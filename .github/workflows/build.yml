@@ -42,8 +42,3 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:master
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:master
-    # Scan image for vulnerabilities
-    - name: Scan image for vulnerabilities
-      uses: docker://docker.io/aquasec/trivy:0.2.1
-      with:
-        args: --cache-dir /var/lib/trivy --severity CRITICAL --no-progress ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu::${{ github.sha }}
