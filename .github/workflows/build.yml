@@ -36,15 +36,15 @@ jobs:
         # Tensorflow Notebook for CPU based workload
         docker build -f tensorflow-notebook/base/Dockerfile.cpu -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:master
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:master
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${GITHUB_REF#refs/*/}
         # Tensorflow Notebook for GPU based workload
         docker build -f tensorflow-notebook/base/Dockerfile.gpu -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:master
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:master
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${GITHUB_REF#refs/*/}
         # R Notebook
         docker build -f r-notebook/base/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:master
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:master
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${GITHUB_REF#refs/*/}
