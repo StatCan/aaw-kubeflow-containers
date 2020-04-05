@@ -1,0 +1,10 @@
+# https://github.com/kubeflow/kubeflow/blob/master/components/tensorflow-notebook-image/Dockerfile
+
+FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-cpu:1.0.0
+USER root
+
+# Configure container startup
+EXPOSE 8888
+USER jovyan
+ENTRYPOINT ["tini", "--"]
+CMD ["sh","-c", "jupyter notebook --notebook-dir=/home/${NB_USER} --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX}" --NotebookApp.default_url='/lab']
