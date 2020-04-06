@@ -89,7 +89,9 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
     && \
     # Extensions
     pip install --upgrade pip && \
+    pip install -U jupyterlab && \
     pip install \
+      'jupyterlab' \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
@@ -103,7 +105,7 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
       'python-language-server' \
       #'jupyter-tensorboard' \
     && \
-    jupyter nbextension enable codefolding/main --sys-prefix && \
+    #jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
         '@jupyter-widgets/jupyterlab-manager' \
         '@lckr/jupyterlab_variableinspector' \
@@ -112,7 +114,7 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
         'jupyterlab-plotly' \
         '@ijmbarr/jupyterlab_spellchecker' \
         '@jupyterlab/toc' \
-        '@jupyterlab/geojson-extension' \
+        #'@jupyterlab/geojson-extension' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
