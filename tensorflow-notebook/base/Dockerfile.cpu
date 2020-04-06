@@ -1,5 +1,4 @@
 # https://github.com/kubeflow/kubeflow/blob/master/components/tensorflow-notebook-image/Dockerfile
-
 FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-cpu:1.0.0
 USER root
 
