@@ -1,6 +1,5 @@
 # https://github.com/kubeflow/kubeflow/blob/master/components/tensorflow-notebook-image/Dockerfile
 
-#FROM jupyter/datascience-notebook
 FROM gcr.io/kubeflow-images-public/tensorflow-2.1.0-notebook-gpu:1.0.0
 USER root
 
@@ -17,96 +16,15 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
     rm ~/anaconda.sh && \
     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc
-    
-
-# ML Everything
-RUN conda update -n root conda && conda update --all && \
+    echo "conda activate base" >> ~/.bashrc \
+  && \
+    # ML Everything
+    conda update -n root conda && conda update --all && \
     conda install -c conda-forge pytorch xgboost keras && \
-    conda clean --all -f -y
-
-RUN pip install -U nltk 
-
-# Extensions
-RUN pip install --upgrade pip && \
-    pip install -U jupyterlab && \
-    # Code folding
-    pip install -U jupyter_contrib_nbextensions && \
-    jupyter nbextension enable codefolding/main && \
-    # IPyWidgets
-    pip install -U ipywidgets  && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    # Dash
-    pip install -U jupyterlab-dash && \
-    # Variable Inspector
-    jupyter labextension install @lckr/jupyterlab_variableinspector && \
-    # Tensorboard
-    pip install -U jupyter-tensorboard && \
-    jupyter labextension install jupyterlab_tensorboard && \
-    # Matplotlib integration
-    pip install -U ipympl && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-matplotlib && \
-    # Plotly
-    jupyter labextension install jupyterlab-plotly && \
-    # Spellcheck
-    jupyter labextension install @ijmbarr/jupyterlab_spellchecker && \
-    # Git
-    pip install --upgrade jupyterlab-git && \
-    jupyter lab build && \
-    # Table of Contents
-    jupyter labextension install @jupyterlab/toc 
-    # Google Drive
-    #jupyter labextension install @jupyterlab/google-drive && \
-    # Comments
-    # pip install jupyterlab-commenting-service && \
-    # jupyter labextension install @jupyterlab/commenting-extension 
-
-# Language Server
-#RUN pip install --upgrade jupyter-lsp && jupyter labextension install @krassowski/jupyterlab-lsp 
-
-# Geomatics
-RUN conda install -c conda-forge rasterio gdal geopandas fiona
-
-### R STUFF
-COPY install2.r /bin/
-RUN chmod +x /bin/install2.r
-
-ARG R_VERSION=3.6.3
-ARG OS_IDENTIFIER=ubuntu-1804
-
-# Install R
-ENV R_LIBS_USER=/opt/R/3.6.3/lib/ 
-ENV R_LIBS=/opt/R/3.6.3/lib/ 
-
-RUN wget https://cdn.rstudio.com/r/${OS_IDENTIFIER}/pkgs/r-${R_VERSION}_1_amd64.deb && \
-    apt-get update -qq && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -f -y ./r-${R_VERSION}_1_amd64.deb && \
-    ln -s /opt/R/${R_VERSION}/bin/R /usr/bin/R && \
-    ln -s /opt/R/${R_VERSION}/bin/Rscript /usr/bin/Rscript && \
-    ln -s /opt/R/${R_VERSION}/lib/R /usr/lib/R && \
-    rm r-${R_VERSION}_1_amd64.deb && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN /usr/bin/Rscript -e 'install.packages("docopt",  repos="http://cran.rstudio.com")'
-
-## tidyverse
-#ENV R_LIBS_USER=/opt/R/3.6.3/lib/ 
-#ENV R_LIBS=/opt/R/3.6.3/lib/ 
-#RUN install2.r --error \
-#    --libloc $R_LIBS \
-#    --repos "http://cran.rstudio.com" \
-#    --deps TRUE \
-#    tidyverse \
-#    dplyr \
-#    devtools \
-#    formatR \
-#    remotes \
-#    selectr \
-#    caTools \
-#    BiocManager
-
-# geospatial
-RUN apt-get update \
+    pip install -U nltk \
+  && \
+    # geospatial
+    apt-get update \
   && apt-get install -y --no-install-recommends \
     lbzip2 \
     libfftw3-dev \
@@ -131,54 +49,89 @@ RUN apt-get update \
     protobuf-compiler \
     sqlite3 \
     tk-dev \
-    unixodbc-dev
+    unixodbc-dev \
+  && \
+    conda install --quiet --yes \
+        -c conda-forge \
+        'r' \
+        'gdal' \
+        'geopandas' \
+        'fiona' \
+        'r-rgdal' \
+        'r-dplyr' \
+        'r-raster' \
+        'rasterio' \
+        'r-RColorBrewer' \
+        'r-RandomFields' \
+        'r-RNetCDF' \
+        'r-classInt' \
+        'r-deldir' \
+        'r-gstat' \
+        'r-hdf5r' \
+        'r-lidR' \
+        'r-mapdata' \
+        'r-maptools' \
+        'r-mapview' \
+        'r-ncdf4' \
+        'r-proj4' \
+        'r-rgeos' \
+        'r-rlas' \
+        'r-sf' \
+        'r-sp' \
+        'r-spacetime' \
+        'r-spatstat' \
+        'r-spdep' \
+        'r-geoR' \
+        'r-geosphere' \
+        'r-IRkernel' \
+    && \
+    # Extensions
+    pip install --upgrade pip && \
+    pip install \
+      'jupyter-git' \
+      'jupyter-lsp' \
+    && \
+      conda install --quiet --yes \
+      'jupyter_contrib_nbextensions' \
+      'ipywidgets' \
+      'ipympl' \
+      'jupyter_contrib_nbextensions' \
+      'jupyterlab-dash' \
+      'nodejs' \
+      'python-language-server' \
+      'jupyter-tensorboard' \
+    && \
+    jupyter nbextension enable codefolding/main --sys-prefix && \
+    jupyter labextension install --no-build \
+        '@jupyter-widgets/jupyterlab-manager' \
+        '@lckr/jupyterlab_variableinspector' \
+        '@jupyter-widgets/jupyterlab-manager' \
+        'jupyter-matplotlib' \
+        'jupyterlab-plotly' \
+        '@ijmbarr/jupyterlab_spellchecker' \
+        '@jupyterlab/toc' \
+        '@jupyterlab/geojson-extension' \
+    && \
+    jupyter lab build && \
+    jupyter lab clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    npm cache clean --force && \
+    conda clean --all -f -y && \
+    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
-RUN install2.r --error \
-    --libloc $R_LIBS \
-    --repos "http://cran.rstudio.com" \
-    RColorBrewer \
-    RandomFields \
-    # RNetCDF \
-    classInt \
-    deldir \
-    gstat \
-    #hdf5r \
-    #lidR \
-    mapdata \
-    maptools \
-    # mapview \
-    #ncdf4 \
-    proj4 \
-    raster \
-    #rgdal \
-    rgeos \
-    rlas \
-    # sf \
-    sp \
-    spacetime \
-    spatstat \
-    #spdep \
-    geoR \
-    geosphere 
-    ## from bioconductor
-
-RUN install2.r --error \
-    --libloc $R_LIBS \
-    --repos "http://cran.rstudio.com" \
-    IRkernel
+    # Not working on the current version.
+    #
+    # Google Drive
+    # jupyter labextension install @jupyterlab/google-drive && \
+    # Comments
+    # pip install jupyterlab-commenting-service && \
+    # jupyter labextension install @jupyterlab/commenting-extension 
 
 # Register R Kernel
 RUN Rscript -e 'IRkernel::installspec()'
-
-# Grab dplyr
-RUN Rscript -e 'install.packages("dplyr", repo="http://cran.rstudio.com")'
-RUN conda install -c conda-forge r-rgdal r-raster
-
-# Grab rgdal
-# RUN ACCEPT_USE_OF_DEPRECATED_PROJ_API_H=1 Rscript -e 'install.packages("rgdal", repo="http://cran.rstudio.com")'
-
-# Geojson
-RUN jupyter labextension install @jupyterlab/geojson-extension
 
 RUN chown -R jovyan:users /home/jovyan
 USER jovyan
