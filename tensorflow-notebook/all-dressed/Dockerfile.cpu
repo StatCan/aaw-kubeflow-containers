@@ -18,9 +18,11 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
     echo "conda activate base" >> ~/.bashrc \
   && \
+    apt-get install -y htop tree vim tig ranger curl \
+  && \
     # ML Everything
     conda update -n root conda && conda update --all && \
-    conda install -c conda-forge pytorch xgboost keras && \
+    conda install -c conda-forge pytorch xgboost keras scikit-learn && \
     pip install -U nltk \
   && \
     # geospatial
@@ -92,14 +94,14 @@ RUN apt-get update --fix-missing && apt-get install -y wget bzip2 ca-certificate
       'jupyter-lsp' \
     && \
       conda install --quiet --yes \
-      'jupyter_contrib_nbextensions' \
+      #'jupyter_contrib_nbextensions' \
       'ipywidgets' \
       'ipympl' \
-      'jupyter_contrib_nbextensions' \
-      'jupyterlab-dash' \
+      #'jupyter_contrib_nbextensions' \
+      #'jupyterlab-dash' \
       'nodejs' \
       'python-language-server' \
-      'jupyter-tensorboard' \
+      #'jupyter-tensorboard' \
     && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
