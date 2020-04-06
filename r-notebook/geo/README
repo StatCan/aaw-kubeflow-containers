@@ -1,0 +1,14 @@
+# R + py + jl 
+The datascience notebook offers R, Python, and Julia, but it's mostly focussed on R to keep the image small.
+
+The thought is that people will often use python for little preprocessing scripts or webscraping, even 
+if they aren't using it for their actual analysis.
+
+# Stan
+The image alos contains "Stan" which is a stats language that Ken requested on our team, as it's what
+a piece of modeling software was written in.
+
+
+```
+Size ~= 8gb
+```
