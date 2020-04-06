@@ -38,7 +38,6 @@ RUN pip install \
       'jupyter-lsp' \
     && \
     conda install --quiet --yes \
-    -c conda-forge \
       'ipywidgets' \
       'ipympl' \
       'jupyter_contrib_nbextensions' \
@@ -47,6 +46,9 @@ RUN pip install \
       'python-language-server' \
     && \
     conda install --quiet --yes \
+    -c conda-forge \
+      'dplyr' \
+      'tidyverse' \
       'gdal' \
       'rasterio' \
       'r-geoR' \
