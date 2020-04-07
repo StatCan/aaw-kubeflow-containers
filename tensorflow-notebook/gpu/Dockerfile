@@ -365,8 +365,8 @@ LABEL maintainer="Statistics Canada"
 # Install Tensorflow
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
-      'tensorflow=2.1*' \
-      'keras' \
+      'tensorflow-gpu' \
+      'keras-gpu' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
