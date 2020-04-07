@@ -17,6 +17,7 @@ RUN apt-get update && \
 
 # Default environment
 RUN pip install --quiet \
+      'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
@@ -55,5 +56,6 @@ RUN pip install --quiet \
 # Configure container startup
 EXPOSE 8888
 USER jovyan
+ENV PATH="/home/jovyan/.local/bin:${PATH}"
 ENTRYPOINT ["tini", "--"]
 CMD ["sh","-c", "jupyter notebook --notebook-dir=/home/${NB_USER} --ip=0.0.0.0 --no-browser --allow-root --port=8888 --NotebookApp.token='' --NotebookApp.password='' --NotebookApp.allow_origin='*' --NotebookApp.base_url=${NB_PREFIX} --NotebookApp.default_url='/lab'"]

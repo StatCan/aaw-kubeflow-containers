@@ -30,6 +30,16 @@ RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
      pytorch \
      torchvision \
+     torchtext \
+     pymc3 \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+# Install XGBoost
+RUN conda config --set channel_priority false && \
+    conda install --quiet --yes xgboost \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
