@@ -362,43 +362,6 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 
 LABEL maintainer="Statistics Canada"
 
-<<<<<<< HEAD:tensorflow-notebook/gpu/Dockerfile
-# Install Tensorflow
-RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-      'tensorflow-gpu' \
-      'keras-gpu' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# Install PyTorch
-RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-      cmake \
-      cffi \
-      mkl \
-      mkl-include \
-      pyyaml \
-      setuptools \
-      typing \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-     pytorch \
-     torchvision \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-=======
->>>>>>> Rename two folders, split minimal into (cpu|gpu)-base -> minimal.:base-notebook/gpu/Dockerfile
 # Configure container startup
 EXPOSE 8888
 USER jovyan

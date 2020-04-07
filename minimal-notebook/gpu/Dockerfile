@@ -2,7 +2,19 @@
 FROM k8scc01covidacr.azurecr.io/base-notebook-gpu:master
 USER root
 
-# Note, base image includes sklearn
+# Dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      'htop' \
+      'tree' \
+      'vim' \
+      'tig' \
+      'ranger' \
+      'curl' \
+      'jq' \
+      'zsh' \
+    && \
+    rm -rf /var/lib/apt/lists/*
 
 # Default environment
 RUN pip install --quiet \
@@ -20,8 +32,6 @@ RUN pip install --quiet \
     && \
     conda install --quiet --yes \
       'r-dplyr' \
-      'r-tidyr' \
-      # Stan is a request from Ken.
       'r-rstan' \
     && \
     conda clean --all -f -y && \
@@ -42,21 +52,6 @@ RUN pip install --quiet \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-
-# Desired apt packages
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y \
-  htop \
-  tree \
-  vim \
-  tig \
-  ranger \
-  curl \
-  jq \
-  zsh \
-  && \
-  rm -rf /var/lib/apt/lists/*
 
 # Configure container startup
 EXPOSE 8888
