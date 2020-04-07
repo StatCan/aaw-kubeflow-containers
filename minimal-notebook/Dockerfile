@@ -2,6 +2,20 @@
 FROM jupyter/datascience-notebook
 USER root
 
+# Dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      'htop' \
+      'tree' \
+      'vim' \
+      'tig' \
+      'ranger' \
+      'curl' \
+      'jq' \
+      'zsh' \
+    && \
+    rm -rf /var/lib/apt/lists/*
+
 # Default environment
 RUN pip install --quiet \
       'jupyter-git' \
@@ -17,14 +31,7 @@ RUN pip install --quiet \
       'python-language-server' \
     && \
     conda install --quiet --yes \
-      'fiona' \
-      'gdal' \
-      'geopandas' \
-      'rasterio' \
       'r-dplyr' \
-      'r-geoR' \
-      'r-raster' \
-      'r-rgdal' \
       'r-rstan' \
       'r-tidyr' \
     && \
