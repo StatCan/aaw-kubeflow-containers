@@ -1,5 +1,4 @@
-# https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM jupyter/datascience-notebook
+FROM k8scc01covidacr.azurecr.io/base-notebook-gpu:master
 USER root
 
 # Dependencies
@@ -33,7 +32,6 @@ RUN pip install --quiet \
     conda install --quiet --yes \
       'r-dplyr' \
       'r-rstan' \
-      'r-tidyr' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \

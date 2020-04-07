@@ -33,27 +33,46 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        # Minimal Notebook
-        docker build -f minimal-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${GITHUB_REF#refs/*/}
+        # Base Notebook CPU
+        docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
-        # R Notebook
-        docker build -f geomatics-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook:${GITHUB_REF#refs/*/}
+        # Minimal Notebook CPU
+        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
-        # Tensorflow Notebook for CPU based workload
-        docker build -f tensorflow-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${GITHUB_REF#refs/*/}
+        # Geomatics Notebook CPU
+        docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
-        # Tensorflow Notebook for GPU based workload
-        docker build -f tensorflow-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }} tensorflow-notebook/gpu
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${GITHUB_REF#refs/*/}
+        # Machine Learning Notebook CPU
+        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+
+        # Base Notebook GPU
+        docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+        # Minimal Notebook GPU
+        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+        # Machine Learning Notebook GPU
+        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
