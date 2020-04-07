@@ -1,5 +1,5 @@
 # https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM k8scc01covidacr.azurecr.io/minimal-notebook:master
+FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
 USER root
 
 
