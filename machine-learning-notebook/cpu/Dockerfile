@@ -14,13 +14,13 @@ RUN conda config --set channel_priority false && \
 # Install PyTorch
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
-      cmake \
-      cffi \
-      mkl \
-      mkl-include \
-      pyyaml \
-      setuptools \
-      typing \
+      'cmake' \
+      'cffi' \
+      'mkl' \
+      'mkl-include' \
+      'pyyaml' \
+      'setuptools' \
+      'typing' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -28,8 +28,8 @@ RUN conda config --set channel_priority false && \
 
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
-     pytorch \
-     torchvision \
+     'pytorch' \
+     'torchvision' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
