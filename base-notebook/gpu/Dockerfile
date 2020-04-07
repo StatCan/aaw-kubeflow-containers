@@ -362,6 +362,8 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 
 LABEL maintainer="Statistics Canada"
 
+ENV PATH="/home/jovyan/.local/bin:${PATH}"
+
 # Configure container startup
 EXPOSE 8888
 USER jovyan

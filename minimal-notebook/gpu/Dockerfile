@@ -17,6 +17,7 @@ RUN apt-get update && \
 
 # Default environment
 RUN pip install --quiet \
+      'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
