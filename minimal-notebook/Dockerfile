@@ -33,7 +33,6 @@ RUN pip install --quiet \
     conda install --quiet --yes \
       'r-dplyr' \
       'r-rstan' \
-      'r-tidyr' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
@@ -53,6 +52,21 @@ RUN pip install --quiet \
     rm -rf /home/$NB_USER/.node-gyp && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
+
+# Desired apt packages
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get install -y \
+  htop \
+  tree \
+  vim \
+  tig \
+  ranger \
+  curl \
+  jq \
+  zsh \
+  && \
+  rm -rf /var/lib/apt/lists/*
 
 # Configure container startup
 EXPOSE 8888
