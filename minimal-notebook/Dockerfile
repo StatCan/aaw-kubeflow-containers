@@ -17,14 +17,8 @@ RUN pip install --quiet \
       'python-language-server' \
     && \
     conda install --quiet --yes \
-      'fiona' \
-      'gdal' \
-      'geopandas' \
-      'rasterio' \
       'r-dplyr' \
-      'r-geoR' \
-      'r-raster' \
-      'r-rgdal' \
+      # Stan is a request from Ken.
       'r-rstan' \
       'r-tidyr' \
     && \
