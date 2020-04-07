@@ -2,38 +2,8 @@
 FROM jupyter/datascience-notebook
 USER root
 
-# Dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      'lbzip2' \
-      'libfftw3-dev' \
-      'libgdal-dev' \
-      'libgeos-dev' \
-      'libgsl0-dev' \
-      'libgl1-mesa-dev' \
-      'libglu1-mesa-dev' \
-      'libhdf4-alt-dev' \
-      'libhdf5-dev' \
-      'libjq-dev' \
-      'liblwgeom-dev' \
-      'libpq-dev' \
-      'libproj-dev' \
-      'libprotobuf-dev' \
-      'libnetcdf-dev' \
-      'libsqlite3-dev' \
-      'libssl-dev' \
-      'libudunits2-dev' \
-      'netcdf-bin' \
-      'postgis' \
-      'protobuf-compiler' \
-      'sqlite3' \
-      'tk-dev' \
-      'unixodbc-dev' \
-    && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Python 3 packages
-RUN pip install \
+# Default environment
+RUN pip install --quiet \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
@@ -47,12 +17,16 @@ RUN pip install \
       'python-language-server' \
     && \
     conda install --quiet --yes \
+      'fiona' \
       'gdal' \
+      'geopandas' \
       'rasterio' \
+      'r-dplyr' \
       'r-geoR' \
       'r-raster' \
       'r-rgdal' \
       'r-rstan' \
+      'r-tidyr' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \

@@ -33,21 +33,27 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }}
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        # Tensorflow Notebook for CPU based workload
-        docker build -f tensorflow-notebook/base/Dockerfile.cpu -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
-        # Tensorflow Notebook for GPU based workload
-        docker build -f tensorflow-notebook/base/Dockerfile.gpu -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-2.1.0-notebook-gpu:${GITHUB_REF#refs/*/}
+        # Minimal Notebook
+        docker build -f minimal-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook:${GITHUB_REF#refs/*/}
         docker system prune -f -a
         # R Notebook
-        docker build -f r-notebook/base/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} .
+        docker build -f r-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-notebook:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+        # Tensorflow Notebook for CPU based workload
+        docker build -f tensorflow-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+        # Tensorflow Notebook for GPU based workload
+        docker build -f tensorflow-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/tensorflow-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
