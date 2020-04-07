@@ -362,6 +362,7 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 
 LABEL maintainer="Statistics Canada"
 
+<<<<<<< HEAD:tensorflow-notebook/gpu/Dockerfile
 # Install Tensorflow
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
@@ -396,6 +397,8 @@ RUN conda config --set channel_priority false && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+=======
+>>>>>>> Rename two folders, split minimal into (cpu|gpu)-base -> minimal.:base-notebook/gpu/Dockerfile
 # Configure container startup
 EXPOSE 8888
 USER jovyan

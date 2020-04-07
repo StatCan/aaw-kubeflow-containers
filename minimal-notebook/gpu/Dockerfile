@@ -1,20 +1,8 @@
 # https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM jupyter/datascience-notebook
+FROM k8scc01covidacr.azurecr.io/base-notebook-gpu:master
 USER root
 
-# Dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-      'htop' \
-      'tree' \
-      'vim' \
-      'tig' \
-      'ranger' \
-      'curl' \
-      'jq' \
-      'zsh' \
-    && \
-    rm -rf /var/lib/apt/lists/*
+# Note, base image includes sklearn
 
 # Default environment
 RUN pip install --quiet \
@@ -32,6 +20,8 @@ RUN pip install --quiet \
     && \
     conda install --quiet --yes \
       'r-dplyr' \
+      'r-tidyr' \
+      # Stan is a request from Ken.
       'r-rstan' \
     && \
     conda clean --all -f -y && \
