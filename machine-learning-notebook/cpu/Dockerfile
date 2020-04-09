@@ -31,6 +31,10 @@ RUN conda config --set channel_priority false && \
      'pytorch' \
      'torchvision' \
     && \
+    conda install --quiet --yes \
+    -c pytorch \
+      'torchtext' \
+    && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

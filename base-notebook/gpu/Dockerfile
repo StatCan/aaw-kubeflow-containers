@@ -361,8 +361,14 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 ############################################################################
 
 LABEL maintainer="Statistics Canada"
-
+USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
+
+RUN pip --no-cache-dir install  --quiet \
+      'kfp' \
+      'kfp-server-api' \
+      'git+https://github.com/kubeflow/fairing@8b08bf7d2703c97901efe8a80717eeccb1133194' \
+      'minio'
 
 # Configure container startup
 EXPOSE 8888
