@@ -34,7 +34,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Base Notebook CPU
-        docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} .
+        docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
