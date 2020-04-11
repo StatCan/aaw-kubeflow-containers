@@ -23,6 +23,9 @@ RUN conda install --quiet --yes pyodbc && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# Need this to connect
+ENV DREMIO_DRIVER=/opt/dremio-odbc/lib64/libdrillodbc_sb64.so
+
 # Configure container startup
 EXPOSE 8888
 USER jovyan
