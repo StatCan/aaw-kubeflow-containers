@@ -83,8 +83,8 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
         # ML-Workspace GPU
-        docker build -f ml-workspace/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }} ml-workspace/gpu
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
+        # docker build -f ml-workspace/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }} ml-workspace/gpu
+        # docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }}
+        # docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
+        # docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
+        # docker system prune -f -a
