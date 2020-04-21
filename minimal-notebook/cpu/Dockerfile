@@ -15,6 +15,18 @@ RUN apt-get update && \
     && \
     rm -rf /var/lib/apt/lists/*
 
+# kubectl, mc, az
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
+    && chmod +x ./kubectl \
+    && sudo mv ./kubectl /usr/local/bin/kubectl \
+  && \
+    wget https://dl.min.io/client/mc/release/linux-amd64/mc \
+    && chmod +x mc \
+    && mv mc /usr/local/bin/mc \
+  && \
+    sh -c 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash'
+
+
 # Default environment
 RUN pip install --quiet \
       'jupyter-git' \
