@@ -37,12 +37,15 @@ RUN pip install --quiet \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
+    conda update -n base conda && conda update --all && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets' \
       'ipympl' \
       'jupyter_contrib_nbextensions' \
       'jupyterlab-dash' \
+      'jupyterlab-git' \
+      'xeus-python' \
       'nodejs' \
       'python-language-server' \
     && \
@@ -64,6 +67,12 @@ RUN pip install --quiet \
       '@lckr/jupyterlab_variableinspector' \
       'jupyter-matplotlib' \
       'jupyterlab-plotly' \
+      '@jupyterlab/debugger' \
+      '@jupyterlab/github' \
+      '@jupyterlab/git' \
+      'jupyterlab-theme-solarized-dark' \
+      'jupyterlab-execute-time' \
+      '@hadim/jupyter-archive' \
       'jupyterlab-spreadsheet' \
     && \
     jupyter lab build && \
