@@ -38,7 +38,7 @@ RUN pip install --quiet \
       'jupyter-lsp' \
     && \
     conda install --quiet --yes \
-    'jupyterlab=2.1.1' \
+    'jupyterlab>=2.1.1' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
