@@ -40,6 +40,7 @@ RUN pip install --quiet \
     && \
     conda install --quiet --yes \
     'jupyterlab=2.1.1' \
+    && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets' \
