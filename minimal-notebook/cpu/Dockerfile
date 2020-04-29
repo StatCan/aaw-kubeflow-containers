@@ -37,7 +37,9 @@ RUN pip install --quiet \
       'jupyter-git' \
       'jupyter-lsp' \
     && \
-    conda update -n base conda && conda update --all && \
+    conda install --quiet --yes \
+    'jupyterlab=2.1.1' \
+    && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets' \
