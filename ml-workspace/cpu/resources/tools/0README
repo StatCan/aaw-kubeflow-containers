@@ -1,0 +1,4 @@
+To install these tools, open a terminal in this folder (or cd to /resources/tools) and execute them through sudo. For example:
+
+sudo ./emacs.sh
+
