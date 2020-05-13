@@ -71,6 +71,7 @@ RUN pip install --quiet \
       '@krassowski/jupyterlab-lsp' \
       '@lckr/jupyterlab_variableinspector' \
       '@elyra/application' \
+      '@elyra/notebook-scheduler-extension' \
       '@elyra/pipeline-editor-extension' \
       '@elyra/python-runner-extension' \
       '@jupyterlab/debugger' \
