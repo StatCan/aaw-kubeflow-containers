@@ -80,7 +80,6 @@ RUN pip install --quiet \
       'jupyterlab-plotly' \
       'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
-      'kubeflow-kale-launcher' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
