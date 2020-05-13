@@ -30,13 +30,14 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
       https://github.com/pachyderm/pachyderm/releases/download/v1.10.0/pachctl_1.10.0_amd64.deb \
     && sudo dpkg -i /tmp/pachctl.deb
 
-
-
 # Default environment
 RUN pip install --quiet \
       'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
+      'git+https://github.com/sylus/elyra@2300a34959c19c77bb96722df06a4fd0c2c16671' \
+      'git+https://github.com/sylus/kale@ab08f3f05c6befd3705a18956ef5fd4f8b12e3ba#egg=kubeflow-kale&subdirectory=backend' \
+      'kfp-notebook==0.8.0' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -66,17 +67,21 @@ RUN pip install --quiet \
       '@ijmbarr/jupyterlab_spellchecker' \
       '@jupyterlab/toc' \
       '@jupyter-widgets/jupyterlab-manager'  \
+      '@hadim/jupyter-archive' \
       '@krassowski/jupyterlab-lsp' \
       '@lckr/jupyterlab_variableinspector' \
-      'jupyter-matplotlib' \
-      'jupyterlab-plotly' \
+      '@elyra/application' \
+      '@elyra/pipeline-editor-extension' \
+      '@elyra/python-runner-extension' \
       '@jupyterlab/debugger' \
       '@jupyterlab/github' \
       '@jupyterlab/git' \
-      'jupyterlab-theme-solarized-dark' \
+      'jupyter-matplotlib' \
       'jupyterlab-execute-time' \
-      '@hadim/jupyter-archive' \
+      'jupyterlab-plotly' \
+      'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
+      'kubeflow-kale-launcher' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
