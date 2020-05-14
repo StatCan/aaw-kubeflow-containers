@@ -3,7 +3,7 @@ FROM jupyter/datascience-notebook
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
 
-RUN pip --no-cache-dir install  --quiet \
+RUN pip --no-cache-dir install --quiet \
       'kfp==0.5.1' \
       'kfp-server-api==0.5.0' \
       'kfp-tekton==0.0.1' \
@@ -15,7 +15,7 @@ RUN pip --no-cache-dir install  --quiet \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
 
 # kfp-azure-databricks needs to be run after kfp
-RUN pip --no-cache-dir install  --quiet \
+RUN pip --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
 
