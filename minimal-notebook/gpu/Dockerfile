@@ -100,23 +100,25 @@ RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-exte
 # Go
 ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOROOT/bin
-ENV GOPATH=/home/$NB_USER/.go/
+ENV GOPATH=/opt/go/
 ARG LATEST_GO_VERSION=1.14.2
 RUN wget https://dl.google.com/go/go${LATEST_GO_VERSION}.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
-  	tar -xvf /tmp/go.tar.gz -C /usr/local && \
-  	printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile && \
-  	printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile && \
-  	printf "\nexport GOPATH=$GOPATH\n"           | tee -a /etc/profile /home/$NB_USER/.bashrc && \
-  	printf "\nexport PATH=$GOPATH/bin:\$PATH\n"  | tee -a /etc/profile /home/$NB_USER/.bashrc
-RUN env GO111MODULE=off go get -d -u github.com/gopherdata/gophernotes && \
+    tar -xvf /tmp/go.tar.gz -C /usr/local && \
+    printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile && \
+    printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile && \
+    printf "\nexport GOPATH=$GOPATH\n"           | tee -a /etc/profile /home/$NB_USER/.bashrc && \
+    printf "\nexport PATH=$GOPATH/bin:\$PATH\n"  | tee -a /etc/profile /home/$NB_USER/.bashrc
+RUN mkdir -p $GOPATH && \
+    env GO111MODULE=off go get -d -u github.com/gopherdata/gophernotes && \
     cd "$(go env GOPATH)"/src/github.com/gopherdata/gophernotes && \
     env GO111MODULE=on go install && \
-    mkdir -p /home/$NB_USER/.local/share/jupyter/kernels/gophernotes && \
-    cp kernel/* /home/$NB_USER/.local/share/jupyter/kernels/gophernotes && \
-    cd /home/$NB_USER/.local/share/jupyter/kernels/gophernotes && \
+    mkdir -p /opt/conda/share/jupyter/kernels/gophernotes && \
+    cp kernel/* /opt/conda/share/jupyter/kernels/gophernotes && \
+    cd /opt/conda/share/jupyter/kernels/gophernotes && \
     chmod +w ./kernel.json && \
     sed "s|gophernotes|$(go env GOPATH)/bin/gophernotes|" < kernel.json.in > kernel.json && \
-    fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER && \
+		fix-permissions $GOPATH
 
 # Configure container startup
 EXPOSE 8888
