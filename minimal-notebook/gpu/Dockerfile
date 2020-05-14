@@ -30,13 +30,14 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
       https://github.com/pachyderm/pachyderm/releases/download/v1.10.0/pachctl_1.10.0_amd64.deb \
     && sudo dpkg -i /tmp/pachctl.deb
 
-
-
 # Default environment
 RUN pip install --quiet \
       'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
+      'git+https://github.com/sylus/elyra@2300a34959c19c77bb96722df06a4fd0c2c16671' \
+      'git+https://github.com/sylus/kale@ab08f3f05c6befd3705a18956ef5fd4f8b12e3ba#egg=kubeflow-kale&subdirectory=backend' \
+      'kfp-notebook==0.8.0' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -66,16 +67,20 @@ RUN pip install --quiet \
       '@ijmbarr/jupyterlab_spellchecker' \
       '@jupyterlab/toc' \
       '@jupyter-widgets/jupyterlab-manager'  \
+      '@hadim/jupyter-archive' \
       '@krassowski/jupyterlab-lsp' \
       '@lckr/jupyterlab_variableinspector' \
-      'jupyter-matplotlib' \
-      'jupyterlab-plotly' \
+      '@elyra/application' \
+      '@elyra/notebook-scheduler-extension' \
+      '@elyra/pipeline-editor-extension' \
+      '@elyra/python-runner-extension' \
       '@jupyterlab/debugger' \
       '@jupyterlab/github' \
       '@jupyterlab/git' \
-      'jupyterlab-theme-solarized-dark' \
+      'jupyter-matplotlib' \
       'jupyterlab-execute-time' \
-      '@hadim/jupyter-archive' \
+      'jupyterlab-plotly' \
+      'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
     && \
     jupyter lab build && \
@@ -88,19 +93,32 @@ RUN pip install --quiet \
 
 # Solarized
 RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
-  printf '{ "theme": "JupyterLab Solarized Dark" }\n' \
-  > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings
+  printf '{ "theme": "JupyterLab Solarized Dark" }\n' && \
+  > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings && \
+  fix-permissions /home/$NB_USER
 
+# Go
 ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOROOT/bin
-ENV GOPATH=/home/$NB_USER/go/
+ENV GOPATH=/opt/go/
 ARG LATEST_GO_VERSION=1.14.2
-RUN wget https://dl.google.com/go/go${LATEST_GO_VERSION}.linux-amd64.tar.gz -O /tmp/go.tar.gz \
-  && tar -xvf /tmp/go.tar.gz -C /usr/local \
-  && printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile \
-  && printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile \
-  && printf "\nexport GOPATH=$GOPATH\n"           | tee -a /etc/profile /home/$NB_USER/.bashrc \
-  && printf "\nexport PATH=$GOPATH/bin:\$PATH\n"  | tee -a /etc/profile /home/$NB_USER/.bashrc
+RUN wget https://dl.google.com/go/go${LATEST_GO_VERSION}.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
+    tar -xvf /tmp/go.tar.gz -C /usr/local && \
+    printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile && \
+    printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile && \
+    printf "\nexport GOPATH=$GOPATH\n"           | tee -a /etc/profile /home/$NB_USER/.bashrc && \
+    printf "\nexport PATH=$GOPATH/bin:\$PATH\n"  | tee -a /etc/profile /home/$NB_USER/.bashrc
+RUN mkdir -p $GOPATH && \
+    env GO111MODULE=off go get -d -u github.com/gopherdata/gophernotes && \
+    cd "$(go env GOPATH)"/src/github.com/gopherdata/gophernotes && \
+    env GO111MODULE=on go install && \
+    mkdir -p /opt/conda/share/jupyter/kernels/gophernotes && \
+    cp kernel/* /opt/conda/share/jupyter/kernels/gophernotes && \
+    cd /opt/conda/share/jupyter/kernels/gophernotes && \
+    chmod +w ./kernel.json && \
+    sed "s|gophernotes|$(go env GOPATH)/bin/gophernotes|" < kernel.json.in > kernel.json && \
+    fix-permissions /home/$NB_USER && \
+		fix-permissions $GOPATH
 
 # Configure container startup
 EXPOSE 8888

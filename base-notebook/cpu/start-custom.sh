@@ -3,6 +3,7 @@
 if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
 fi
+
 git clone https://github.com/statcan/jupyter-notebooks
 
 jupyter notebook --notebook-dir=/home/${NB_USER} \
