@@ -19,18 +19,20 @@ RUN python3 -m pip install \
       'jupyter-shiny-proxy' && \
     conda install --quiet --yes \
       'r-arrow' \
+      'r-aws.s3' \
+      'r-catools' \
+      'r-devtools' \
       'r-dplyr' \
       'r-ggplot2' \
       'r-hdf5r' \
       'r-jsonlite' \
+      'r-odbc' \
+      'r-rmarkdown' \
       'r-rstan' \
       'r-sf' \
       'r-shiny' \
-      'r-rmarkdown' \
       'r-sparklyr' \
       'r-tidyr' \
-      'r-odbc' \
-      'r-devtools' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -77,10 +79,6 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
     curl -o /tmp/pachctl.deb -L \
       https://github.com/pachyderm/pachyderm/releases/download/v1.10.0/pachctl_1.10.0_amd64.deb \
     && sudo dpkg -i /tmp/pachctl.deb
-
-
-# We'll replace this once the git repo is created.
-COPY R-notebooks /home/$NB_USER/examples
 
 
 COPY start-custom.sh /usr/local/bin
