@@ -34,15 +34,16 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     # Container build and push to a Azure Container registry (ACR)
     - run: |
-        # R-Studio (CPU)
-        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
-
         # Base Notebook CPU
         docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
@@ -73,6 +74,12 @@ jobs:
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-cpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
+        # R-Studio CPU
+        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
 
         # Base Notebook GPU
         docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
@@ -98,3 +105,31 @@ jobs:
         # docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
         # docker push ${{ env.REGISTRY_NAME }}.azurecr.io/ml-workspace-gpu:${GITHUB_REF#refs/*/}
         # docker system prune -f -a
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
