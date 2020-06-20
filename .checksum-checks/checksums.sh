@@ -1,0 +1,246 @@
+#!/bin/sh
+
+# Requires
+#
+#     curl, jq
+
+
+#######################################
+###      Basic file/url tests       ###
+#######################################
+
+test_sha256 () {
+	# This is the sha256 of the empty string
+	if test "$1" = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; then
+		echo "The curl command failed; file not found" >&2
+		echo "Exiting."
+		exit 1
+	fi
+}
+
+
+test_url () {
+	# At the moment, just ensure https. Could be extended.
+	if ! echo "$1" | grep -q '^https://[^;]*$'; then
+		echo 'URL failed. Have to use https!!!' >&2
+		exit 1
+	fi
+}
+
+
+#######################################
+###          Download tests         ###
+#######################################
+
+
+check_dremio_odbc () {
+	NAME=dremio-odbc
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	# TO CONFIRM:
+	#
+	# Check curl https://download.dremio.com/odbc-driver
+	#
+	# And see if we got the newest version.
+
+	# THE TRAILING SLASH BELONGS HERE
+	BASE_URL='https://download.dremio.com/odbc-driver/'
+
+	test_url "$BASE_URL" || exit 1
+
+	VERSION=$(curl -sL "$BASE_URL" |
+						 grep 'href="[0-9./]*"' |
+						 sed 's~.*href="\([^"]*\)".*~\1~' |
+						 sort -nr |
+						 sed 1q |
+						 sed 's~/$~~')
+
+	RPM=$(curl -sL "${BASE_URL}${VERSION}/" |
+						 grep 'href="[^"]*x86_64.rpm"' |
+						 sed 's~.*href="\([^"]*.rpm\)".*~\1~' |
+						 sort -nr |
+						 sed 1q)
+
+	URL="${BASE_URL}${VERSION}/${RPM}"
+
+	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
+
+	test_sha256 "$SHA256" || exit 1
+
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+check_mc () {
+	NAME=mc
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	# TO CONFIRM:
+	#
+	# Check curl https://dl.min.io/client/mc/release/linux-amd64/
+	#
+	# And see if we got the newest version.
+
+	# THE TRAILING SLASH BELONGS HERE
+	BASE_URL='https://dl.min.io/client/mc/release/linux-amd64/'
+
+	test_url "$BASE_URL" || exit 1
+
+	VERSION=$(curl -sL "$BASE_URL" |
+						 grep 'href="./mc.RELEASE.*.sha256sum"' |
+						 sed 's~.*href="./\(mc.RELEASE.[0-9A-Z-]*\).sha256sum".*~\1~' |
+						 sort -nr |
+						 sed 1q)
+
+	SHA_URL="$BASE_URL/$VERSION.sha256sum"
+	
+	# If we can curl
+	curl -s "$SHA_URL" | awk \
+			-v APP=mc \
+			-v VERSION="$VERSION" \
+			-v URL="$BASE_URL" \
+			'NR==1 {printf "%s	%s	%s%s	%s\n", APP, VERSION, URL, $2, $1}'
+
+	printf ' done.\n' >&2
+}
+
+
+
+check_kubectl () {
+	NAME=kubectl
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	VERSION=$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)
+	URL="https://storage.googleapis.com/kubernetes-release/release/$VERSION/bin/linux/amd64/kubectl"
+	
+	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
+
+	test_sha256 "$SHA256" || exit 1
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+
+
+
+check_az () {
+	# This is a deb install in disguise. We'll verify that the installer script is bona fide, tho
+	# The installer script is versionless, and should not change?
+	NAME=azcli
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	VERSION=null
+	URL=https://aka.ms/InstallAzureCLIDeb
+	STATIC_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
+	SHA256=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
+	[ "$SHA256" = "$STATIC_SHA" ] || {
+		echo "chack_az: This is not the sha256sum I expected to see... Please investigate." >&2
+	}
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+
+check_pachctl () {
+	NAME=pachctl
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	BASE_URL=https://api.github.com/repos/pachyderm/pachyderm/releases/latest
+	URL=$(curl -s "$BASE_URL" |
+			  jq -r '.assets | .[].browser_download_url' |
+			  grep 'amd64.deb')
+
+	# latest -> version
+	VERSION=$(basename $(dirname "$URL"))
+
+	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+check_golang () {
+	# TODO: Instead of computing the sha256sum here,
+	# it's also available on the site.
+	
+	NAME=golang
+	printf "checksums.sh: checking %s" "$NAME" >&2
+
+	#  Get the latest stable version
+	GITHUB_URL='https://api.github.com/repos/golang/go/git/refs/tags'
+	VERSION=$(curl -s "$GITHUB_URL" | jq -r '
+		 [ 
+		   # only take stable releases (no beta or weekly)
+		   .[] | select( .ref | test("refs/tags/go[1-9.]*$") )
+		   # refs/tags/go1.14.4 -> 1.14.4
+		       | (.ref |= sub("refs/tags/go"; ""))
+		 ] 
+		 # "1.14.4" -> [1, 14, 4] ; needed to lex sort
+		 | max_by( .ref | split(".") | map(tonumber)) 
+		 | .ref')
+	# Format is just "1.14.4" by the end
+
+	URL="https://dl.google.com/go/go${VERSION}.linux-amd64.tar.gz"
+	SHA256=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+get_checksums () {
+	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
+#Application	Version	URL	SHA256
+$(check_az)
+$(check_dremio_odbc)
+$(check_golang)
+$(check_kubectl)
+$(check_mc)
+$(check_pachctl)
+EOF
+
+	if [ -f CHECKSUMS.new ] && ! diff -q CHECKSUMS CHECKSUMS.new > /dev/null 2>&1; then
+		cat <<EOF
+
+    CHECKSUMS differs from old version!
+    ===================================
+
+$(diff CHECKSUMS CHECKSUMS.new)
+
+EOF
+	fi
+}
+
+get_checksums

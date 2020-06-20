@@ -1,0 +1,7 @@
+#Application  Version                          URL                                                                                        SHA256
+azcli         null                             https://aka.ms/InstallAzureCLIDeb                                                          c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
+dremio-odbc   1.4.2.1003                       https://download.dremio.com/odbc-driver/1.4.2.1003/dremio-odbc-1.4.2.1003-1.x86_64.rpm     d2f5ff5d498d97f29a0eedc485dbcc85faf0e82eed2c1f7eb0ef3fee393ad450
+golang        1.14.4                           https://dl.google.com/go/go1.14.4.linux-amd64.tar.gz                                       aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067
+kubectl       v1.18.4                          https://storage.googleapis.com/kubernetes-release/release/v1.18.4/bin/linux/amd64/kubectl  5fea9ad294ea73f952243178db5340dc29c14ad96aed3f92a18deedb73f221ec
+mc            mc.RELEASE.2020-06-20T00-18-43Z  https://dl.min.io/client/mc/release/linux-amd64/mc.RELEASE.2020-06-20T00-18-43Z            7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
+pachctl       v1.10.5                          https://github.com/pachyderm/pachyderm/releases/download/v1.10.5/pachctl_1.10.5_amd64.deb  8bc58206e87c3c4304a074c1479e08bdf173743dd6869d0ad4e792830a0df5c5
