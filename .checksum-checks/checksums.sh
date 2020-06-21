@@ -221,6 +221,8 @@ check_golang () {
 
 
 get_checksums () {
+	echo >&2
+	echo >&2
 	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
 #Application	Version	URL	SHA256
 $(check_az)
@@ -231,14 +233,21 @@ $(check_mc)
 $(check_pachctl)
 EOF
 
-	if [ -f CHECKSUMS.new ] && ! diff -q CHECKSUMS CHECKSUMS.new > /dev/null 2>&1; then
+	if [ -f CHECKSUMS.new ] && ! diff -qb CHECKSUMS CHECKSUMS.new > /dev/null 2>&1; then
 		cat <<EOF
 
     CHECKSUMS differs from old version!
     ===================================
 
-$(diff CHECKSUMS CHECKSUMS.new)
+$(diff -b CHECKSUMS CHECKSUMS.new)
 
+
+    NOTE: Newer != Better
+    =====================
+
+Some programs like kubectl *should not* be on the newest version, but
+pinned to the version of the cluster. Take that into account before
+modifying the versions.
 EOF
 	fi
 }
