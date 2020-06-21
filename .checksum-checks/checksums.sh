@@ -220,6 +220,32 @@ check_golang () {
 }
 
 
+check_rstudio () {
+	NAME=rstudio
+	printf "checksums.sh: checking %s" "$NAME" >&2
+	
+	VERSION=$(curl --silent -L --fail https://download2.rstudio.org/ |
+		tr -d '\n' |
+		grep -o '<Key>rstudio-server-\([0-9.]*\)-amd64.deb</Key>' |
+		sed 's~^<Key>rstudio-server-\([0-9.]*\)-amd64.deb</Key>~\1~g' |
+		sort -nr |
+		sed 1q)
+
+	URL="https://download2.rstudio.org/rstudio-server-${VERSION}-amd64.deb"
+
+	SHA256=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
+
+	printf "%s	%s	%s	%s\n" \
+		   "$NAME" \
+		   "$VERSION" \
+		   "$URL" \
+		   "$SHA256" 
+
+	printf ' done.\n' >&2
+}
+
+
+
 get_checksums () {
 	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
 #Application	Version	URL	SHA256
@@ -229,6 +255,7 @@ $(check_golang)
 $(check_kubectl)
 $(check_mc)
 $(check_pachctl)
+$(check_rstudio)
 EOF
 
 	if [ -f CHECKSUMS.new ] && ! diff -qb CHECKSUMS CHECKSUMS.new > /dev/null 2>&1; then
