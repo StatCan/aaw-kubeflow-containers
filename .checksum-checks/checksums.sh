@@ -172,7 +172,7 @@ check_pachctl () {
 			  grep 'amd64.deb')
 
 	# latest -> version
-	VERSION=$(basename $(dirname "$URL"))
+	VERSION=$(basename $(dirname "$URL") | sed 's/^v*//')
 
 	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
 
@@ -221,8 +221,6 @@ check_golang () {
 
 
 get_checksums () {
-	echo >&2
-	echo >&2
 	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
 #Application	Version	URL	SHA256
 $(check_az)
