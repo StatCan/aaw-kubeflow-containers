@@ -43,7 +43,6 @@ jobs:
     - run: |
         # Base Notebook CPU
         docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
-        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -55,8 +54,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Minimal Notebook CPU
-        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
         docker system prune -f -a
+        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -68,8 +67,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Geomatics Notebook CPU
-        docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} .
         docker system prune -f -a
+        docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} .
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -81,8 +80,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Machine Learning Notebook CPU
-        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} .
         docker system prune -f -a
+        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} .
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -94,8 +93,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # R-Studio CPU
-        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
         docker system prune -f -a
+        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -107,8 +106,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Base Notebook GPU
-        docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
         docker system prune -f -a
+        docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -120,8 +119,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Minimal Notebook GPU
-        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
         docker system prune -f -a
+        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -133,8 +132,8 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Machine Learning Notebook GPU
-        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
         docker system prune -f -a
+        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
