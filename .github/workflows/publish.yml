@@ -10,8 +10,11 @@
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
 # 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
-name: build
-on: [pull_request]
+name: publish
+on:
+  push:
+    branches:
+      - master
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -43,6 +46,9 @@ jobs:
     - run: |
         # Base Notebook CPU
         docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -56,6 +62,9 @@ jobs:
     - run: |
         # Minimal Notebook CPU
         docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -69,6 +78,9 @@ jobs:
     - run: |
         # Geomatics Notebook CPU
         docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -82,6 +94,9 @@ jobs:
     - run: |
         # Machine Learning Notebook CPU
         docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -95,6 +110,9 @@ jobs:
     - run: |
         # R-Studio CPU
         docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -108,6 +126,9 @@ jobs:
     - run: |
         # Base Notebook GPU
         docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -121,6 +142,9 @@ jobs:
     - run: |
         # Minimal Notebook GPU
         docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -134,6 +158,9 @@ jobs:
     - run: |
         # Machine Learning Notebook GPU
         docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
