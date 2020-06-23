@@ -15,20 +15,40 @@ RUN apt-get update && \
     && \
     rm -rf /var/lib/apt/lists/*
 
+ARG KUBECTL_VERSION=v1.15.10
+ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+
+ARG MC_VERSION=mc.RELEASE.2020-06-20T00-18-43Z
+ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/${MC_VERSION}
+ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
+
+ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb 
+ARG AZCLI_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
+
+ARG PACHCTL_VERSION=1.10.5
+ARG PACHCTL_URL=https://github.com/pachyderm/pachyderm/releases/download/v${PACHCTL_VERSION}/pachctl_${PACHCTL_VERSION}_amd64.deb 
+ARG PACHCTL_SHA=8bc58206e87c3c4304a074c1479e08bdf173743dd6869d0ad4e792830a0df5c5
+
 # kubectl, mc, az, pachctl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl \
+RUN curl -LO "${KUBECTL_URL}" \
+    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    wget https://dl.min.io/client/mc/release/linux-amd64/mc \
+    wget --quiet -O mc "${MC_URL}" \
+    && echo "${MC_SHA} mc" | sha256sum -c - \
     && chmod +x mc \
     && mv mc /usr/local/bin/mc \
   && \
-    sh -c 'curl -sL https://aka.ms/InstallAzureCLIDeb | bash' \
+    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    && echo "${AZCLI_SHA} InstallAzureCLIDeb" | sha256sum -c - \
+    && bash InstallAzureCLIDeb \
   && \
-    curl -o /tmp/pachctl.deb -L \
-      https://github.com/pachyderm/pachyderm/releases/download/v1.10.0/pachctl_1.10.0_amd64.deb \
+    curl -o /tmp/pachctl.deb -L "${PACHCTL_URL}" \
+    && echo "${PACHCTL_SHA} /tmp/pachctl.deb" | sha256sum -c - \
     && sudo dpkg -i /tmp/pachctl.deb
+
 
 # Default environment
 RUN pip install --quiet \
@@ -98,11 +118,16 @@ RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-exte
   fix-permissions /home/$NB_USER
 
 # Go
-ENV GOROOT=/usr/local/go
-ENV PATH=$PATH:$GOROOT/bin
-ENV GOPATH=/opt/go/
-ARG LATEST_GO_VERSION=1.14.2
-RUN wget https://dl.google.com/go/go${LATEST_GO_VERSION}.linux-amd64.tar.gz -O /tmp/go.tar.gz && \
+ENV GOROOT=/usr/local/go \
+    PATH=$PATH:$GOROOT/bin \
+    GOPATH=/opt/go/
+
+ARG GO_VERSION=1.14.4
+ARG GO_URL=https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz
+ARG GO_SHA=aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067
+
+RUN wget "${GO_URL}" -O /tmp/go.tar.gz && \
+    echo "${GO_SHA} /tmp/go.tar.gz" | sha256sum -c - && \
     tar -xvf /tmp/go.tar.gz -C /usr/local && \
     printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile && \
     printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile && \
