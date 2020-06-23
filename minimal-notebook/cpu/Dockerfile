@@ -1,21 +1,17 @@
 FROM k8scc01covidacr.azurecr.io/base-notebook-cpu:master
 USER root
 
-
-RUN apt-get update --yes && apt-get install -y gnupg2 \
-    && echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Debian_10/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list \
-    && curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/Debian_10/Release.key | apt-key add - \
-    && apt-get update -qq \
-    && apt-get install -y --no-install-recommends \
-          'curl' \
-          'htop' \
-          'jq' \
-          'podman' \
-          'ranger' \
-          'tig' \
-          'tree' \
-          'vim' \
-          'zsh' \
+# Dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      'htop' \
+      'tree' \
+      'vim' \
+      'tig' \
+      'ranger' \
+      'curl' \
+      'jq' \
+      'zsh' \
     && \
     rm -rf /var/lib/apt/lists/*
 
