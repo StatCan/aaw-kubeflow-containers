@@ -118,9 +118,9 @@ RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-exte
   fix-permissions /home/$NB_USER
 
 # Go
-ENV GOROOT=/usr/local/go \
-    PATH=$PATH:$GOROOT/bin \
-    GOPATH=/opt/go/
+ENV GOROOT=/usr/local/go 
+ENV PATH=$PATH:$GOROOT/bin 
+ENV GOPATH=/opt/go/
 
 ARG GO_VERSION=1.14.4
 ARG GO_URL=https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz
