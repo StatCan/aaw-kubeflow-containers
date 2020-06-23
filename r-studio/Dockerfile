@@ -1,4 +1,4 @@
-FROM jupyter/r-notebook
+FROM jupyter/r-notebook:c094bb7219f9
 USER root
 
 # install rstudio-server
