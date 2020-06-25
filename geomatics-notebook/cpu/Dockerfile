@@ -5,6 +5,7 @@ RUN conda install --quiet --yes \
       'fiona' \
       'gdal' \
       'geopandas' \
+      'postal' \
       'rasterio' \
       'r-classInt' \
       'r-deldir' \
