@@ -20,7 +20,6 @@ RUN python3 -m pip install \
     conda install --quiet --yes \
       'r-arrow' \
       'r-aws.s3' \
-      'r-catools' \
       'r-devtools' \
       'r-dplyr' \
       'r-ggplot2' \
@@ -33,6 +32,11 @@ RUN python3 -m pip install \
       'r-shiny' \
       'r-sparklyr' \
       'r-tidyr' \
+    && \
+    # Get the latest r-catools and r-bitops from conda-forge
+    conda install -c conda-forge --quiet --yes \
+     'r-catools' \
+     'r-bitops' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -82,6 +86,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
 
 
 COPY start-custom.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/start-custom.sh
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 WORKDIR /home/$NB_USER
 EXPOSE 8888
