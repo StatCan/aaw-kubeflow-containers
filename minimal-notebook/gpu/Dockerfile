@@ -35,7 +35,7 @@ RUN pip install --quiet \
       'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
-      'elyra=0.10.3' \
+      'elyra==0.10.3' \
       'kfp-notebook==0.10.1' \
     && \
     conda install --quiet --yes \

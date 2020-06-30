@@ -34,7 +34,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s 
 RUN pip install --quiet \
       'jupyter-git' \
       'jupyter-lsp' \
-      'elyra=0.10.3' \
+      'elyra==0.10.3' \
       'kfp-notebook==0.10.1' \
     && \
     conda install --quiet --yes \
