@@ -35,9 +35,8 @@ RUN pip install --quiet \
       'gpustat' \
       'jupyter-git' \
       'jupyter-lsp' \
-      'git+https://github.com/sylus/elyra@2300a34959c19c77bb96722df06a4fd0c2c16671' \
-      'git+https://github.com/sylus/kale@ab08f3f05c6befd3705a18956ef5fd4f8b12e3ba#egg=kubeflow-kale&subdirectory=backend' \
-      'kfp-notebook==0.8.0' \
+      'elyra=0.10.3' \
+      'kfp-notebook==0.10.1' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -65,23 +64,26 @@ RUN pip install --quiet \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@ijmbarr/jupyterlab_spellchecker' \
-      '@jupyterlab/toc' \
       '@jupyter-widgets/jupyterlab-manager'  \
       '@hadim/jupyter-archive' \
       '@krassowski/jupyterlab-lsp' \
       '@lckr/jupyterlab_variableinspector' \
       '@elyra/application' \
+      '@elyra/code-snippet-extension-experimental' \
       '@elyra/notebook-scheduler-extension' \
       '@elyra/pipeline-editor-extension' \
       '@elyra/python-runner-extension' \
+      '@elyra/theme-extension' \
       '@jupyterlab/debugger' \
       '@jupyterlab/github' \
       '@jupyterlab/git' \
+      '@jupyterlab/toc' \
       'jupyter-matplotlib' \
       'jupyterlab-execute-time' \
       'jupyterlab-plotly' \
       'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
+      'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
@@ -118,7 +120,7 @@ RUN mkdir -p $GOPATH && \
     chmod +w ./kernel.json && \
     sed "s|gophernotes|$(go env GOPATH)/bin/gophernotes|" < kernel.json.in > kernel.json && \
     fix-permissions /home/$NB_USER && \
-		fix-permissions $GOPATH
+    fix-permissions $GOPATH
 
 # Configure container startup
 EXPOSE 8888
