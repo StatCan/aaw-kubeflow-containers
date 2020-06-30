@@ -70,7 +70,7 @@ ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBE
 ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
 
 ARG MC_VERSION=mc.RELEASE.2020-06-20T00-18-43Z
-ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/${MC_VERSION}
+ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
 ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb 

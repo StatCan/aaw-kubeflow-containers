@@ -89,7 +89,7 @@ check_mc () {
 	# And see if we got the newest version.
 
 	# THE TRAILING SLASH BELONGS HERE
-	BASE_URL='https://dl.min.io/client/mc/release/linux-amd64/'
+	BASE_URL='https://dl.min.io/client/mc/release/linux-amd64/archive/'
 
 	test_url "$BASE_URL" || exit 1
 
