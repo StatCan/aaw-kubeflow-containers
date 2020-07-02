@@ -1,13 +1,13 @@
 # https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM jupyter/datascience-notebook:04f7f60d34a6 
+FROM jupyter/datascience-notebook:04f7f60d34a6
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
 
 RUN pip --no-cache-dir install --quiet \
       'kfp==0.5.1' \
       'kfp-server-api==0.5.0' \
-      'kfp-tekton==0.0.1' \
-      'kubeflow-fairing==0.7.2' \
+      'kfp-tekton==0.1.0' \
+      'kubeflow-fairing==1.0.0' \
       'kubeflow-metadata==0.3.1' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
