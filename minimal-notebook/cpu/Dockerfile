@@ -23,11 +23,11 @@ ARG MC_VERSION=mc.RELEASE.2020-06-20T00-18-43Z
 ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
 ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 
-ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb 
+ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG AZCLI_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
 
 ARG PACHCTL_VERSION=1.10.5
-ARG PACHCTL_URL=https://github.com/pachyderm/pachyderm/releases/download/v${PACHCTL_VERSION}/pachctl_${PACHCTL_VERSION}_amd64.deb 
+ARG PACHCTL_URL=https://github.com/pachyderm/pachyderm/releases/download/v${PACHCTL_VERSION}/pachctl_${PACHCTL_VERSION}_amd64.deb
 ARG PACHCTL_SHA=8bc58206e87c3c4304a074c1479e08bdf173743dd6869d0ad4e792830a0df5c5
 
 # kubectl, mc, az, pachctl
@@ -55,6 +55,7 @@ RUN pip install --quiet \
       'jupyter-lsp' \
       'elyra==0.10.3' \
       'kfp-notebook==0.10.1' \
+      'git+https://github.com/kubeflow-kale/kale@c4922323e550144cedf77bd2b0f7af055f2ee1d2' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -101,6 +102,7 @@ RUN pip install --quiet \
       'jupyterlab-plotly' \
       'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
+      'kubeflow-kale-labextension' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
@@ -118,8 +120,8 @@ RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-exte
   fix-permissions /home/$NB_USER
 
 # Go
-ENV GOROOT=/usr/local/go 
-ENV PATH=$PATH:$GOROOT/bin 
+ENV GOROOT=/usr/local/go
+ENV PATH=$PATH:$GOROOT/bin
 ENV GOPATH=/opt/go/
 
 ARG GO_VERSION=1.14.4
