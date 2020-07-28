@@ -1,10 +1,14 @@
-FROM jupyter/r-notebook:c094bb7219f9
+FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
 USER root
 
 # install rstudio-server
 ARG RSTUDIO_VERSION=1.1.463
 ARG SHA256=62aafd46f79705ca5db9c629ce3b60bf708d81c06a6b86cc4b417fbaf30691c1
 RUN apt-get update && \
+    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.3_amd64.deb -O libssl1.0.0.deb && \
+    dpkg -i libssl1.0.0.deb && \
+    wget http://ftp.br.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_1.0.2u-1~deb9u1_amd64.deb -O libssl1.0.2.deb && \
+    dpkg -i libssl1.0.2.deb && \
     curl --silent -L --fail "https://download2.rstudio.org/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \

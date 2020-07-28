@@ -103,7 +103,7 @@ RUN pip install --quiet \
       'jupyterlab-spreadsheet' \
       'nbdime-jupyterlab' \
     && \
-    jupyter lab build && \
+    jupyter lab build --dev-build=False --minimize=False && \
     jupyter lab clean && \
   npm cache clean --force && \
   rm -rf /home/$NB_USER/.cache/yarn && \
