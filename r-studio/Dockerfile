@@ -19,7 +19,26 @@ RUN python3 -m pip install \
       'jupyter-server-proxy' \
       'jupyter-rsession-proxy' \
       'jupyter-shiny-proxy' && \
-    conda install --quiet --yes \
+    conda install --quiet --yes \   
+      'r-base' \
+      'r-caret' \
+      'r-crayon' \
+      'r-devtools' \
+      'r-forecast' \
+      'r-hexbin' \
+      'r-htmltools' \
+      'r-htmlwidgets' \
+      'r-irkernel' \
+      'r-nycflights13' \
+      'r-randomforest' \
+      'r-rcurl' \
+      'r-rmarkdown' \
+      'r-rodbc' \
+      'r-rsqlite' \
+      'r-shiny' \
+      'r-tidyverse' \
+      'unixodbc' \
+      'r-tidymodels' \
       'r-arrow' \
       'r-aws.s3' \
       'r-catools' \
@@ -40,6 +59,8 @@ RUN python3 -m pip install \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# Install e1071 R package (dependency of the caret R package)
+RUN conda install --quiet --yes r-e1071
 
 # SQLite drivers
 # The default /etc/odbcinst.ini file doesn't use full paths,
@@ -50,7 +71,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     sed -i 's~^\(Setup\|Driver\)=\([^/]*\)$~\1=/usr/lib/x86_64-linux-gnu/odbc/\2~' /etc/odbcinst.ini && \
     sed -i 's~libsqliteodbc.so~libsqlite3odbc.so~' /etc/odbcinst.ini 
-
 
 # Nice tools
 RUN apt-get update && \
@@ -109,3 +129,4 @@ EXPOSE 8888
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
+
