@@ -121,7 +121,6 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "${PACHCTL_SHA} /tmp/pachctl.deb" | sha256sum -c - \
     && sudo dpkg -i /tmp/pachctl.deb
 
-
 COPY start-custom.sh /usr/local/bin
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 WORKDIR /home/$NB_USER
@@ -129,4 +128,3 @@ EXPOSE 8888
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
-
