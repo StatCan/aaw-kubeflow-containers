@@ -49,14 +49,12 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "${PACHCTL_SHA} /tmp/pachctl.deb" | sha256sum -c - \
     && sudo dpkg -i /tmp/pachctl.deb
 
-
 # Default environment
 RUN pip install --quiet \
       'gpustat' \
-      'jupyter-git' \
-      'jupyter-lsp' \
-      'elyra==0.10.3' \
-      'kfp-notebook==0.10.1' \
+      'kubernetes==11.0.0' \
+      'kfp-notebook==0.11.0' \
+      'jupyter-lsp==0.9.0' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -88,12 +86,6 @@ RUN pip install --quiet \
       '@hadim/jupyter-archive' \
       '@krassowski/jupyterlab-lsp' \
       '@lckr/jupyterlab_variableinspector' \
-      '@elyra/application' \
-      '@elyra/code-snippet-extension-experimental' \
-      '@elyra/notebook-scheduler-extension' \
-      '@elyra/pipeline-editor-extension' \
-      '@elyra/python-runner-extension' \
-      '@elyra/theme-extension' \
       '@jupyterlab/debugger' \
       '@jupyterlab/github' \
       '@jupyterlab/git' \
