@@ -105,10 +105,14 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
+# Enable cell execution time
+RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension && \
+  echo '{"recordTiming": true }' > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension/tracker.jupyterlab-settings && \
+  fix-permissions /home/$NB_USER
+
 # Solarized
 RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
-  printf '{ "theme": "JupyterLab Solarized Dark" }\n' && \
-  > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings && \
+  echo '{ "theme": "JupyterLab Solarized Dark" }' > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings && \
   fix-permissions /home/$NB_USER
 
 # Go
