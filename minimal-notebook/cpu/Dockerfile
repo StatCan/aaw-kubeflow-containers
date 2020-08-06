@@ -53,7 +53,8 @@ RUN curl -LO "${KUBECTL_URL}" \
 RUN pip install --quiet \
       'kubernetes==11.0.0' \
       'kfp-notebook==0.11.0' \
-      'jupyter-lsp==0.9.0' \
+      'jupyter-lsp==0.9.1' \
+      'git+https://github.com/kubeflow-kale/kale@978b535e155967e6df5c85f0c612df9a8ce2348b#egg=kubeflow-kale&subdirectory=backend' \
     && \
     conda install --quiet --yes \
     'jupyterlab>=2.1.1' \
@@ -95,6 +96,12 @@ RUN pip install --quiet \
       'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
       'nbdime-jupyterlab' \
+    && \
+      git clone https://github.com/kubeflow-kale/kale && \
+      cd kale/labextension && \
+      jlpm install && \
+      jlpm run build && \
+      jupyter labextension install . \
     && \
     jupyter lab build && \
     jupyter lab clean && \
