@@ -52,12 +52,11 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Default environment
 RUN pip install --quiet \
       'kubernetes==11.0.0' \
-      'kfp-notebook==0.11.0' \
       'jupyter-lsp==0.9.1' \
-      'git+https://github.com/kubeflow-kale/kale@978b535e155967e6df5c85f0c612df9a8ce2348b#egg=kubeflow-kale&subdirectory=backend' \
+      'git+https://github.com/sylus/kale@0491c0da065e01773008892fb8ffb22cf9c7ca5b#egg=kubeflow-kale&subdirectory=backend' \
     && \
     conda install --quiet --yes \
-    'jupyterlab>=2.1.1' \
+      'jupyterlab>=2.2.2' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
@@ -111,11 +110,10 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-#Enable cell execution time
+# Enable cell execution time
 RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension && \
   echo '{"recordTiming": true }' > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension/tracker.jupyterlab-settings && \
   fix-permissions /home/$NB_USER
-
 
 # Solarized
 RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \

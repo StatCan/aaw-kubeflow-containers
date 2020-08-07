@@ -53,12 +53,11 @@ RUN curl -LO "${KUBECTL_URL}" \
 RUN pip install --quiet \
       'gpustat' \
       'kubernetes==11.0.0' \
-      'kfp-notebook==0.11.0' \
       'jupyter-lsp==0.9.1' \
-      'git+https://github.com/kubeflow-kale/kale@978b535e155967e6df5c85f0c612df9a8ce2348b#egg=kubeflow-kale&subdirectory=backend' \
+      'git+https://github.com/sylus/kale@0491c0da065e01773008892fb8ffb22cf9c7ca5b#egg=kubeflow-kale&subdirectory=backend' \
     && \
     conda install --quiet --yes \
-    'jupyterlab>=2.1.1' \
+      'jupyterlab>=2.2.2' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
