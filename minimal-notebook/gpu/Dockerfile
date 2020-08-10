@@ -111,15 +111,9 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Enable cell execution time
-RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension && \
-  echo '{"recordTiming": true }' > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/notebook-extension/tracker.jupyterlab-settings && \
-  fix-permissions /home/$NB_USER
-
-# Solarized
-RUN mkdir -p /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension && \
-  echo '{ "theme": "JupyterLab Solarized Dark" }' > /home/$NB_USER/.jupyter/lab/user-settings/@jupyterlab/apputils-extension/themes.jupyterlab-settings && \
-  fix-permissions /home/$NB_USER
+# Solarized Theme and Cell Execution Time
+RUN echo '{ "@jupyterlab/apputils-extension:themes": {"theme": "JupyterLab Solarized Dark"}, "@jupyterlab/notebook-extension:tracker": {"recordTiming": true}}' > /opt/conda/share/jupyter/lab/settings/overrides.json && \
+    fix-permissions /home/$NB_USER
 
 # Go
 ENV GOROOT=/usr/local/go
