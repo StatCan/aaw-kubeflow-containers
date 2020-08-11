@@ -65,7 +65,7 @@ RUN pip install --quiet \
       'ipympl' \
       'jupyter_contrib_nbextensions' \
       'jupyterlab-dash' \
-      'jupyterlab-git' \
+      'jupyterlab-git==0.20.0' \
       'xeus-python' \
       'nodejs' \
       'python-language-server' \
@@ -88,7 +88,7 @@ RUN pip install --quiet \
       '@lckr/jupyterlab_variableinspector' \
       '@jupyterlab/debugger' \
       '@jupyterlab/github' \
-      '@jupyterlab/git' \
+      '@jupyterlab/git@0.20.0' \
       '@jupyterlab/toc' \
       'jupyter-matplotlib' \
       'jupyterlab-execute-time' \
