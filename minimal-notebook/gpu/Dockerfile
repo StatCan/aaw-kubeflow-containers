@@ -54,7 +54,6 @@ RUN pip install --quiet \
       'gpustat' \
       'kubernetes==11.0.0' \
       'jupyter-lsp==0.9.1' \
-      'git+https://github.com/sylus/kale@0491c0da065e01773008892fb8ffb22cf9c7ca5b#egg=kubeflow-kale&subdirectory=backend' \
     && \
     conda install --quiet --yes \
       'jupyterlab>=2.2.2' \
@@ -96,12 +95,6 @@ RUN pip install --quiet \
       'jupyterlab-theme-solarized-dark' \
       'jupyterlab-spreadsheet' \
       'nbdime-jupyterlab' \
-    && \
-      git clone https://github.com/kubeflow-kale/kale && \
-      cd kale/labextension && \
-      jlpm install && \
-      jlpm run build && \
-      jupyter labextension install . \
     && \
     jupyter lab build && \
     jupyter lab clean && \
