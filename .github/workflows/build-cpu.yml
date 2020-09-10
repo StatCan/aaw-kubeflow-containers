@@ -46,18 +46,17 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v2
-
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
       working-directory: ./base-notebook/
       run: |
+        # Pinned tag
         TAG="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}"
-        build_cpu.sh -t "$TAG"
+        bash build_cpu.sh -t "$TAG"
         docker push "$TAG"
+        # Common tag
         TAG="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}"
-        build_cpu.sh -t "$TAG"
+        bash build_cpu.sh -t "$TAG"
         docker push "$TAG"
 
     # Scan image for vulnerabilities
