@@ -47,16 +47,17 @@ jobs:
         df -h
 
     # Container build and push to a Azure Container registry (ACR)
-    - name: Base Notebook CPU
+    - id: base_notebook_cpu
       working-directory: ./base-notebook/
       run: |
         # Pinned tag
         TAG="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}"
-        bash build_cpu.sh -t "$TAG"
+        run: echo "::set-output name=pinned_tag::$TAG"
+        (source ../build_settings.env && bash ../scripts/build.sh --tag $TAG --base_container $UPSTREAM_CONTAINER_CPU)
         docker push "$TAG"
         # Common tag
         TAG="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}"
-        bash build_cpu.sh -t "$TAG"
+        (source ../build_settings.env && bash ../scripts/build.sh --tag $TAG --base_container $UPSTREAM_CONTAINER_CPU)
         docker push "$TAG"
 
     # Scan image for vulnerabilities
@@ -66,20 +67,25 @@ jobs:
         severity-threshold: CRITICAL
         run-quality-checks: false
 
-    # # Container build and push to a Azure Container registry (ACR)
-    # - run: |
-    #     # Minimal Notebook CPU
-    #     docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
-    #     docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
-    #     docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}
-    #     docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}
+    # Container build and push to a Azure Container registry (ACR)
+    - id: minimal_notebook_cpu
+      working-directory: ./minimal-notebook/
+      run: |
+        # Pinned tag
+        TAG="${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}"
+        ../../scripts/build.sh --tag "$TAG" --base_container ${{ steps.base_notebook_cpu.outputs.pinned_tag }}
+        docker push "$TAG"
+        # Common tag
+        TAG="${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}"
+        ../../scripts/build.sh --tag "$TAG" --base_container ${{ steps.base_notebook_cpu.outputs.pinned_tag }}
+        docker push "$TAG"
 
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     # # Container build and push to a Azure Container registry (ACR)
     # - run: |

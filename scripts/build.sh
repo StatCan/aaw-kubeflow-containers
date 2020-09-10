@@ -1,5 +1,9 @@
+DOCKERFILE="./Dockerfile"
+
 USAGE_MESSAGE="
 Usage: $0 -b base_container_name -d Dockerfile -t tag
+Defaults:
+	dockerfile=$DOCKERFILE
 "
 
 while [[ "$#" -gt 0 ]]; do case $1 in
