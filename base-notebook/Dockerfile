@@ -1,5 +1,6 @@
 # https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM jupyter/datascience-notebook:04f7f60d34a6
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
 
