@@ -46,6 +46,9 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
+
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
       working-directory: ./base-notebook/
