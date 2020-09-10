@@ -49,7 +49,6 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -65,7 +64,6 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -81,7 +79,6 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
