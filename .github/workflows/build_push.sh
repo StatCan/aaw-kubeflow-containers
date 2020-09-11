@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+
 USAGE_MESSAGE="
 Usage: $0 --registry REGISTRY --image_name IMAGE_NAME --tag_pinned GITHUB_SHA --tag_latest TAG_LATEST --base_container BASE_CONTAINER [--cache-from FULL_IMAGE_PATH] [--push] [--prune]
 Where:
