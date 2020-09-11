@@ -48,16 +48,25 @@ jobs:
     #     df -h
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Base Notebook CPU
-        TAG_PINNED="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}"
-        TAG_MASTER="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ env.LATEST_IMAGE_TAG }}"
-        # Try pulling from acr to get a cache-from source
-        docker pull "$TAG_MASTER" || true
-        docker build --cache-from $TAG_MASTER -f base-notebook/cpu/Dockerfile -t $TAG_PINNED base-notebook/cpu
-        docker push $TAG_PINNED
-        docker tag $TAG_PINNED $TAG_MASTER
-        docker push $TAG_MASTER
+    - name: Base Notebook CPU
+      id: base_notebook_cpu
+      working-directory: ./base-notebook/
+      run: |
+        UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu"
+        TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
+        TAG_LATEST="$UNTAGGED_IMAGE:${{ env.LATEST_IMAGE_TAG }}"
+        echo "::set-output name=tag_pinned::$TAG_PINNED"
+
+        # Try pulling latest from acr to get a source for cache-from
+        docker pull "$TAG_LATEST" || true
+
+        # Build and push image
+        (source ../build_settings.env && docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU)
+        docker push "$TAG_PINNED"
+
+        docker tag "$TAG_PINNED" "$TAG_LATEST"
+        docker push "$TAG_LATEST"
+    #     docker system prune -f -a
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -67,12 +76,21 @@ jobs:
     #     run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Minimal Notebook CPU
-        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+    - name: Minimal Notebook CPU
+      id: minimal_notebook_cpu
+      working-directory: ./minimal-notebook/
+      run: |
+        UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu"
+        TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
+        TAG_LATEST="$UNTAGGED_IMAGE:${{ env.LATEST_IMAGE_TAG }}"
+        echo "::set-output name=tag_pinned::$TAG_PINNED"
+
+        # Build and push image
+        docker build -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }}
+        docker push "$TAG_PINNED"
+
+        docker tag "$TAG_PINNED" "$TAG_LATEST"
+        docker push "$TAG_LATEST"
     #     docker system prune -f -a
 
     # # Scan image for vulnerabilities
