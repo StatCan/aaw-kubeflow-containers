@@ -50,7 +50,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
       id: base_notebook_cpu
-      working-directory: ./base-notebook/
+      working-directory: ./base-notebook/cpu
       run: |
         UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu"
         TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
@@ -78,7 +78,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Minimal Notebook CPU
       id: minimal_notebook_cpu
-      working-directory: ./minimal-notebook/
+      working-directory: ./minimal-notebook/cpu
       run: |
         UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu"
         TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
