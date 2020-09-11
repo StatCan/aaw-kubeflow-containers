@@ -50,7 +50,7 @@ else
 fi
 
 # Build and push image
-docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} .
+docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
 docker tag "$TAG_PINNED" "$TAG_LATEST"
 
 if [ -z "$PUSH" ]; then
