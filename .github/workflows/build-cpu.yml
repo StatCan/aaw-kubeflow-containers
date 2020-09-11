@@ -52,21 +52,15 @@ jobs:
       id: base_notebook_cpu
       working-directory: ./base-notebook/
       run: |
-        UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu"
-        TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
-        TAG_LATEST="$UNTAGGED_IMAGE:${{ env.LATEST_IMAGE_TAG }}"
-        echo "::set-output name=tag_pinned::$TAG_PINNED"
-
-        # Try pulling latest from acr to get a source for cache-from
-        docker pull "$TAG_LATEST" || true
-
-        # Build and push image
-        (source ../build_settings.env && docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU .)
-        docker push "$TAG_PINNED"
-
-        docker tag "$TAG_PINNED" "$TAG_LATEST"
-        docker push "$TAG_LATEST"
-    #     docker system prune -f -a
+        # Get upstream image from build_settings.env
+        (source ../build_settings.env && \
+         ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+                                            --image_name base-notebook-cpu \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                            --base_container UPSTREAM_CONTAINER_CPU \
+                                            --push
+        )
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -80,21 +74,12 @@ jobs:
       id: minimal_notebook_cpu
       working-directory: ./minimal-notebook/
       run: |
-        UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu"
-        TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
-        TAG_LATEST="$UNTAGGED_IMAGE:${{ env.LATEST_IMAGE_TAG }}"
-        echo "::set-output name=tag_pinned::$TAG_PINNED"
-
-        # Try pulling latest from acr to get a source for cache-from
-        docker pull "$TAG_LATEST" || true
-
-        # Build and push image
-        docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }} .
-        docker push "$TAG_PINNED"
-
-        docker tag "$TAG_PINNED" "$TAG_LATEST"
-        docker push "$TAG_LATEST"
-    #     docker system prune -f -a
+        ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+                                           --image_name minimal-notebook-cpu \
+                                           --tag_pinned ${{ github.sha }} \
+                                           --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                           --base_container ${{ steps.base_notebook_cpu.outputs.tag_pinned }} \
+                                           --push
 
 
     # # Scan image for vulnerabilities
@@ -109,21 +94,12 @@ jobs:
       id: geomatics_notebook_cpu
       working-directory: ./geomatics-notebook/
       run: |
-        UNTAGGED_IMAGE="${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu"
-        TAG_PINNED="$UNTAGGED_IMAGE:${{ github.sha }}"
-        TAG_LATEST="$UNTAGGED_IMAGE:${{ env.LATEST_IMAGE_TAG }}"
-        echo "::set-output name=tag_pinned::$TAG_PINNED"
-
-        # Try pulling latest from acr to get a source for cache-from
-        docker pull "$TAG_LATEST" || true
-
-        # Build and push image
-        docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} .
-        docker push "$TAG_PINNED"
-
-        docker tag "$TAG_PINNED" "$TAG_LATEST"
-        docker push "$TAG_LATEST"
-    #     docker system prune -f -a
+        ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+                                           --image_name geomatics-notebook-cpu \
+                                           --tag_pinned ${{ github.sha }} \
+                                           --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                           --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
+                                           --push
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
