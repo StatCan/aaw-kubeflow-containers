@@ -61,7 +61,7 @@ jobs:
         docker pull "$TAG_LATEST" || true
 
         # Build and push image
-        (UPSTREAM_CONTAINER_CPU="jupyter/datascience-notebook:04f7f60d34a6" && docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU)
+        (UPSTREAM_CONTAINER_CPU="jupyter/datascience-notebook:04f7f60d34a6" && docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU .)
         docker push "$TAG_PINNED"
 
         docker tag "$TAG_PINNED" "$TAG_LATEST"
@@ -86,7 +86,7 @@ jobs:
         echo "::set-output name=tag_pinned::$TAG_PINNED"
 
         # Build and push image
-        docker build -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }}
+        docker build -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }} .
         docker push "$TAG_PINNED"
 
         docker tag "$TAG_PINNED" "$TAG_LATEST"
