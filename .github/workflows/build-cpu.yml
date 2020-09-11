@@ -22,10 +22,10 @@ on:
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: k8scc01covidacr
+  REGISTRY: k8scc01covidacr.azurecr.io
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
-  REGISTRY: ${{ env.REGISTRY_NAME }}.azurecr.io
 jobs:
   build:
     runs-on: ubuntu-latest
