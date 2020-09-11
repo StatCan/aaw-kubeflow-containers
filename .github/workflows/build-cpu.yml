@@ -54,7 +54,7 @@ jobs:
       run: |
         # Get upstream image from build_settings.env
         (source ../build_settings.env && \
-         ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+         ../.github/workflows/build_push.sh --registry ${{ env.REGISTRY_NAME }}.azurecr.io \
                                             --image_name base-notebook-cpu \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -74,7 +74,7 @@ jobs:
       id: minimal_notebook_cpu
       working-directory: ./minimal-notebook/
       run: |
-        ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+        ../.github/workflows/build_push.sh --registry ${{ env.REGISTRY_NAME }}.azurecr.io \
                                            --image_name minimal-notebook-cpu \
                                            --tag_pinned ${{ github.sha }} \
                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -94,7 +94,7 @@ jobs:
       id: geomatics_notebook_cpu
       working-directory: ./geomatics-notebook/
       run: |
-        ../.github/workflows/build_push.sh --registry "${{ env.REGISTRY_NAME }}.azurecr.io \
+        ../.github/workflows/build_push.sh --registry ${{ env.REGISTRY_NAME }}.azurecr.io \
                                            --image_name geomatics-notebook-cpu \
                                            --tag_pinned ${{ github.sha }} \
                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
