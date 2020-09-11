@@ -30,7 +30,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   --tag_pinned) GITHUB_SHA="$2"; shift;;
   --tag_latest) LATEST="$2"; shift;;
   --base_container) BASE_CONTAINER="$2"; shift;;
-  --CACHE_FROM) CACHE_FROM="$2"; shift ;;
+  --cache_from) CACHE_FROM="$2"; shift ;;
   --push) PUSH="true"; ;;
   --prune) PRUNE="true"; ;;
   *) echo "Unknown parameter passed: $1" &&
