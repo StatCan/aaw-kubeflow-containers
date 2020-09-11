@@ -61,7 +61,7 @@ jobs:
         docker pull "$TAG_LATEST" || true
 
         # Build and push image
-        (source ../build_settings.env && docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU .)
+        (source ../build_settings.env && docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU .)
         docker push "$TAG_PINNED"
 
         docker tag "$TAG_PINNED" "$TAG_LATEST"
@@ -89,7 +89,7 @@ jobs:
         docker pull "$TAG_LATEST" || true
 
         # Build and push image
-        docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }} .
+        docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.base_notebook_cpu.outputs.tag_pinned }} .
         docker push "$TAG_PINNED"
 
         docker tag "$TAG_PINNED" "$TAG_LATEST"
@@ -118,7 +118,7 @@ jobs:
         docker pull "$TAG_LATEST" || true
 
         # Build and push image
-        docker build --cache-from $TAG_MASTER -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} .
+        docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} .
         docker push "$TAG_PINNED"
 
         docker tag "$TAG_PINNED" "$TAG_LATEST"
