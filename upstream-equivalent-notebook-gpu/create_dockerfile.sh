@@ -61,5 +61,6 @@ fi
 
 cd $GPU_JUPYTER_DIR
 ./generate-Dockerfile.sh -c $DOCKER_STACKS_HEAD_COMMIT
-mv .build/Dockerfile $CWD
+# Copy the Dockerfile and any required build context files back to working directory
+cp .build/* $CWD
 cd $CWD
