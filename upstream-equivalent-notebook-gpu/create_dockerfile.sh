@@ -62,5 +62,7 @@ fi
 cd $GPU_JUPYTER_DIR
 ./generate-Dockerfile.sh -c $DOCKER_STACKS_HEAD_COMMIT
 # Copy the Dockerfile and any required build context files back to working directory
+# Can't use 'cp *' directly because it will return an error code due to subdirectories in .build
+find .gpu-jupyter/.build/ -maxdepth 1 -type f | xargs cp -t ./
 cp .build/* $CWD
 cd $CWD
