@@ -103,6 +103,7 @@ jobs:
       working-directory: ./geomatics-notebook/
       env:
         IMAGE_NAME: geomatics-notebook-cpu
+      # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
         ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
@@ -110,7 +111,8 @@ jobs:
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
-                                            --push
+                                            --push \
+                                            --prune_this
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -125,6 +127,7 @@ jobs:
       working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-cpu
+      # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
         ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
@@ -132,7 +135,8 @@ jobs:
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
-                                            --push
+                                            --push \
+                                            --prune_this
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -147,6 +151,7 @@ jobs:
       working-directory: ./r-studio/
       env:
         IMAGE_NAME: r-studio-cpu
+      # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
         ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
@@ -154,7 +159,8 @@ jobs:
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
-                                            --push
+                                            --push \
+                                            --prune_this
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0

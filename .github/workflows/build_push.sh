@@ -11,11 +11,13 @@ Where:
     base_container: base container used in building this image (passed to docker as a build arg)
     cache_from: (optional) if set, will pull this image to help caching.  Typically set to a recently built version of this image, such as myRegistry.azurecr.io/IMAGE_NAME:TAG_LATEST
     push: (optional) if set, will push all products to registry.  Default is unset
-    prune: (optional) if set, will 'docker system prune -f -a' after build.  Default is unset
+    prune_all: (optional) if set, will 'docker system prune -f -a' after build.  Default is unset
+    prune_this: (optional) if set, will remove all images built since this job started (like prune_all but only for products of this job)
 "
 
 PUSH=""
-PRUNE=""
+PRUNE_ALL=""
+PRUNE_THIS=""
 CACHE_FROM=""
 
 
@@ -32,11 +34,23 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   --base_container) BASE_CONTAINER="$2"; shift;;
   --cache_from) CACHE_FROM="$2"; shift ;;
   --push) PUSH="true"; ;;
-  --prune) PRUNE="true"; ;;
+  --prune_all) PRUNE_ALL="true"; ;;
+  --prune_this) PRUNE_THIS="true"; ;;
   *) echo "Unknown parameter passed: $1" &&
     echo "$USAGE_MESSAGE"; exit 1;;
 esac; shift; done
 
+# If pruning only this product, remember the last image built before so we can filter
+# If there are no previous images, fallback to a prune_all
+if [ ! -z "$PRUNE_THIS" ]; then
+  echo "Remembering the last non-intermediate image before building so we can prune recent images later"
+  PREVIOUS_IMAGE=$(docker images -q | head -n 1)
+  if [ -z "$PREVIOUS_IMAGE" ]; then
+    echo "No previous images built.  Will do a prune all after completion"
+    PRUNE_ALL="true"
+    PRUNE_THIS=""
+  fi
+fi
 
 UNTAGGED_IMAGE="$REGISTRY/$IMAGE_NAME"
 TAG_PINNED="$UNTAGGED_IMAGE:$GITHUB_SHA"
@@ -62,12 +76,14 @@ else
     docker push "$TAG_LATEST"
 fi
 
-if [ -z "$PRUNE" ]; then
-    echo "Skipping pruning docker"
-else
-    echo "Pruning docker"
-    docker system prune -f -a
+if [ ! -z "$PRUNE_ALL" ]; then
+    echo "Pruning all docker images"
+    docker rmi -f $(docker images -a -q)
 fi
 
-
-
+if [ ! -z "$PRUNE_THIS" ]; then
+    # This technically prunes images build DURING this session.  If another process
+    # builds a docker image while this was running, it will be removed too
+    echo "Pruning docker images built since $PREVIOUS_IMAGE"
+    docker rmi -f $(docker images -a -q --filter=since=$PREVIOUS_IMAGE)
+fi
