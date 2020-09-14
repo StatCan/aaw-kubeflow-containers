@@ -39,14 +39,13 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    # DEBUG: Removed for debugging
-    # - name: Free disk space
-    #   run: |
-    #     sudo swapoff -a
-    #     sudo rm -f /swapfile
-    #     sudo apt clean
-    #     docker rmi $(docker image ls -aq)
-    #     df -h
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU

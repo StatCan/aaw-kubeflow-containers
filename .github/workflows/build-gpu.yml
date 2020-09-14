@@ -17,11 +17,12 @@ on:
       - master
   pull_request:
     branches: 
-      - not_a_real_branch  # DEBUG
+      - master  # DEBUG
 
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: k8scc01covidacr
+  REGISTRY: k8scc01covidacr.azurecr.io
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
@@ -46,47 +47,86 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
+    - name: Create Dockerfile for Upstream Equivalent Notebook GPU
+      working-directory: upstream-equivalent-notebook-gpu
+      run: |
+        ./create_dockerfile.sh
+
+    - name: Upstream Equivalent Notebook GPU (equivalent to docker-stacks datascience)
+      id: upstream_equivalent_notebook_gpu
+      working-directory: upstream-equivalent-notebook-gpu
+      env:
+        IMAGE_NAME: upstream-equivalent-notebook-gpu
+      run: |
+        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
+                                            --push
+
+    - name: Base Notebook GPU
+      id: base_notebook_gpu
+      working-directory: ./base-notebook/
+      env:
+        IMAGE_NAME: base-notebook-gpu
+      run: |
+        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
+                                            --base_container ${{ steps.upstream_equivalent_notebook_gpu.outputs.tag_pinned }} \
+                                            --push
+
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
+
+    - name: Minimal Notebook GPU
+      id: minimal_notebook_gpu
+      working-directory: ./minimal-notebook/
+      env:
+        IMAGE_NAME: minimal-notebook-gpu
+      run: |
+        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
+                                            --base_container ${{ steps.base_notebook_gpu.outputs.tag_pinned }} \
+                                            --push
+
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
+
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Base Notebook GPU
-        docker build -f base-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
+    - name: Machine Learning Notebook GPU
+      id: machine_learning_notebook_gpu
+      working-directory: ./machine-learning-notebook/
+      env:
+        IMAGE_NAME: machine-learning-notebook-gpu
+      # Remove product docker image after build to save space (they are not used again elsewhere)
+      run: |
+        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
+                                            --base_container ${{ steps.minimal_notebook_gpu.outputs.tag_pinned }} \
+                                            --push \
+                                            --prune_this
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Minimal Notebook GPU
-        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
-    # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Machine Learning Notebook GPU
-        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ env.LATEST_IMAGE_TAG }}
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false

@@ -2,13 +2,13 @@
 set -e
 
 USAGE_MESSAGE="
-Usage: $0 --registry REGISTRY --image_name IMAGE_NAME --tag_pinned GITHUB_SHA --tag_latest TAG_LATEST --base_container BASE_CONTAINER [--cache-from FULL_IMAGE_PATH] [--push] [--prune]
+Usage: $0 --registry REGISTRY --image_name IMAGE_NAME --tag_pinned GITHUB_SHA --tag_latest TAG_LATEST [--base_container BASE_CONTAINER] [--cache-from FULL_IMAGE_PATH] [--push] [--prune]
 Where:
     registry: container registry full path, such as myRegistry.azurecr.io
     image_name: name of the image to be pushed
     tag_pinned: tag used for the 'pinned' version (typically a github sha)
     tag_latest: tag used for the latest version, both to pull a recent cache and push back to registry
-    base_container: base container used in building this image (passed to docker as a build arg)
+    base_container: (optional) if set, pass this value to docker as a build arg (eg: '--build-arg BASE_CONTAINER=THIS_VALUE')
     cache_from: (optional) if set, will pull this image to help caching.  Typically set to a recently built version of this image, such as myRegistry.azurecr.io/IMAGE_NAME:TAG_LATEST
     push: (optional) if set, will push all products to registry.  Default is unset
     prune_all: (optional) if set, will 'docker system prune -f -a' after build.  Default is unset
@@ -19,10 +19,11 @@ PUSH=""
 PRUNE_ALL=""
 PRUNE_THIS=""
 CACHE_FROM=""
+BASE_CONTAINER=""
 
 
 # Very basic input validation
-if [[ "$#" -lt 10 ]]; then
+if [[ "$#" -lt 8 ]]; then
     echo "$USAGE_MESSAGE"; exit 1;
 fi
 
@@ -65,7 +66,11 @@ else
     docker pull "$CACHE_FROM" || true
 fi
 
-docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
+if [ -z "$BASE_CONTAINER" ]; then
+    docker build --cache-from $TAG_LATEST -t $TAG_PINNED .
+else
+    docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
+fi
 docker tag "$TAG_PINNED" "$TAG_LATEST"
 
 if [ -z "$PUSH" ]; then
