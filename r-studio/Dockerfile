@@ -1,4 +1,5 @@
-FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 
 # install rstudio-server
@@ -19,7 +20,7 @@ RUN python3 -m pip install \
       'jupyter-server-proxy' \
       'jupyter-rsession-proxy' \
       'jupyter-shiny-proxy' && \
-    conda install --quiet --yes \   
+    conda install --quiet --yes \
       'r-base' \
       'r-caret' \
       'r-crayon' \
