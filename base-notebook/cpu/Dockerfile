@@ -19,14 +19,13 @@ RUN pip --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
 
-RUN conda install --quiet --yes pyodbc && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
+    pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
     rm -rf /var/lib/apt/lists/* && \
     npm cache clean --force && \
     rm -rf /home/$NB_USER/.cache/yarn && \
     rm -rf /home/$NB_USER/.node-gyp && \
-    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # Configure container startup
