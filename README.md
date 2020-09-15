@@ -4,15 +4,15 @@ Containers to be used with Kubeflow for Data Science.
 
 ## Introduction
 
-These container images are based on the community driven [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks), which maintains a [data science](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook) Jupyterlab notebook image with many standard tools installed.  
+These container images are based on the community driven [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks), which maintains a [data science](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook) Jupyterlab notebook image with many standard tools installed.  The local repo builds on this upstream image by adding additional tools, with the hierarchy shown below:
 
-docker-stacks supports only CPU-driven computation, but the parallel effort from [iot-salzburg/gpu-jupyter](https://github.com/iot-salzburg/gpu-jupyter) provides tools to create GPU-driven versions of the `docker-stacks` images as well.  `gpu-jupyter`'s scripts take a `docker-stacks` commit SHA as input and recreate the data science Dockerfile from that commit using an NVIDIA/CUDA enabled base image.  
+![High Level Dockerfile Hierarchy](./dockerfile_hierarchy_summary.png)
 
-From these two upstream images (`jupyter/datascience-notebook:COMMIT` and the locally created GPU version built in `./upstream-equivalent-notebook-gpu`), we build the rest of our image stack.  This is outline in the following figure:
+`docker-stacks` images support only CPU-driven computation, but the parallel effort from [iot-salzburg/gpu-jupyter](https://github.com/iot-salzburg/gpu-jupyter) provides tools to create GPU-driven versions of the `docker-stacks` images as well.  `gpu-jupyter`'s scripts take a `docker-stacks` commit SHA as input and recreate the data science Dockerfile from that commit using an NVIDIA/CUDA enabled base image.  To enable both CPU- and GPU-driven versions of most images, the `Dockerfile`s here (`base-notebook`, `minimal-notebook`, ...) accept their base image as a `build-arg`  - this allows both the CPU and GPU stacks to be build using a single core set of `Dockerfile`'s.  This is shown for a subset of the images below:
 
-# ADD FIGURE
+![Detailed Dockerfile Hierarchy for Machine Learning](./dockerfile_hierarchy_detailed.png)
 
-For each image built here, the `Dockerfile` accepts the base image as a `build-arg` to let us maintain a single core path of `Dockerfile`s that supports both the CPU and GPU streams.  The notebooks intended for deployment are the `minimal-notebook-*`, `machine-learning-notebook-*`, `geomatics`, and `r-studio`.  As summary of each is given in their respective `readme.md` files. 
+As summary of each step is given in their respective `readme.md` files. The notebooks intended for deployment to users are the `minimal-notebook-*`, `machine-learning-notebook-*`, `geomatics`, and `r-studio`.  
 
 ## Testing and Local Builds
 
