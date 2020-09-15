@@ -57,7 +57,7 @@ jobs:
         # Get upstream image from build_settings.env
 
         (source ../build_settings.env && \
-         ../.github/workflows/build_push.sh --registry ${{ env.REGISTRY }} \
+         ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -80,7 +80,7 @@ jobs:
       env:
         IMAGE_NAME: minimal-notebook-cpu
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -104,7 +104,7 @@ jobs:
         IMAGE_NAME: geomatics-notebook-cpu
       # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -128,7 +128,7 @@ jobs:
         IMAGE_NAME: machine-learning-notebook-cpu
       # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -152,7 +152,7 @@ jobs:
         IMAGE_NAME: r-studio-cpu
       # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \

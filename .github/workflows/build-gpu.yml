@@ -58,7 +58,7 @@ jobs:
       env:
         IMAGE_NAME: upstream-equivalent-notebook-gpu
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -71,7 +71,7 @@ jobs:
       env:
         IMAGE_NAME: base-notebook-gpu
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -92,7 +92,7 @@ jobs:
       env:
         IMAGE_NAME: minimal-notebook-gpu
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
@@ -115,7 +115,7 @@ jobs:
         IMAGE_NAME: machine-learning-notebook-gpu
       # Remove product docker image after build to save space (they are not used again elsewhere)
       run: |
-        ../.github/workflows/build_push.sh  --registry ${{ env.REGISTRY }} \
+        ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \

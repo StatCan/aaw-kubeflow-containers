@@ -1,4 +1,3 @@
-# https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
 ARG BASE_CONTAINER
 FROM $BASE_CONTAINER
 USER root
