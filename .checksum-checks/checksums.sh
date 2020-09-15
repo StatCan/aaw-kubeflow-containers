@@ -32,52 +32,6 @@ test_url () {
 ###          Download tests         ###
 #######################################
 
-
-check_dremio_odbc () {
-	NAME=dremio-odbc
-	printf "checksums.sh: checking %s" "$NAME" >&2
-
-	# TO CONFIRM:
-	#
-	# Check curl https://download.dremio.com/odbc-driver
-	#
-	# And see if we got the newest version.
-
-	# THE TRAILING SLASH BELONGS HERE
-	BASE_URL='https://download.dremio.com/odbc-driver/'
-
-	test_url "$BASE_URL" || exit 1
-
-	VERSION=$(curl -sL "$BASE_URL" |
-						 grep 'href="[0-9./]*"' |
-						 sed 's~.*href="\([^"]*\)".*~\1~' |
-						 sort -nr |
-						 sed 1q |
-						 sed 's~/$~~')
-
-	RPM=$(curl -sL "${BASE_URL}${VERSION}/" |
-						 grep 'href="[^"]*x86_64.rpm"' |
-						 sed 's~.*href="\([^"]*.rpm\)".*~\1~' |
-						 sort -nr |
-						 sed 1q)
-
-	URL="${BASE_URL}${VERSION}/${RPM}"
-
-	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
-
-	test_sha256 "$SHA256" || exit 1
-
-
-	printf "%s	%s	%s	%s\n" \
-		   "$NAME" \
-		   "$VERSION" \
-		   "$URL" \
-		   "$SHA256" 
-
-	printf ' done.\n' >&2
-}
-
-
 check_mc () {
 	NAME=mc
 	printf "checksums.sh: checking %s" "$NAME" >&2
@@ -162,30 +116,6 @@ check_az () {
 
 
 
-check_pachctl () {
-	NAME=pachctl
-	printf "checksums.sh: checking %s" "$NAME" >&2
-
-	BASE_URL=https://api.github.com/repos/pachyderm/pachyderm/releases/latest
-	URL=$(curl -s "$BASE_URL" |
-			  jq -r '.assets | .[].browser_download_url' |
-			  grep 'amd64.deb')
-
-	# latest -> version
-	VERSION=$(basename $(dirname "$URL") | sed 's/^v*//')
-
-	SHA256=$(curl -fsL "$URL" | sha256sum | awk '{print $1}')
-
-	printf "%s	%s	%s	%s\n" \
-		   "$NAME" \
-		   "$VERSION" \
-		   "$URL" \
-		   "$SHA256" 
-
-	printf ' done.\n' >&2
-}
-
-
 check_golang () {
 	# TODO: Instead of computing the sha256sum here,
 	# it's also available on the site.
@@ -250,11 +180,9 @@ get_checksums () {
 	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
 #Application	Version	URL	SHA256
 $(check_az)
-$(check_dremio_odbc)
 $(check_golang)
 $(check_kubectl)
 $(check_mc)
-$(check_pachctl)
 $(check_rstudio)
 EOF
 
