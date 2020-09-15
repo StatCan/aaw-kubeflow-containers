@@ -26,11 +26,7 @@ ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG AZCLI_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
 
-ARG PACHCTL_VERSION=1.10.5
-ARG PACHCTL_URL=https://github.com/pachyderm/pachyderm/releases/download/v${PACHCTL_VERSION}/pachctl_${PACHCTL_VERSION}_amd64.deb
-ARG PACHCTL_SHA=8bc58206e87c3c4304a074c1479e08bdf173743dd6869d0ad4e792830a0df5c5
-
-# kubectl, mc, az, pachctl
+# kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
@@ -43,11 +39,7 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && echo "${AZCLI_SHA} InstallAzureCLIDeb" | sha256sum -c - \
-    && bash InstallAzureCLIDeb \
-  && \
-    curl -o /tmp/pachctl.deb -L "${PACHCTL_URL}" \
-    && echo "${PACHCTL_SHA} /tmp/pachctl.deb" | sha256sum -c - \
-    && sudo dpkg -i /tmp/pachctl.deb
+    && bash InstallAzureCLIDeb 
 
 # Default environment
 RUN pip install --quiet \
