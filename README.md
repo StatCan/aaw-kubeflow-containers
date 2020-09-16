@@ -23,3 +23,7 @@ For testing and building locally, `build_cpu_local.sh` and `build_gpu_local.sh` 
 Github Actions CI is set up to build and deploy the images on merge to master.  Settings defining the base images used for CI (from `docker-stacks` and from `gpu-jupyter`) are defined in `build_settings.env`.  
 
 To reduce build times, the Github Actions CI workflow attempts to pull the latest version of each image from ACR before building.  In cases where cached layers can be reused, this can considerably reduce build time (at the cost of some data transfer time).  In general this appears to be of net benefit (if changing upstream images or `base-notebook` total build times will be ~5 minute slower, but if iterating on any other image build times will be ~10-60 minutes faster).
+
+## Notes
+
+The CPU and GPU images provided here contain the same software except for Ubuntu versions.  The `docker-stacks` images are based ob Ubuntu 20.04, whereas the GPU version uses Ubuntu 18.04.  This is caused by a conflict betwen PyTorch/CUDA 11/Ubuntu 20.04, and can be resolved once the upstream conflict is addressed (watch `gpu-jupyter` for progress).
