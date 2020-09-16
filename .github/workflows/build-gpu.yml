@@ -114,7 +114,7 @@ jobs:
         sudo swapoff -a
         sudo rm -f /swapfile
         sudo apt clean
-        docker rmi $(docker image ls -aq)
+        docker rmi -f $(docker image ls -aq)
         df -h
 
     # Container build and push to a Azure Container registry (ACR)
