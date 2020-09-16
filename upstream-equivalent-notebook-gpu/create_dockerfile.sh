@@ -3,11 +3,10 @@ set -e
 
 # This uses https://github.com/iot-salzburg/gpu-jupyter to build a GPU version 
 # of the docker-stacks (https://github.com/jupyter/docker-stacks) 
-# datascience-notebook Dockerfilem with an extra modification where we overwrite
-# the nvidia base image with one of our choice.  
-
-# I think our current gpu comes from.  No, it feels maybe based there but then manually edited
-# DOCKER_STACKS_HEAD_COMMIT="a0baf97d2506e11c6eb32fdc274a8e3edb3a4527"
+# datascience-notebook Dockerfile.  Different from standard gpu-jupyter, the 
+# Dockerfile from this wrapper will OMIT installing GPU-related software
+# pytorch and tensorflow) as we want notebook images available without these 
+# pre-installed
 
 # Defaults from env settings, if they exist in a default location
 . ../build_settings.env || true
@@ -37,8 +36,8 @@ if [ -z "$DOCKER_STACKS_HEAD_COMMIT" ]; then
     echo "$USAGE_MESSAGE"; exit 1;
 fi
 
-# (adapted from gpu-jupyter)
 # Clone if gpu-jupyter doesn't exist, and set to the given commit or the default commit
+# (adapted from gpu-jupyter)
 ls $GPU_JUPYTER_DIR/generate-Dockerfile.sh  > /dev/null 2>&1  || (echo "gpu-jupyter was not found, cloning repository" \
  && git clone https://github.com/iot-salzburg/gpu-jupyter.git $GPU_JUPYTER_DIR)
 echo "Set gpu-jupyter to commit '$GPU_JUPYTER_HEAD_COMMIT'."
@@ -59,8 +58,26 @@ else
   fi
 fi
 
+# Create the Dockerfile with gpu-jupyter
 cd $GPU_JUPYTER_DIR
-./generate-Dockerfile.sh -c $DOCKER_STACKS_HEAD_COMMIT
+
+# Edit gpu-jupyter on the fly to remove installation of GPU-related packages (pytorch/tf)
+# by commenting out the addition of these packages from the Dockerfile generation script.
+# For a little robustness, first test whether our search string hits anything
+PATTERN="cat src\/Dockerfile\.gpulibs"
+FOUND=$(grep "$PATTERN" generate-Dockerfile.sh || echo "")
+
+if [[ -z "$FOUND" ]]; then
+  echo "Could not find/remove gpulibs insertion in generate-Dockerfile.sh.  Aborting"
+  exit 1
+else
+  REPLACE="echo \"# gpulibs omitted and to be installed later\" >> \$DOCKERFILE\n# \1"
+  sed -E -i "s/^($PATTERN)/$REPLACE"/ generate-Dockerfile.sh
+fi
+
+# generate Dockerfile
+./generate-Dockerfile.sh -c $DOCKER_STACKS_HEAD_COMMIT --no-useful-packages
+
 # Copy the Dockerfile and any required build context files back to working directory
 # Can't use 'cp *' directly because it will return an error code due to subdirectories in .build
 find .build/ -maxdepth 1 -type f | xargs cp -t $CWD
