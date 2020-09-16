@@ -107,6 +107,16 @@ jobs:
     #     severity-threshold: CRITICAL
     #     run-quality-checks: false
 
+    # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
+    # This results in us redownloading the upstream layers.
+    - name: Free disk space (2)
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
+
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
       id: machine-learning-notebook-gpu
