@@ -17,7 +17,8 @@ USER root
 # Install Tensorflow, check compatibility here: https://www.tensorflow.org/install/gpu
 # installation via conda leads to errors in version 4.8.2
 RUN pip install --no-cache-dir "tensorflow==2.1.*" && \
-    pip install --no-cache-dir "keras==2.4.3"
+    pip install --no-cache-dir "keras==2.4.3" && \
+    pip cache purge
 
 # # Install PyTorch
 
@@ -55,11 +56,12 @@ RUN pip install --no-cache-dir "tensorflow==2.1.*" && \
 # Pytorch via pip
 # Conda gave environment inconsistency/version problems as of 2020-09-15
 # cu version must match that inherited from upstream GPU drivers
-RUN pip install --no-cache-dir \
-    torch==1.6.0+cu101 \
-    torchvision==0.7.0+cu101 \
-    torchtext==0.7.0 \
-    -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install --no-cache-dir torch==1.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html && \
+    pip cache clear
+RUN pip install --no-cache-dir torchvision==0.7.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html && \
+    pip cache clear
+RUN pip install --no-cache-dir torchtext==0.7.0 -f https://download.pytorch.org/whl/torch_stable.html && \
+    pip cache clear
 
 # Install XGBoost
 RUN conda config --set channel_priority false && \
