@@ -6,11 +6,11 @@ Containers to be used with Kubeflow for Data Science.
 
 These container images are based on the community driven [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks), which maintains a [data science](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html#jupyter-datascience-notebook) Jupyterlab notebook image with many standard tools installed.  The local repo builds on this upstream image by adding additional tools, with the hierarchy shown below:
 
-![High Level Dockerfile Hierarchy](./dockerfile_hierarchy_summary.png)
+![High Level Dockerfile Hierarchy](./figures/dockerfile_hierarchy_summary.png)
 
 `docker-stacks` images support only CPU-driven computation, but the parallel effort from [iot-salzburg/gpu-jupyter](https://github.com/iot-salzburg/gpu-jupyter) provides tools to create GPU-driven versions of the `docker-stacks` images as well.  `gpu-jupyter`'s scripts take a `docker-stacks` commit SHA as input and recreate the data science Dockerfile from that commit using an NVIDIA/CUDA enabled base image.  To enable both CPU- and GPU-driven versions of most images, the `Dockerfile`s here (`base-notebook`, `minimal-notebook`, ...) accept their base image as a `build-arg`  - this allows both the CPU and GPU stacks to be build using a single core set of `Dockerfile`'s.  This is shown for a subset of the images below:
 
-![Detailed Dockerfile Hierarchy for Machine Learning](./dockerfile_hierarchy_detailed.png)
+![Detailed Dockerfile Hierarchy for Machine Learning](./figures/dockerfile_hierarchy_detailed.png)
 
 As summary of each step is given in their respective `readme.md` files. The notebooks intended for deployment to users are the `minimal-notebook-*`, `machine-learning-notebook-*`, `geomatics`, and `r-studio`.  
 
