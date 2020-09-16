@@ -116,6 +116,12 @@ jobs:
         sudo apt clean
         docker rmi -f $(docker image ls -aq)
         df -h
+        echo "docker system df -v"
+        docker system df -v
+        docker system prune -f -a
+        df -h
+        echo "docker system df -v"
+        docker system df -v
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
