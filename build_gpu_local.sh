@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 cd upstream-equivalent-notebook-gpu
-build.sh
+./build.sh
 cd ..
 
 cd base-notebook
