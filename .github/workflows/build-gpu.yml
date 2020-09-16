@@ -53,7 +53,7 @@ jobs:
         ./create_dockerfile.sh
 
     - name: Upstream Equivalent Notebook GPU (equivalent to docker-stacks datascience)
-      id: upstream_equivalent_notebook_gpu
+      id: upstream-equivalent-notebook-gpu
       working-directory: upstream-equivalent-notebook-gpu
       env:
         IMAGE_NAME: upstream-equivalent-notebook-gpu
@@ -66,7 +66,7 @@ jobs:
                                             --push
 
     - name: Base Notebook GPU
-      id: base_notebook_gpu
+      id: base-notebook-gpu
       working-directory: ./base-notebook/
       env:
         IMAGE_NAME: base-notebook-gpu
@@ -76,7 +76,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.upstream_equivalent_notebook_gpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
     # # Scan image for vulnerabilities
@@ -87,7 +87,7 @@ jobs:
     #     run-quality-checks: false
 
     - name: Minimal Notebook GPU
-      id: minimal_notebook_gpu
+      id: minimal-notebook-gpu
       working-directory: ./minimal-notebook/
       env:
         IMAGE_NAME: minimal-notebook-gpu
@@ -97,7 +97,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.base_notebook_gpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.base-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
     # # Scan image for vulnerabilities
@@ -109,7 +109,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
-      id: machine_learning_notebook_gpu
+      id: machine-learning-notebook-gpu
       working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-gpu
@@ -120,7 +120,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.minimal_notebook_gpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
 

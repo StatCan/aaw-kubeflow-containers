@@ -49,7 +49,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
-      id: base_notebook_cpu
+      id: base-notebook-cpu
       working-directory: ./base-notebook/
       env:
         IMAGE_NAME: base-notebook-cpu
@@ -75,7 +75,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Minimal Notebook CPU
-      id: minimal_notebook_cpu
+      id: minimal-notebook-cpu
       working-directory: ./minimal-notebook/
       env:
         IMAGE_NAME: minimal-notebook-cpu
@@ -85,7 +85,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.base_notebook_cpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
 
@@ -98,7 +98,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Geomatics Notebook CPU
-      id: geomatics_notebook_cpu
+      id: geomatics-notebook-cpu
       working-directory: ./geomatics-notebook/
       env:
         IMAGE_NAME: geomatics-notebook-cpu
@@ -109,7 +109,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
 
@@ -122,7 +122,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook CPU
-      id: machine_learning_notebook_cpu
+      id: machine-learning-notebook-cpu
       working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-cpu
@@ -133,7 +133,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
 
@@ -146,7 +146,7 @@ jobs:
 
     # Container build and push to a Azure Container registry (ACR)
     - name: R-Studio CPU
-      id: r_studio_cpu
+      id: r-studio-cpu
       working-directory: ./r-studio/
       env:
         IMAGE_NAME: r-studio-cpu
@@ -157,7 +157,7 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ env.LATEST_IMAGE_TAG }} \
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
-                                            --base_container ${{ steps.minimal_notebook_cpu.outputs.tag_pinned }} \
+                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
 
