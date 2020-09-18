@@ -116,29 +116,7 @@ check_az () {
 
 
 
-check_golang () {
-	# TODO: Instead of computing the sha256sum here,
-	# it's also available on the site.
-	
-	NAME=golang
-	printf "checksums.sh: checking %s" "$NAME" >&2
 
-	#  Get the latest stable version
-	GITHUB_URL='https://api.github.com/repos/golang/go/git/refs/tags'
-	VERSION=$(curl -s "$GITHUB_URL" | jq -r '
-		 [ 
-		   # only take stable releases (no beta or weekly)
-		   .[] | select( .ref | test("refs/tags/go[1-9.]*$") )
-		   # refs/tags/go1.14.4 -> 1.14.4
-		       | (.ref |= sub("refs/tags/go"; ""))
-		 ] 
-		 # "1.14.4" -> [1, 14, 4] ; needed to lex sort
-		 | max_by( .ref | split(".") | map(tonumber)) 
-		 | .ref')
-	# Format is just "1.14.4" by the end
-
-	URL="https://dl.google.com/go/go${VERSION}.linux-amd64.tar.gz"
-	SHA256=$(curl -sL "$URL" | sha256sum | awk '{print $1}')
 
 	printf "%s	%s	%s	%s\n" \
 		   "$NAME" \
@@ -148,6 +126,7 @@ check_golang () {
 
 	printf ' done.\n' >&2
 }
+
 
 
 check_rstudio () {
@@ -180,7 +159,6 @@ get_checksums () {
 	cat <<EOF | column -t | tee "CHECKSUMS$([ -f CHECKSUMS ] && printf '.new' )"
 #Application	Version	URL	SHA256
 $(check_az)
-$(check_golang)
 $(check_kubectl)
 $(check_mc)
 $(check_rstudio)

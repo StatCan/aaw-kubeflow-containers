@@ -100,33 +100,6 @@ RUN pip install --quiet \
 RUN echo '{ "@jupyterlab/apputils-extension:themes": {"theme": "JupyterLab Solarized Dark"}, "@jupyterlab/notebook-extension:tracker": {"recordTiming": true}}' > /opt/conda/share/jupyter/lab/settings/overrides.json && \
     fix-permissions /home/$NB_USER
 
-# Go
-ENV GOROOT=/usr/local/go
-ENV PATH=$PATH:$GOROOT/bin
-ENV GOPATH=/opt/go/
-
-ARG GO_VERSION=1.14.4
-ARG GO_URL=https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz
-ARG GO_SHA=aed845e4185a0b2a3c3d5e1d0a35491702c55889192bb9c30e67a3de6849c067
-
-RUN wget "${GO_URL}" -O /tmp/go.tar.gz && \
-    echo "${GO_SHA} /tmp/go.tar.gz" | sha256sum -c - && \
-    tar -xvf /tmp/go.tar.gz -C /usr/local && \
-    printf "\nexport GOROOT=$GOROOT"             | tee -a /etc/profile && \
-    printf "\nexport PATH=\$GOROOT/bin:\$PATH\n" | tee -a /etc/profile && \
-    printf "\nexport GOPATH=$GOPATH\n"           | tee -a /etc/profile /home/$NB_USER/.bashrc && \
-    printf "\nexport PATH=$GOPATH/bin:\$PATH\n"  | tee -a /etc/profile /home/$NB_USER/.bashrc
-RUN mkdir -p $GOPATH && \
-    env GO111MODULE=off go get -d -u github.com/gopherdata/gophernotes && \
-    cd "$(go env GOPATH)"/src/github.com/gopherdata/gophernotes && \
-    env GO111MODULE=on go install && \
-    mkdir -p /opt/conda/share/jupyter/kernels/gophernotes && \
-    cp kernel/* /opt/conda/share/jupyter/kernels/gophernotes && \
-    cd /opt/conda/share/jupyter/kernels/gophernotes && \
-    chmod +w ./kernel.json && \
-    sed "s|gophernotes|$(go env GOPATH)/bin/gophernotes|" < kernel.json.in > kernel.json && \
-    fix-permissions /home/$NB_USER && \
-    fix-permissions $GOPATH
 
 # Configure container startup
 EXPOSE 8888
