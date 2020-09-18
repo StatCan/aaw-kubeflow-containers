@@ -51,6 +51,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     && sudo dpkg -i /tmp/pachctl.deb
 
 # Default environment
+# TODO: Missing clean cache?  Might not have access to cache anyway...
 RUN pip install --quiet \
       'kubernetes==11.0.0' \
       'jupyter-lsp==0.9.1' \
@@ -134,7 +135,9 @@ RUN mkdir -p $GOPATH && \
     chmod +w ./kernel.json && \
     sed "s|gophernotes|$(go env GOPATH)/bin/gophernotes|" < kernel.json.in > kernel.json && \
     fix-permissions /home/$NB_USER && \
-    fix-permissions $GOPATH
+    fix-permissions $GOPATH && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Configure container startup
 EXPOSE 8888

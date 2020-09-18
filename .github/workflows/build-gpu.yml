@@ -107,6 +107,7 @@ jobs:
     #     severity-threshold: CRITICAL
     #     run-quality-checks: false
 
+    # DEBUG
     # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
     # This results in us redownloading the upstream layers.
     - name: Free disk space (2)
