@@ -16,35 +16,35 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN python3 -m pip install \
-      'jupyter-server-proxy' \
-      'jupyter-rsession-proxy' \
-      'jupyter-shiny-proxy' && \
+      'jupyter-server-proxy==1.5.0' \
+      'jupyter-rsession-proxy==1.2' \
+      'jupyter-shiny-proxy==1.1' && \
     conda install --quiet --yes \   
-      'r-base' \
-      'r-caret' \
-      'r-crayon' \
-      'r-devtools' \
-      'r-forecast' \
-      'r-hexbin' \
-      'r-htmltools' \
-      'r-htmlwidgets' \
-      'r-irkernel' \
-      'r-nycflights13' \
-      'r-randomforest' \
-      'r-rcurl' \
-      'r-rmarkdown' \
-      'r-rodbc' \
-      'r-rsqlite' \
-      'r-shiny' \
-      'r-tidyverse' \
-      'r-tidymodels' \
-      'r-arrow' \
-      'r-aws.s3' \
-      'r-catools' \
-      'r-hdf5r' \
-      'r-odbc' \
-      'r-sf' \
-      'r-sparklyr' \
+      'r-base==3.6.3' \
+      'r-caret==6.0_86' \
+      'r-crayon==1.3.4' \
+      'r-devtools==2.3.1' \
+      'r-forecast==8.13' \
+      'r-hexbin==1.28.1' \
+      'r-htmltools==0.5.0' \
+      'r-htmlwidgets==1.5.1' \
+      'r-irkernel==1.1.1' \
+      'r-nycflights13==1.0.1' \
+      'r-randomforest==4.6_14' \
+      'r-rcurl==1.98_1.2' \
+      'r-rmarkdown==2.3' \
+      'r-rodbc==1.3_16' \
+      'r-rsqlite==2.2.0' \
+      'r-shiny==1.5.0' \
+      'r-tidyverse==1.3.0' \
+      'r-tidymodels==0.1.0' \
+      'r-arrow==0.17.1' \
+      'r-aws.s3==0.3.21' \
+      'r-catools==1.18.0' \
+      'r-hdf5r==1.3.2' \
+      'r-odbc==1.2.3' \
+      'r-sf==0.9_5' \
+      'r-sparklyr==1.4.0' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

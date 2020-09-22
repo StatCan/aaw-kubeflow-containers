@@ -205,33 +205,33 @@ USER $NB_UID
 
 # Install Python 3 packages
 RUN conda install --quiet --yes \
-    'beautifulsoup4=4.8.*' \
+    'beautifulsoup4=4.8.2' \
     'conda-forge::blas=*=openblas' \
-    'bokeh=1.4.*' \
-    'cloudpickle=1.3.*' \
-    'cython=0.29.*' \
-    'dask=2.11.*' \
-    'dill=0.3.*' \
-    'h5py=2.10.*' \
-    'hdf5=1.10.*' \
-    'ipywidgets=7.5.*' \
-    'ipympl=0.5.*'\
-    'matplotlib-base=3.1.*' \
-    'numba=0.48.*' \
-    'numexpr=2.7.*' \
-    'pandas=1.0.*' \
-    'patsy=0.5.*' \
-    'protobuf=3.11.*' \
-    'scikit-image=0.16.*' \
-    'scikit-learn=0.22.*' \
-    'scipy=1.4.*' \
-    'seaborn=0.10.*' \
-    'sqlalchemy=1.3.*' \
-    'statsmodels=0.11.*' \
-    'sympy=1.5.*' \
-    'vincent=0.4.*' \
-    'widgetsnbextension=3.5.*'\
-    'xlrd' \
+    'bokeh=1.4.0' \
+    'cloudpickle=1.3.0' \
+    'cython=0.29.21' \
+    'dask=2.11.0' \
+    'dill=0.3.2' \
+    'h5py=2.10.0' \
+    'hdf5=1.10.6' \
+    'ipywidgets=7.5.1' \
+    'ipympl=0.5.8'\
+    'matplotlib-base=3.1.3' \
+    'numba=0.48.0' \
+    'numexpr=2.7.1' \
+    'pandas=1.0.5' \
+    'patsy=0.5.1' \
+    'protobuf=3.11.4' \
+    'scikit-image=0.16.2' \
+    'scikit-learn=0.22.2.post1' \
+    'scipy=1.4.1' \
+    'seaborn=0.10.1' \
+    'sqlalchemy=1.3.19' \
+    'statsmodels=0.11.1' \
+    'sympy=1.5.1' \
+    'vincent=0.4.4' \
+    'widgetsnbextension=3.5.1'\
+    'xlrd=1.2.0' \
     && \
     conda clean --all -f -y && \
     # Activate ipywidgets extension in the environment that runs the notebook server
@@ -317,24 +317,24 @@ USER $NB_UID
 # R packages including IRKernel which gets installed globally.
 RUN conda install --quiet --yes \
     'r-base=3.6.2' \
-    'r-caret=6.0*' \
-    'r-crayon=1.3*' \
-    'r-devtools=2.2*' \
-    'r-forecast=8.10*' \
-    'r-hexbin=1.28*' \
-    'r-htmltools=0.4*' \
-    'r-htmlwidgets=1.5*' \
-    'r-irkernel=1.1*' \
-    'r-nycflights13=1.0*' \
-    'r-plyr=1.8*' \
-    'r-randomforest=4.6*' \
-    'r-rcurl=1.98*' \
-    'r-reshape2=1.4*' \
-    'r-rmarkdown=2.1*' \
-    'r-rsqlite=2.1*' \
-    'r-shiny=1.3*' \
-    'r-tidyverse=1.3*' \
-    'rpy2=3.1*' \
+    'r-caret=6.0_86' \
+    'r-crayon=1.3.4' \
+    'r-devtools=2.2.2' \
+    'r-forecast=8.10' \
+    'r-hexbin=1.28.1' \
+    'r-htmltools=0.4.0' \
+    'r-htmlwidgets=1.5.1' \
+    'r-irkernel=1.1.1' \
+    'r-nycflights13=1.0.1' \
+    'r-plyr=1.8.6' \
+    'r-randomforest=4.6_14' \
+    'r-rcurl=1.98_1.2' \
+    'r-reshape2=1.4.4' \
+    'r-rmarkdown=2.1' \
+    'r-rsqlite=2.1.5' \
+    'r-shiny=1.3.2' \
+    'r-tidyverse=1.3.0' \
+    'rpy2=3.1.0' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
