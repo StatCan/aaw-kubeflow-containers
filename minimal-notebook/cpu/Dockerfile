@@ -51,41 +51,41 @@ RUN pip install --quiet \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipywidgets' \
-      'ipympl' \
-      'jupyter_contrib_nbextensions' \
-      'jupyterlab-dash' \
+      'ipywidgets==7.5.1' \
+      'ipympl==0.5.8' \
+      'jupyter_contrib_nbextensions==0.5.1' \
+      'jupyterlab-dash==0.1.0a3' \
       'jupyterlab-git==0.20.0' \
-      'xeus-python' \
-      'nodejs' \
-      'python-language-server' \
+      'xeus-python==0.8.4' \
+      'nodejs==13.13.0' \
+      'python-language-server==0.31.10' \
     && \
     conda install --quiet --yes \
-      'pyarrow' \
-      'r-dplyr' \
-      'r-tidyr' \
-      'r-jsonlite' \
-      'r-ggplot2' \
-      'r-rstan' \
+      'pyarrow==0.17.1' \
+      'r-dplyr==1.0.0' \
+      'r-tidyr==1.1.2' \
+      'r-jsonlite==1.7.1' \
+      'r-ggplot2==3.3.2' \
+      'r-rstan==2.21.2' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker' \
-      '@jupyter-widgets/jupyterlab-manager'  \
-      '@hadim/jupyter-archive' \
-      '@krassowski/jupyterlab-lsp' \
-      '@lckr/jupyterlab_variableinspector' \
-      '@jupyterlab/debugger' \
-      '@jupyterlab/github' \
+      '@ijmbarr/jupyterlab_spellchecker@0.1.6' \
+      '@jupyter-widgets/jupyterlab-manager@2.0.0'  \
+      '@hadim/jupyter-archive@0.7.0' \
+      '@krassowski/jupyterlab-lsp@2.0.6' \
+      '@lckr/jupyterlab_variableinspector@0.5.1' \
+      '@jupyterlab/debugger@0.3.2' \
+      '@jupyterlab/github@2.0.0' \
       '@jupyterlab/git@0.20.0' \
-      '@jupyterlab/toc' \
-      'jupyter-matplotlib' \
-      'jupyterlab-execute-time' \
-      'jupyterlab-plotly' \
-      'jupyterlab-theme-solarized-dark' \
-      'jupyterlab-spreadsheet' \
-      'nbdime-jupyterlab' \
+      '@jupyterlab/toc@4.0.0' \
+      'jupyter-matplotlib@0.7.4' \
+      'jupyterlab-execute-time@1.0.0' \
+      'jupyterlab-plotly@4.10.0' \
+      'jupyterlab-theme-solarized-dark@1.0.2' \
+      'jupyterlab-spreadsheet@0.3.2' \
+      'nbdime-jupyterlab@2.0.0' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
