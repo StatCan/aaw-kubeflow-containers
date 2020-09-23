@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
+
 set -e
 
 USAGE_MESSAGE="
+This script handles building, tagging, and (optionally) pushing an image to a docker repo.  It builds the image requested, adds two tags (one intended for version pinning such as a git sha, and one intended for something like 'latest').  It optionally can: 
+
+* pull an existing image to use as a layer cache
+* pass a build-arg 'BASE_CONTAINER' to the 'docker build' command, indicating the container to build from
+* prune either all docker images/containers or the images built since starting this script (typically just the images built here, but not guaranteed if other processes run in parallel)
+
 Usage: $0 --registry REGISTRY --image_name IMAGE_NAME --tag_pinned GITHUB_SHA --tag_latest TAG_LATEST [--base_container BASE_CONTAINER] [--cache-from FULL_IMAGE_PATH] [--push] [--prune]
 Where:
     registry: container registry full path, such as myRegistry.azurecr.io
@@ -27,6 +34,8 @@ if [[ "$#" -lt 8 ]]; then
     echo "$USAGE_MESSAGE"; exit 1;
 fi
 
+
+# Parse input arguments
 while [[ "$#" -gt 0 ]]; do case $1 in
   --registry) REGISTRY="$2"; shift;;
   --image_name) IMAGE_NAME="$2"; shift;;
@@ -41,7 +50,16 @@ while [[ "$#" -gt 0 ]]; do case $1 in
     echo "$USAGE_MESSAGE"; exit 1;;
 esac; shift; done
 
-# If pruning only this product, remember the last image built before so we can filter
+
+# Interpret input arguments
+
+UNTAGGED_IMAGE="$REGISTRY/$IMAGE_NAME"
+TAG_PINNED="$UNTAGGED_IMAGE:$GITHUB_SHA"
+TAG_LATEST="$UNTAGGED_IMAGE:$LATEST"
+echo "::set-output name=tag_pinned::$TAG_PINNED"
+
+# If pruning only this product, remember the last image built before now so we can select 
+# all since then later.
 # If there are no previous images, fallback to a prune_all
 if [ ! -z "$PRUNE_THIS" ]; then
   echo "Remembering the last non-intermediate image before building so we can prune recent images later"
@@ -53,24 +71,26 @@ if [ ! -z "$PRUNE_THIS" ]; then
   fi
 fi
 
-UNTAGGED_IMAGE="$REGISTRY/$IMAGE_NAME"
-TAG_PINNED="$UNTAGGED_IMAGE:$GITHUB_SHA"
-TAG_LATEST="$UNTAGGED_IMAGE:$LATEST"
-echo "::set-output name=tag_pinned::$TAG_PINNED"
+BUILD_COMMAND="docker build"
 
-# Try pulling latest from acr to get a source for cache-from
+# Initialize layer caching by pulling the cache_from image
 if [ -z "$CACHE_FROM" ]; then
     echo "Skipping cache pull"
 else
     echo "Pulling cache image"
     docker pull "$CACHE_FROM" || true
+    BUILD_COMMAND="$BUILD_COMMAND --cache-from $CACHE_FROM"
 fi
 
+echo "Building image"
 if [ -z "$BASE_CONTAINER" ]; then
-    docker build --cache-from $TAG_LATEST -t $TAG_PINNED .
+    docker build --cache-from $CACHE_FROM -t $TAG_PINNED .
 else
-    docker build --cache-from $TAG_LATEST -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
+    docker build --cache-from $CACHE_FROM -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
 fi
+echo "building docker with:"
+echo $BUILD_COMMAND
+`$BUILD_COMMAND`
 docker tag "$TAG_PINNED" "$TAG_LATEST"
 
 if [ -z "$PUSH" ]; then

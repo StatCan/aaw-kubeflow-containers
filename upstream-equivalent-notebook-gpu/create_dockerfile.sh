@@ -72,7 +72,13 @@ if [[ -z "$FOUND" ]]; then
   exit 1
 else
   REPLACE="echo \"# gpulibs omitted and to be installed later\" >> \$DOCKERFILE\n# \1"
-  sed -E -i "s/^($PATTERN)/$REPLACE"/ generate-Dockerfile.sh
+  if [[ $(uname -s) == "Darwin" ]]; then
+    # mac has different sed syntax...
+    sed -E -i '' "s/^($PATTERN)/$REPLACE"/ generate-Dockerfile.sh
+  else
+    # Everyone else
+    sed -E -i "s/^($PATTERN)/$REPLACE"/ generate-Dockerfile.sh
+  fi
 fi
 
 # generate Dockerfile
@@ -80,5 +86,5 @@ fi
 
 # Copy the Dockerfile and any required build context files back to working directory
 # Can't use 'cp *' directly because it will return an error code due to subdirectories in .build
-find .build/ -maxdepth 1 -type f | xargs cp -t $CWD
+find .build/ -maxdepth 1 -type f | xargs -I {} cp {} $CWD
 cd $CWD

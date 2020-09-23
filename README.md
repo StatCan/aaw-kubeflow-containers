@@ -16,7 +16,15 @@ As summary of each step is given in their respective `readme.md` files. The note
 
 ## Testing and Local Builds
 
-For testing and building locally, `build_cpu_local.sh` and `build_gpu_local.sh` provide recipes to build each stream.  Some settings for base image selection are provided in `build_settings.env`.  Each image subdir also has build scripts for its respective build.
+For building locally, `build_cpu_local.sh` and `build_gpu_local.sh` provide recipes to build each stream.  Some settings for base image selection are provided in `build_settings.env`.  Each image subdir also has build scripts for its respective build.
+
+To test locally, build the image you need then run it with port forwarding like:
+
+```
+docker run 8888:SOME_LOCAL_PORT IMAGENAME
+```
+
+where you add a local port and imagename.  Then open a browser and go to `localhost:SOME_LOCAL_PORT`.
 
 ## Deployment and CI
 

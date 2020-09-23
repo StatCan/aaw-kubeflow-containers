@@ -6,7 +6,7 @@ This is a Dockerfile which adds geomatics-related R packages.  Typical usage for
 
 ## CPU
 
-(requires you've already built the base_container locally)
+Note: The below build instructions require you've already built the corresponding `minimal_notebook` locally.
 
 ```
 build_cpu.sh
@@ -18,4 +18,4 @@ build_cpu.sh
 
 ## CI
 
-See `.github/workflows/build-cpu.yml` for deployment versions, which use `.github/workflows/build_push.sh` to automate some tagging/pushing/caching.
+For CI, see `.github/workflows/build-cpu.yml`.  It leverages the `.github/workflows/build_push.sh` wrapper for tagging, pushing, and caching all at once. 

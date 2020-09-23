@@ -14,7 +14,7 @@ This provides a common notebook setup for both CPU and GPU paths, ensuring they'
 
 ## CPU
 
-(get BASE_CONTAINER from the `../build_settings.env` file for most recent version)
+To build the CPU image, first set the `BASE_CONTAINER` in the `../build_settings.env` file to point to the appropriate docker-stacks upstream image.  Then:
 
 ```
 build_cpu.sh
@@ -22,7 +22,7 @@ build_cpu.sh
 
 ## GPU
 
-(requires you've already built the base_container locally)
+To build the GPU image, first build `upstream-equivalent-notebook-gpu`, then do:
 
 ```
 build_gpu.sh
@@ -30,4 +30,4 @@ build_gpu.sh
 
 ## CI
 
-See `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml` for deployment versions, which use `.github/workflows/build_push.sh` to automate some tagging/pushing/caching.
+For CI, see `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml`.  They leverage the `.github/workflows/build_push.sh` wrapper for tagging, pushing, and caching all at once. 

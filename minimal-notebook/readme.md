@@ -9,9 +9,9 @@ Typical usage for this Dockerfile is to be built off a `base-notebook-cpu` or `b
 
 # Usage
 
-## CPU
+Note: The below build instructions require you've already built the corresponding `base_notebook` locally.
 
-(requires you've already built the base_container locally)
+## CPU
 
 ```
 build_cpu.sh
@@ -19,12 +19,10 @@ build_cpu.sh
 
 ## GPU
 
-(requires you've already built the base_container locally)
-
 ```
 build_gpu.sh
 ```
 
 ## CI
 
-See `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml` for deployment versions, which use `.github/workflows/build_push.sh` to automate some tagging/pushing/caching.
+For CI, see `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml`.  They leverage the `.github/workflows/build_push.sh` wrapper for tagging, pushing, and caching all at once. 
