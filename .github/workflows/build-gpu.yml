@@ -65,6 +65,13 @@ jobs:
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --push
 
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
     - name: Base Notebook GPU
       id: base-notebook-gpu
       working-directory: ./base-notebook/
@@ -82,7 +89,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -103,7 +110,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -116,13 +123,8 @@ jobs:
         sudo rm -f /swapfile
         sudo apt clean
         docker rmi -f $(docker image ls -aq)
-        df -h
-        echo "docker system df -v"
-        docker system df -v
         docker system prune -f -a
         df -h
-        echo "docker system df -v"
-        docker system df -v
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
@@ -144,6 +146,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.machine-learning-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false

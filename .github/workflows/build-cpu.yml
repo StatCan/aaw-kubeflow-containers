@@ -69,7 +69,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
+        image-name: ${{ steps.base-notebook-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -92,7 +92,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
+        image-name: ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -116,7 +116,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }}
+        image-name: ${{ steps.geomatics-notebook-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -140,7 +140,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }}
+        image-name: ${{ steps.machine-learning-notebook-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -164,6 +164,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }}
+        image-name: ${{ steps.r-studio-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
