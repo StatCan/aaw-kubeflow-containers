@@ -1,0 +1,8 @@
+/.gpu-jupyter
+/fix-permissions
+/jupyter_notebook_config.json
+/jupyter_notebook_config.py
+/start-notebook.sh
+/start-singleuser.sh
+/start.sh
+/Dockerfile

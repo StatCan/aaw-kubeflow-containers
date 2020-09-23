@@ -1,4 +1,5 @@
-FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 
 # install rstudio-server
@@ -62,8 +63,6 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean && rm -rf /var/lib/apt/lists/* && \
     sed -i 's~^\(Setup\|Driver\)=\([^/]*\)$~\1=/usr/lib/x86_64-linux-gnu/odbc/\2~' /etc/odbcinst.ini && \
     sed -i 's~libsqliteodbc.so~libsqlite3odbc.so~' /etc/odbcinst.ini 
-
-RUN apt-get clean 
 
 COPY start-custom.sh /usr/local/bin
 ENV DEFAULT_JUPYTER_URL="/rstudio"
