@@ -44,7 +44,7 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Default environment
 RUN pip install --quiet \
       'kubernetes==11.0.0' \
-      'jupyter-lsp==0.9.1' \
+      'jupyter-lsp==0.9.2' \
     && \
     conda install --quiet --yes \
       'jupyterlab>=2.2.2' \
@@ -74,7 +74,7 @@ RUN pip install --quiet \
       '@ijmbarr/jupyterlab_spellchecker@0.1.6' \
       '@jupyter-widgets/jupyterlab-manager@2.0.0'  \
       '@hadim/jupyter-archive@0.7.0' \
-      '@krassowski/jupyterlab-lsp@2.0.6' \
+      '@krassowski/jupyterlab-lsp@2.0.7' \
       '@lckr/jupyterlab_variableinspector@0.5.1' \
       '@jupyterlab/debugger@0.3.2' \
       '@jupyterlab/github@2.0.0' \
