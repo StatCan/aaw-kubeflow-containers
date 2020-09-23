@@ -44,7 +44,7 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Default environment
 RUN pip install --quiet \
       'kubernetes==11.0.0' \
-      'jupyter-lsp==0.9.1' \
+      'jupyter-lsp==0.9.2' \
     && \
     conda install --quiet --yes \
       'jupyterlab>=2.2.2' \
