@@ -27,6 +27,7 @@ PRUNE_ALL=""
 PRUNE_THIS=""
 CACHE_FROM=""
 BASE_CONTAINER=""
+REGISTRY=""
 
 
 # Very basic input validation
@@ -52,8 +53,11 @@ esac; shift; done
 
 
 # Interpret input arguments
-
-UNTAGGED_IMAGE="$REGISTRY/$IMAGE_NAME"
+if [[ -z "$REGISTRY" ]]; then
+  UNTAGGED_IMAGE="$IMAGE_NAME"
+else
+  UNTAGGED_IMAGE="$REGISTRY/$IMAGE_NAME"
+fi
 TAG_PINNED="$UNTAGGED_IMAGE:$GITHUB_SHA"
 TAG_LATEST="$UNTAGGED_IMAGE:$LATEST"
 echo "::set-output name=tag_pinned::$TAG_PINNED"
@@ -71,7 +75,7 @@ if [ ! -z "$PRUNE_THIS" ]; then
   fi
 fi
 
-BUILD_COMMAND="docker build"
+BUILD_COMMAND="docker build -t $TAG_PINNED"
 
 # Initialize layer caching by pulling the cache_from image
 if [ -z "$CACHE_FROM" ]; then
@@ -84,13 +88,13 @@ fi
 
 echo "Building image"
 if [ -z "$BASE_CONTAINER" ]; then
-    docker build --cache-from $CACHE_FROM -t $TAG_PINNED .
+    BUILD_COMMAND="$BUILD_COMMAND ."
 else
-    docker build --cache-from $CACHE_FROM -t $TAG_PINNED --build-arg BASE_CONTAINER=$BASE_CONTAINER .
+    BUILD_COMMAND="$BUILD_COMMAND --build-arg BASE_CONTAINER=$BASE_CONTAINER ."
 fi
 echo "building docker with:"
 echo $BUILD_COMMAND
-`$BUILD_COMMAND`
+$BUILD_COMMAND
 docker tag "$TAG_PINNED" "$TAG_LATEST"
 
 if [ -z "$PUSH" ]; then
