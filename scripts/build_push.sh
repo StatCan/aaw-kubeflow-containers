@@ -20,6 +20,7 @@ Where:
     push: (optional) if set, will push all products to registry.  Default is unset
     prune_all: (optional) if set, will 'docker system prune -f -a' after build.  Default is unset
     prune_this: (optional) if set, will remove all images built since this job started (like prune_all but only for products of this job)
+    no_remove_dangling: (optional) if set, will not remove dangling images after build
 "
 
 PUSH=""
@@ -28,7 +29,7 @@ PRUNE_THIS=""
 CACHE_FROM=""
 BASE_CONTAINER=""
 REGISTRY=""
-
+REMOVE_DANGLING="true"
 
 # Very basic input validation
 if [[ "$#" -lt 8 ]]; then
@@ -47,6 +48,7 @@ while [[ "$#" -gt 0 ]]; do case $1 in
   --push) PUSH="true"; ;;
   --prune_all) PRUNE_ALL="true"; ;;
   --prune_this) PRUNE_THIS="true"; ;;
+  --no_remove_dangling) REMOVE_DANGLING=""; ;;
   *) echo "Unknown parameter passed: $1" &&
     echo "$USAGE_MESSAGE"; exit 1;;
 esac; shift; done
@@ -103,6 +105,11 @@ else
     echo "Pushing images"
     docker push "$TAG_PINNED"
     docker push "$TAG_LATEST"
+fi
+
+if [[ -n "$REMOVE_DANGLING" ]]; then
+    echo "Removing dangling images"
+    docker image prune -f
 fi
 
 if [ ! -z "$PRUNE_ALL" ]; then

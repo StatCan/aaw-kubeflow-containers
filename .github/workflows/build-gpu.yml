@@ -40,13 +40,10 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Free disk space
+    - name: Free disk space (cache + all docker images)
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
+        scripts/free_space.sh
         docker rmi $(docker image ls -aq)
-        df -h
 
     - name: Create Dockerfile for Upstream Equivalent Notebook GPU
       working-directory: upstream-equivalent-notebook-gpu
@@ -66,16 +63,9 @@ jobs:
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --push
 
-    - name: Debug Disk Space
+    - name: Free disk space (cache)
       run: |
-        df -h
-        docker images -f dangling=true
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
-        docker image prune
-        df -h
+        scripts/free_space.sh
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -98,16 +88,9 @@ jobs:
                                             --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
-    - name: Debug Disk Space
+    - name: Free disk space (cache)
       run: |
-        df -h
-        docker images -f dangling=true
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        df -h
-        docker image prune
-        df -h
+        scripts/free_space.sh
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -130,6 +113,10 @@ jobs:
                                             --base_container ${{ steps.base-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -137,17 +124,17 @@ jobs:
         severity-threshold: CRITICAL
         run-quality-checks: false
 
-    # DEBUG
-    # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
-    # This results in us redownloading the upstream layers.
-    - name: Free disk space (2)
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi -f $(docker image ls -aq)
-        docker system prune -f -a
-        df -h
+    # # DEBUG
+    # # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
+    # # This results in us redownloading the upstream layers.
+    # - name: Free disk space (2)
+    #   run: |
+    #     sudo swapoff -a
+    #     sudo rm -f /swapfile
+    #     sudo apt clean
+    #     docker rmi -f $(docker image ls -aq)
+    #     docker system prune -f -a
+    #     df -h
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
@@ -165,6 +152,10 @@ jobs:
                                             --base_container ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
+
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
