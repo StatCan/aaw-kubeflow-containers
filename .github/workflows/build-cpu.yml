@@ -26,7 +26,7 @@ env:
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
-  TRIVY_TIMEOUT: 10m0s  # Some images take longer than default 2m to scan
+  TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
 jobs:
   build:
     runs-on: ubuntu-latest

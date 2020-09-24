@@ -26,7 +26,7 @@ env:
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
-  TRIVY_TIMEOUT: 10m0s  # Some images take longer than default 2m to scan
+  TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -67,12 +67,13 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # # DEBUG : removed temporarily
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
     - name: Base Notebook GPU
       id: base-notebook-gpu
@@ -92,12 +93,13 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # # # DEBUG : removed temporarily
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
     - name: Minimal Notebook GPU
       id: minimal-notebook-gpu
@@ -117,12 +119,13 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # # # DEBUG : removed temporarily
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
     # # DEBUG
     # # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
