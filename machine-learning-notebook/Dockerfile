@@ -21,9 +21,6 @@ RUN pip install --no-cache-dir \
     -f https://download.pytorch.org/whl/torch_stable.html && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
 
 # Install XGBoost
 RUN conda config --set channel_priority false && \

@@ -66,6 +66,17 @@ jobs:
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --push
 
+    - name: Debug Disk Space
+      run: |
+        df -h
+        docker images -f dangling=true
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+        docker image prune
+        df -h
+
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -86,6 +97,17 @@ jobs:
                                             --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.LATEST_IMAGE_TAG }} \
                                             --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
                                             --push
+
+    - name: Debug Disk Space
+      run: |
+        df -h
+        docker images -f dangling=true
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        df -h
+        docker image prune
+        df -h
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
