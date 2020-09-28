@@ -1,4 +1,4 @@
-# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+# This workflow will build a docker container and publish it to Azure Container Registry
 #
 # https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
 #
@@ -9,7 +9,7 @@
 #     b. REGISTRY_PASSWORD with ACR Password
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
-# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
+# 2. Change the values for the REGISTRY_NAME/REGISTRY, CLUSTER_NAME, and CLUSTER_RESOURCE_GROUP
 name: build cpu
 on:
   push:
@@ -26,10 +26,11 @@ env:
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
-  TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
     steps:
     - uses: actions/checkout@master
 
@@ -39,7 +40,6 @@ jobs:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-
 
     - name: Free disk space (cache + all docker images)
       run: |
@@ -108,7 +108,7 @@ jobs:
       working-directory: ./geomatics-notebook/
       env:
         IMAGE_NAME: geomatics-notebook-cpu
-      # Remove product docker image after build to save space (they are not used again elsewhere)
+      # Invoke --prune-this to remove this image after built/pushed (it is not used again downstream)
       run: |
         ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
@@ -136,7 +136,7 @@ jobs:
       working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-cpu
-      # Remove product docker image after build to save space (they are not used again elsewhere)
+      # Invoke --prune-this to remove this image after built/pushed (it is not used again downstream)
       run: |
         ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \
@@ -164,7 +164,7 @@ jobs:
       working-directory: ./r-studio/
       env:
         IMAGE_NAME: r-studio-cpu
-      # Remove product docker image after build to save space (they are not used again elsewhere)
+      # Invoke --prune-this to remove this image after built/pushed (it is not used again downstream)
       run: |
         ../scripts/build_push.sh  --registry ${{ env.REGISTRY }} \
                                             --image_name ${{ env.IMAGE_NAME }} \

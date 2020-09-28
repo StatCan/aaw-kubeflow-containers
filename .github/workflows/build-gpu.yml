@@ -1,4 +1,4 @@
-# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+# This workflow will build a docker container and publish it to Azure Container Registry
 #
 # https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
 #
@@ -9,7 +9,7 @@
 #     b. REGISTRY_PASSWORD with ACR Password
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
-# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
+# 2. Change the values for the REGISTRY_NAME/REGISTRY, CLUSTER_NAME, and CLUSTER_RESOURCE_GROUP
 name: build gpu
 on:
   push:
@@ -26,10 +26,11 @@ env:
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
   LATEST_IMAGE_TAG: master
-  TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
     steps:
     - uses: actions/checkout@master
 
@@ -67,13 +68,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # # DEBUG : removed temporarily
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+   # Scan image for vulnerabilities
+   - uses: Azure/container-scan@v0
+     with:
+       image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+       severity-threshold: CRITICAL
+       run-quality-checks: false
 
     - name: Base Notebook GPU
       id: base-notebook-gpu
@@ -93,13 +93,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # # # DEBUG : removed temporarily
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+   # Scan image for vulnerabilities
+   - uses: Azure/container-scan@v0
+     with:
+       image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
+       severity-threshold: CRITICAL
+       run-quality-checks: false
 
     - name: Minimal Notebook GPU
       id: minimal-notebook-gpu
@@ -119,25 +118,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-    # # # DEBUG : removed temporarily
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
-
-    # # DEBUG
-    # # Machine Learning Notebook nearly takes max space on the node.  Free everything up first
-    # # This results in us redownloading the upstream layers.
-    # - name: Free disk space (2)
-    #   run: |
-    #     sudo swapoff -a
-    #     sudo rm -f /swapfile
-    #     sudo apt clean
-    #     docker rmi -f $(docker image ls -aq)
-    #     docker system prune -f -a
-    #     df -h
+   # Scan image for vulnerabilities
+   - uses: Azure/container-scan@v0
+     with:
+       image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
+       severity-threshold: CRITICAL
+       run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
