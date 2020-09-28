@@ -68,12 +68,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-   # Scan image for vulnerabilities
-   - uses: Azure/container-scan@v0
-     with:
-       image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
-       severity-threshold: CRITICAL
-       run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     - name: Base Notebook GPU
       id: base-notebook-gpu
@@ -93,12 +93,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-   # Scan image for vulnerabilities
-   - uses: Azure/container-scan@v0
-     with:
-       image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
-       severity-threshold: CRITICAL
-       run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     - name: Minimal Notebook GPU
       id: minimal-notebook-gpu
@@ -118,12 +118,12 @@ jobs:
       run: |
         scripts/free_space.sh
 
-   # Scan image for vulnerabilities
-   - uses: Azure/container-scan@v0
-     with:
-       image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
-       severity-threshold: CRITICAL
-       run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
