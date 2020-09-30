@@ -9,7 +9,6 @@ RUN apt-get update && \
       'vim' \
       'tig' \
       'ranger' \
-      'curl' \
       'jq' \
       'zsh' \
     && \
@@ -43,15 +42,10 @@ RUN curl -LO "${KUBECTL_URL}" \
 
 # Default environment
 RUN pip install --quiet \
-      'kubernetes==11.0.0' \
       'jupyter-lsp==0.9.2' \
     && \
     conda install --quiet --yes \
-      'jupyterlab>=2.2.2' \
-    && \
-    conda install --quiet --yes \
     -c conda-forge \
-      'ipywidgets==7.5.1' \
       'ipympl==0.5.8' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'jupyterlab-dash==0.1.0a3' \
@@ -62,17 +56,14 @@ RUN pip install --quiet \
     && \
     conda install --quiet --yes \
       'pyarrow==0.17.1' \
-      'r-dplyr==1.0.0' \
       'r-tidyr==1.1.2' \
       'r-jsonlite==1.7.1' \
-      'r-ggplot2==3.3.2' \
       'r-rstan==2.21.2' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@ijmbarr/jupyterlab_spellchecker@0.1.6' \
-      '@jupyter-widgets/jupyterlab-manager@2.0.0'  \
       '@hadim/jupyter-archive@0.7.0' \
       '@krassowski/jupyterlab-lsp@2.0.7' \
       '@lckr/jupyterlab_variableinspector@0.5.1' \
@@ -80,7 +71,6 @@ RUN pip install --quiet \
       '@jupyterlab/github@2.0.0' \
       '@jupyterlab/git@0.20.0' \
       '@jupyterlab/toc@4.0.0' \
-      'jupyter-matplotlib@0.7.4' \
       'jupyterlab-execute-time@1.0.0' \
       'jupyterlab-plotly@4.10.0' \
       'jupyterlab-theme-solarized-dark@1.0.2' \
