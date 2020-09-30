@@ -4,8 +4,8 @@ USER root
 # Install Tensorflow
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
-      'tensorflow=2.1*' \
-      'keras==2.3.1' \
+      'tensorflow==2.2.0' \
+      'keras==2.4.3' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -14,8 +14,8 @@ RUN conda config --set channel_priority false && \
 # Install PyTorch
 RUN conda config --set channel_priority false && \
     conda install --quiet --yes \
-      'cmake==3.14.0' \
-      'cffi==1.14.1' \
+      'cmake==3.18.2' \
+      'cffi==1.14.3' \
       'mkl==2020.2' \
       'mkl-include==2020.2' \
       'pyyaml==5.3.1' \
@@ -26,16 +26,11 @@ RUN conda config --set channel_priority false && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-     'pytorch==1.3.1' \
-     'torchvision==0.4.2' \
+RUN pip --no-cache-dir install --quiet \
+     'torch==1.6.0' \
+     'torchvision==0.7.0' \
+     'torchtext==0.7.0' \
     && \
-    conda install --quiet --yes \
-    -c pytorch \
-      'torchtext==0.6.0' \
-    && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
