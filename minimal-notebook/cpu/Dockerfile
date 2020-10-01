@@ -43,12 +43,12 @@ RUN curl -LO "${KUBECTL_URL}" \
 # Default environment
 RUN pip install --quiet \
       'jupyter-lsp==0.9.2' \
+      'jupyter-server-proxy==1.5.0' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipympl==0.5.8' \
       'jupyter_contrib_nbextensions==0.5.1' \
-      'jupyterlab-dash==0.1.0a3' \
       'jupyterlab-git==0.20.0' \
       'xeus-python==0.8.4' \
       'nodejs==13.13.0' \
@@ -59,6 +59,10 @@ RUN pip install --quiet \
       'r-tidyr==1.1.2' \
       'r-jsonlite==1.7.1' \
       'r-rstan==2.21.2' \
+    && \
+    conda install --quiet --yes \
+      -c plotly \
+      'jupyter-dash==0.3.0' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
