@@ -46,6 +46,7 @@ RUN pip install --quiet \
       'gpustat==0.6.0' \
       'kubernetes==11.0.0' \
       'jupyter-lsp==0.9.1' \
+      'jupyter-server-proxy==1.5.0' \
     && \
     conda install --quiet --yes \
       'jupyterlab>=2.2.2' \
@@ -55,7 +56,6 @@ RUN pip install --quiet \
       'ipywidgets==7.5.1' \
       'ipympl==0.5.8' \
       'jupyter_contrib_nbextensions==0.5.1' \
-      'jupyterlab-dash==0.1.0a3' \
       'jupyterlab-git==0.20.0' \
       'xeus-python==0.8.4' \
       'nodejs==12.18.3' \
@@ -68,6 +68,10 @@ RUN pip install --quiet \
       'r-jsonlite==1.7.1' \
       'r-ggplot2==3.3.2' \
       'r-rstan==2.21.2' \
+    && \
+    conda install --quiet --yes \
+     -c plotly \
+     'jupyter-dash==0.3.0' \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
