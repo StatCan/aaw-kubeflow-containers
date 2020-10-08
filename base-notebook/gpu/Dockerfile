@@ -367,7 +367,7 @@ ENV PATH="/home/jovyan/.local/bin:${PATH}"
 RUN pip --no-cache-dir install --quiet \
       'kfp==1.0.0' \
       'kfp-server-api==1.0.0' \
-      'kfp-tekton==0.2.0' \
+      'kfp-tekton==0.17.0' \
       'kubeflow-fairing==1.0.1' \
       'kubeflow-metadata==0.3.1' \
       'kubeflow-pytorchjob==0.1.3' \
