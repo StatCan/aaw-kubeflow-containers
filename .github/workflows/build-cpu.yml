@@ -14,11 +14,7 @@ name: build cpu
 on:
   push:
     branches:
-<<<<<<< HEAD
       - Short-Haches  
-=======
-      - Short-Haches
->>>>>>> b011d66ea2b638763168b33df5ed8c77b04274af
       - master
 
 # Environment variables available to all jobs and steps in this workflow
