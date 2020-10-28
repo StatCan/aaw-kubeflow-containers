@@ -36,8 +36,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Add SHORT_SHA env property with commit short sha
-      run:  |
-         echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-4`" >> $GITHUB_ENV
+      run:  echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-4`" >> $GITHUB_ENV
          
 
     # Connect to Azure Container registry (ACR)
@@ -67,26 +66,30 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-<<<<<<< HEAD
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:$SHORT_SHA
+<<<<<<< HEAD
 =======
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:
 >>>>>>> Update build-cpu.yml
+=======
+>>>>>>> short
         severity-threshold: CRITICAL
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Minimal Notebook CPU
-<<<<<<< HEAD
         docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+<<<<<<< HEAD
 =======
         docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA  .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA 
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA  ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
 >>>>>>> Update build-cpu.yml
+=======
+>>>>>>> short
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
@@ -116,26 +119,30 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Machine Learning Notebook CPU
-<<<<<<< HEAD
         docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA.
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+<<<<<<< HEAD
 =======
         docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu$SHORT_SHA
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
 >>>>>>> Update build-cpu.yml
+=======
+>>>>>>> short
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-<<<<<<< HEAD
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA
+<<<<<<< HEAD
 =======
         image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu$SHORT_SHA
 >>>>>>> Update build-cpu.yml
+=======
+>>>>>>> short
         severity-threshold: CRITICAL
         run-quality-checks: false
 
