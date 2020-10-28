@@ -2,12 +2,10 @@ FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
 USER root
 
 # Install Tensorflow
-RUN conda config --set channel_priority false && \
-    conda install --quiet --yes \
-      'tensorflow==2.2.0' \
-      'keras==2.4.3' \
+RUN pip --no-cache-dir install --quiet \
+     'tensorflow==2.3.1' \
+     'keras==2.4.3' \
     && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
