@@ -15,10 +15,14 @@ on:
   push:
     branches:
 <<<<<<< HEAD
+<<<<<<< HEAD
       - Short-Haches
 =======
       - Short-Haches  
 >>>>>>> Change to short hashes
+=======
+      - Short-Haches  
+>>>>>>> change the hashes
       - master
 
 # Environment variables available to all jobs and steps in this workflow
