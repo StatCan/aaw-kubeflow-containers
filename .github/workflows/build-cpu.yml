@@ -58,7 +58,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -74,7 +74,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -90,7 +90,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -106,7 +106,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -122,6 +122,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
