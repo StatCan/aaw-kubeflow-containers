@@ -101,7 +101,7 @@ RUN pip install --quiet \
   fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
-RUN echo '{ "@jupyterlab/apputils-extension:themes": {"theme": "JupyterLab Solarized Dark"}, "@jupyterlab/notebook-extension:tracker": {"recordTiming": true}}' > /opt/conda/share/jupyter/lab/settings/overrides.json && \
+RUN echo '{ "@jupyterlab/apputils-extension:themes": {"theme": "JupyterLab Dark"}, "@jupyterlab/notebook-extension:tracker": {"recordTiming": true}}' > /opt/conda/share/jupyter/lab/settings/overrides.json && \
     fix-permissions /home/$NB_USER
 
 
