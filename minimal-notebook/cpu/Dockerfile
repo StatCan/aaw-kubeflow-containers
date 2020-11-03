@@ -66,8 +66,21 @@ RUN pip install --quiet \
     && \
     conda clean --all -f -y && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install . \
-    &&\ 
+    jupyter labextension install --no-build \
+      '@ijmbarr/jupyterlab_spellchecker@0.1.6' \
+      '@hadim/jupyter-archive@0.7.0' \
+      '@krassowski/jupyterlab-lsp@2.0.7' \
+      '@lckr/jupyterlab_variableinspector@0.5.1' \
+      '@jupyterlab/debugger' \
+      '@jupyterlab/github@2.0.0' \
+      '@jupyterlab/git@0.20.0' \
+      '@jupyterlab/toc@4.0.0' \
+      'jupyterlab-execute-time@1.0.0' \
+      'jupyterlab-plotly@4.10.0' \
+      'jupyterlab-theme-solarized-dark@1.0.2' \
+      'jupyterlab-spreadsheet@0.3.2' \
+      'nbdime-jupyterlab@2.0.0' \
+    && \
     jupyter lab build && \
     jupyter lab clean && \
   npm cache clean --force && \
