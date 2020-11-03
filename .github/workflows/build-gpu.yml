@@ -58,7 +58,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -74,7 +74,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -90,6 +90,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:$SHORT_SHA
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
         run-quality-checks: false

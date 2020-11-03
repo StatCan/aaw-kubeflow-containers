@@ -97,7 +97,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Machine Learning Notebook CPU
-        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA.
+        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
