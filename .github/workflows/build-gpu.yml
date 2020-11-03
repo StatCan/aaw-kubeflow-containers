@@ -31,6 +31,7 @@ jobs:
       run:  |
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-4`" >> $GITHUB_ENV
 =======
          echo "
@@ -39,6 +40,9 @@ jobs:
 =======
         echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-4`" >> $GITHUB_ENV
 >>>>>>> short
+=======
+        echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-6`" >> $GITHUB_ENV
+>>>>>>> test worflow with short hashes
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
