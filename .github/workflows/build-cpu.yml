@@ -14,13 +14,16 @@ name: build cpu
 on:
   push:
     branches:
-      - master
+      #- master
+      - combine-cpu-gpu-images
 
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: k8scc01covidacr
+  REGISTRY: k8scc01covidacr.azurecr.io
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
+  LATEST_IMAGE_TAG: master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -43,12 +46,19 @@ jobs:
         df -h
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Base Notebook CPU
-        docker build -f base-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} base-notebook/cpu
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
+    - name: Base Notebook CPU
+      id: base-notebook-cpu
+      working-directory: ./base-notebook/
+      env:
+        IMAGE_NAME: base-notebook-cpu
+      run: |
+        # Get upstream image from build_settings.env
+
+        source ../build_settings.env
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ UPSTREAM_CONTAINER_CPU }} .
+        docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" "${{ env.LATEST_IMAGE_TAG }}"
+        docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+        docker push "${{ env.LATEST_IMAGE_TAG }}"
         docker system prune -f -a
 
     # Scan image for vulnerabilities
