@@ -55,7 +55,7 @@ jobs:
         # Get upstream image from build_settings.env
 
         source ../build_settings.env
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ UPSTREAM_CONTAINER_CPU }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=$UPSTREAM_CONTAINER_CPU .
         docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" "${{ env.LATEST_IMAGE_TAG }}"
         docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
         docker push "${{ env.LATEST_IMAGE_TAG }}"

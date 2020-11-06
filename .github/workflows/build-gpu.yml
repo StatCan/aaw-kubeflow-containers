@@ -49,7 +49,7 @@ jobs:
     - name: Create Dockerfile for Upstream Equivalent Notebook GPU
       working-directory: upstream-equivalent-notebook-gpu
       run: |
-        ./create_dockerfile.sh
+        bash ./create_dockerfile.sh
     - name: Upstream Equivalent Notebook GPU (equivalent to docker-stacks datascience)
       id: upstream-equivalent-notebook-gpu
       working-directory: upstream-equivalent-notebook-gpu
