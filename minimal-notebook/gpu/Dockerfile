@@ -1,4 +1,5 @@
-FROM k8scc01covidacr.azurecr.io/base-notebook-gpu:master
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 
 # Dependencies
