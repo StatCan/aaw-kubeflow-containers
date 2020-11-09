@@ -15,6 +15,9 @@ on:
   push:
     branches:
       - master
+  pull_request:
+    branches: 
+      - master  # DEBUG
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -22,7 +25,6 @@ env:
   REGISTRY: k8scc01covidacr.azurecr.io
   CLUSTER_NAME: k8s-cancentral-01-covid-aks
   CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
-  LATEST_IMAGE_TAG: master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,6 +51,7 @@ jobs:
       working-directory: upstream-equivalent-notebook-gpu
       run: |
         bash ./create_dockerfile.sh
+        
     - name: Upstream Equivalent Notebook GPU (equivalent to docker-stacks datascience)
       id: upstream-equivalent-notebook-gpu
       working-directory: upstream-equivalent-notebook-gpu
@@ -56,9 +59,25 @@ jobs:
         IMAGE_NAME: upstream-equivalent-notebook-gpu
       run: |
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-        docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" "${{ env.LATEST_IMAGE_TAG }}"
-        docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-        docker push "${{ env.LATEST_IMAGE_TAG }}"
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF#refs/*/}
+        docker system prune -f -a
+   
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Container build and push to a Azure Container registry (ACR)
+    - run: |
+        # Base Notebook GPU
+        docker build -f base-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
