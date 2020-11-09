@@ -13,6 +13,7 @@
 name: build cpu
 on:
   push:
+<<<<<<< HEAD
     branches:
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -23,6 +24,9 @@ on:
 =======
       - Short-Haches  
 >>>>>>> change the hashes
+=======
+    branches:  
+>>>>>>> Update build-cpu.yml
       - master
 
 # Environment variables available to all jobs and steps in this workflow
