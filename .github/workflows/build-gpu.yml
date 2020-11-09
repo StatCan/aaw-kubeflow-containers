@@ -14,7 +14,6 @@ name: build gpu
 on:
   push:
     branches:
-      - Short-Haches
       - master
 
 # Environment variables available to all jobs and steps in this workflow
