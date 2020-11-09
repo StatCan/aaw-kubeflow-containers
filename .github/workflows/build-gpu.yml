@@ -14,8 +14,7 @@ name: build gpu
 on:
   push:
     branches:
-      #- master
-      - combine-cpu-gpu-images
+      - master
 
 # Environment variables available to all jobs and steps in this workflow
 env:
