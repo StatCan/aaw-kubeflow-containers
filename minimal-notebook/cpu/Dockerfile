@@ -1,4 +1,5 @@
-FROM k8scc01covidacr.azurecr.io/base-notebook-cpu:master
+ARG BRANCH_NAME=master
+FROM k8scc01covidacr.azurecr.io/base-notebook-cpu:${BRANCH_NAME}
 USER root
 
 # Dependencies
