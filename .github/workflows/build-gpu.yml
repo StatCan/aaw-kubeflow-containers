@@ -49,9 +49,10 @@ jobs:
     # tests if GITHUB_HEAD_REF is non-zero in length, then assigns the branch name to $BRANCH_NAME
     - name: Get branch name for image tag
       id: get_branch_name
-      run:
-        echo '::set-output name=branch_name::$BRANCH_NAME'
-       
+      run: |
+        echo ::set-output name=branch_name::${BRANCH_NAME}
+        echo ${BRANCH_NAME}
+
     # Container build and push to a Azure Container registry (ACR)
     - name: Create Dockerfile for Upstream Equivalent Notebook GPU
       working-directory: upstream-equivalent-notebook-gpu

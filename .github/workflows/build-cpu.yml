@@ -50,13 +50,9 @@ jobs:
     # tests if GITHUB_HEAD_REF is non-zero in length, then assigns the branch name to $BRANCH_NAME
     - name: Get branch name for image tag
       id: get_branch_name
-      if: ${{ github.event_name == 'pull_request' }}
-      run:
-        echo ::set-output name=branch_name::${github.head_ref}
-      if: ${{ github.event_name == 'push' }}
-      run:
-        echo ::set-output name=branch_name::${GITHUB_REF#refs/*/}
-          
+      run: |
+        echo ::set-output name=branch_name::${BRANCH_NAME}
+        echo ${BRANCH_NAME}
         
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
