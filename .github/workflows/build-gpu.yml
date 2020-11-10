@@ -46,6 +46,12 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
+    # tests if GITHUB_HEAD_REF is non-zero in length, then assigns the branch name to $BRANCH_NAME
+    - name: Get branch name for image tag
+      id: get_branch_name
+      run:
+        echo '::set-output name=branch_name::$BRANCH_NAME'
+       
     # Container build and push to a Azure Container registry (ACR)
     - name: Create Dockerfile for Upstream Equivalent Notebook GPU
       working-directory: upstream-equivalent-notebook-gpu
@@ -59,15 +65,15 @@ jobs:
         IMAGE_NAME: upstream-equivalent-notebook-gpu
       run: |
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF#refs/*/}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF#refs/*/}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
    
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
+        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -76,8 +82,8 @@ jobs:
         # Base Notebook GPU
         docker build -f base-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook/gpu
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -92,8 +98,8 @@ jobs:
         # Minimal Notebook GPU
         docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -108,8 +114,8 @@ jobs:
         # Machine Learning Notebook GPU
         docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${GITHUB_REF#refs/*/}
+        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
