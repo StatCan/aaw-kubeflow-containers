@@ -52,6 +52,7 @@ jobs:
       id: get_branch_name
       run:
         echo '::set-output name=branch_name::$BRANCH_NAME'
+        echo ${{ steps.get_branch_name.outputs.branch_name }}
         
     # Container build and push to a Azure Container registry (ACR)
     - name: Base Notebook CPU
