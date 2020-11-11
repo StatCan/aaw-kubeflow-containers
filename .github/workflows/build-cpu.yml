@@ -81,7 +81,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Minimal Notebook CPU
-        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
+        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} --build-arg BRANCH_NAME=${{ steps.get_branch_name.outputs.branch_name }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}

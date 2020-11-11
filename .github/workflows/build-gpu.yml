@@ -80,7 +80,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Base Notebook GPU
-        docker build -f base-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} base-notebook
+        docker build -f base-notebook/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
         docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}

@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER
+ARG BASE_CONTAINER=master
 FROM $BASE_CONTAINER
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
