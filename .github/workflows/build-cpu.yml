@@ -14,7 +14,7 @@ name: build cpu
 on:
   push:
     branches:
-      - test-workflow
+      - Test-workflow
       - master
 
 # Environment variables available to all jobs and steps in this workflow
