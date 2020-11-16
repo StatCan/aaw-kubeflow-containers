@@ -24,7 +24,7 @@ ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
 ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-ARG AZCLI_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
+ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
@@ -81,7 +81,7 @@ RUN pip install --quiet \
       '@hadim/jupyter-archive@0.7.0' \
       '@krassowski/jupyterlab-lsp@2.0.7' \
       '@lckr/jupyterlab_variableinspector@0.5.1' \
-      '@jupyterlab/debugger' \
+      '@jupyterlab/debugger@0.3.4' \
       '@jupyterlab/github@2.0.0' \
       '@jupyterlab/git@0.20.0' \
       '@jupyterlab/toc@4.0.0' \
