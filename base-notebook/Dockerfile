@@ -1,5 +1,5 @@
-# https://github.com/jupyter/docker-stacks/blob/master/datascience-notebook/Dockerfile
-FROM jupyter/datascience-notebook:150731d32f85
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
 
@@ -13,12 +13,16 @@ RUN pip --no-cache-dir install --quiet \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # kfp-azure-databricks needs to be run after kfp
 RUN pip --no-cache-dir install --quiet \
       'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
+      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
@@ -27,6 +31,7 @@ RUN apt-get update && \
     npm cache clean --force && \
     rm -rf /home/$NB_USER/.cache/yarn && \
     rm -rf /home/$NB_USER/.node-gyp && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # Configure container startup
