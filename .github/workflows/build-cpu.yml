@@ -89,7 +89,7 @@ jobs:
         IMAGE_NAME: minimal-notebook-cpu
       run: |
         # Minimal Notebook CPU
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
@@ -110,7 +110,7 @@ jobs:
         IMAGE_NAME: geomatics-notebook-cpu
       run: |
         # Geomatics Notebook CPU
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/minimal-notebook-cpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
@@ -131,7 +131,7 @@ jobs:
         IMAGE_NAME: machine-learning-notebook-cpu
       run: |
         # Machine Learning Notebook CPU
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/minimal-notebook-cpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
@@ -152,7 +152,7 @@ jobs:
         IMAGE_NAME: r-studio-cpu
       run: |
         # R-Studio CPU
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/minimal-notebook-cpu:${{ github.sha }} .
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}

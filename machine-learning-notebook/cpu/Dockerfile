@@ -1,4 +1,5 @@
-FROM k8scc01covidacr.azurecr.io/minimal-notebook-cpu:master
+ARG BASE_CONTAINER
+FROM $BASE_CONTAINER
 USER root
 
 # Install Tensorflow
