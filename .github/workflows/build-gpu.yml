@@ -1,4 +1,4 @@
-# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+# This workflow will build a docker container and publish it to Azure Container Registry
 #
 # https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
 #
@@ -9,7 +9,7 @@
 #     b. REGISTRY_PASSWORD with ACR Password
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
-# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
+# 2. Change the values for the REGISTRY_NAME/REGISTRY, CLUSTER_NAME, and CLUSTER_RESOURCE_GROUP
 name: build gpu
 on:
   push:
@@ -17,7 +17,7 @@ on:
       - master
   pull_request:
     branches: 
-      - master  # DEBUG
+      - master  
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -88,11 +88,10 @@ jobs:
       env:
         IMAGE_NAME: base-notebook-gpu
       run: |
-        # Base Notebook GPU
-        docker build -t ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -103,12 +102,16 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Minimal Notebook GPU
-        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+    - name: Minimal Notebook GPU
+      id: minimal-notebook-gpu
+      working-directory: ./minimal-notebook/
+      env:
+        IMAGE_NAME: minimal-notebook-gpu
+      run: |
+        docker build -f minimal-notebook/gpu/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -119,12 +122,16 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
-        # Machine Learning Notebook GPU
-        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ steps.get_branch_name.outputs.branch_name }}
+    - name: Machine Learning Notebook GPU
+      id: machine-learning-notebook-gpu
+      working-directory: ./machine-learning-notebook/
+      env:
+        IMAGE_NAME: machine-learning-notebook-gpu
+      run: |
+        docker build -f machine-learning-notebook/gpu/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities

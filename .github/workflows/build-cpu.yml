@@ -1,4 +1,4 @@
-# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+# This workflow will build a docker container and publish it to Azure Container Registry
 #
 # https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
 #
@@ -9,7 +9,7 @@
 #     b. REGISTRY_PASSWORD with ACR Password
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
-# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
+# 2. Change the values for the REGISTRY_NAME/REGISTRY, CLUSTER_NAME, and CLUSTER_RESOURCE_GROUP
 name: build cpu
 on:
   push:
@@ -17,7 +17,7 @@ on:
       - master
   pull_request:
     branches: 
-      - master  # DEBUG
+      - master 
       
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -82,12 +82,17 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
+    - name: Minimal Notebook CPU
+      id: minimal-notebook-cpu
+      working-directory: ./minimal-notebook/
+      env:
+        IMAGE_NAME: minimal-notebook-cpu
+      run: |
         # Minimal Notebook CPU
-        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -98,12 +103,17 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
+    - name: Geomatics Notebook CPU
+      id: geomatics-notebook-cpu
+      working-directory: ./geomatics-notebook/
+      env:
+        IMAGE_NAME: geomatics-notebook-cpu
+      run: |
         # Geomatics Notebook CPU
-        docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -114,12 +124,17 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
+    - name: Machine Learning Notebook CPU
+      id: machine-learning-notebook-cpu
+      working-directory: ./machine-learning-notebook/
+      env:
+        IMAGE_NAME: machine-learning-notebook-cpu
+      run: |
         # Machine Learning Notebook CPU
-        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
@@ -130,12 +145,17 @@ jobs:
         run-quality-checks: false
 
     # Container build and push to a Azure Container registry (ACR)
-    - run: |
+    - name: R-Studio CPU
+      id: r-studio-cpu
+      working-directory: ./r-studio/
+      env:
+        IMAGE_NAME: r-studio-cpu
+      run: |
         # R-Studio CPU
-        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} r-studio
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }}
-        docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ github.sha }} ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${{ steps.get_branch_name.outputs.branch_name }}
+        docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
         docker system prune -f -a
 
     # Scan image for vulnerabilities
