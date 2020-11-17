@@ -28,6 +28,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      TRIVY_TIMEOUT: 20m0s  # Some images take longer than default 2m to scan
     steps:
     - uses: actions/checkout@master
 
