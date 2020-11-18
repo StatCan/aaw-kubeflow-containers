@@ -106,7 +106,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Minimal Notebook GPU
       id: minimal-notebook-gpu
-      working-directory: ./minimal-notebook/gpu
+      working-directory: ./minimal-notebook/
       env:
         IMAGE_NAME: minimal-notebook-gpu
       run: |
@@ -126,7 +126,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook GPU
       id: machine-learning-notebook-gpu
-      working-directory: ./machine-learning-notebook/gpu
+      working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-gpu
       run: |

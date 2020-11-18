@@ -86,7 +86,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Minimal Notebook CPU
       id: minimal-notebook-cpu
-      working-directory: ./minimal-notebook/cpu
+      working-directory: ./minimal-notebook/
       env:
         IMAGE_NAME: minimal-notebook-cpu
       run: |
@@ -107,7 +107,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Geomatics Notebook CPU
       id: geomatics-notebook-cpu
-      working-directory: ./geomatics-notebook/cpu
+      working-directory: ./geomatics-notebook/
       env:
         IMAGE_NAME: geomatics-notebook-cpu
       run: |
@@ -128,7 +128,7 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Machine Learning Notebook CPU
       id: machine-learning-notebook-cpu
-      working-directory: ./machine-learning-notebook/cpu
+      working-directory: ./machine-learning-notebook/
       env:
         IMAGE_NAME: machine-learning-notebook-cpu
       run: |
