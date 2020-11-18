@@ -6,7 +6,7 @@ USER root
 
 # Install Tensorflow, check compatibility here: https://www.tensorflow.org/install/gpu
 # installation via conda leads to errors in version 4.8.2
-RUN pip install --no-cache-dir "tensorflow==2.1.*" && \
+RUN pip install --no-cache-dir "tensorflow==2.3.1" && \
     pip install --no-cache-dir "keras==2.4.3" && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
