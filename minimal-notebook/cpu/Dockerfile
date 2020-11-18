@@ -72,7 +72,7 @@ RUN pip install --quiet \
       '@hadim/jupyter-archive@0.7.0' \
       '@krassowski/jupyterlab-lsp@2.0.7' \
       '@lckr/jupyterlab_variableinspector@0.5.1' \
-      '@jupyterlab/debugger@0.3.2' \
+      '@jupyterlab/debugger@0.3.4' \
       '@jupyterlab/github@2.0.0' \
       '@jupyterlab/git@0.20.0' \
       '@jupyterlab/toc@4.0.0' \
