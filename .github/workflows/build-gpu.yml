@@ -71,16 +71,16 @@ jobs:
       env:
         IMAGE_NAME: upstream-equivalent-notebook-gpu
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker system prune -f -a
-   
+        ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --push
+
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -91,16 +91,17 @@ jobs:
       env:
         IMAGE_NAME: base-notebook-gpu
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY_NAME }}.azurecr.io/upstream-equivalent-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker system prune -f -a
+        ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
+                                            --push
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.base-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -111,16 +112,17 @@ jobs:
       env:
         IMAGE_NAME: minimal-notebook-gpu
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/base-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker system prune -f -a
+        ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --base_container ${{ steps.base-notebook-gpu.outputs.tag_pinned }} \
+                                            --push
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -131,15 +133,16 @@ jobs:
       env:
         IMAGE_NAME: machine-learning-notebook-gpu
       run: |
-        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} --build-arg BASE_CONTAINER=${{ env.REGISTRY }}/minimal-notebook-gpu:${{ github.sha }} .
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }}
-        docker system prune -f -a
+        ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
+                                            --image_name ${{ env.IMAGE_NAME }} \
+                                            --tag_pinned ${{ github.sha }} \
+                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --base_container ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }} \
+                                            --push
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-gpu:${{ github.sha }}
+        image-name: ${{ steps.machine-learning-notebook-gpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
