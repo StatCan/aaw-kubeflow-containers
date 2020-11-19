@@ -18,6 +18,7 @@ on:
   pull_request:
     branches: 
       - master  
+      - combine-all-cpu-gpu-dockerfiles #DEBUG
 
 # Environment variables available to all jobs and steps in this workflow
 env:
