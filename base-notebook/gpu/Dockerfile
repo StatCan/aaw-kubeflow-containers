@@ -1,6 +1,6 @@
 # Use NVIDIA CUDA as base image and run the same installation as in the other packages.
 # The version of cudatoolkit must match those of the base image, see Dockerfile.pytorch
-FROM nvidia/cuda:10.1-base-ubuntu18.04
+FROM nvidia/cuda:10.1-cudnn7-runtime-ubuntu18.04
 LABEL maintainer="Statistics Canada"
 # The maintainers of subsequent sections may vary
 
