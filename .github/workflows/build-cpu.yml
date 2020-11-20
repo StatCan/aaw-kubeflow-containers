@@ -81,7 +81,7 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
+        image-name: ${{ steps.base-notebook-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
@@ -140,6 +140,7 @@ jobs:
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
+
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -164,6 +165,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ steps.r-studio-notebook-cpu.outputs.tag_pinned }}
+        image-name: ${{ steps.r-studio-cpu.outputs.tag_pinned }}
         severity-threshold: CRITICAL
         run-quality-checks: false
