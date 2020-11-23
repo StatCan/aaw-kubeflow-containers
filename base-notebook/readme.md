@@ -11,3 +11,7 @@ This provides a common notebook setup for both CPU and GPU paths, ensuring they'
 - kubeflow pipelines and kubeflow-metadata
 - pandas, numpy, scipy, matplotlib, and scikit-learn
 - common tools such as git, nano, vi, and emacs
+
+## CI
+
+For CI, see `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml`. They leverage the `.github/workflows/build_push.sh` wrapper for tagging and pushing all at once.

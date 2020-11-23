@@ -42,13 +42,10 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Free disk space
+    - name: Free disk space (cache + all docker images)
       run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
+        scripts/free_space.sh
         docker rmi $(docker image ls -aq)
-        df -h
     
     # Get the branch name - allows running CI on other branches than master for debugging
     - name: Get branch name for image tag
@@ -77,7 +74,11 @@ jobs:
                                             --base_container $UPSTREAM_CONTAINER_CPU \
                                             --push
         )
-
+    
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+        
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -99,6 +100,10 @@ jobs:
                                             --base_container ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+    
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -120,6 +125,10 @@ jobs:
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+    
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -141,6 +150,10 @@ jobs:
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+    
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
@@ -162,6 +175,10 @@ jobs:
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
+    - name: Free disk space (cache)
+      run: |
+        scripts/free_space.sh
+    
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
