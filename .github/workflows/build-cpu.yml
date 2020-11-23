@@ -71,6 +71,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container $UPSTREAM_CONTAINER_CPU \
                                             --push
         )
@@ -97,6 +98,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
@@ -122,6 +124,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
@@ -147,6 +150,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 
@@ -172,6 +176,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
                                             --push
 

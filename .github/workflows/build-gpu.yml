@@ -96,6 +96,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
@@ -121,6 +122,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.base-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
@@ -146,6 +148,7 @@ jobs:
                                             --image_name ${{ env.IMAGE_NAME }} \
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                            --cache_from ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }} \
                                             --push \
                                             --prune_this
