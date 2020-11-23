@@ -14,6 +14,18 @@ These container images are based on the community driven [jupyter/docker-stacks]
 
 As summary of each step is given in their respective `readme.md` files. The notebooks intended for deployment to users are the `minimal-notebook-*`, `machine-learning-notebook-*`, `geomatics`, and `r-studio`.  
 
+## Testing and Local Builds
+
+For building locally, `build_cpu_local.sh` and `build_gpu_local.sh` provide recipes to build each stream.  Some settings for base image selection are provided in `build_settings.env`.  Each image subdir also has build scripts for its respective build.
+
+To test locally, build the image you need then run it with port forwarding like:
+
+```
+docker run 8888:SOME_LOCAL_PORT IMAGENAME
+```
+
+where you add a local port and imagename.  Then open a browser and go to `localhost:SOME_LOCAL_PORT`.
+
 ## Deployment and CI
 
 Github Actions CI is set up to build and deploy the images on merge to master.  Settings defining the base images used for CI (from `docker-stacks` and from `gpu-jupyter`) are defined in `build_settings.env`.  
@@ -44,6 +56,7 @@ would add a single layer of about 1GB, whereas
 
 ```
 RUN add_1GB_file_with_wrong_permissions_to_NB_USER.sh
+
 RUN fix-permissions /home/$NB_USER
 ```
 
