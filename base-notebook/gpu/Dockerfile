@@ -364,11 +364,13 @@ LABEL maintainer="Statistics Canada"
 USER root
 ENV PATH="/home/jovyan/.local/bin:${PATH}"
 
+# Install ml-metadata explicitly so kubeflow-metadata does not install tensorflow
 RUN pip --no-cache-dir install --quiet \
       'kfp==1.0.0' \
       'kfp-server-api==1.0.0' \
       'kfp-tekton==0.3.0' \
       'kubeflow-fairing==1.0.1' \
+      'ml-metadata==0.24.0' \
       'kubeflow-metadata==0.3.1' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
