@@ -74,8 +74,6 @@ jobs:
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
                                             --push
 
-        docker system prune -f -a
-
     - name: Free disk space (cache)
       run: |
         scripts/free_space.sh
@@ -100,8 +98,6 @@ jobs:
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.upstream-equivalent-notebook-gpu.outputs.tag_pinned }} \
                                             --push
-
-        docker system prune -f -a
 
     - name: Free disk space (cache)
       run: |
@@ -128,8 +124,6 @@ jobs:
                                             --base_container ${{ steps.base-notebook-gpu.outputs.tag_pinned }} \
                                             --push
 
-        docker system prune -f -a
-
     - name: Free disk space (cache)
       run: |
         scripts/free_space.sh
@@ -153,9 +147,8 @@ jobs:
                                             --tag_pinned ${{ github.sha }} \
                                             --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
                                             --base_container ${{ steps.minimal-notebook-gpu.outputs.tag_pinned }} \
-                                            --push
-
-        docker system prune -f -a
+                                            --push \
+                                            --prune_this
 
     - name: Free disk space (cache)
       run: |
