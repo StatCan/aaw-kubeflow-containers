@@ -4,4 +4,4 @@ This is a Dockerfile which adds Tensorflow and Pytorch. Typical usage for this D
 
 ## CI
 
-For CI, see `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml`. They leverage the `.github/workflows/build_push.sh` wrapper for tagging and pushing all at once.
+For CI, see `.github/workflows/build-cpu.yml` and `.github/workflows/build-gpu.yml`. They leverage the `.github/workflows/build_push.sh` wrapper for tagging, pushing and caching all at once.

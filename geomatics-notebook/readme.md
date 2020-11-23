@@ -4,4 +4,4 @@ This is a Dockerfile which adds geomatics-related R packages.  Typical usage for
 
 ## CI
 
-For CI, see `.github/workflows/build-cpu.yml`.  It leverages the `.github/workflows/build_push.sh` wrapper for tagging and pushing all at once. 
+For CI, see `.github/workflows/build-cpu.yml`.  It leverages the `.github/workflows/build_push.sh` wrapper for tagging, pushing and caching all at once.
