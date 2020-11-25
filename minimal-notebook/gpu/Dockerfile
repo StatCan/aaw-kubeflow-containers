@@ -24,7 +24,6 @@ ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
 ARG MC_SHA=7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-ARG AZCLI_SHA=c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
 
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
@@ -38,7 +37,6 @@ RUN curl -LO "${KUBECTL_URL}" \
     && mv mc /usr/local/bin/mc \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
-    && echo "${AZCLI_SHA} InstallAzureCLIDeb" | sha256sum -c - \
     && bash InstallAzureCLIDeb 
 
 # Default environment
