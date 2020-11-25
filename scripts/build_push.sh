@@ -3,7 +3,8 @@
 set -e
 
 USAGE_MESSAGE="
-This script handles building, tagging, and (optionally) pushing an image to a docker repo.  It builds the image requested, adds two tags (one intended for version pinning such as a git sha, and one intended for something like 'latest').  It optionally can: 
+This script handles building, tagging, and (optionally) pushing an image to a docker repo. It builds the image requested, adds two tags (one intended for version pinning such as a git sha, and one intended for something like 'latest') 
+and emits the github action 'tag_pinned' when when run as a step in a github action.  It optionally can: 
 * pass a build-arg 'BASE_CONTAINER' to the 'docker build' command, indicating the container to build from
 * prune either all docker images/containers or the images built since starting this script (typically just the images built here, but not guaranteed if other processes run in parallel)
 Usage: $0 --registry REGISTRY --image_name IMAGE_NAME --tag_pinned GITHUB_SHA --tag_latest TAG_LATEST [--base_container BASE_CONTAINER] [--push] [--prune]

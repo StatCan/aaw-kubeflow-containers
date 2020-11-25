@@ -18,7 +18,6 @@ on:
   pull_request:
     branches: 
       - master 
-      - combine-all-cpu-gpu-dockerfiles #DEBUG
       
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -68,11 +67,11 @@ jobs:
 
         (source ../build_settings.env && \
          ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
-                                            --image_name ${{ env.IMAGE_NAME }} \
-                                            --tag_pinned ${{ github.sha }} \
-                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
-                                            --base_container $UPSTREAM_CONTAINER_CPU \
-                                            --push
+                                  --image_name ${{ env.IMAGE_NAME }} \
+                                  --tag_pinned ${{ github.sha }} \
+                                  --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                  --base_container $UPSTREAM_CONTAINER_CPU \
+                                  --push
         )
     
     - name: Free disk space (cache)
@@ -94,11 +93,11 @@ jobs:
         IMAGE_NAME: minimal-notebook-cpu
       run: |
         ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
-                                            --image_name ${{ env.IMAGE_NAME }} \
-                                            --tag_pinned ${{ github.sha }} \
-                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
-                                            --base_container ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
-                                            --push
+                                 --image_name ${{ env.IMAGE_NAME }} \
+                                 --tag_pinned ${{ github.sha }} \
+                                 --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                 --base_container ${{ steps.base-notebook-cpu.outputs.tag_pinned }} \
+                                 --push
 
     - name: Free disk space (cache)
       run: |
@@ -119,11 +118,11 @@ jobs:
         IMAGE_NAME: geomatics-notebook-cpu
       run: |
         ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
-                                            --image_name ${{ env.IMAGE_NAME }} \
-                                            --tag_pinned ${{ github.sha }} \
-                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
-                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
-                                            --push
+                                 --image_name ${{ env.IMAGE_NAME }} \
+                                 --tag_pinned ${{ github.sha }} \
+                                 --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                 --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
+                                 --push
 
     - name: Free disk space (cache)
       run: |
@@ -144,11 +143,11 @@ jobs:
         IMAGE_NAME: machine-learning-notebook-cpu
       run: |
         ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
-                                            --image_name ${{ env.IMAGE_NAME }} \
-                                            --tag_pinned ${{ github.sha }} \
-                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
-                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
-                                            --push
+                                 --image_name ${{ env.IMAGE_NAME }} \
+                                 --tag_pinned ${{ github.sha }} \
+                                 --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                 --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
+                                 --push
 
     - name: Free disk space (cache)
       run: |
@@ -169,11 +168,11 @@ jobs:
         IMAGE_NAME: r-studio-cpu
       run: |
         ../scripts/build_push.sh --registry ${{ env.REGISTRY }} \
-                                            --image_name ${{ env.IMAGE_NAME }} \
-                                            --tag_pinned ${{ github.sha }} \
-                                            --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
-                                            --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
-                                            --push
+                                 --image_name ${{ env.IMAGE_NAME }} \
+                                 --tag_pinned ${{ github.sha }} \
+                                 --tag_latest ${{ steps.get_branch_name.outputs.branch_name }} \
+                                 --base_container ${{ steps.minimal-notebook-cpu.outputs.tag_pinned }} \
+                                 --push
 
     - name: Free disk space (cache)
       run: |
