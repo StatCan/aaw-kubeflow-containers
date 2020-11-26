@@ -15,7 +15,7 @@ on:
   push:
     branches:
       - '*'
-      - '!master'
+      - '!feat-refactor'
 
 jobs:
   build:
