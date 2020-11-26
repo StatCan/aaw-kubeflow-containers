@@ -20,6 +20,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         notebook:
           - RStudio
@@ -50,5 +51,12 @@ jobs:
         make all
         COMMIT=$(make get-commit)
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT
+        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image
         cd -
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: kubeflow-image
+        severity-threshold: CRITICAL
+        run-quality-checks: false

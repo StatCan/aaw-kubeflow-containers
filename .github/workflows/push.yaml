@@ -26,6 +26,7 @@ env:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         notebook:
           - RStudio
@@ -64,40 +65,41 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
-    # Container build and push to a Azure Container registry (ACR)
+    # Container build
     - name: Build image
       run: |
         sudo apt-get install --yes make
         make all
         COMMIT=$(make get-commit)
-        IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
-        REGISTRY=${{ env.REGISTRY }}
         cd output/${{ matrix.notebook }}
         echo
         echo "Do the build"
-        docker build . --build-arg BASE_VERSION=$COMMIT -t $REGISTRY/$IMAGE_NAME:${{ github.sha }}
-        echo
-        echo "Push the long-ref"
-        docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
-        echo
-        echo "Push the short-ref"
-        docker tag $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
-        docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
-        echo
-        echo "Set an alias to latest"
-        docker tag $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:latest
-        docker push $REGISTRY/$IMAGE_NAME:latest
-        echo
-        echo
-        echo
-        echo "Pushed $REGISTRY/$IMAGE_NAME:${{ github.sha }}"
-        echo "       $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}"
-        echo "       $REGISTRY/$IMAGE_NAME:${{ github.sha }} $REGISTRY/$IMAGE_NAME:latest"
+        docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
         cd -
 
-    # # Scan image for vulnerabilities
-    # - uses: Azure/container-scan@v0
-    #   with:
-    #     image-name: ${{ env.REGISTRY }}/base-notebook-cpu:${{ github.sha }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: kuebeflow-image
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Container push to a Azure Container registry (ACR)
+    - name: Push image
+      run: |
+        COMMIT=$(make get-commit)
+        IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
+        REGISTRY=${{ env.REGISTRY }}
+        echo
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:latest"
+        echo
+        docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
+        docker push $REGISTRY/$IMAGE_NAME:latest"
+        echo
+        echo "Pushed $REGISTRY/$IMAGE_NAME:${{ github.sha }}"
+        echo "       $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}"
+        echo "       $REGISTRY/$IMAGE_NAME:latest"
+        cd -
