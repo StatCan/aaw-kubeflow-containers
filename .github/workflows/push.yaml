@@ -14,7 +14,7 @@ name: push
 on:
   push:
     branches:
-      - feat-refactor
+      - master
 
 # Environment variables available to all jobs and steps in this workflow
 env:
