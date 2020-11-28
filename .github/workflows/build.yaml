@@ -51,17 +51,19 @@ jobs:
         echo REF=${GITHUB_REF#refs/*/} >> $GITHUB_ENV
         echo BASE_VERSION=$(make get-commit) >> $GITHUB_ENV
 
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        registry: docker.pkg.github.com
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Build and push
       id: docker_build
       uses: docker/build-push-action@v2
       with:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-        registry: docker.pkg.github.com
-        repository: statcan/kubeflow-containers/$IMAGE_NAME
         context: output/${{ matrix.notebook }}/
         file: output/${{ matrix.notebook }}/Dockerfile
-        platforms: linux/amd64,linux/arm64,linux/386
         push: true
         tags: ${{ github.sha }}
         build-args: |
