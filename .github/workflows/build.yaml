@@ -56,7 +56,7 @@ jobs:
         echo
         cd output/${{ matrix.notebook }}
         docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
-        docker tag kubeflow-image ${{ env.REGISTRY }}/$IMAGE_NAME:${{ github.sha }}
+        docker tag kubeflow-image ${{ env.REGISTRY }}/kubeflow-image:${{ github.sha }}
         cd -
 
     # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
@@ -67,6 +67,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY }}/$IMAGE_NAME:${{ github.sha }}
+        image-name: ${{ env.REGISTRY }}/kubeflow-image:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
