@@ -46,6 +46,8 @@ jobs:
     - name: Build image
       run: |
         sudo apt-get install --yes make
+        pwd
+        find .
         COMMIT=$(make get-commit)
         IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
         REGISTRY=${{ env.REGISTRY }}
