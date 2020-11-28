@@ -36,6 +36,11 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
     - name: Free disk space
@@ -56,17 +61,12 @@ jobs:
         echo
         cd output/${{ matrix.notebook }}
         docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
-        docker tag kubeflow-image ${{ env.REGISTRY }}/kubeflow-image:${{ github.sha }}
+        docker tag kubeflow-image localhost:5000/kubeflow-image:${{ github.sha }}
         cd -
-
-    # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
-    - name: Set Env Vars
-      run: |
-        echo IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: ${{ env.REGISTRY }}/kubeflow-image:${{ github.sha }}
+        image-name: localhost:5000/kubeflow-image:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
