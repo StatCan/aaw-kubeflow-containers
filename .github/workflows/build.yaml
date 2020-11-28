@@ -37,40 +37,40 @@ jobs:
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
+    ##    - uses: actions/checkout@master
+    ##    - name: Free disk space
+    ##      run: |
+    ##        sudo swapoff -a
+    ##        sudo rm -f /swapfile
+    ##        sudo apt clean
+    ##        docker rmi $(docker image ls -aq)
+    ##        df -h
 
-    # I hate this
-    # https://github.com/docker/build-push-action/issues/37#issuecomment-720358308
-    - name: Lowercase Env Vars
-      run: |
-        echo IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-        echo REGISTRY=${{ env.REGISTRY }} >> $GITHUB_ENV
-        echo REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
+    ##    # I hate this
+    ##    # https://github.com/docker/build-push-action/issues/37#issuecomment-720358308
+    ##    - name: Lowercase Env Vars
+    ##      run: |
+    ##        echo IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+    ##        echo REGISTRY=${{ env.REGISTRY }} >> $GITHUB_ENV
+    ##        echo REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
-    # Container build and push to a Azure Container registry (ACR)
-    - name: Build image
-      run: |
-        sudo apt-get install --yes make
-        COMMIT=$(make get-commit)
-        echo
-        cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
-        docker tag kubeflow-image docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
-        cd -
+    ##    # Container build and push to a Azure Container registry (ACR)
+    ##    - name: Build image
+    ##      run: |
+    ##        sudo apt-get install --yes make
+    ##        COMMIT=$(make get-commit)
+    ##        echo
+    ##        cd output/${{ matrix.notebook }}
+    ##        docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
+    ##        docker tag kubeflow-image docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+    ##        cd -
 
     - name: Docker login
       run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
 
-    - name: Publish to GPR
-      run: |
-        docker push docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+    #     - name: Publish to GPR
+    #       run: |
+    #         docker push docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -82,7 +82,8 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+        image-ref: docker.pkg.github.com/statcan/kubeflow-containers/rstudio:4225b33606adea4f12c56ee21112c990b68d46aa
+        # image-ref: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
         format: 'table'
         exit-code: '1'
         ignore-unfixed: true
