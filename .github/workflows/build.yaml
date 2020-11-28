@@ -33,6 +33,11 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
     - name: Free disk space
@@ -43,35 +48,21 @@ jobs:
         docker rmi $(docker image ls -aq)
         df -h
 
-    - name: Environment Vars
+    # Container build and push to a Azure Container registry (ACR)
+    - name: Build image
       run: |
         sudo apt-get install --yes make
         make all
-        echo IMAGE_NAME= >> $GITHUB_ENV
-        echo REF=${GITHUB_REF#refs/*/} >> $GITHUB_ENV
-        echo BASE_VERSION=$(make get-commit) >> $GITHUB_ENV
-
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        registry: docker.pkg.github.com
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: output/${{ matrix.notebook }}/
-        file: output/${{ matrix.notebook }}/Dockerfile
-        push: true
-        tags: ${{ github.sha }}
-        build-args: |
-          BASE_VERSION=$BASE_VERSION
+        COMMIT=$(make get-commit)
+        IMAGE_NAME=$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')
+        cd output/${{ matrix.notebook }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/$IMAGE_NAME:${{ github.sha }}
+        docker push localhost:5000/$IMAGE_NAME:${{ github.sha }}
+        cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: statcan/kubeflow-containers/$IMAGE_NAME:${{ github.sha }}
+        image-name: localhost:5000/$IMAGE_NAME:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
