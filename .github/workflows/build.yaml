@@ -33,9 +33,13 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
-
     - name: Free disk space
       run: |
         sudo swapoff -a
@@ -51,12 +55,13 @@ jobs:
         make all
         COMMIT=$(make get-commit)
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
+        docker push localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
         cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: kubeflow-image
+        image-name: localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
