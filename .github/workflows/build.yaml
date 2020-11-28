@@ -65,6 +65,8 @@ jobs:
     ##        docker tag kubeflow-image docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
     ##        cd -
 
+    # - name: Docker login
+    #   run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
 
     #     - name: Publish to GPR
     #       run: |
@@ -78,7 +80,6 @@ jobs:
     #     run-quality-checks: false
 
   scan:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -92,10 +93,10 @@ jobs:
           - JupyterLab-Spark
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
-    #needs: build
+    # needs: build
     steps:
-    #- name: Docker login
-    #  run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
+    - name: Docker login
+      run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
