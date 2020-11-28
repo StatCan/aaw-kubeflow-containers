@@ -36,11 +36,6 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
     steps:
     - uses: actions/checkout@master
     #- name: Free disk space
@@ -61,13 +56,23 @@ jobs:
         echo
         cd output/${{ matrix.notebook }}
         docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
-        docker tag kubeflow-image localhost:5000/kubeflow-image:${{ github.sha }}
-        docker push localhost:5000/kubeflow-image:${{ github.sha }}
+        docker tag kubeflow-image docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:${{ github.sha }}
         cd -
+
+    - name: Build and tag image
+      run: docker build -t "docker.pkg.github.com/$GITHUB_REPOSITORY/firmware-builder:latest" -f docker/Dockerfile docker/
+
+    - name: Docker login
+      run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
+
+    - name: Publish to GPR
+      run: |
+        IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
+        docker push docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:${{ github.sha }}
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: localhost:5000/kubeflow-image:${{ github.sha }}
+        image-name: docker.pkg.github.com/$GITHUB_REPOSITORY/$IMAGE_NAME:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
