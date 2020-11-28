@@ -33,35 +33,44 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
-    services:
-      registry:
-        image: registry:2
-        ports:
-          - 5000:5000
     steps:
     - uses: actions/checkout@master
-#    - name: Free disk space
-#      run: |
-#        sudo swapoff -a
-#        sudo rm -f /swapfile
-#        sudo apt clean
-#        docker rmi $(docker image ls -aq)
-#        df -h
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
-    # Container build and push to a Azure Container registry (ACR)
-    - name: Build image
+    - name: Environment Vars
       run: |
         sudo apt-get install --yes make
         make all
-        COMMIT=$(make get-commit)
-        cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
-        docker push localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
-        cd -
+        echo IMAGE_NAME= >> $GITHUB_ENV
+        echo REF=${GITHUB_REF#refs/*/} >> $GITHUB_ENV
+        echo BASE_VERSION=$(make get-commit) >> $GITHUB_ENV
+        docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
+
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        registry: docker.pkg.github.com
+        repository: statcan/kubeflow-containers/$IMAGE_NAME
+        context: output/${{ matrix.notebook }}/
+        file: output/${{ matrix.notebook }}/Dockerfile
+        platforms: linux/amd64,linux/arm64,linux/386
+        push: true
+        tags: ${{ github.sha }}
+        build-args: |
+          BASE_VERSION=$BASE_VERSION
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: localhost:5000/${{ matrix.notebook.lowercase }}:${{ github.sha }}
+        image-name: statcan/kubeflow-containers/$IMAGE_NAME:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
