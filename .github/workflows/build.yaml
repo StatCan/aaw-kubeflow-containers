@@ -62,6 +62,7 @@ jobs:
         cd output/${{ matrix.notebook }}
         docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
         docker tag kubeflow-image localhost:5000/kubeflow-image:${{ github.sha }}
+        docker push localhost:5000/kubeflow-image:${{ github.sha }}
         cd -
 
     # Scan image for vulnerabilities
