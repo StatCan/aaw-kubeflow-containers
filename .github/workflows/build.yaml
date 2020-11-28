@@ -72,17 +72,18 @@ jobs:
       run: |
         docker push docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
 
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
+    # # Scan image for vulnerabilities
+    # - uses: Azure/container-scan@v0
+    #   with:
+    #     image-name: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
       with:
-        image-name: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+        image-ref: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+        format: 'table'
+        exit-code: '1'
+        ignore-unfixed: true
+        severity: 'CRITICAL'
