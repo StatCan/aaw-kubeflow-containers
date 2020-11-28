@@ -38,13 +38,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    #- name: Free disk space
-    #  run: |
-    #    sudo swapoff -a
-    #    sudo rm -f /swapfile
-    #    sudo apt clean
-    #    docker rmi $(docker image ls -aq)
-    #    df -h
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     # I hate this
     # https://github.com/docker/build-push-action/issues/37#issuecomment-720358308
@@ -71,6 +71,14 @@ jobs:
     - name: Publish to GPR
       run: |
         docker push docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+
+    - name: Free disk space
+      run: |
+        sudo swapoff -a
+        sudo rm -f /swapfile
+        sudo apt clean
+        docker rmi $(docker image ls -aq)
+        df -h
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
