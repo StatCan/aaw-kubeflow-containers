@@ -51,12 +51,13 @@ jobs:
         make all
         COMMIT=$(make get-commit)
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image
+        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image:${{ github.sha }}
         cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
+      continue-on-error: true
       with:
-        image-name: kubeflow-image
+        image-name: kubeflow-image:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
