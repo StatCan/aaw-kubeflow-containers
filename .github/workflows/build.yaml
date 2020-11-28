@@ -98,12 +98,19 @@ jobs:
     steps:
     - name: Docker login
       run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
+    #- name: Run Trivy vulnerability scanner
+    #  uses: aquasecurity/trivy-action@master
+    #  with:
+    #    image-ref: docker.pkg.github.com/statcan/kubeflow-containers/rstudio:4225b33606adea4f12c56ee21112c990b68d46aa
+    #    # image-ref: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+    #    format: 'table'
+    #    exit-code: '1'
+    #    ignore-unfixed: true
+    #    severity: 'CRITICAL'
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
       with:
-        image-ref: docker.pkg.github.com/statcan/kubeflow-containers/rstudio:4225b33606adea4f12c56ee21112c990b68d46aa
-        # image-ref: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
-        format: 'table'
-        exit-code: '1'
-        ignore-unfixed: true
-        severity: 'CRITICAL'
+        image-name: docker.pkg.github.com/statcan/kubeflow-containers/rstudio:4225b33606adea4f12c56ee21112c990b68d46aa
+        severity-threshold: CRITICAL
+        run-quality-checks: false
