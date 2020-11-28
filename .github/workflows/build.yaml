@@ -110,6 +110,6 @@ jobs:
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+        image-name: docker.pkg.github.com/${{ env.REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
