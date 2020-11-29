@@ -38,6 +38,11 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
 
@@ -48,42 +53,40 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
-
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
       run: |
         sudo apt-get install --yes make
         make all
         COMMIT=$(make get-commit)
+        echo
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image:${{ github.sha }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:${{ github.sha }}
+        docker push localhost:5000/kubeflow-image:${{ github.sha }}
+        docker rmi localhost:5000/kubeflow-image:${{ github.sha }}
+        docker image prune
         cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
-      continue-on-error: true
       with:
-        image-name: kubeflow-image:${{ github.sha }}
+        image-name: localhost:5000/kubeflow-image:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
 
     # Container push to a Azure Container registry (ACR)
     - name: Push image
       run: |
-        COMMIT=$(make get-commit)
+        echo Repull the image
+        docker pull localhost:5000/kubeflow-image:${{ github.sha }}
+        docker tag localhost:5000/kubeflow-image:${{ github.sha }} kubeflow-image
+        echo
         IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
         REGISTRY=${{ env.REGISTRY }}
         echo
-        docker tag kubeflow-image:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${{ github.sha }}
-        docker tag kubeflow-image:${{ github.sha }} $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
-        docker tag kubeflow-image:${{ github.sha }} $REGISTRY/$IMAGE_NAME:latest
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:${{ github.sha }}
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:latest
         echo
         docker push $REGISTRY/$IMAGE_NAME:${{ github.sha }}
         docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}

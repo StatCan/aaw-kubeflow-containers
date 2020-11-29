@@ -33,16 +33,13 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@master
-
-    - name: Free disk space
-      run: |
-        sudo swapoff -a
-        sudo rm -f /swapfile
-        sudo apt clean
-        docker rmi $(docker image ls -aq)
-        df -h
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
@@ -50,14 +47,17 @@ jobs:
         sudo apt-get install --yes make
         make all
         COMMIT=$(make get-commit)
+        echo
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT  -t kubeflow-image:${{ github.sha }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:${{ github.sha }}
+        docker push localhost:5000/kubeflow-image:${{ github.sha }}
+        docker rmi localhost:5000/kubeflow-image:${{ github.sha }}
+        docker image prune
         cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
-      continue-on-error: true
       with:
-        image-name: kubeflow-image:${{ github.sha }}
+        image-name: localhost:5000/kubeflow-image:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
