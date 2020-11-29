@@ -64,10 +64,14 @@ jobs:
         docker build . --build-arg BASE_VERSION=$COMMIT -t ghcr.io/$REPO/$IMAGE_NAME:${{ github.sha }}
         cd -
 
-    - name: Docker login
-      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ github.token }}
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
 
-    - name: Publish to GPR
+    - name: Publish to ghcr.io
       run: |
         docker push ghcr.io/$REPO/$IMAGE_NAME:${{ github.sha }}
 
@@ -103,8 +107,12 @@ jobs:
         echo REGISTRY=${{ env.REGISTRY }} >> $GITHUB_ENV
         echo REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
-    - name: Docker login
-      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ github.token }}
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
