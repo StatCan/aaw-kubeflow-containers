@@ -54,6 +54,13 @@ jobs:
         echo REGISTRY=${{ env.REGISTRY }} >> $GITHUB_ENV
         echo REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.CR_PAT }}
+
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
       run: |
@@ -63,13 +70,6 @@ jobs:
         cd output/${{ matrix.notebook }}
         docker build . --build-arg BASE_VERSION=$COMMIT -t ghcr.io/$REPO/$IMAGE_NAME:${{ github.sha }}
         cd -
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.CR_PAT }}
 
     - name: Publish to ghcr.io
       run: |
@@ -111,7 +111,7 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: ghcr.io
-        username: ${{ github.actor }}
+        username: ${{ github.repository_owner }}
         password: ${{ secrets.CR_PAT }}
 
     # Scan image for vulnerabilities
