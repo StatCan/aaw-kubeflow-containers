@@ -61,16 +61,15 @@ jobs:
         COMMIT=$(make get-commit)
         echo
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT -t kubeflow-image
-        docker tag kubeflow-image docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t ghcr.io/$REPO/$IMAGE_NAME:${{ github.sha }}
         cd -
 
     - name: Docker login
-      run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
+      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ github.token }}
 
     - name: Publish to GPR
       run: |
-        docker push docker.pkg.github.com/$REPO/$IMAGE_NAME:${{ github.sha }}
+        docker push ghcr.io/$REPO/$IMAGE_NAME:${{ github.sha }}
 
     # # Scan image for vulnerabilities
     # - uses: Azure/container-scan@v0
@@ -105,11 +104,11 @@ jobs:
         echo REPO=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
 
     - name: Docker login
-      run: docker login docker.pkg.github.com -u ${{ github.actor }} -p ${{ github.token }}
+      run: docker login ghcr.io -u ${{ github.actor }} -p ${{ github.token }}
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: docker.pkg.github.com/${{ env.REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        image-name: ghcr.io/${{ env.REPO }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
         severity-threshold: CRITICAL
         run-quality-checks: false
