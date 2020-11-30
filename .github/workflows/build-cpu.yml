@@ -18,6 +18,7 @@ on:
     branches:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       - Short-Haches
 =======
       - Short-Haches  
@@ -31,6 +32,9 @@ on:
 =======
     branches:
 >>>>>>> Formatting
+=======
+      - Short-Haches
+>>>>>>> use condition
       - master
 
 # Environment variables available to all jobs and steps in this workflow
