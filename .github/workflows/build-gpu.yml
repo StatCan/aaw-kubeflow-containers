@@ -47,8 +47,12 @@ jobs:
       - uses: actions/checkout@master
       - name: Add SHORT_SHA env property with commit short sha
         run: |
+<<<<<<< HEAD
           echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-6`" >> $GITHUB_ENV
 >>>>>>> Formatting
+=======
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+>>>>>>> Use 8 digit
 
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
