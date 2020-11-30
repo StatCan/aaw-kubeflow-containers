@@ -50,7 +50,6 @@ generate-CUDA:
 generate-Spark:
 	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
 
-
 #############################
 ###   Bases GPU & Spark   ###
 #############################
@@ -67,7 +66,6 @@ PyTorch Tensorflow: .output
 
 Spark CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
-
 
 #########################################
 ###    R-Studio, Jupyter & VS-Code    ###

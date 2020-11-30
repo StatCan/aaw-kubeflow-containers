@@ -31,8 +31,6 @@ RUN apt-get update --yes \
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/base/Dockerfile
 
-
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
@@ -74,8 +72,6 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.1 brand=tesla,driver>=418,driver<419 brand=tes
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/runtime/Dockerfile
 
-
-
 ENV NCCL_VERSION 2.7.8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -92,7 +88,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
 
-
 ENV CUDNN_VERSION 8.0.4.30
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
@@ -101,7 +96,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcudnn8=$CUDNN_VERSION-1+cuda11.1 \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
-
 
 ###############################
 ###  docker-bits/2_Tensorflow.Dockerfile
@@ -175,7 +169,7 @@ ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
 ARG MC_SHA=59e184bd4e2c3a8a19837b0f0da3977bd4e301495a24e4a5d50e291728a1de51
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-#ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
+# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -228,17 +222,9 @@ RUN \
 
 USER ${NB_USER}
 
-#RUN npm install -g --production code-server && \
-#    npm cache clean --force && \
-#    rm -rf $HOME/.npm/* $HOME/.node-gyp/* && \
-#    pip install --quiet \
-#      'jupyter-vscode-proxy==0.1' \
-#      'jupyter-server-proxy==1.5.0'
-
 ARG CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1119-vsc1.33.1/code-server1.1119-vsc1.33.1-linux-x64.tar.gz"
 ARG CODESERVER="code-server1.1119-vsc1.33.1-linux-x64"
 ARG CODESERVER_SHA=dcd024301226eb493db2d06454b5d57a3499fbbc17fd816a68a2333ee3482685
-
 
 ARG VSCODE_VERSION=3.6.2
 ARG VSCODE_SHA=71edb5776a7f965bf720c9814ab2e762fbaa0ddad4d9f4f85848c3912df1b67c

@@ -9,11 +9,3 @@ RUN conda config --set channel_priority false && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-#     'typing' \
-#     'cmake' \
-#     'cffi' \
-#     'mkl' \
-#     'mkl-include' \
-#     'pyyaml' \
-#     'setuptools' \

@@ -7,8 +7,6 @@
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/base/Dockerfile
 
-
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
@@ -50,8 +48,6 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.0 brand=tesla,driver>=418,driver<419 brand=tes
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/Dockerfile
 
-
-
 ENV NCCL_VERSION 2.7.8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -67,7 +63,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ### CudNN
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
-
 
 ENV CUDNN_VERSION 8.0.4.30
 
