@@ -1,0 +1,8 @@
+{
+    "@jupyterlab/apputils-extension:themes" : {
+        "theme": "JupyterLab Dark"
+    },
+    "@jupyterlab/notebook-extension:tracker" : {
+        "recordTiming": true
+    }
+}
