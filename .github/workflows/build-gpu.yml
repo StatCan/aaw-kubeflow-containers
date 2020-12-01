@@ -27,6 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 <<<<<<< HEAD
+<<<<<<< HEAD
     - uses: actions/checkout@master
     - name: Add SHORT_SHA env property with commit short sha
       run:  |
@@ -54,6 +55,12 @@ jobs:
 =======
           echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 >>>>>>> Use 8 digit
+=======
+      - uses: actions/checkout@master
+      - name: Add SHORT_SHA env property with commit short sha
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+>>>>>>> 9d8a0a94640387b47a5c41b32e85a60e23e37ddb
 
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
@@ -71,6 +78,7 @@ jobs:
           df -h
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     # Container build and push to a Azure Container registry (ACR)
     - run: |
         # Base Notebook GPU
@@ -86,6 +94,8 @@ jobs:
         docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
         docker system prune -f -a
 =======
+=======
+>>>>>>> 9d8a0a94640387b47a5c41b32e85a60e23e37ddb
       # Container build and push to a Azure Container registry (ACR)
       - run: |
           # Base Notebook GPU
@@ -94,7 +104,10 @@ jobs:
           docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
           docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-gpu:${GITHUB_REF#refs/*/}
           docker system prune -f -a
+<<<<<<< HEAD
 >>>>>>> Formatting
+=======
+>>>>>>> 9d8a0a94640387b47a5c41b32e85a60e23e37ddb
 
       # Scan image for vulnerabilities
       - uses: Azure/container-scan@v0

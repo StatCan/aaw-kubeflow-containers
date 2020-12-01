@@ -19,6 +19,7 @@ on:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       - Short-Haches
 =======
       - Short-Haches  
@@ -35,6 +36,9 @@ on:
 =======
       - Short-Haches
 >>>>>>> use condition
+=======
+      - Short-Haches
+>>>>>>> 9d8a0a94640387b47a5c41b32e85a60e23e37ddb
       - master
 
 # Environment variables available to all jobs and steps in this workflow
@@ -74,6 +78,7 @@ jobs:
           docker push ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${GITHUB_REF#refs/*/}
           docker system prune -f -a
 
+<<<<<<< HEAD
 <<<<<<< HEAD
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
@@ -210,6 +215,72 @@ jobs:
           docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
           docker system prune -f -a
 
+=======
+      # Scan image for vulnerabilities
+      - uses: Azure/container-scan@v0
+        with:
+          image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/base-notebook-cpu:${{ env.SHORT_SHA }}
+          severity-threshold: CRITICAL
+          run-quality-checks: false
+
+      # Container build and push to a Azure Container registry (ACR)
+      - run: |
+          # Minimal Notebook CPU
+          docker build -f minimal-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA .
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA
+          docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker system prune -f -a
+
+      # Scan image for vulnerabilities
+      - uses: Azure/container-scan@v0
+        with:
+          image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/minimal-notebook-cpu:${{ env.SHORT_SHA }}
+          severity-threshold: CRITICAL
+          run-quality-checks: false
+
+      # Container build and push to a Azure Container registry (ACR)
+      - run: |
+          # Geomatics Notebook CPU
+          docker build -f geomatics-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:$SHORT_SHA .
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:$SHORT_SHA
+          docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker system prune -f -a
+
+      # Scan image for vulnerabilities
+      - uses: Azure/container-scan@v0
+        with:
+          image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/geomatics-notebook-cpu:${{ env.SHORT_SHA }}
+          severity-threshold: CRITICAL
+          run-quality-checks: false
+
+      # Container build and push to a Azure Container registry (ACR)
+      - run: |
+          # Machine Learning Notebook CPU
+          docker build -f machine-learning-notebook/cpu/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA .
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA
+          docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${GITHUB_REF#refs/*/}
+          docker system prune -f -a
+
+      # Scan image for vulnerabilities
+      - uses: Azure/container-scan@v0
+        with:
+          image-name: ${{ env.REGISTRY_NAME }}.azurecr.io/machine-learning-notebook-cpu:${{ env.SHORT_SHA }}
+          severity-threshold: CRITICAL
+          run-quality-checks: false
+
+      # Container build and push to a Azure Container registry (ACR)
+      - run: |
+          # R-Studio CPU
+          docker build -f r-studio/Dockerfile -t ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:$SHORT_SHA r-studio
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:$SHORT_SHA
+          docker tag ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:$SHORT_SHA ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
+          docker push ${{ env.REGISTRY_NAME }}.azurecr.io/r-studio-cpu:${GITHUB_REF#refs/*/}
+          docker system prune -f -a
+
+>>>>>>> 9d8a0a94640387b47a5c41b32e85a60e23e37ddb
       # Scan image for vulnerabilities
       - uses: Azure/container-scan@v0
         with:
