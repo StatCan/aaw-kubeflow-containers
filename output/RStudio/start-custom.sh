@@ -21,6 +21,15 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     touch /home/$NB_USER/.zsh-installed
 fi
 
+# Configure the language
+if [ -n "${KF_LANG}" ]; then
+    if [ "${KF_LANG}"="en" ]; then
+        LANG="en_US.utf8"
+    else
+        LANG="fr_CA.utf8"
+    fi
+fi
+
 jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
