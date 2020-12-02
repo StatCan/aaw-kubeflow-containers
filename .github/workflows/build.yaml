@@ -25,11 +25,9 @@ jobs:
         notebook:
           - RStudio
           - VSCode-CPU
-          - VSCode-Spark
           - VSCode-PyTorch
           - VSCode-Tensorflow
           - JupyterLab-CPU
-          - JupyterLab-Spark
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest

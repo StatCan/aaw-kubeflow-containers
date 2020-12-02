@@ -64,7 +64,7 @@ PyTorch Tensorflow: .output
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
-Spark CPU: .output
+CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
 
 #########################################
@@ -85,7 +85,7 @@ RStudio: CPU
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-JupyterLab VSCode: PyTorch Tensorflow CPU Spark
+JupyterLab VSCode: PyTorch Tensorflow CPU
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
