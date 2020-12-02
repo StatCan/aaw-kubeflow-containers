@@ -206,17 +206,6 @@ RUN apt-get update && \
     pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
     rm -rf /var/lib/apt/lists/*
 
-# Add PGWeb too
-ENV PGWEB_VERSION 0.11.7
-ARG PGWEB_SHA256=87afd2aa1a087d0e61fa9624178cdf5ea663dec545ae0b6d3c0351f9deacd681
-RUN \
-  cd /tmp && \
-  wget -q https://github.com/sosedoff/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
-  echo "$PGWEB_SHA256  pgweb_linux_amd64.zip" | sha256sum -c - && \
-  unzip pgweb_linux_amd64.zip -d /usr/bin && \
-  mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
-  rm -f pgweb_linux_amd64.zip
-
 ###############################
 ###  docker-bits/6_VSCode.Dockerfile
 ###############################
@@ -249,10 +238,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 USER $NB_USER
 RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
-    && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
-    && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
     && conda install --yes nb_conda_kernels \
-    && ( julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' || true; ) \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \
     && fix-permissions "${CONDA_DIR}/share/jupyter" \

@@ -26,10 +26,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 USER $NB_USER
 RUN pip install jupyter-server-proxy \
     && pip install git+https://github.com/blairdrummond/vscode-binder \
-    && pip install git+https://github.com/illumidesk/jupyter-pluto-proxy \
-    && pip install git+https://github.com/illumidesk/jupyter-pgweb-proxy.git \
     && conda install --yes nb_conda_kernels \
-    && ( julia -e 'import Pkg; Pkg.update(); Pkg.add("Pluto")' || true; ) \
     && chmod -R go+rx "${CONDA_DIR}/share/jupyter" \
     && rm -rf "${HOME}/.local" \
     && fix-permissions "${CONDA_DIR}/share/jupyter" \
