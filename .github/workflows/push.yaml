@@ -32,9 +32,6 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
           - RStudio
-          - VSCode-CPU
-          - VSCode-PyTorch
-          - VSCode-Tensorflow
     runs-on: ubuntu-latest
     services:
       registry:

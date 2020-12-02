@@ -24,9 +24,6 @@ jobs:
       matrix:
         notebook:
           - RStudio
-          - VSCode-CPU
-          - VSCode-PyTorch
-          - VSCode-Tensorflow
           - JupyterLab-CPU
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow

@@ -25,7 +25,7 @@ clean:
 .output:
 	mkdir -p $(OUT)/ $(TMP)/
 
-all: JupyterLab RStudio VSCode
+all: JupyterLab RStudio
 	@echo "All dockerfiles created."
 
 build:
@@ -56,7 +56,6 @@ generate-Spark:
 
 # Configure the "Bases".
 #
-# NOTE: At the time of writing, CPU is an alias for Spark.
 PyTorch Tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_CPU.Dockerfile \
@@ -67,9 +66,9 @@ PyTorch Tensorflow: .output
 CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
 
-#########################################
-###    R-Studio, Jupyter & VS-Code    ###
-#########################################
+################################
+###    R-Studio & Jupyter    ###
+################################
 
 # Only one output version
 RStudio: CPU
@@ -85,7 +84,7 @@ RStudio: CPU
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-JupyterLab VSCode: PyTorch Tensorflow CPU
+JupyterLab: PyTorch Tensorflow CPU
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
