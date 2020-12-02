@@ -29,14 +29,9 @@ jobs:
       matrix:
         notebook:
           - JupyterLab-CPU
-          - JupyterLab-Spark
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
           - RStudio
-          - VSCode-CPU
-          - VSCode-Spark
-          - VSCode-PyTorch
-          - VSCode-Tensorflow
     runs-on: ubuntu-latest
     services:
       registry:

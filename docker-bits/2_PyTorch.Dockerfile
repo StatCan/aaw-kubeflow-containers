@@ -6,6 +6,9 @@ RUN conda config --set channel_priority false && \
       'torchvision' \
       'ipykernel' \
     && \
+    conda install -n torch -c pytorch --quiet --yes \
+      'torchtext' \
+    && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
