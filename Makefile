@@ -72,7 +72,7 @@ Spark CPU: .output
 #########################################
 
 # Only one output version
-RStudio: Spark
+RStudio: CPU
 	mkdir -p $(OUT)/$@
 	cp -r resources/* $(OUT)/$@
 

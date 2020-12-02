@@ -1,15 +1,15 @@
 
 ###############################
-###  .tmp/Spark.Dockerfile
+###  .tmp/CPU.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_Spark.Dockerfile
+###  docker-bits/0_CPU.Dockerfile
 ###############################
 
 ARG BASE_VERSION=42f4c82a07ff
-FROM jupyter/all-spark-notebook:$BASE_VERSION
+FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
