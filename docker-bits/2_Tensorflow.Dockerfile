@@ -1,10 +1,9 @@
 # Install Tensorflow
-RUN conda config --set channel_priority false && \
-    conda create -n tensorflow && \
+RUN conda create -n tensorflow && \
     conda install -n tensorflow --quiet --yes \
       'tensorflow-gpu' \
       'keras' \
-      'ipykernel' \
+      'ipykernel==5.3.4' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

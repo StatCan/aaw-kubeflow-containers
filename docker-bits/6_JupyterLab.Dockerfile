@@ -24,40 +24,40 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp' \
-      'jupyter-server-proxy' \
+      'jupyter-lsp==0.9.3' \
+      'jupyter-server-proxy==1.5.0' \
       'git+https://github.com/blairdrummond/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipympl' \
-      'jupyter_contrib_nbextensions' \
-      'nb_conda_kernels' \
-      'jupyterlab-git' \
-      'nodejs' \
-      'python-language-server' \
+      'ipympl==0.5.8' \
+      'jupyter_contrib_nbextensions==0.5.1' \
+      'nb_conda_kernels==2.3.1' \
+      'jupyterlab-git==0.23.2' \
+      'nodejs==14.14.0' \
+      'python-language-server==0.36.2' \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash' \
+      'jupyter-dash==0.3.0' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker' \
-      '@hadim/jupyter-archive' \
-      '@krassowski/jupyterlab-lsp' \
-      '@lckr/jupyterlab_variableinspector' \
-      '@jupyterlab/github' \
-      '@jupyterlab/git' \
-      '@jupyterlab/server-proxy' \
-      '@jupyterlab/toc' \
-      'jupyterlab-execute-time' \
-      'jupyterlab-plotly' \
-      'jupyterlab-theme-solarized-dark' \
-      'jupyterlab-spreadsheet' \
-      'nbdime-jupyterlab' \
+      '@ijmbarr/jupyterlab_spellchecker@0.2.0' \
+      '@hadim/jupyter-archive@0.7.0' \
+      '@krassowski/jupyterlab-lsp@2.1.0' \
+      '@lckr/jupyterlab_variableinspector@0.5.1' \
+      '@jupyterlab/github@2.0.0' \
+      '@jupyterlab/git@0.23.2' \
+      '@jupyterlab/server-proxy@2.1.1' \
+      '@jupyterlab/toc@4.0.0' \
+      'jupyterlab-execute-time@1.0.0' \
+      'jupyterlab-plotly@4.14.1' \
+      'jupyterlab-theme-solarized-dark@1.0.3' \
+      'jupyterlab-spreadsheet@0.3.2' \
+      'nbdime-jupyterlab@2.0.1' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
