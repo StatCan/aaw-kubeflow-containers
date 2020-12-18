@@ -24,12 +24,7 @@ jobs:
       matrix:
         notebook:
           - RStudio
-          - VSCode-CPU
-          - VSCode-Spark
-          - VSCode-PyTorch
-          - VSCode-Tensorflow
           - JupyterLab-CPU
-          - JupyterLab-Spark
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
     runs-on: ubuntu-latest
@@ -41,10 +36,18 @@ jobs:
     steps:
     - uses: actions/checkout@master
 
+    - name: Test output folder
+      run: |
+        sudo apt-get install --yes make
+        make all
+        if ! git diff --quiet output/; then
+            echo 'output folder and docker-bits/resources out of sync!'
+            exit 1
+        fi
+
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
       run: |
-        sudo apt-get install --yes make
         make all
         COMMIT=$(make get-commit)
         echo

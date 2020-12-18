@@ -29,14 +29,9 @@ jobs:
       matrix:
         notebook:
           - JupyterLab-CPU
-          - JupyterLab-Spark
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
           - RStudio
-          - VSCode-CPU
-          - VSCode-Spark
-          - VSCode-PyTorch
-          - VSCode-Tensorflow
     runs-on: ubuntu-latest
     services:
       registry:
@@ -45,6 +40,15 @@ jobs:
           - 5000:5000
     steps:
     - uses: actions/checkout@master
+
+    - name: Test output folder
+      run: |
+        sudo apt-get install --yes make
+        make all
+        if ! git diff --quiet output/; then
+            echo 'output folder and docker-bits/resources out of sync!'
+            exit 1
+        fi
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
@@ -56,7 +60,6 @@ jobs:
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
       run: |
-        sudo apt-get install --yes make
         make all
         COMMIT=$(make get-commit)
         echo

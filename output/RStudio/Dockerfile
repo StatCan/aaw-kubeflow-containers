@@ -1,15 +1,15 @@
 
 ###############################
-###  .tmp/Spark.Dockerfile
+###  .tmp/CPU.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_Spark.Dockerfile
+###  docker-bits/0_CPU.Dockerfile
 ###############################
 
 ARG BASE_VERSION=42f4c82a07ff
-FROM jupyter/all-spark-notebook:$BASE_VERSION
+FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -98,7 +98,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
 
 # Have to use the zsh-installer in the entrypoint!
-COPY helpers.zsh /tmp/helpers.zsh
+COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -110,17 +110,6 @@ RUN apt-get update && \
     pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
     rm -rf /var/lib/apt/lists/*
 
-# Add PGWeb too
-ENV PGWEB_VERSION 0.11.7
-ARG PGWEB_SHA256=87afd2aa1a087d0e61fa9624178cdf5ea663dec545ae0b6d3c0351f9deacd681
-RUN \
-  cd /tmp && \
-  wget -q https://github.com/sosedoff/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
-  echo "$PGWEB_SHA256  pgweb_linux_amd64.zip" | sha256sum -c - && \
-  unzip pgweb_linux_amd64.zip -d /usr/bin && \
-  mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
-  rm -f pgweb_linux_amd64.zip
-
 ###############################
 ###  docker-bits/6_RStudio.Dockerfile
 ###############################
@@ -129,7 +118,7 @@ RUN \
 ARG RSTUDIO_VERSION=1.1.463
 ARG SHA256=62aafd46f79705ca5db9c629ce3b60bf708d81c06a6b86cc4b417fbaf30691c1
 RUN apt-get update && \
-    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.4_amd64.deb -O libssl1.0.0.deb && \
+    wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.5_amd64.deb -O libssl1.0.0.deb && \
     dpkg -i libssl1.0.0.deb && \
     curl --silent -L --fail "https://download2.rstudio.org/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
@@ -140,18 +129,18 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy' \
-      'jupyter-shiny-proxy' && \
+      'jupyter-rsession-proxy==1.2' \
+      'jupyter-shiny-proxy==1.1' && \
     conda install --quiet --yes \
-      'r-rodbc' \
-      'r-tidymodels' \
-      'r-arrow' \
-      'r-aws.s3' \
-      'r-catools' \
-      'r-hdf5r' \
-      'r-odbc' \
-      'r-sf' \
-      'r-e1071' \
+      'r-rodbc==1.3_16' \
+      'r-tidymodels==0.1.2' \
+      'r-arrow==2.0.0' \
+      'r-aws.s3==0.3.21' \
+      'r-catools==1.18.0' \
+      'r-hdf5r==1.3.3' \
+      'r-odbc==1.3.0' \
+      'r-sf==0.9_6' \
+      'r-e1071==1.7_4' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

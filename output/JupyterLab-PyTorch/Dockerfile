@@ -103,12 +103,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###############################
 
 # Install PyTorch
-RUN conda config --set channel_priority false && \
-    conda create -n torch python=3.7 && \
+RUN conda create -n torch python=3.7 && \
     conda install -n torch --quiet --yes \
       'pytorch-gpu' \
       'torchvision' \
-      'ipykernel' \
+      'ipykernel==5.3.4' \
+    && \
+    conda install -n torch -c pytorch --quiet --yes \
+      'torchtext' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -194,7 +196,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
 
 # Have to use the zsh-installer in the entrypoint!
-COPY helpers.zsh /tmp/helpers.zsh
+COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -206,55 +208,70 @@ RUN apt-get update && \
     pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
     rm -rf /var/lib/apt/lists/*
 
-# Add PGWeb too
-ENV PGWEB_VERSION 0.11.7
-ARG PGWEB_SHA256=87afd2aa1a087d0e61fa9624178cdf5ea663dec545ae0b6d3c0351f9deacd681
-RUN \
-  cd /tmp && \
-  wget -q https://github.com/sosedoff/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
-  echo "$PGWEB_SHA256  pgweb_linux_amd64.zip" | sha256sum -c - && \
-  unzip pgweb_linux_amd64.zip -d /usr/bin && \
-  mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
-  rm -f pgweb_linux_amd64.zip
-
 ###############################
 ###  docker-bits/6_JupyterLab.Dockerfile
 ###############################
 
+# Install vscode
+ARG CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1119-vsc1.33.1/code-server1.1119-vsc1.33.1-linux-x64.tar.gz"
+ARG CODESERVER="code-server1.1119-vsc1.33.1-linux-x64"
+ARG CODESERVER_SHA=dcd024301226eb493db2d06454b5d57a3499fbbc17fd816a68a2333ee3482685
+
+ARG VSCODE_VERSION=3.6.2
+ARG VSCODE_SHA=71edb5776a7f965bf720c9814ab2e762fbaa0ddad4d9f4f85848c3912df1b67c
+ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+
+USER root
+RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
+    && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+    && apt-get update \
+    && apt-get install -y nginx \
+    && apt-get install -y ./vscode.deb \
+    && rm ./vscode.deb \
+    && rm -f /etc/apt/sources.list.d/vscode.list \
+    && echo "Install codeserver" \
+    && wget -q ${CODESERVER_URL} \
+    && echo "${CODESERVER_SHA}  ${CODESERVER}.tar.gz" | sha256sum -c - \
+    && tar xvf ${CODESERVER}.tar.gz \
+    && mv ${CODESERVER}/code-server /usr/local/bin/ \
+    && rm -rf code-server*
+
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp' \
-      'jupyter-server-proxy' \
+      'jupyter-lsp==0.9.3' \
+      'jupyter-server-proxy==1.5.0' \
+      'git+https://github.com/blairdrummond/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipympl' \
-      'jupyter_contrib_nbextensions' \
-      'jupyterlab-git' \
-      'xeus-python' \
-      'nodejs' \
-      'python-language-server' \
+      'ipympl==0.5.8' \
+      'jupyter_contrib_nbextensions==0.5.1' \
+      'nb_conda_kernels==2.3.1' \
+      'jupyterlab-git==0.23.2' \
+      'nodejs==14.14.0' \
+      'python-language-server==0.36.2' \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash' \
+      'jupyter-dash==0.3.0' \
     && \
     conda clean --all -f -y && \
+    jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker' \
-      '@hadim/jupyter-archive' \
-      '@krassowski/jupyterlab-lsp' \
-      '@lckr/jupyterlab_variableinspector' \
-      '@jupyterlab/debugger' \
-      '@jupyterlab/github' \
-      '@jupyterlab/git' \
-      '@jupyterlab/toc' \
-      'jupyterlab-execute-time' \
-      'jupyterlab-plotly' \
-      'jupyterlab-theme-solarized-dark' \
-      'jupyterlab-spreadsheet' \
-      'nbdime-jupyterlab' \
+      '@ijmbarr/jupyterlab_spellchecker@0.2.0' \
+      '@hadim/jupyter-archive@0.7.0' \
+      '@krassowski/jupyterlab-lsp@2.1.0' \
+      '@lckr/jupyterlab_variableinspector@0.5.1' \
+      '@jupyterlab/github@2.0.0' \
+      '@jupyterlab/git@0.23.2' \
+      '@jupyterlab/server-proxy@2.1.1' \
+      '@jupyterlab/toc@4.0.0' \
+      'jupyterlab-execute-time@1.0.0' \
+      'jupyterlab-plotly@4.14.1' \
+      'jupyterlab-theme-solarized-dark@1.0.3' \
+      'jupyterlab-spreadsheet@0.3.2' \
+      'nbdime-jupyterlab@2.0.1' \
     && \
     jupyter lab build && \
     jupyter lab clean && \

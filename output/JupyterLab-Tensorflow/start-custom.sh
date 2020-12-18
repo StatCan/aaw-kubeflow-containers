@@ -17,7 +17,8 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
       conda init zsh
     fi
 
-    cat /tmp/helpers.zsh >> /home/$NB_USER/.zshrc
+    cat /tmp/helpers.sh >> /home/$NB_USER/.bashrc
+    cat /tmp/helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
 fi
 
@@ -34,7 +35,6 @@ jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
-                 --NotebookApp.terminado_settings='{"shell_command":["zsh"]}' \
                  --NotebookApp.token='' \
                  --NotebookApp.password='' \
                  --NotebookApp.allow_origin='*' \

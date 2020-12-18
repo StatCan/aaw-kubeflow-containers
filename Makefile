@@ -25,7 +25,7 @@ clean:
 .output:
 	mkdir -p $(OUT)/ $(TMP)/
 
-all: JupyterLab RStudio VSCode
+all: JupyterLab RStudio
 	@echo "All dockerfiles created."
 
 build:
@@ -45,7 +45,7 @@ get-commit:
 
 generate-CUDA:
 	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
-	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh    $(PyTorch-CUDA) > $(SRC)/1_CUDA-$(PyTorch-CUDA).Dockerfile
 
 generate-Spark:
 	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
@@ -56,7 +56,6 @@ generate-Spark:
 
 # Configure the "Bases".
 #
-# NOTE: At the time of writing, CPU is an alias for Spark.
 PyTorch Tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_CPU.Dockerfile \
@@ -64,15 +63,15 @@ PyTorch Tensorflow: .output
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
-Spark CPU: .output
+CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
 
-#########################################
-###    R-Studio, Jupyter & VS-Code    ###
-#########################################
+################################
+###    R-Studio & Jupyter    ###
+################################
 
 # Only one output version
-RStudio: Spark
+RStudio: CPU
 	mkdir -p $(OUT)/$@
 	cp -r resources/* $(OUT)/$@
 
@@ -85,7 +84,7 @@ RStudio: Spark
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-JupyterLab VSCode: PyTorch Tensorflow CPU Spark
+JupyterLab: PyTorch Tensorflow CPU
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
