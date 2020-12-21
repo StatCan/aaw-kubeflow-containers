@@ -52,3 +52,19 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
     ├── VSCode-PyTorch/
     └── VSCode-Tensorflow/
 ```
+## Deployment Testing Instructions
+
+The output folder contains Dockerfiles for each Notebook made from a combination of different [docker-bits](/docker-bits). They are created on `make all`.
+
+Make your changes to the correct docker-bit and not output/{notebook folder}/Dockerfile otherwise it will just get overwritten. Then, do the following:
+
+```bash
+# from kubeflow-containers directory
+make all
+cd output/{notebook folder}
+docker build . -t tagName:version
+docker run -p 8888:8888 tagName:version
+```
+Now open in http://localhost:8888/.
+
+**Note**: If your RStudio image was build successfully but is not opening coorectly on localhost (error 5000 page), change your CPU allocation in your VM settings to >= 3. 
