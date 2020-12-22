@@ -67,4 +67,4 @@ docker run -p 8888:8888 tagName:version
 ```
 Now open in http://localhost:8888/.
 
-**Note**: If your RStudio image was build successfully but is not opening coorectly on localhost (error 5000 page), change your CPU allocation in your VM settings to >= 3. 
+**Note**: If your RStudio image was build successfully but is not opening correctly on localhost (error 5000 page), change your CPU allocation in your Linux VM settings to >= 3. You can also use your VM's system monitor to examine usage and see if this adjustment is needed. Tested on Linux Ubuntu 20.04 running in a virtualbox VM.
