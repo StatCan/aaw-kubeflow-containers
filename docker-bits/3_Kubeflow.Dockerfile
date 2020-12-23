@@ -1,5 +1,5 @@
 RUN pip --no-cache-dir install --quiet \
-      'git+https://github.com/statcan/kubeflow-pipelines@6b0fe0018ab083553fdb3aa92c387b97ef7bac0d#egg=kfp&subdirectory=sdk/python/kfp' \
+      'git+https://github.com/statcan/kubeflow-pipelines@6b0fe0018ab083553fdb3aa92c387b97ef7bac0d#subdirectory=sdk/python/' \
       'kfp-server-api==1.2.0' \
       'kfp-tekton==0.5.0' \
       'kubeflow-fairing==1.0.2' \
