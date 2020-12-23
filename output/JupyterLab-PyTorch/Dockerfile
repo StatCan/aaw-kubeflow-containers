@@ -105,12 +105,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PyTorch
 RUN conda create -n torch python=3.7 && \
     conda install -n torch --quiet --yes \
-      'pytorch-gpu' \
-      'torchvision' \
+      'pytorch-gpu=1.3.1' \
+      'torchvision=0.4.2' \
       'ipykernel==5.3.4' \
     && \
     conda install -n torch -c pytorch --quiet --yes \
-      'torchtext' \
+      'torchtext=0.6.0' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -121,7 +121,7 @@ RUN conda create -n torch python=3.7 && \
 ###############################
 
 RUN pip --no-cache-dir install --quiet \
-      'kfp==1.2.0' \
+      'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.2.0' \
       'kfp-tekton==0.5.0' \
       'kubeflow-fairing==1.0.2' \
