@@ -117,7 +117,7 @@ RUN conda create -n tensorflow && \
 ###############################
 
 RUN pip --no-cache-dir install --quiet \
-      'kfp==1.2.0' \
+      'git+https://github.com/statcan/kubeflow-pipelines@6b0fe0018ab083553fdb3aa92c387b97ef7bac0d#egg=kfp&subdirectory=sdk/python/kfp' \
       'kfp-server-api==1.2.0' \
       'kfp-tekton==0.5.0' \
       'kubeflow-fairing==1.0.2' \
