@@ -6,7 +6,7 @@ RUN conda create -n torch python=3.7 && \
       'ipykernel==5.3.4' \
     && \
     conda install -n torch -c pytorch --quiet --yes \
-      'torchtext' \
+      'torchtext=0.6.0' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
