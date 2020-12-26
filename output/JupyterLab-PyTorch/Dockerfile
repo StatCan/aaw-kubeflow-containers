@@ -284,6 +284,9 @@ RUN pip install --quiet \
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
+# Fix for VSCode extensions and CORS
+ENV SERVICE_URL=https://extensions.coder.com/api
+
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 
