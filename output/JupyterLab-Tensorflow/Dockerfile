@@ -209,10 +209,6 @@ RUN apt-get update && \
 ###############################
 
 # Install vscode
-ARG CODESERVER_URL="https://github.com/cdr/code-server/releases/download/2.1698/code-server2.1698-vsc1.41.1-linux-x86_64.tar.gz"
-ARG CODESERVER="code-server2.1698-vsc1.41.1-linux-x86_64"
-ARG CODESERVER_SHA=6cb344a9f25da97bb8a59e9a9ce7d116720324e3da5197aad45b8b61e384757d
-
 ARG VSCODE_VERSION=3.8.0
 ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a
 ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
@@ -222,15 +218,11 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
     && apt-get update \
     && apt-get install -y nginx \
-    && apt-get install -y ./vscode.deb \
+    && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
-    && rm -f /etc/apt/sources.list.d/vscode.list \
-    && echo "Install codeserver" \
-    && wget -q ${CODESERVER_URL} \
-    && echo "${CODESERVER_SHA}  ${CODESERVER}.tar.gz" | sha256sum -c - \
-    && tar xvf ${CODESERVER}.tar.gz \
-    && mv ${CODESERVER}/code-server /usr/local/bin/ \
-    && rm -rf code-server*
+    && rm -f /etc/apt/sources.list.d/vscode.list
+RUN code-server --install-extension ms-python.python && \
+    code-server --install-extension ikuyadeu.r
 
 # Default environment
 RUN pip install --quiet \
