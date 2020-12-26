@@ -25,11 +25,7 @@ cat <<EOF
 MinIO
 =====
 
-MinIO configured. Hosts "minimal", "premium", and "pachyderm", added.
-
-Try
-
-  mc ls minimal/$NAMESPACE/
+MinIO configured. Hosts "standard" and "premium" added as mounted drives.
 
 Conda
 =====
