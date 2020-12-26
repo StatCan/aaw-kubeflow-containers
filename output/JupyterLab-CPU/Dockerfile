@@ -134,7 +134,7 @@ RUN code-server --install-extension ms-python.python && \
 RUN pip install --quiet \
       'jupyter-lsp==0.9.3' \
       'jupyter-server-proxy==1.5.0' \
-      'git+https://github.com/sylus/vscode-binder' \
+      'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
