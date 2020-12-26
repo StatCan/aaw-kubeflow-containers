@@ -115,12 +115,12 @@ RUN apt-get update && \
 ###############################
 
 # Install vscode
-ARG CODESERVER_URL="https://github.com/cdr/code-server/releases/download/1.1119-vsc1.33.1/code-server1.1119-vsc1.33.1-linux-x64.tar.gz"
-ARG CODESERVER="code-server1.1119-vsc1.33.1-linux-x64"
-ARG CODESERVER_SHA=dcd024301226eb493db2d06454b5d57a3499fbbc17fd816a68a2333ee3482685
+ARG CODESERVER_URL="https://github.com/cdr/code-server/releases/download/2.1698/code-server2.1698-vsc1.41.1-linux-x86_64.tar.gz"
+ARG CODESERVER="code-server2.1698-vsc1.41.1-linux-x86_64"
+ARG CODESERVER_SHA=6cb344a9f25da97bb8a59e9a9ce7d116720324e3da5197aad45b8b61e384757d
 
-ARG VSCODE_VERSION=3.6.2
-ARG VSCODE_SHA=71edb5776a7f965bf720c9814ab2e762fbaa0ddad4d9f4f85848c3912df1b67c
+ARG VSCODE_VERSION=3.8.0
+ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a
 ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -142,7 +142,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 RUN pip install --quiet \
       'jupyter-lsp==0.9.3' \
       'jupyter-server-proxy==1.5.0' \
-      'git+https://github.com/blairdrummond/vscode-binder' \
+      'git+https://github.com/sylus/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
