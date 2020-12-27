@@ -126,9 +126,15 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && apt-get install -y nginx \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
-    && rm -f /etc/apt/sources.list.d/vscode.list
+    && rm -f /etc/apt/sources.list.d/vscode.list \
+    && mkdir -p /etc/share/code-server/extensions
+
+# Fix for VSCode extensions and CORS
+ENV XDG_DATA_HOME=/etc/share/
+ENV SERVICE_URL=https://extensions.coder.com/api
 RUN code-server --install-extension ms-python.python && \
-    code-server --install-extension ikuyadeu.r
+    code-server --install-extension ikuyadeu.r && \
+    fix-permissions $XDG_DATA_HOME
 
 # Default environment
 RUN pip install --quiet \
@@ -177,9 +183,6 @@ RUN pip install --quiet \
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
-
-# Fix for VSCode extensions and CORS
-ENV SERVICE_URL=https://extensions.coder.com/api
 
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
