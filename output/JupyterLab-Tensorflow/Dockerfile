@@ -224,8 +224,9 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p /etc/share/code-server/extensions
 
 # Fix for VSCode extensions and CORS
-ENV XDG_DATA_HOME=/etc/share/
+ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
+COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
     fix-permissions $XDG_DATA_HOME
