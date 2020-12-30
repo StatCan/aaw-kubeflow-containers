@@ -24,10 +24,10 @@ fi
 
 # Configure the language
 if [ -n "${KF_LANG}" ]; then
-    if [ "${KF_LANG}"="en" ]; then
-        LANG="en_US.utf8"
+    if [ "${KF_LANG}" = "en" ]; then
+        export LANG="en_US.utf8"
     else
-        LANG="fr_CA.utf8"
+        export LANG="fr_CA.utf8"
     fi
 fi
 
