@@ -35,6 +35,8 @@ jobs:
           - 5000:5000
     steps:
     - uses: actions/checkout@master
+    - name: Add SHORT_SHA env property with commit short sha
+      run:  echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
     - name: Test output folder
       run: |
@@ -52,15 +54,15 @@ jobs:
         COMMIT=$(make get-commit)
         echo
         cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:${{ github.sha }}
-        docker push localhost:5000/kubeflow-image:${{ github.sha }}
-        docker rmi localhost:5000/kubeflow-image:${{ github.sha }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
+        docker push localhost:5000/kubeflow-image:$SHORT_SHA
+        docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
         docker image prune
         cd -
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
       with:
-        image-name: localhost:5000/kubeflow-image:${{ github.sha }}
+        image-name: localhost:5000/kubeflow-image:$SHORT_SHA
         severity-threshold: CRITICAL
         run-quality-checks: false
