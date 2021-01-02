@@ -31,6 +31,13 @@ if [ -n "${KF_LANG}" ]; then
     fi
 fi
 
+# Configure KFP multi-user
+if [ -n "${NB_NAMESPACE}" ]; then
+cat <<EOF > $HOME/.config/kfp/context.json
+{"namespace": "${NB_NAMESPACE}"}
+EOF
+fi
+
 jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
