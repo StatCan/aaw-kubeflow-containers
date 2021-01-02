@@ -239,6 +239,7 @@ RUN code-server --install-extension ms-python.python && \
 RUN pip install --quiet \
       'jupyter-lsp==0.9.3' \
       'jupyter-server-proxy==1.5.0' \
+      'kubeflow-kale==0.6.0' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
@@ -270,6 +271,7 @@ RUN pip install --quiet \
       'jupyterlab-plotly@4.14.1' \
       'jupyterlab-theme-solarized-dark@1.0.3' \
       'jupyterlab-spreadsheet@0.3.2' \
+      'kubeflow-kale-labextension@0.6.0' \
       'nbdime-jupyterlab@2.0.1' \
     && \
     jupyter lab build && \
