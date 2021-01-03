@@ -33,6 +33,7 @@ fi
 
 # Configure KFP multi-user
 if [ -n "${NB_NAMESPACE}" ]; then
+mkdir -p $HOME/.config/kfp
 cat <<EOF > $HOME/.config/kfp/context.json
 {"namespace": "${NB_NAMESPACE}"}
 EOF
