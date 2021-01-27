@@ -7,10 +7,8 @@ for  f in $(ls /vault/secrets/minio-* | grep -v -E '\..*'); do
  tenant=$(basename "$f" | sed 's/^minio-//') # remove minio- prefix 
  if [ ! -f /tmp/.minio-$tenant ] || [ $f -nt /tmp/.minio-$tenant ]; then
      source $f
-     ( 
-       mc config host add $tenant $MINIO_URL $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
-       touch /tmp/.minio-$tenant
-     )
+     /usr/local/bin/mc-original config host add $tenant $MINIO_URL $MINIO_ACCESS_KEY $MINIO_SECRET_KEY
+     touch /tmp/.minio-$tenant
  fi
 done
 /usr/local/bin/mc-original $@
