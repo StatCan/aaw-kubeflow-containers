@@ -57,6 +57,11 @@ cat <<EOF > $HOME/.config/kfp/context.json
 EOF
 fi
 
+# Introduced by RStudio 1.4
+# See https://github.com/jupyterhub/jupyter-rsession-proxy/issues/95
+# And https://github.com/blairdrummond/jupyter-rsession-proxy/blob/master/jupyter_rsession_proxy/__init__.py
+export RSERVER_WWW_ROOT_PATH=$NB_PREFIX/rstudio
+
 jupyter notebook --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
