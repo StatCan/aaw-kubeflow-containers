@@ -27,6 +27,9 @@ jobs:
           - JupyterLab-CPU
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
+          - JupyterLab-CPU-OL-compliant
+          - JupyterLab-PyTorch-OL-compliant
+          - JupyterLab-Tensorflow-OL-compliant
     runs-on: ubuntu-latest
     services:
       registry:

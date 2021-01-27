@@ -32,6 +32,7 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
           - RStudio
+          - JupyterLab-CPU-OL-compliant     
     runs-on: ubuntu-latest
     services:
       registry:

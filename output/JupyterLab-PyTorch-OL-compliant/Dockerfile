@@ -167,9 +167,9 @@ ARG KUBECTL_VERSION=v1.15.10
 ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
 
-ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
+ARG MC_VERSION=mc.RELEASE.2020-10-03T02-54-56Z
 ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
-ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
+ARG MC_SHA=59e184bd4e2c3a8a19837b0f0da3977bd4e301495a24e4a5d50e291728a1de51
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 # ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
@@ -209,10 +209,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/6_JupyterLab.Dockerfile
+###  docker-bits/6_JupyterLab-OL-compliant.Dockerfile
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
+# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
+# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
+
+# TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
+#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -238,20 +244,24 @@ RUN code-server --install-extension ms-python.python && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==0.9.3' \
+RUN conda install -c conda-forge \
+      'jupyterlab==3.0.5' \
+    && \
+    pip install --quiet \
+      'jupyter-lsp==1.0.0' \
       'jupyter-server-proxy==1.5.0' \
       'kubeflow-kale==0.6.0' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
+      'ipywidgets==7.6.3' \
       'ipympl==0.5.8' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'jupyterlab-git==0.23.2' \
       'nodejs==14.14.0' \
       'python-language-server==0.36.2' \
+      'jupyterlab-translate==0.1.1' \
     && \
     conda install --quiet --yes \
       -c plotly \
@@ -260,21 +270,14 @@ RUN pip install --quiet \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
+    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker@0.2.0' \
-      '@hadim/jupyter-archive@0.7.0' \
-      '@krassowski/jupyterlab-lsp@2.1.0' \
-      '@lckr/jupyterlab_variableinspector@0.5.1' \
-      '@jupyterlab/github@2.0.0' \
-      '@jupyterlab/git@0.23.2' \
-      '@jupyterlab/server-proxy@2.1.1' \
-      '@jupyterlab/toc@4.0.0' \
-      'jupyterlab-execute-time@1.0.0' \
-      'jupyterlab-plotly@4.14.1' \
-      'jupyterlab-theme-solarized-dark@1.0.3' \
-      'jupyterlab-spreadsheet@0.3.2' \
-      'kubeflow-kale-labextension@0.6.0' \
-      'nbdime-jupyterlab@2.0.1' \
+      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/server-proxy@2.1.2' \
+      '@jupyterlab/toc' \
+      '@hadim/jupyter-archive@3.0.0' \
+      'jupyterlab-plotly@4.14.3' \
+      'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
@@ -283,6 +286,8 @@ RUN pip install --quiet \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
+
+RUN pip install git+https://github.com/JessicaBarh/jupyterlab-fr_FR
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
