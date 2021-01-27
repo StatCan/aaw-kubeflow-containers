@@ -16,6 +16,9 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
       conda init bash
       conda init zsh
     fi
+
+    cat /tmp/helpers.sh >> /home/$NB_USER/.bashrc
+    cat /tmp/helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
 fi
 
@@ -45,6 +48,7 @@ if [ -n "${KF_LANG}" ]; then
         fi
     fi
 fi
+
 # Configure KFP multi-user
 if [ -n "${NB_NAMESPACE}" ]; then
 mkdir -p $HOME/.config/kfp

@@ -97,6 +97,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
 
+
 ###############################
 ###  docker-bits/2_PyTorch.Dockerfile
 ###############################
@@ -185,7 +186,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     wget --quiet -O mc "${MC_URL}" \
     && echo "${MC_SHA} mc" | sha256sum -c - \
     && chmod +x mc \
-    && mv mc /usr/local/bin/mc-original \
+    && mv mc /usr/local/bin/mc \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -193,6 +194,9 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
+
+# Have to use the zsh-installer in the entrypoint!
+COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -205,10 +209,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/6_JupyterLab.Dockerfile
+###  docker-bits/6_JupyterLab-OL-compliant.Dockerfile
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
+# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
+# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
+
+# TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
+#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -234,20 +244,24 @@ RUN code-server --install-extension ms-python.python && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==0.9.3' \
+RUN conda install -c conda-forge \
+      'jupyterlab==3.0.5' \
+    && \
+    pip install --quiet \
+      'jupyter-lsp==1.0.0' \
       'jupyter-server-proxy==1.5.0' \
       'kubeflow-kale==0.6.0' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
+      'ipywidgets==7.6.3' \
       'ipympl==0.5.8' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'jupyterlab-git==0.23.2' \
       'nodejs==14.14.0' \
       'python-language-server==0.36.2' \
+      'jupyterlab-translate==0.1.1' \
     && \
     conda install --quiet --yes \
       -c plotly \
@@ -256,21 +270,14 @@ RUN pip install --quiet \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
+    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker@0.2.0' \
-      '@hadim/jupyter-archive@0.7.0' \
-      '@krassowski/jupyterlab-lsp@2.1.0' \
-      '@lckr/jupyterlab_variableinspector@0.5.1' \
-      '@jupyterlab/github@2.0.0' \
-      '@jupyterlab/git@0.23.2' \
-      '@jupyterlab/server-proxy@2.1.1' \
-      '@jupyterlab/toc@4.0.0' \
-      'jupyterlab-execute-time@1.0.0' \
-      'jupyterlab-plotly@4.14.1' \
-      'jupyterlab-theme-solarized-dark@1.0.3' \
-      'jupyterlab-spreadsheet@0.3.2' \
-      'kubeflow-kale-labextension@0.6.0' \
-      'nbdime-jupyterlab@2.0.1' \
+      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/server-proxy@2.1.2' \
+      '@jupyterlab/toc' \
+      '@hadim/jupyter-archive@3.0.0' \
+      'jupyterlab-plotly@4.14.3' \
+      'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
@@ -279,6 +286,8 @@ RUN pip install --quiet \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
+
+RUN pip install git+https://github.com/JessicaBarh/jupyterlab-fr_FR
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
@@ -295,7 +304,6 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]

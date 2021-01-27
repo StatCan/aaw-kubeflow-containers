@@ -88,7 +88,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     wget --quiet -O mc "${MC_URL}" \
     && echo "${MC_SHA} mc" | sha256sum -c - \
     && chmod +x mc \
-    && mv mc /usr/local/bin/mc-original \
+    && mv mc /usr/local/bin/mc \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -96,6 +96,9 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
+
+# Have to use the zsh-installer in the entrypoint!
+COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -108,44 +111,91 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/6_RStudio.Dockerfile
+###  docker-bits/6_JupyterLab-OL-compliant.Dockerfile
 ###############################
 
-# install rstudio-server
-ARG RSTUDIO_VERSION=1.4.1103
-ARG SHA256=552baf1bbfd98fc36a3f63c430cce3ceb16dd41de723a535fa27d254ff6afa62
-RUN apt-get update && \
-    curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
-    echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
-    apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
-    rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-ENV PATH=$PATH:/usr/lib/rstudio-server/bin
+# installs vscode server, python & conda packages and jupyter lab extensions.
+# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
+# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
-# Install some default R packages
-RUN conda install --quiet --yes \
-      'r-rodbc==1.3_16' \
-      'r-tidymodels==0.1.2' \
-      'r-arrow==2.0.0' \
-      'r-aws.s3==0.3.21' \
-      'r-catools==1.18.0' \
-      'r-hdf5r==1.3.3' \
-      'r-odbc==1.3.0' \
-      'r-sf==0.9_6' \
-      'r-e1071==1.7_4' \
+# TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
+#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
+
+# Install vscode
+ARG VSCODE_VERSION=3.8.0
+ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a
+ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+
+USER root
+RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
+    && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+    && apt-get update \
+    && apt-get install -y nginx \
+    && dpkg -i ./vscode.deb \
+    && rm ./vscode.deb \
+    && rm -f /etc/apt/sources.list.d/vscode.list \
+    && mkdir -p /etc/share/code-server/extensions
+
+# Fix for VSCode extensions and CORS
+ENV XDG_DATA_HOME=/etc/share
+ENV SERVICE_URL=https://extensions.coder.com/api
+COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
+RUN code-server --install-extension ms-python.python && \
+    code-server --install-extension ikuyadeu.r && \
+    fix-permissions $XDG_DATA_HOME
+
+# Default environment
+RUN conda install -c conda-forge \
+      'jupyterlab==3.0.5' \
+    && \
+    pip install --quiet \
+      'jupyter-lsp==1.0.0' \
+      'jupyter-server-proxy==1.5.0' \
+      'kubeflow-kale==0.6.0' \
+      'git+https://github.com/betatim/vscode-binder' \
+    && \
+    conda install --quiet --yes \
+    -c conda-forge \
+      'ipywidgets==7.6.3' \
+      'ipympl==0.5.8' \
+      'jupyter_contrib_nbextensions==0.5.1' \
+      'nb_conda_kernels==2.3.1' \
+      'nodejs==14.14.0' \
+      'python-language-server==0.36.2' \
+      'jupyterlab-translate==0.1.1' \
+    && \
+    conda install --quiet --yes \
+      -c plotly \
+      'jupyter-dash==0.3.0' \
     && \
     conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    jupyter serverextension enable --py jupyter_server_proxy && \
+    jupyter nbextension enable codefolding/main --sys-prefix && \
+    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
+    jupyter labextension install --no-build \
+      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/server-proxy@2.1.2' \
+      '@jupyterlab/toc' \
+      '@hadim/jupyter-archive@3.0.0' \
+      'jupyterlab-plotly@4.14.3' \
+      'nbdime-jupyterlab' \
+    && \
+    jupyter lab build && \
+    jupyter lab clean && \
+  npm cache clean --force && \
+  rm -rf /home/$NB_USER/.cache/yarn && \
+  rm -rf /home/$NB_USER/.node-gyp && \
+  fix-permissions $CONDA_DIR && \
+  fix-permissions /home/$NB_USER
 
-RUN python3 -m pip install \
-      'git+git://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
-      'jupyter-shiny-proxy==1.1'
+RUN pip install git+https://github.com/JessicaBarh/jupyterlab-fr_FR
 
-RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
+# Solarized Theme and Cell Execution Time
+COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
-ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
+ENV DEFAULT_JUPYTER_URL=/lab
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
@@ -156,7 +206,6 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]

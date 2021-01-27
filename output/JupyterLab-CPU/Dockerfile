@@ -111,6 +111,8 @@ RUN apt-get update && \
 ###  docker-bits/6_JupyterLab.Dockerfile
 ###############################
 
+# installs vscode server, python & conda packages and jupyter lab extensions.
+
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
 ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a

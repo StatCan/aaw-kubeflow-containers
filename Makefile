@@ -16,6 +16,7 @@ SRC := docker-bits
 RESOURCES := resources
 OUT := output
 TMP := .tmp
+OL := OL-compliant
 
 .PHONY: clean .output all
 
@@ -84,8 +85,9 @@ RStudio: CPU
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-JupyterLab: PyTorch Tensorflow CPU
-
+# create directories for current images and OL-compliant JupyterLab3 images
+JupyterLab: PyTorch Tensorflow CPU 
+	
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
 		cp -r resources/* $(OUT)/$@-$${type}/; \
@@ -97,4 +99,14 @@ JupyterLab: PyTorch Tensorflow CPU
 			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
-	done
+		mkdir -p $(OUT)/$@-$${type}-$(OL); \
+		cp -r resources/* $(OUT)/$@-$${type}-$(OL)/; \
+		$(CAT) \
+			$(TMP)/$${type}.Dockerfile \
+			$(SRC)/3_Kubeflow.Dockerfile \
+			$(SRC)/4_CLI.Dockerfile \
+			$(SRC)/5_DB-Drivers.Dockerfile \
+			$(SRC)/6_$(@)-$(OL).Dockerfile \
+			$(SRC)/∞_CMD.Dockerfile \
+		>   $(OUT)/$@-$${type}-$(OL)/Dockerfile; \
+	done	
