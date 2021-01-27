@@ -97,7 +97,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
 
-
 ###############################
 ###  docker-bits/2_PyTorch.Dockerfile
 ###############################
@@ -186,7 +185,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     wget --quiet -O mc "${MC_URL}" \
     && echo "${MC_SHA} mc" | sha256sum -c - \
     && chmod +x mc \
-    && mv mc /usr/local/bin/mc \
+    && mv mc /usr/local/bin/mc-original \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -194,9 +193,6 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
-
-# Have to use the zsh-installer in the entrypoint!
-COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -304,6 +300,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
