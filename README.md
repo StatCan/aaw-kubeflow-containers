@@ -11,13 +11,12 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
 
 ```
 .
-├── Makefile                    # Cats the docker-bits together
+├── Makefile                                # Cats the docker-bits together
 │
-├── docker-bits                 # The docker snippets. Numbering indicates the DAG.
-│   ├── 0_Base.Dockerfile
+├── docker-bits                             # The docker snippets. Numbering indicates the DAG.
+│   ├── 0_CPU.Dockerfile
 │   ├── 1_CUDA-11.0.Dockerfile
 │   ├── 1_CUDA-11.1.Dockerfile
-│   ├── 2_Spark.Dockerfile
 │   ├── 2_PyTorch.Dockerfile
 │   ├── 2_Tensorflow.Dockerfile
 │   ├── 3_Kubeflow.Dockerfile
@@ -25,10 +24,10 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
 │   ├── 5_DB-Drivers.Dockerfile
 │   ├── 6_JupyterLab.Dockerfile
 │   ├── 6_RStudio.Dockerfile
-│   ├── 6_VSCode.Dockerfile
+│   ├── 6_JupyterLab-OL-compliant.Dockerfile
 │   └── ∞_CMD.Dockerfile
 │
-├── resources                   # the Docker context (files for COPY)
+├── resources                               # the Docker context (files for COPY)
 │   ├── clean-layer.sh
 │   ├── helpers.zsh
 │   ├── jupyterlab-overrides.json
@@ -37,31 +36,34 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
 │   ├── README.md
 │   └── start-custom.sh
 │
-├── scripts                     # Helper Scripts (NOT automated.)
+├── scripts                                 # Helper Scripts (NOT automated.)
 │   ├── CHECKSUMS
 │   ├── checksums.sh
 │   ├── get-nvidia-stuff.sh
+│   ├── start-custom-OL-compliant.sh
 │   └── README.md
 │
-└── output                       # Staging area for a `docker build .`
+└── output                                  # Staging area for a `docker build .`
     ├── JupyterLab-CPU/
     ├── JupyterLab-PyTorch/
     ├── JupyterLab-Tensorflow/
-    ├── RStudio/
-    ├── VSCode-CPU/
-    ├── VSCode-PyTorch/
-    └── VSCode-Tensorflow/
+    |── RStudio/
+    ├── JupyterLab-CPU-OL-compliant/        # These images use JupyterLab 3.0 and contain only OL-compliant extensions
+    ├── JupyterLab-PyTorch-OL-compliant/
+    └── JupyterLab-Tensorflow-OL-compliant/
 ```
 ## Deployment Testing Instructions
 
 The output folder contains Dockerfiles for each Notebook made from a combination of different [docker-bits](/docker-bits). They are created on `make all`.
 
-Make your changes to the correct docker-bit and not output/{notebook folder}/Dockerfile otherwise it will just get overwritten. Then, do the following:
+Make your changes to the correct [docker-bits](/docker-bits) file and not the files in `output/` folder otherwise it will get overwritten. Same goes for the shell scripts and json files - they should be modified from the [resources](/resources) folder. 
+
+Now build and run your image:
 
 ```bash
 # from kubeflow-containers directory
 make all
-cd output/{notebook folder}
+cd output/<notebook-name>
 docker build . -t tagName:version
 docker run -p 8888:8888 tagName:version
 ```
