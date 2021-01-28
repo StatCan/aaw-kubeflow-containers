@@ -34,7 +34,7 @@ jobs:
   trigger-context:
     runs-on: ubuntu-latest
     outputs:
-      in_scope: ${{ steps.am-i-in_scope.outputs.in_scope }}
+      in_scope: ${{ steps.am-i-in-scope.outputs.in_scope }}
       allowed_author: ${{ steps.pr_comment_context.outputs.allowed_author }}
       is_pr_comment: ${{ steps.pr_comment_context.outputs.is_pr_comment }}
       pr_number: ${{ steps.pr_comment_context.outputs.pr_number }}
@@ -59,13 +59,14 @@ jobs:
     # Test whether we are either:
     #   a push 
     #   a comment on a PR (eg: not just a comment on a random issue) from a contributor/owner
-    - name: am-i-in_scope
+    - name: am-i-in-scope
       shell: bash
       run: |
         if   [ ${{ github.event_name }} == "push" ] \
           || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] && [ ${{steps.pr_comment_context.outputs.allowed_author }} == "true" ]); then
             echo trigger is in scope
             echo "::set-output name=in_scope::true"
+            echo "pretend to set-output name=in_scope::true"
         else
             echo trigger is out of scope
             # echo "::set-output name=in_scope::false"  # Don't set anything if false
