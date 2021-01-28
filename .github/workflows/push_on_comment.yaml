@@ -34,7 +34,6 @@ jobs:
   trigger-context:
     runs-on: ubuntu-latest
     outputs:
-      in-scope: ${{ steps.am-i-in-scope.conclusion }}
       allowed_author: ${{ steps.pr_comment_context.outputs.allowed_author }}
       is_pr_comment: ${{ steps.pr_comment_context.outputs.is_pr_comment }}
       pr_number: ${{ steps.pr_comment_context.outputs.pr_number }}
@@ -65,21 +64,23 @@ jobs:
         if   [ ${{ github.event_name }} == "push" ] \
           || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] && [ ${{steps.pr_comment_context.outputs.allowed_author }} == "true" ]); then
             echo trigger is in scope
-            exit 0
+            echo "::set-output name=in-scope::true"
         else
-          echo trigger is out of scope
-          exit 1
+            echo trigger is out of scope
+            # echo "::set-output name=in-scope::false"  # Don't set anything if false
         fi
+
   test-print:
     needs:
       trigger-context
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ needs.trigger-context.outputs.in-scope }}
+      - run: echo ${{ needs.trigger-context.outputs.is_pr_comment }}
   build-push:
     needs:
       trigger-context
-    if: needs.trigger-context.outputs.in-scope == 'success'
+    if: needs.trigger-context.outputs.in-scope == 'true'  # Could also just be if in-scope, as it'll be empty if false
     strategy:
       fail-fast: false
       matrix:
