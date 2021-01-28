@@ -63,7 +63,7 @@ jobs:
       shell: bash
       run: |
         if   [ ${{ github.event_name }} == "push" ] \
-          || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] && [ ${{steps.pr_comment_context.outputs.allowed_author }} == "true" ]; then
+          || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] && [ ${{steps.pr_comment_context.outputs.allowed_author }} == "true" ]); then
             echo trigger is in scope
             exit 0
         else
