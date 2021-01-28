@@ -34,17 +34,16 @@ if [ -n "${KF_LANG}" ]; then
           export LANG="fr_FR"     
           lang_file="/home/${NB_USER}/.jupyter/lab/user-settings/@jupyterlab/translation-extension/plugin.jupyterlab-settings"
           mkdir -p "$(dirname "${lang_file}")" && touch $lang_file
-
-          echo '{
-                  // Langue
-                  // @jupyterlab/translation-extension:plugin
-                  // Paramètres de langue.
-                  // ****************************************
-
-                  // Langue locale
-                  // Définit la langue d'\''affichage de l'\''interface. Exemples: '\''es_CO'\'', '\''fr'\''.
-                  "locale": "'${LANG}'"
-                }' >> $lang_file   
+          ( echo    '{'
+            echo     '   // Langue'
+            echo     '   // @jupyterlab/translation-extension:plugin'
+            echo     '   // Paramètres de langue.'
+            echo  -e '   // ****************************************\n'
+            echo     '   // Langue locale'
+            echo     '   // Définit la langue d'\''affichage de l'\''interface. Exemples: '\''es_CO'\'', '\''fr'\''.'
+            echo     '   "locale": "'${LANG}'"'
+            echo     '}'
+          ) >> $lang_file            
         fi
     fi
 fi
