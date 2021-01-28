@@ -1,7 +1,8 @@
 #!/bin/bash
 # This script checks if the tenant if newer than an exiting one.
 # Every time that the user calls mc, the for loop checks to see if any vault secrets are newer than the most recent lockfile. 
-# If the secret is newer, then it reinitializes the client right away.for  f in $(ls /vault/secrets/minio-* | grep -v -E '\..*'); do
+# If the secret is newer, then it reinitializes the client right away.
+for  f in $(ls /vault/secrets/minio-* | grep -v -E '\..*'); do
  tenant=$(basename "$f" | sed 's/^minio-//') # remove minio- prefix 
  if [ ! -f /tmp/.minio-$tenant ] || [ $f -nt /tmp/.minio-$tenant ]; then
      (
