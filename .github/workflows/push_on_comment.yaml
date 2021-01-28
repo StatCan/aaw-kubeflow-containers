@@ -41,7 +41,7 @@ jobs:
       from_pr_originator: ${{ steps.pr_comment_context.outputs.from_pr_originator }}
       event_ref: ${{ steps.pr_comment_context.outputs.event_ref }}
     steps:
-    - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@c84d32bd0e09152cf06136f4f56967d6631e66e4
+    - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
       id: pr_comment_context
       with: 
         allowed_author_associations: '[OWNER, COLLABORATOR]'
@@ -91,7 +91,7 @@ jobs:
         ports:
           - 5000:5000
     steps:
-    - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@c84d32bd0e09152cf06136f4f56967d6631e66e4
+    - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
       id: event_ref
     - uses: actions/checkout@master
     
