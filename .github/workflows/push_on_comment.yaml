@@ -34,6 +34,7 @@ jobs:
   trigger-context:
     runs-on: ubuntu-latest
     outputs:
+      in_scope: ${{ steps.am-i-in_scope.outputs.in_scope }}
       allowed_author: ${{ steps.pr_comment_context.outputs.allowed_author }}
       is_pr_comment: ${{ steps.pr_comment_context.outputs.is_pr_comment }}
       pr_number: ${{ steps.pr_comment_context.outputs.pr_number }}
@@ -58,16 +59,16 @@ jobs:
     # Test whether we are either:
     #   a push 
     #   a comment on a PR (eg: not just a comment on a random issue) from a contributor/owner
-    - name: am-i-in-scope
+    - name: am-i-in_scope
       shell: bash
       run: |
         if   [ ${{ github.event_name }} == "push" ] \
           || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] && [ ${{steps.pr_comment_context.outputs.allowed_author }} == "true" ]); then
             echo trigger is in scope
-            echo "::set-output name=in-scope::true"
+            echo "::set-output name=in_scope::true"
         else
             echo trigger is out of scope
-            # echo "::set-output name=in-scope::false"  # Don't set anything if false
+            # echo "::set-output name=in_scope::false"  # Don't set anything if false
         fi
 
   test-print:
@@ -75,12 +76,12 @@ jobs:
       trigger-context
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ needs.trigger-context.outputs.in-scope }}
-      - run: echo ${{ needs.trigger-context.outputs.is_pr_comment }}
+      - run: echo in_scope = ${{ needs.trigger-context.outputs.in_scope }}
+      - run: echo is_pr_comment = ${{ needs.trigger-context.outputs.is_pr_comment }}
   build-push:
     needs:
       trigger-context
-    if: needs.trigger-context.outputs.in-scope == 'true'  # Could also just be if in-scope, as it'll be empty if false
+    if: needs.trigger-context.outputs.in_scope == 'true'  # Could also just be if in_scope, as it'll be empty if false
     strategy:
       fail-fast: false
       matrix:
