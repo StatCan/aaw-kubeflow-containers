@@ -33,8 +33,7 @@ jobs:
   # Inspired by https://stackoverflow.com/a/61832535/5394584
   trigger-context:
     runs-on: ubuntu-latest
-    shell: bash
-    output:
+    outputs:
       in-scope: ${{ steps.am-i-in-scope.conclusion }}
       allowed_author: ${{ steps.pr_comment_context.outputs.allowed_author }}
       is_pr_comment: ${{ steps.pr_comment_context.outputs.is_pr_comment }}
@@ -61,6 +60,7 @@ jobs:
     #   a push 
     #   a comment on a PR (eg: not just a comment on a random issue) from a contributor/owner
     - name: am-i-in-scope
+      shell: bash
       run: |
         if   [ ${{ github.event_name == "push" }} ] \
           || ([ ${{ steps.pr_comment_context.outputs.is_pr_comment == "true" }} ] && [ ${{steps.pr_comment_context.outputs.allowed_author == "true" }}]; then
