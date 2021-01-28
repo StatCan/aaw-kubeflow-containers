@@ -70,6 +70,12 @@ jobs:
           echo trigger is out of scope
           exit 1
         fi
+  test-print:
+    needs:
+      trigger-context
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.trigger-context.outputs.in-scope }}
   build-push:
     needs:
       trigger-context
