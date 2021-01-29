@@ -148,7 +148,7 @@ jobs:
     - name: Report branch name on PR comment
       id: report-branch-name
       shell: bash
-      run: 
+      run: |
         if [ "${{ needs.trigger-context.outputs.is_pr_comment }}" == "true" ]; then
           BRANCH_NAME=${{ steps.get-branch-name.outputs.branch }}
         else
