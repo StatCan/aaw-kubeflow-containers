@@ -153,25 +153,55 @@ jobs:
         severity-threshold: CRITICAL
         run-quality-checks: false
 
+    # Get branch name for tagging. 
+    # When triggered by a comment on a PR, ref points to master rather than true branch name
+    - name: Get branch name on PR comment
+      id: get-branch-name
+      if: needs.trigger-context.outputs.is_pr_comment
+      with: 
+        owner: ${{ github.event.repository.owner.login }}
+        repository: ${{ github.event.repository.name }}
+        pr_number: ${{ needs.trigger-context.outputs.pr_number }}
+      uses: ca-scribner/github-actions-recipes/get-branch-name-of-pr@fb78f53adf9877c3916e63b44cfb4132b9cdf4b7
+
+    - name: Report branch name on PR comment
+      id: report-branch-name
+      run: 
+        if [ "${{ needs.trigger-context.outputs.is_pr_comment }} == "true" ]; then
+          BRANCH_NAME=${{ steps.get-branch-name.outputs.branch }}
+        else
+          BRANCH_NAME=${GITHUB_REF#refs/*/}
+        fi
+        echo "BRANCH_NAME=$(echo $BRANCH_NAME | cut -c 1-6)" >> $GITHUB_ENV
+
     # Container push to a Azure Container registry (ACR)
     - name: Push image
       run: |
         echo Repull the image
         docker pull localhost:5000/kubeflow-image:$SHORT_SHA
         docker tag localhost:5000/kubeflow-image:$SHORT_SHA kubeflow-image
+
         echo
         IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
         REGISTRY=${{ env.REGISTRY }}
+
         echo
         docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:$SHORT_SHA
-        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}
-        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:latest
-        echo
-        # DEBUG: Removed during debugging
         # docker push $REGISTRY/$IMAGE_NAME:$SHORT_SHA
+        docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:$BRANCH_NAME
+        # DEBUG: Removed during debugging
         # docker push $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}  # I think this breaks for PR comments
+
+        if ["$BRANCH_NAME" == "master"]; then
+        # DEBUG: Removed during debugging
+          docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:latest
         # docker push $REGISTRY/$IMAGE_NAME:latest
+        fi
+
+        # Report
         echo
         echo "Pushed $REGISTRY/$IMAGE_NAME:$SHORT_SHA"
         echo "       $REGISTRY/$IMAGE_NAME:${GITHUB_REF#refs/*/}"
-        echo "       $REGISTRY/$IMAGE_NAME:latest"
+        if ["$BRANCH_NAME" == "master"]; then
+          echo "       $REGISTRY/$IMAGE_NAME:latest"
+        fi
