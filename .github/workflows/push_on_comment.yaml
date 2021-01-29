@@ -41,7 +41,7 @@ jobs:
       from_pr_originator: ${{ steps.pr_comment_context.outputs.from_pr_originator }}
       event_ref: ${{ steps.pr_comment_context.outputs.event_ref }}
     steps:
-    - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
+    - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@86aad239d20c9f7555816dd634d60a896774c030
       id: pr_comment_context
       with: 
         allowed_author_associations: '[OWNER, COLLABORATOR]'
@@ -80,6 +80,7 @@ jobs:
     steps:
       - run: echo in_scope = ${{ needs.trigger-context.outputs.in_scope }}
       - run: echo is_pr_comment = ${{ needs.trigger-context.outputs.is_pr_comment }}
+
   build-push:
     needs:
       trigger-context
@@ -133,26 +134,6 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    # Container build and push to a Azure Container registry (ACR)
-    - name: Build image
-      run: |
-        make all
-        COMMIT=$(make get-commit)
-        echo
-        cd output/${{ matrix.notebook }}
-        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
-        docker push localhost:5000/kubeflow-image:$SHORT_SHA
-        docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
-        docker image prune
-        cd -
-
-    # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      with:
-        image-name: localhost:5000/kubeflow-image:${{ env.SHORT_SHA }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-
     # Get branch name for tagging. 
     # When triggered by a comment on a PR, ref points to master rather than true branch name
     - name: Get branch name on PR comment
@@ -173,6 +154,26 @@ jobs:
           BRANCH_NAME=${GITHUB_REF#refs/*/}
         fi
         echo "BRANCH_NAME=$(echo $BRANCH_NAME | cut -c 1-6)" >> $GITHUB_ENV
+
+    # Container build and push to a Azure Container registry (ACR)
+    - name: Build image
+      run: |
+        make all
+        COMMIT=$(make get-commit)
+        echo
+        cd output/${{ matrix.notebook }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
+        docker push localhost:5000/kubeflow-image:$SHORT_SHA
+        docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
+        docker image prune
+        cd -
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: localhost:5000/kubeflow-image:${{ env.SHORT_SHA }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
 
     # Container push to a Azure Container registry (ACR)
     - name: Push image
