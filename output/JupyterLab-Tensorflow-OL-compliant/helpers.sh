@@ -31,7 +31,7 @@ Conda
 =====
 
 It's recommended that you use conda to create virtual environments and
-to insall R, Python, or Julia packages.
+to install R, Python, or Julia packages.
 
 
 Have fun!!!
