@@ -75,6 +75,8 @@ jobs:
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
+      env:
+        TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
         image-name: localhost:5000/kubeflow-image:${{ env.SHORT_SHA }}
         severity-threshold: CRITICAL
