@@ -72,4 +72,3 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcudnn8=$CUDNN_VERSION-1+cuda11.0 \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
-

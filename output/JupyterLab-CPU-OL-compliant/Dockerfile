@@ -79,6 +79,9 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
@@ -88,7 +91,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     wget --quiet -O mc "${MC_URL}" \
     && echo "${MC_SHA} mc" | sha256sum -c - \
     && chmod +x mc \
-    && mv mc /usr/local/bin/mc \
+    && mv mc /usr/local/bin/mc-original \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -96,9 +99,6 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
-
-# Have to use the zsh-installer in the entrypoint!
-COPY helpers.sh /tmp/helpers.sh
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -206,6 +206,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
