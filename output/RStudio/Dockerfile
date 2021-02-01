@@ -79,6 +79,9 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
@@ -119,7 +122,12 @@ RUN apt-get update && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    #Harden rstudio-server
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
+    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages

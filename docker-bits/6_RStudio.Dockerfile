@@ -6,7 +6,12 @@ RUN apt-get update && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    #Harden rstudio-server
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
+    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
