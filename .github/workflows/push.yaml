@@ -67,6 +67,9 @@ jobs:
         COMMIT=$(make get-commit)
         echo
         cd output/${{ matrix.notebook }}
+        if [[ ${{ matrix.notebook }} == *"OL-compliant" ]]; then
+          COMMIT="r-4.0.3"
+        fi
         docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
         docker push localhost:5000/kubeflow-image:$SHORT_SHA
         docker rmi localhost:5000/kubeflow-image:$SHORT_SHA

@@ -63,9 +63,15 @@ PyTorch Tensorflow: .output
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
+	$(CAT) \
+		$(SRC)/0_CPU-$(OL).Dockerfile \
+		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
+		$(SRC)/2_$@.Dockerfile \
+	> $(TMP)/$@-$(OL).Dockerfile
 
 CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
+	$(CAT) $(SRC)/0_$@-$(OL).Dockerfile > $(TMP)/$@-$(OL).Dockerfile
 
 ################################
 ###    R-Studio & Jupyter    ###
@@ -102,7 +108,7 @@ JupyterLab: PyTorch Tensorflow CPU
 		mkdir -p $(OUT)/$@-$${type}-$(OL); \
 		cp -r resources/* $(OUT)/$@-$${type}-$(OL)/; \
 		$(CAT) \
-			$(TMP)/$${type}.Dockerfile \
+			$(TMP)/$${type}-$(OL).Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
 			$(SRC)/4_CLI.Dockerfile \
 			$(SRC)/5_DB-Drivers.Dockerfile \

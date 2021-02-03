@@ -1,6 +1,6 @@
 # installs vscode server, python & conda packages and jupyter lab extensions.
-# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
-# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# Using JupyterLab 3.0 from docker-stacks base image. This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
 # TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
@@ -30,13 +30,10 @@ RUN code-server --install-extension ms-python.python && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN conda install -c conda-forge \
-      'jupyterlab==3.0.5' \
-    && \
-    pip install --quiet \
+RUN pip install --quiet \
       'jupyter-lsp==1.0.0' \
       'jupyter-server-proxy==1.5.0' \
-      'kubeflow-kale==0.6.0' \
+      'kubeflow-kale==0.6.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
@@ -51,14 +48,13 @@ RUN conda install -c conda-forge \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.3.0' \
+      'jupyter-dash==0.4.0' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
     jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
       '@jupyterlab/toc' \
       '@hadim/jupyter-archive@3.0.0' \
