@@ -1,6 +1,6 @@
-# This workflow will build a docker container, publish it to Azure Container Registry, and deploy it to Azure Kubernetes Service using a helm chart.
+# This workflow will build a docker container and publish it to Azure Container Registry
 #
-# https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
+# Based on https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
 #
 # To configure this workflow:
 #
@@ -9,8 +9,7 @@
 #     b. REGISTRY_PASSWORD with ACR Password
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
-# 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
-
+# 2. Change the values for the REGISTRY
 # DEBUG: This is a temporary CI for testing.  This will be merged into push.yaml when complete, but must be tested on master branch (comment triggers only work on master)
 name: push on comment
 on:
@@ -24,10 +23,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  REGISTRY: registry.hub.docker.com
-  REGISTRY_NAME: k8scc01covidacr
-  CLUSTER_NAME: k8s-cancentral-01-covid-aks
-  CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
+  REGISTRY: registry.hub.docker.com/scribby182
 jobs:
   # Do initial tests to see if we should run (push or an issue_comment on a PR) or if we should ignore (an issue_comment NOT on a PR)
   # Inspired by https://stackoverflow.com/a/61832535/5394584
@@ -71,11 +67,10 @@ jobs:
       matrix:
         notebook:
           - JupyterLab-CPU
-          # DEBUG images removed during debugging
-          # - JupyterLab-PyTorch
-          # - JupyterLab-Tensorflow
-          # - RStudio
-          # - JupyterLab-CPU-OL-compliant     
+          - JupyterLab-PyTorch
+          - JupyterLab-Tensorflow
+          - RStudio
+          - JupyterLab-CPU-OL-compliant     
     runs-on: ubuntu-latest
     services:
       registry:
@@ -104,18 +99,27 @@ jobs:
     # Extra checkout step to ensure we checkout PR's code when this triggers on PR comment
     # Without this, we will always check out master
     - name: Checkout PR code
-      if: github.event_name == 'issue_comment'
+      if: needs.trigger-context.outputs.is_pr_comment
       run: |
          git fetch origin ${{ steps.event_ref.outputs.branch }}
          # This works for open PR but not merged one.  Trying using branch instead
          # git fetch origin ${{ steps.event_ref.outputs.event_ref }}
          git checkout FETCH_HEAD
+         
+    # If this is a PR, the GITHUB_SHA points to master rather than this PR's latest commit
+    - name: Update GITHUB_SHA if PR
+      if: needs.trigger-context.outputs.is_pr_comment
+      run: |
+        BRANCH_SHA=`git rev-parse HEAD`
+        echo "Updating SHA to $BRANCH_SHA"
+        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
 
       # DEBUG Does GITHUB_SHA work for issue_comment?
     - name: Add SHORT_SHA env property with commit short sha
       run:  |
-        echo "SHORT_SHA=${GITHUB_SHA}"
-        echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
+        echo "SHA=${GITHUB_SHA}"
+        SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`
+        echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
     - name: Test output folder
       run: |
