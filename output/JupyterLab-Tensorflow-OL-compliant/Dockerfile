@@ -1,15 +1,18 @@
 
 ###############################
-###  .tmp/Tensorflow.Dockerfile
+###  .tmp/Tensorflow-OL-compliant.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_CPU.Dockerfile
+###  docker-bits/0_CPU-OL-compliant.Dockerfile
 ###############################
 
-ARG BASE_VERSION=42f4c82a07ff
-FROM jupyter/datascience-notebook:$BASE_VERSION
+ARG BASE_VERSION=r-4.0.3
+
+# temporarily hard coding docker image tag to r-4.0.3 to avoid using the current tag passed in --build-arg in CI for OL. 
+# Should be replaced back to $BASE_VERSION when current images are replaced for the OL ones 
+FROM jupyter/datascience-notebook:r-4.0.3
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -102,13 +105,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###############################
 
 # Install Tensorflow
-RUN conda create -n tensorflow && \
-    conda install -n tensorflow --quiet --yes \
-      'tensorflow-gpu' \
-      'keras' \
-      'ipykernel==5.3.4' \
+RUN pip install --quiet \
+        'tensorflow-gpu' \
+        'keras' \
+        'ipykernel==5.3.4' \
     && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -118,11 +119,10 @@ RUN conda create -n tensorflow && \
 
 RUN pip --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.2.0' \
-      'kfp-tekton==0.5.0' \
+      'kfp-server-api==1.3.0' \      
       'kubeflow-fairing==1.0.2' \
-      'ml-metadata==0.26.0' \
-      'kubeflow-metadata==0.3.1' \
+      'ml-metadata==0.27.0' \
+      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
@@ -209,8 +209,8 @@ RUN apt-get update && \
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
-# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
-# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# Using JupyterLab 3.0 from docker-stacks base image. This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
 # TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
@@ -240,13 +240,10 @@ RUN code-server --install-extension ms-python.python && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN conda install -c conda-forge \
-      'jupyterlab==3.0.5' \
-    && \
-    pip install --quiet \
+RUN pip install --quiet \
       'jupyter-lsp==1.0.0' \
       'jupyter-server-proxy==1.5.0' \
-      'kubeflow-kale==0.6.0' \
+      'kubeflow-kale==0.6.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
@@ -261,14 +258,13 @@ RUN conda install -c conda-forge \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.3.0' \
+      'jupyter-dash==0.4.0' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
     jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
       '@jupyterlab/toc' \
       '@hadim/jupyter-archive@3.0.0' \

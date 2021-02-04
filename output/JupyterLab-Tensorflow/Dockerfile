@@ -102,13 +102,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###############################
 
 # Install Tensorflow
-RUN conda create -n tensorflow && \
-    conda install -n tensorflow --quiet --yes \
-      'tensorflow-gpu' \
-      'keras' \
-      'ipykernel==5.3.4' \
+RUN pip install --quiet \
+        'tensorflow-gpu' \
+        'keras' \
+        'ipykernel==5.3.4' \
     && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -118,11 +116,10 @@ RUN conda create -n tensorflow && \
 
 RUN pip --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.2.0' \
-      'kfp-tekton==0.5.0' \
+      'kfp-server-api==1.3.0' \      
       'kubeflow-fairing==1.0.2' \
-      'ml-metadata==0.26.0' \
-      'kubeflow-metadata==0.3.1' \
+      'ml-metadata==0.27.0' \
+      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
