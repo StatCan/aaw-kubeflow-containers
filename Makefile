@@ -63,6 +63,7 @@ PyTorch Tensorflow: .output
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
+	# use 0_CPU-OL-compliant docker-bit to create JupyterLab-OL images, temporary until we want to replace our JupyterLab images with the OL compliant ones
 	$(CAT) \
 		$(SRC)/0_CPU-$(OL).Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
@@ -71,6 +72,7 @@ PyTorch Tensorflow: .output
 
 CPU: .output
 	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
+	# temporary until we want to replace our JupyterLab images with the OL compliant ones
 	$(CAT) $(SRC)/0_$@-$(OL).Dockerfile > $(TMP)/$@-$(OL).Dockerfile
 
 ################################
@@ -91,7 +93,8 @@ RStudio: CPU
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-# create directories for current images and OL-compliant JupyterLab3 images
+# create directories for current images and OL-compliant/JupyterLab3 images
+# create OL images with OL-compliant docker-bits, temporary until we want to replace our JupyterLab images with the OL compliant ones
 JupyterLab: PyTorch Tensorflow CPU 
 	
 	for type in $^; do \

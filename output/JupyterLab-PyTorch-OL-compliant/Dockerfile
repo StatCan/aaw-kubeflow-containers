@@ -9,7 +9,7 @@
 ###############################
 
 ARG BASE_VERSION=r-4.0.3
-FROM jupyter/datascience-notebook:$BASE_VERSION
+FROM jupyter/datascience-notebook:r-4.0.3
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -123,7 +123,7 @@ RUN pip --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \      
       'kubeflow-fairing==1.0.2' \
-      'ml-metadata==0.24.0'\
+      'ml-metadata==0.27.0'\
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \

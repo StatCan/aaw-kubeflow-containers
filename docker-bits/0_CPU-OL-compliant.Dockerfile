@@ -1,5 +1,5 @@
 ARG BASE_VERSION=r-4.0.3
-FROM jupyter/datascience-notebook:$BASE_VERSION
+FROM jupyter/datascience-notebook:r-4.0.3
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
