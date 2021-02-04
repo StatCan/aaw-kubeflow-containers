@@ -106,7 +106,9 @@ jobs:
     - name: Checkout PR code
       if: github.event_name == 'issue_comment'
       run: |
-         git fetch origin ${{ steps.event_ref.outputs.event_ref }}
+         git fetch origin ${{ steps.event_ref.outputs.branch }}
+         # This works for open PR but not merged one.  Trying using branch instead
+         # git fetch origin ${{ steps.event_ref.outputs.event_ref }}
          git checkout FETCH_HEAD
 
       # DEBUG Does GITHUB_SHA work for issue_comment?
