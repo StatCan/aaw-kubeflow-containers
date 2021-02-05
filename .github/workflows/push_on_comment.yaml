@@ -132,23 +132,20 @@ jobs:
         git checkout $BRANCH_NAME
         BRANCH_SHA=$(git rev-parse $BRANCH_NAME)
         echo "Updating GITHUB_SHA to $BRANCH_SHA"
-        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
+        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV  # This sets env.GITHUB_SHA for future steps, but wont overwrite $GITHUB_SHA in future steps(?!)
         echo "BRANCH_SHA=$BRANCH_SHA" >> $GITHUB_ENV
-    - name: Test GITHUB_SHA overwrite
-      run: |
-        echo GITHUB_SHA=$GITHUB_SHA
-        echo env.GITHUB_SHA=${{ env.GITHUB_SHA }}
 
     - name: Add SHORT_SHA env property with commit short sha
       run:  |
-        echo "BRANCH_SHA = $BRANCH_SHA"
-        SHA=${BRANCH_SHA:-$GITHUB_SHA}
-        echo "SHA=$SHA"
-        SHORT_SHA=`echo ${SHA} | cut -c1-8`
+        # Use env.GITHUB_SHA in case this was overwritten above.  For some reason $GITHUB_SHA is not updated
+        
+        FULL_SHA=${{ env.GITHUB_SHA }}
+        echo "FULL_SHA=$FULL_SHA"
+        SHORT_SHA=`echo ${FULL_SHA} | cut -c1-8`
         echo "SHORT_SHA=$SHORT_SHA"
         echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
-    - name: Test output folder
+    - name: Assert committed ./output folder matches `make all` output
       run: |
         sudo apt-get install --yes make
         make all
