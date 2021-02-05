@@ -128,6 +128,7 @@ jobs:
     - name: Checkout this Branch and update GITHUB_SHA if PR Comment
       if: needs.trigger-context.outputs.is_pr_comment
       run: |
+        git fetch origin
         git checkout $BRANCH_NAME
         BRANCH_SHA=$(git rev-parse $BRANCH_NAME)
         echo "Updating GITHUB_SHA to $BRANCH_SHA"
