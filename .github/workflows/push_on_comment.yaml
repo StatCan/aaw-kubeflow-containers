@@ -23,7 +23,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  REGISTRY: registry.hub.docker.com/scribby182
+  REGISTRY: scribby182
 jobs:
   # Do initial tests to see if we should run (push or an issue_comment on a PR) or if we should ignore (an issue_comment NOT on a PR)
   # Inspired by https://stackoverflow.com/a/61832535/5394584
@@ -164,8 +164,12 @@ jobs:
         cd output/${{ matrix.notebook }}
         
         # DEBUG
+        ls -l
+        cat Dockerfile
         echo "FROM alpine:3.5" > Dockerfile
         echo "ARG BASE_VERSION=1" >> Dockerfile
+        cat Dockerfile
+        ls -l
         
         docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
         docker push localhost:5000/kubeflow-image:$SHORT_SHA
