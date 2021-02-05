@@ -199,7 +199,7 @@ jobs:
 
         echo
         echo Sanitizing BRANCH_NAME to conform to Docker image tagging rules
-        BRANCH_NAME=echo $BRANCH_NAME | sed 's/[^[:alnum:]\.\_\-]/-/g'
+        BRANCH_NAME=$(echo $BRANCH_NAME | sed 's/[^[:alnum:]\.\_\-]/-/g')
         echo "Using sanitized BRANCH_NAME $BRANCH_NAME for tagging image"
 
         echo
