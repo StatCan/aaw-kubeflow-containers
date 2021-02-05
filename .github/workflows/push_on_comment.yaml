@@ -196,6 +196,8 @@ jobs:
         echo "Pull the image from local storage repo $SOURCE_IMAGE_NAME"
         docker pull $SOURCE_IMAGE_NAME
 
+        IMAGE_NAME="${{ matrix.notebook }}"
+
         echo "Build tags list"
         TAGS=($SHORT_SHA $BRANCH_NAME)
         if [ "$BRANCH_NAME" == "master" ]; then
