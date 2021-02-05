@@ -128,12 +128,13 @@ jobs:
     - name: Checkout this Branch and update GITHUB_SHA if PR Comment
       if: needs.trigger-context.outputs.is_pr_comment
       run: |
-        echo "BRANCH_SHA=`git rev-parse $BRANCH_NAME`"
+        git checkout $BRANCH_SHA
+
+        echo "BRANCH_SHA=git rev-parse $BRANCH_NAME"
         echo try1
         BRANCH_SHA=$(git rev-parse $BRANCH_NAME)
         echo try2
         BRANCH_SHA=`git rev-parse $BRANCH_NAME`
-        git checkout $BRANCH_SHA
         echo "Updating SHA to $BRANCH_SHA"
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
          
