@@ -135,7 +135,7 @@ jobs:
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV  # This sets env.GITHUB_SHA for future steps, but wont overwrite $GITHUB_SHA in future steps(?!)
         echo "BRANCH_SHA=$BRANCH_SHA" >> $GITHUB_ENV
 
-    - name: Add SHORT_SHA env property with commit short sha
+    - name: Add SHORT_SHA env variable
       run:  |
         # Use env.GITHUB_SHA in case this was overwritten above.  For some reason $GITHUB_SHA is not updated
         
