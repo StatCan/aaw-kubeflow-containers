@@ -99,20 +99,6 @@ jobs:
         ports:
           - 5000:5000
     steps:
-    - name: Notify start via comment
-      if: needs.trigger-context.outputs.is_pr_comment
-      id: notify-start
-      uses: actions/github-script@v1
-      with: 
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `Build activated.  Track in [Github Actions](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/).  I will report back when things are pushed!`
-          })
-
     - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
       id: event_ref
     - uses: actions/checkout@master
