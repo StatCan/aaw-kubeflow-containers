@@ -102,49 +102,7 @@ jobs:
     - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
       id: event_ref
     - uses: actions/checkout@master
-    
-    # Extra checkout step to ensure we checkout PR's code when this triggers on PR comment
-    # Without this, we will always check out master
-    - name: Checkout PR code
-      if: needs.trigger-context.outputs.is_pr_comment
-      run: |
-         git fetch origin ${{ steps.event_ref.outputs.branch }}
-         # This works for open PR but not merged one.  Trying using branch instead
-         # git fetch origin ${{ steps.event_ref.outputs.event_ref }}
-         git checkout FETCH_HEAD
-         
-    # If this is a PR, the GITHUB_SHA points to master rather than this PR's latest commit
-    - name: Update GITHUB_SHA if PR
-      if: needs.trigger-context.outputs.is_pr_comment
-      run: |
-        BRANCH_SHA=`git rev-parse HEAD`
-        echo "Updating SHA to $BRANCH_SHA"
-        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
 
-      # DEBUG Does GITHUB_SHA work for issue_comment?
-    - name: Add SHORT_SHA env property with commit short sha
-      run:  |
-        echo "SHA=${GITHUB_SHA}"
-        SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`
-        echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-
-    - name: Test output folder
-      run: |
-        sudo apt-get install --yes make
-        make all
-        if ! git diff --quiet output/; then
-            echo 'output folder and docker-bits/resources out of sync!'
-            exit 1
-        fi
-
-    # Connect to Dockerhub registry
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-
-    # Get branch name for tagging
     # Depending on whether this is a push or a pr-comment, branch name is discoverable differently.
     - name: Report branch name on PR comment
       id: report-branch-name
@@ -164,6 +122,48 @@ jobs:
         fi
         echo "Found BRANCH_NAME=$BRANCH_NAME"
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+    # Extra checkout step to ensure we checkout PR's code when this triggers on PR comment
+    # Without this, we will always check out master
+    - name: Checkout PR code
+      if: needs.trigger-context.outputs.is_pr_comment
+      run: |
+         # This works for open PR but not merged one.  Trying using branch instead
+         # git fetch origin ${{ steps.event_ref.outputs.event_ref }}
+         git fetch origin $BRANCH_NAME
+         git checkout FETCH_HEAD
+         
+    # If this is a PR, the GITHUB_SHA points to master rather than this PR's latest commit
+    - name: Update GITHUB_SHA if PR
+      if: needs.trigger-context.outputs.is_pr_comment
+      run: |
+        BRANCH_SHA=`git rev-parse $BRANCH_NAME`
+        echo "Updating SHA to $BRANCH_SHA"
+        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
+
+      # DEBUG Does GITHUB_SHA work for issue_comment?
+    - name: Add SHORT_SHA env property with commit short sha
+      run:  |
+        echo "SHA=${GITHUB_SHA}"
+        SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`
+        echo "SHORT_SHA=$SHORT_SHA"
+        echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
+    - name: Test output folder
+      run: |
+        sudo apt-get install --yes make
+        make all
+        if ! git diff --quiet output/; then
+            echo 'output folder and docker-bits/resources out of sync!'
+            exit 1
+        fi
+
+    # Connect to Dockerhub registry
+    - name: Login to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
 
     # Container build and push to a Azure Container registry (ACR)
     - name: Build image
