@@ -134,7 +134,11 @@ jobs:
         echo "Updating GITHUB_SHA to $BRANCH_SHA"
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
         echo "BRANCH_SHA=$BRANCH_SHA" >> $GITHUB_ENV
-         
+    - name: Test GITHUB_SHA overwrite
+      run: |
+        echo GITHUB_SHA=$GITHB_SHA
+        echo env.GITHUB_SHA=${{ env.GITHUB_SHA }}
+
     - name: Add SHORT_SHA env property with commit short sha
       run:  |
         echo "BRANCH_SHA = $BRANCH_SHA"
