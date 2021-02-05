@@ -137,7 +137,7 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
-    # Get branch name for tagging. 
+    # Get branch name for tagging
     # Depending on whether this is a push or a pr-comment, branch name is discoverable differently.
     - name: Report branch name on PR comment
       id: report-branch-name
@@ -153,6 +153,7 @@ jobs:
           # Extract branch name from Github context's ref variable
           BRANCH_NAME=${GITHUB_REF#refs/*/}
         fi
+        echo "Found BRANCH_NAME=$BRANCH_NAME"
         echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
     # Container build and push to a Azure Container registry (ACR)
@@ -195,6 +196,11 @@ jobs:
         echo
         IMAGE_NAME="$(echo ${{ matrix.notebook }} | tr '[:upper:]' '[:lower:]')"
         REGISTRY=${{ env.REGISTRY }}
+
+        echo
+        echo Sanitizing BRANCH_NAME to conform to Docker image tagging rules
+        BRANCH_NAME=echo $BRANCH_NAME | sed 's/[^[:alnum:]\.\_\-]/-/g'
+        echo "Using sanitized BRANCH_NAME $BRANCH_NAME for tagging image"
 
         echo
         docker tag kubeflow-image $REGISTRY/$IMAGE_NAME:$SHORT_SHA
