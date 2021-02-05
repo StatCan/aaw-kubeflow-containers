@@ -125,23 +125,14 @@ jobs:
 
     # Extra checkout step to ensure we checkout PR's code when this triggers on PR comment
     # Without this, we will always check out master
-    - name: Checkout PR code
-      if: needs.trigger-context.outputs.is_pr_comment
-      run: |
-         # This works for open PR but not merged one.  Trying using branch instead
-         # git fetch origin ${{ steps.event_ref.outputs.event_ref }}
-         git fetch origin $BRANCH_NAME
-         git checkout FETCH_HEAD
-         
-    # If this is a PR, the GITHUB_SHA points to master rather than this PR's latest commit
-    - name: Update GITHUB_SHA if PR
+    - name: Checkout this Branch and update GITHUB_SHA if PR Comment
       if: needs.trigger-context.outputs.is_pr_comment
       run: |
         BRANCH_SHA=`git rev-parse $BRANCH_NAME`
+        git checkout $BRANCH_SHA
         echo "Updating SHA to $BRANCH_SHA"
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
-
-      # DEBUG Does GITHUB_SHA work for issue_comment?
+         
     - name: Add SHORT_SHA env property with commit short sha
       run:  |
         echo "SHA=${GITHUB_SHA}"
