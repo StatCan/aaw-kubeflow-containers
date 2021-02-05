@@ -58,6 +58,27 @@ jobs:
             # Return null if false
         fi
 
+  # Notify outside build-push, otherwise we get a notification for each matrix run
+  notify-start:
+    needs:
+      trigger-context
+    if: needs.trigger-context.outputs.in_scope == 'true'  # Could also just be if in_scope, as it'll be empty if false
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify start via comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      id: notify-start
+      uses: actions/github-script@v1
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Build activated.  Track in [Github Actions](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/).  I will report back when things are pushed!`
+          })
+
   build-push:
     needs:
       trigger-context
