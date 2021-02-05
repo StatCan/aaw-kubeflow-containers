@@ -162,6 +162,11 @@ jobs:
         COMMIT=$(make get-commit)
         echo
         cd output/${{ matrix.notebook }}
+        
+        # DEBUG
+        echo "FROM alpine:3.5" > Dockerfile
+        echo "ARG BASE_VERSION=1" >> Dockerfile
+        
         docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
         docker push localhost:5000/kubeflow-image:$SHORT_SHA
         docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
