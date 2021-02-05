@@ -104,7 +104,7 @@ jobs:
     - uses: actions/checkout@master
 
     # Depending on whether this is a push or a pr-comment, branch name is discoverable differently.
-    - name: Report branch name on PR comment
+    - name: Report branch name
       id: report-branch-name
       shell: bash
       run: |
@@ -128,14 +128,9 @@ jobs:
     - name: Checkout this Branch and update GITHUB_SHA if PR Comment
       if: needs.trigger-context.outputs.is_pr_comment
       run: |
-        git checkout $BRANCH_SHA
-
-        echo "BRANCH_SHA=git rev-parse $BRANCH_NAME"
-        echo try1
+        git checkout $BRANCH_NAME
         BRANCH_SHA=$(git rev-parse $BRANCH_NAME)
-        echo try2
-        BRANCH_SHA=`git rev-parse $BRANCH_NAME`
-        echo "Updating SHA to $BRANCH_SHA"
+        echo "Updating GITHUB_SHA to $BRANCH_SHA"
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV
          
     - name: Add SHORT_SHA env property with commit short sha
