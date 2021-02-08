@@ -121,7 +121,7 @@ RUN apt-get update && \
 
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
-# TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
+# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once avaialable
 #       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
 
 # Install vscode
@@ -167,6 +167,9 @@ RUN pip install --quiet \
     conda install --quiet --yes \
       -c plotly \
       'jupyter-dash==0.4.0' \
+    && \
+    pip install --pre \
+      'jupyterlab-git==0.30.0b1' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \

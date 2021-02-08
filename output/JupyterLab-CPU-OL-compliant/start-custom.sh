@@ -59,7 +59,7 @@ fi
 # And https://github.com/blairdrummond/jupyter-rsession-proxy/blob/master/jupyter_rsession_proxy/__init__.py
 export RSERVER_WWW_ROOT_PATH=$NB_PREFIX/rstudio
 
-jupyter notebook --notebook-dir=/home/${NB_USER} \
+jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
