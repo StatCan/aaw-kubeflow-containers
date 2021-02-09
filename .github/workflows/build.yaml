@@ -30,6 +30,7 @@ jobs:
           - JupyterLab-CPU-OL-compliant
           - JupyterLab-PyTorch-OL-compliant
           - JupyterLab-Tensorflow-OL-compliant
+          - RemoteDesktop
     runs-on: ubuntu-latest
     services:
       registry:
