@@ -59,13 +59,13 @@ fi
 # And https://github.com/blairdrummond/jupyter-rsession-proxy/blob/master/jupyter_rsession_proxy/__init__.py
 export RSERVER_WWW_ROOT_PATH=$NB_PREFIX/rstudio
 
-jupyter notebook --notebook-dir=/home/${NB_USER} \
+jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
-                 --NotebookApp.token='' \
-                 --NotebookApp.password='' \
-                 --NotebookApp.allow_origin='*' \
-                 --NotebookApp.authenticate_prometheus=False \
-                 --NotebookApp.base_url=${NB_PREFIX} \
-                 --NotebookApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
+                 --ServerApp.token='' \
+                 --ServerApp.password='' \
+                 --ServerApp.allow_origin='*' \
+                 --ServerApp.authenticate_prometheus=False \
+                 --ServerApp.base_url=${NB_PREFIX} \
+                 --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
