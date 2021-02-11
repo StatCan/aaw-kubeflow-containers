@@ -36,5 +36,14 @@ RUN python3 -m pip install \
 
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
+# Required to run jupyter notebook on jupyter server. NBClassic loads jupyter notebook's config files
+# These are just required for the 'non-OL' images
+RUN pip install --quiet \
+    'jupyter_server==1.3.0' \
+    'nbclassic==0.2.6' \
+    && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
