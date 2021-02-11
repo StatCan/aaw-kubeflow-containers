@@ -138,6 +138,15 @@ RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
     fix-permissions $XDG_DATA_HOME
 
+# Required to run jupyter notebook on jupyter server. NBClassic loads jupyter notebook's config files
+# These are just required for the 'non-OL' images
+RUN pip install --quiet \
+    'jupyter_server==1.3.0' \
+    'nbclassic==0.2.6' \
+    && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
 # Default environment
 RUN pip install --quiet \
       'jupyter-lsp==0.9.3' \
