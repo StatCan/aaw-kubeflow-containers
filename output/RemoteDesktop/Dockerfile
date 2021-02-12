@@ -265,12 +265,25 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-#QGIS
-COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists
+#TRY ADDING THE CONDA STUFF FROM LINE 263 ONWARDS?
+#This does not do anything T_T
+#https://github.com/StatCan/kubeflow-containers-desktop/blob/master/base/Dockerfile#L263
+#RUN echo "hello" && \
+#These two lines seem to cause things to hang / take forever
+##    $CONDA_DIR/bin/conda update -y -n base -c defaults conda && \
+##    $CONDA_DIR/bin/conda update -y setuptools && \
+    #None of these things commented onwards do anything
+    #$CONDA_DIR/bin/conda install -y conda-build && \
+    # Add conda forge - Append so that conda forge has lower priority than the main channel
+   # $CONDA_DIR/bin/conda config --system --append channels conda-forge && \
+   # $CONDA_DIR/bin/conda config --system --set auto_update_conda false && \
+   # $CONDA_DIR/bin/conda config --system --set show_channel_urls true && \
+    ## Conda Solving Environment Fix: Turn off channel priority
+   # conda config --set channel_priority false && \
+    # Link Conda #uuhhhhh
+   # ln -s $CONDA_DIR/bin/python /usr/local/bin/python && \
+   # ln -s $CONDA_DIR/bin/conda /usr/bin/conda 
+
 
 #R-Studio this r-runtime messes with the building process
 #RUN /bin/bash $RESOURCES_PATH/r-runtime.sh && \
@@ -302,6 +315,60 @@ RUN \
     clean-layer.sh
 
 
+
+
+#QGIS
+COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
+#COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
+COPY qgistry2.sh $RESOURCES_PATH/qgis.sh
+RUN /bin/bash $RESOURCES_PATH/qgis.sh
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists
+
+#Test these
+RUN echo "hel"
+#Wow it seems that just ANY plugin messes with it, even trying it in the remote desktop it fails
+#also has the same error message
+#is there a difference between installing qgis the current way vs through conda-forge?
+
+RUN conda install --override-channels -c conda-forge --yes \
+#well fiona / gdal seem to get installed by geopandas
+#These are the 3 problematic packages
+#try installing gdal / fiona / geopandas in a different way
+      #'fiona' \
+      #'gdal' \
+      #'geopandas' \
+      'rasterio' \
+      'r-classInt' \
+      'r-deldir' \
+      'r-geoR' \
+      'r-geosphere' \
+      'r-gstat' \
+      'r-hdf5r' \
+      'r-lidR' \
+      'r-mapdata' \
+      'r-maptools' \
+      'r-mapview' \
+      'r-ncdf4' \
+      'r-proj4' \
+      'r-RandomFields' \
+      'r-raster' \
+      'r-RColorBrewer' \
+      'r-rgdal' \
+      'r-rgeos' \
+      'r-rlas' \
+      'r-RNetCDF' \
+      'r-sf' \
+      'r-sp' \
+      'r-spacetime' \
+      'r-spatstat' \
+      'r-spdep'
+
+#Copy over the path to have it recognized upon startup
+COPY qgis.pth /opt/conda/lib/python3.8/site-packages
+
+
+
 #MISC Configuration Area
 #Copy over desktop files. First is dropdown, second is desktop and make themm executable
 COPY /desktop-files /usr/share/applications 
@@ -313,6 +380,7 @@ RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
 #The following lines are TEMPORARY / me trying to find a solution to the little bar at the top 
+#not working currently
 #not being translated
 COPY French/fr.json /resources/novnc/app/locale
 #^ might not work 
@@ -336,12 +404,78 @@ RUN chown -R $NB_UID:$NB_GID $HOME
 ADD . /opt/install
 RUN fix-permissions /opt/install
 
+#there are some variants with just one ./ and three ./, maybe just one will suffice?
+RUN echo $LD_LIBRARY_PATH
+# So this breaks bin bash / file manager, but qgis is fine?
+#ENV LD_LIBRARY_PATH="/opt/conda/lib/python3.8/site-packages/osgeo/../../.././:${LD_LIBRARY_PATH}"
+RUN echo $LD_LIBRARY_PATH
+#RUN pip install -Iv pygdal==3.1.4.6
+
+#Some scuffed gdal install
+#awks this does not seem to install either
+#RUN apt-get update \
+  #&& apt-get install -y --no-install-recommends \
+    #lbzip2 \
+    #libfftw3-dev \
+    #libgdal-dev \
+    #libgeos-dev \
+    #libgsl0-dev \
+    #libhdf4-alt-dev \
+    #libhdf5-dev \
+    #package dne?liblwgeom-dev \
+    #libproj-dev \
+    #libnetcdf-dev \
+    #libsqlite3-dev \
+    #libssl-dev \
+    #libudunits2-dev \
+    #tk-dev \
+    #unixodbc-dev
+#these packages do not exist
+#RUN apt-get install -y \ 
+#install2.r --error \
+    #RColorBrewer \
+    #RandomFields \
+    #classInt \
+    #deldir \
+    #gstat \
+    #lidR \
+    #mapdata \
+    #maptools \
+    #mapview \
+    #proj4 \
+    #raster \
+    #rgdal \
+    #rgeos \
+    #rlas \
+    #sf \
+    #sp \
+    #spacetime \
+    #spatstat \
+    #spdep \
+    #geoR \
+    #geosphere
+    #end scuffed gdal install
+
+#RUN echo "sup wit it"
+#RUN apt-get update \
+ #    && apt-get install -y libgeotiff-dev 
+
+#regular gdal conda install 
+RUN conda install --override-channels -c conda-forge --yes \
+     'fiona' \
+     'gdal' \
+     'geopandas'
+#ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/conda/lib
 USER $NB_USER
 ENV DEFAULT_JUPYTER_URL=desktop
 
 
-RUN cd /opt/install && \
-   conda env update -n base --file environment.yml
+#Is this conva env update the reason qgis fails?. No this is not the reason? Unless
+# it needs to be done all in one step (try that)
+#Can i do this instead????
+RUN conda install -c conda-forge websockify 
+#RUN cd /opt/install && \
+#   conda env update -n base --file environment.yml
 
 #Use this instead of infinity for now
 # Configure container startup

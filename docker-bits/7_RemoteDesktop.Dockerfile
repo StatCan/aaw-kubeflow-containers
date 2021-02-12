@@ -241,12 +241,17 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-#QGIS
+#Try adding conda stuff from https://github.com/StatCan/kubeflow-containers-desktop/blob/master/base/Dockerfile#L263
+
+
+#QGIS: #btw need to set firefox to be the browser, set some browser env variable
 COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
 COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
 RUN /bin/bash $RESOURCES_PATH/qgis.sh
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists
+#Copy over the path to have it recognized upon startup. This is required
+COPY qgis.pth /opt/conda/lib/python3.8/site-packages
 
 #R-Studio this r-runtime messes with the building process
 #RUN /bin/bash $RESOURCES_PATH/r-runtime.sh && \
@@ -290,6 +295,7 @@ COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
 #The following lines are TEMPORARY / me trying to find a solution to the little bar at the top 
 #not being translated
+#this testing is not working currently 
 COPY French/fr.json /resources/novnc/app/locale
 #^ might not work 
 #try writing directly to PO, this writes to the correct folder but the ui.js is still messy
@@ -315,9 +321,11 @@ RUN fix-permissions /opt/install
 USER $NB_USER
 ENV DEFAULT_JUPYTER_URL=desktop
 
-
-RUN cd /opt/install && \
-   conda env update -n base --file environment.yml
+#Instead of using the environment.yml file you can just do a 
+# regular (conda forge) conda install websockify 
+RUN conda install -c conda-forge websockify 
+#RUN cd /opt/install && \
+#   conda env update -n base --file environment.yml
 
 #Use this instead of infinity for now
 # Configure container startup
