@@ -69,6 +69,29 @@ docker run -p 8888:8888 tagName:version
 ```
 Now open in http://localhost:8888/.
 
+### Development Testing Instructions for CI
+
+If making changes to CI that cannot be done on a branch (eg: changes to issue_comment triggers), you can:
+* fork the 'kubeflow-containers' repo
+* Modify the CI with 
+  * REGISTRY: (your own dockerhub repo, eg: "j-smith" (no need for the full url))
+  * Change 
+  	```
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+  	```
+  	to 
+  	```
+    - uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    ```
+  * In your forked repo, define secrets for REGISTRY_USERNAME and REGISTRY_PASSWORD with your dockerhub credentials (you should use an API token, not your actual dockerhub password)
+
 ## Troubleshooting
 If running using a VM and RStudio image was built successfully but is not opening correctly on localhost (error 5000 page), change your CPU allocation in your Linux VM settings to >= 3. You can also use your VM's system monitor to examine if all CPUs are 100% being used as your container is running. If so, increase CPU allocation. 
 This was tested on Linux Ubuntu 20.04 virtual machine.

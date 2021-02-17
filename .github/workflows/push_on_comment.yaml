@@ -1,0 +1,263 @@
+# This workflow will build a docker container and publish it to Azure Container Registry
+#
+# Based on https://github.com/Azure/actions-workflow-samples/tree/master/Kubernetes
+#
+# To configure this workflow:
+#
+# 1. Set up the following secrets in your workspace:
+#     a. REGISTRY_USERNAME with ACR username
+#     b. REGISTRY_PASSWORD with ACR Password
+#     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
+#
+# 2. Change the values for the REGISTRY
+
+# DEBUG: This is a temporary CI for testing.  This will be merged into push.yaml when complete, but must be tested on master branch (comment triggers only work on master)
+name: push on comment
+on:
+  # push:
+    # branches:
+      # - master  # DEBUG Removed during debugging
+      # - add-deploy-triggers # DEBUG Added during debugging
+  issue_comment:
+    types:
+      - created
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  REGISTRY: k8scc01covidacr.azurecr.io
+jobs:
+  # Do initial tests to see if we should run (push or an issue_comment on a PR) or if we should ignore (an issue_comment NOT on a PR)
+  # Inspired by https://stackoverflow.com/a/61832535/5394584
+  trigger-context:
+    runs-on: ubuntu-latest
+    outputs:
+      in_scope: ${{ steps.am_i_in_scope.outputs.in_scope }}
+      allowed_author: ${{ steps.pr_comment_context.outputs.allowed_author }}
+      is_pr_comment: ${{ steps.pr_comment_context.outputs.is_pr_comment }}
+      pr_number: ${{ steps.pr_comment_context.outputs.pr_number }}
+      from_pr_originator: ${{ steps.pr_comment_context.outputs.from_pr_originator }}
+      event_ref: ${{ steps.pr_comment_context.outputs.event_ref }}
+    steps:
+    - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@86aad239d20c9f7555816dd634d60a896774c030
+      id: pr_comment_context
+      with: 
+        allowed_author_associations: '[OWNER, COLLABORATOR]'
+    - name: Check if trigger is in scope
+      id: am_i_in_scope
+      shell: bash
+      run: |
+        # In scope if push or if PR-comment saying "/deploy" from a contributor/owner
+        if   [ ${{ github.event_name }} == "push" ] \
+          || (     [ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] \
+                && [ ${{ steps.pr_comment_context.outputs.allowed_author }} == "true" ] \
+                && [ "${{ github.event.comment.body }}" == "/deploy" ]); then
+            echo trigger is in scope
+            echo "::set-output name=in_scope::true"
+            echo "pretend to set-output name=in_scope::true"
+        else
+            echo trigger is out of scope
+            # Return null if false
+        fi
+
+  notify-start:
+    # Notify of triggered start before build-push.  If done in build-push, this triggers
+    # once per matrix run
+    needs:
+      trigger-context
+    if: needs.trigger-context.outputs.in_scope == 'true'  # Could also just be if in_scope, as it'll be empty if false
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify start via comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      id: notify-start
+      uses: actions/github-script@v1
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Build activated.  Track in [Github Actions](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/).  I will report back when things are pushed!`
+          })
+
+  build-push:
+    needs:
+      trigger-context
+    if: needs.trigger-context.outputs.in_scope == 'true'  # Could also just be if in_scope, as it'll be empty if false
+    strategy:
+      fail-fast: false
+      matrix:
+        notebook:
+          - JupyterLab-CPU
+          - JupyterLab-PyTorch
+          - JupyterLab-Tensorflow
+          - RStudio
+          - JupyterLab-CPU-OL-compliant     
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    steps:
+    - name: Notify start via comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      id: notify-start
+      uses: actions/github-script@v1
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Build activated.  Track in [Github Actions](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/).  I will report back when things are pushed!`
+          })
+
+    - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
+      id: event_ref
+    - uses: actions/checkout@master
+
+    # Depending on whether this is a push or a pr-comment, branch name is discoverable differently.
+    - name: Report BRANCH_NAME env variable
+      id: report-branch-name
+      shell: bash
+      run: |
+        if [ "${{ needs.trigger-context.outputs.is_pr_comment }}" == "true" ]; then
+          # Use Github API to get branch name from PR details
+          OWNER=${{ github.event.repository.owner.login }}
+          REPOSITORY=${{ github.event.repository.name }}
+          PR_NUMBER=${{ needs.trigger-context.outputs.pr_number }}
+          BRANCH_NAME=$(curl -s -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/$OWNER/$REPOSITORY/pulls/$PR_NUMBER | jq '.head.ref')
+          # Remove leading/trailing quotes
+          BRANCH_NAME=$(sed -e 's/^"//' -e 's/"$//' <<<"$BRANCH_NAME")
+        else
+          # Extract branch name from Github context's ref variable
+          BRANCH_NAME=${GITHUB_REF#refs/*/}
+        fi
+        echo "Found BRANCH_NAME=$BRANCH_NAME"
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+    # Extra checkout step to ensure we checkout PR's code when this triggers on PR comment
+    # Without this, we will always check out master
+    - name: Checkout this Branch and update GITHUB_SHA if PR Comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      run: |
+        git fetch origin
+        git checkout $BRANCH_NAME
+        BRANCH_SHA=$(git rev-parse $BRANCH_NAME)
+        echo "Updating GITHUB_SHA to $BRANCH_SHA"
+        echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV  # This sets env.GITHUB_SHA for future steps, but wont overwrite $GITHUB_SHA in future steps(?!)
+        echo "BRANCH_SHA=$BRANCH_SHA" >> $GITHUB_ENV
+
+    - name: Report SHORT_SHA env variable
+      run:  |
+        # Use env.GITHUB_SHA in case this was overwritten above.  For some reason $GITHUB_SHA is not updated
+        FULL_SHA=${{ env.GITHUB_SHA }}
+        echo "FULL_SHA=$FULL_SHA"
+        SHORT_SHA=`echo ${FULL_SHA} | cut -c1-8`
+        echo "SHORT_SHA=$SHORT_SHA"
+        echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
+    - name: Assert committed ./output folder matches `make all` output
+      run: |
+        sudo apt-get install --yes make
+        make all
+        if ! git diff --quiet output/; then
+            echo 'output folder and docker-bits/resources out of sync!'
+            exit 1
+        fi
+
+    # Connect to Azure Container registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    # Container build and push to a Azure Container registry (ACR)
+    - name: Build image
+      run: |
+        make all
+        COMMIT=$(make get-commit)
+        echo
+        cd output/${{ matrix.notebook }}
+        docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
+        docker push localhost:5000/kubeflow-image:$SHORT_SHA
+        docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
+        docker image prune
+        cd -
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      with:
+        image-name: localhost:5000/kubeflow-image:${{ env.SHORT_SHA }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+
+    # Container push to a Azure Container registry (ACR)
+    - name: Push image
+      id: push-image
+      shell: bash
+      run: |
+        SOURCE_IMAGE_NAME=localhost:5000/kubeflow-image:$SHORT_SHA
+        echo "Pull the image from local storage repo $SOURCE_IMAGE_NAME"
+        docker pull $SOURCE_IMAGE_NAME
+
+        IMAGE_NAME="${{ matrix.notebook }}"
+
+        echo "Build tags list"
+        TAGS=($SHORT_SHA $BRANCH_NAME)
+        if [ "$BRANCH_NAME" == "master" ]; then
+            TAGS+=(latest)
+        fi
+        echo "Tags to push: ${TAGS[@]}"
+
+        sanitize () {
+            # This:
+            # * removes leading non-alphanumeric/underscore characters
+            # * converts all non-alphanumeric/period/hyphen/underscore to hyphens
+            # * converts all characters to lowercase
+            local result="$(echo $1 | sed -e 's/^[^[:alnum:]\_]*//' -e 's/[^[:alnum:]\.\_\-]/-/g' | tr '[:upper:]' '[:lower:]')"
+            echo "$result"
+        }
+
+        echo
+        echo "Pushing tagged images"
+        PUSHED_IMAGES=()
+        for tag in "${TAGS[@]}"; do
+            TARGET_FULL_IMAGE_NAME="$(sanitize $REGISTRY)/$(sanitize $IMAGE_NAME):$(sanitize $tag)"
+            echo "Pushing docker image: $TARGET_FULL_IMAGE_NAME"
+            docker tag $SOURCE_IMAGE_NAME $TARGET_FULL_IMAGE_NAME
+            docker push $TARGET_FULL_IMAGE_NAME
+            PUSHED_IMAGES+=($TARGET_FULL_IMAGE_NAME)
+        done
+
+        # Report
+        echo
+        for pushed_image in "${PUSHED_IMAGES[@]}"; do
+            echo "Pushed $pushed_image"
+        done
+
+    # This notification uses a semi-hardcoded image name.  There's probably a better way
+    - name: Notify end via comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      id: notify-end
+      uses: actions/github-script@v1
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          var IMAGE_NAME = process.env.IMAGE_NAME
+          var REGISTRY = process.env.REGISTRY
+          var SHORT_SHA = process.env.SHORT_SHA
+
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Build complete for image: ${IMAGE_NAME}.  Test your image in [kubeflow](https://kubeflow.covid.cloud.statcan.ca/_/jupyter) by creating a Notebook Server using custom image ${REGISTRY}/${SHORT_SHA}`
+          })
+      env:
+        IMAGE_NAME: ${{ matrix.notebook }}
+        REGISTRY: ${{ env.REGISTRY }}
