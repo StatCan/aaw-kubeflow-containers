@@ -41,12 +41,12 @@ jobs:
     - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@86aad239d20c9f7555816dd634d60a896774c030
       id: pr_comment_context
       with: 
-        allowed_author_associations: '[OWNER, COLLABORATOR]'
+        allowed_author_associations: '[OWNER, COLLABORATOR, CONTRIBUTOR, MEMBER]'
     - name: Check if trigger is in scope
       id: am_i_in_scope
       shell: bash
       run: |
-        # In scope if push or if PR-comment saying "/deploy" from a contributor/owner
+        # In scope if push or if PR-comment saying "/deploy" from an allowed author
         if   [ ${{ github.event_name }} == "push" ] \
           || (     [ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] \
                 && [ ${{ steps.pr_comment_context.outputs.allowed_author }} == "true" ] \
