@@ -8,7 +8,7 @@
 ###  docker-bits/0_CPU.Dockerfile
 ###############################
 
-ARG BASE_VERSION=42f4c82a07ff
+ARG BASE_VERSION=r-4.0.3
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root

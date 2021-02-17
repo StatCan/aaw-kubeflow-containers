@@ -1,18 +1,15 @@
 
 ###############################
-###  .tmp/CPU-OL-compliant.Dockerfile
+###  .tmp/CPU.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_CPU-OL-compliant.Dockerfile
+###  docker-bits/0_CPU.Dockerfile
 ###############################
 
 ARG BASE_VERSION=r-4.0.3
-
-# temporarily hard coding docker image tag to r-4.0.3 to avoid using the current tag passed in --build-arg in CI for OL. 
-# Should be replaced back to $BASE_VERSION when current images are replaced for the OL ones 
-FROM jupyter/datascience-notebook:r-4.0.3
+FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -149,15 +146,15 @@ RUN code-server --install-extension ms-python.python && \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp==1.0.0' \
-      'jupyter-server-proxy==1.5.0' \
+      'jupyter-lsp==1.1.3' \
+      'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets==7.6.3' \
-      'ipympl==0.5.8' \
+      'ipympl==0.6.3' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
       'nodejs==14.14.0' \
@@ -168,16 +165,15 @@ RUN pip install --quiet \
       -c plotly \
       'jupyter-dash==0.4.0' \
     && \
-    pip install --pre \
-      'jupyterlab-git==0.30.0b1' \
-    && \
+    # pip install --pre \
+    #   'jupyterlab-git==0.30.0b2' \
+    # && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
-      '@jupyterlab/toc' \
       '@hadim/jupyter-archive@3.0.0' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
