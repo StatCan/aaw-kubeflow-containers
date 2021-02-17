@@ -246,6 +246,7 @@ RUN pip install --quiet \
       'jupyter-lsp==1.1.3' \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
+      'jupyterlab_execute_time==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
