@@ -239,6 +239,8 @@ jobs:
         for pushed_image in "${PUSHED_IMAGES[@]}"; do
             echo "Pushed $pushed_image"
         done
+        
+        echo "::set-output name=pushed_images::${PUSHED_IMAGES[@]}"
 
     # This notification uses a semi-hardcoded image name.  There's probably a better way
     - name: Notify end via comment
@@ -249,15 +251,15 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           var IMAGE_NAME = process.env.IMAGE_NAME
-          var REGISTRY = process.env.REGISTRY
-          var SHORT_SHA = process.env.SHORT_SHA
+          var PUSHED_IMAGES = process.env.PUSHED_IMAGES
 
           github.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `Build complete for image: ${IMAGE_NAME}.  Test your image in [kubeflow](https://kubeflow.covid.cloud.statcan.ca/_/jupyter) by creating a Notebook Server using custom image ${REGISTRY}/${SHORT_SHA}`
+            body: `Build complete for image: ${IMAGE_NAME}.  Test your image in [kubeflow](https://kubeflow.covid.cloud.statcan.ca/_/jupyter) by creating a Notebook Server using one of (${PUSHED_IMAGES})`
           })
       env:
         IMAGE_NAME: ${{ matrix.notebook }}
         REGISTRY: ${{ env.REGISTRY }}
+        PUSHED_IMAGES: ${{ steps.push-image.outputs.pushed_images }}
