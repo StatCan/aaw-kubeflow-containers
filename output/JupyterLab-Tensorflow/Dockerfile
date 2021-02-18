@@ -279,7 +279,11 @@ RUN pip install --quiet \
 
 # Install R and Julia language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    conda install -c conda-forge r-languageserver
+    conda install -c conda-forge 'r-languageserver' \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
