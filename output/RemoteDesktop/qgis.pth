@@ -1,6 +1,3 @@
 #python path to let it know where to find the qgis package
 /usr/lib/python3/dist-packages/
 #if that doesnt work its without the / 
-#TEST THIS (does not seem to help)
-/opt/conda/share/qgis/python
-/opt/conda/share/qgis/python/plugins
