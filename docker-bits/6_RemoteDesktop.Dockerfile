@@ -1,25 +1,30 @@
 USER root
 
-RUN apt-get -y update \
- && apt-get install -y dbus-x11 \
-   xfce4 \
-   xfce4-panel \
-   xfce4-session \
-   xfce4-settings \
-   xorg \
-   xubuntu-icon-theme
-
-ENV RESOURCES_PATH="/resources" 
-RUN mkdir $RESOURCES_PATH 
-
-RUN python3 -m pip install \ 
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
-
-RUN conda install -y conda-build
-#Before adding clean-layer: 6.9 GB (including installs)
-#After adding clean-layer: 6.85GB (so it does make it smaller)
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
+
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -y update \
+ && apt-get install -y dbus-x11 \
+    xfce4 \
+    xfce4-panel \
+    xfce4-session \
+    xfce4-settings \
+    xorg \
+    xubuntu-icon-theme \
+ && clean-layer.sh
+
+ENV RESOURCES_PATH="/resources"
+RUN mkdir $RESOURCES_PATH
+
+RUN python3 -m pip install \
+    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
+
+#RUN conda install -y conda-build
+##Before adding clean-layer: 6.9 GB (including installs)
+##After adding clean-layer: 6.85GB (so it does make it smaller)
+#COPY clean-layer.sh /usr/bin/clean-layer.sh
+#RUN chmod +x /usr/bin/clean-layer.sh
 
 #Fix-permissions
 COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
@@ -37,7 +42,7 @@ RUN \
     locale-gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     apt-get install -y language-pack-fr-base && \
-    #Needed for right click functions 
+    #Needed for right click functions
     apt-get install -y language-pack-gnome-fr && \
     clean-layer.sh
 
@@ -53,7 +58,7 @@ RUN \
     apt-get install -y --no-install-recommends gdebi && \
     # Search for files
     apt-get install -y --no-install-recommends catfish && \
-    # TODO: Unable to locate package:  apt-get install -y --no-install-recommends gnome-search-tool && 
+    # TODO: Unable to locate package:  apt-get install -y --no-install-recommends gnome-search-tool &&
     # vs support for thunar
     apt-get install -y thunar-vcs-plugin && \
     apt-get install -y --no-install-recommends baobab && \
@@ -66,7 +71,7 @@ RUN \
     apt-get install -y p7zip p7zip-rar && \
     apt-get install -y --no-install-recommends thunar-archive-plugin && \
     apt-get install -y xarchiver && \
-    # DB Utils 
+    # DB Utils
     apt-get install -y --no-install-recommends sqlitebrowser && \
     # Install nautilus and support for sftp mounting
     apt-get install -y --no-install-recommends nautilus gvfs-backends && \
@@ -82,14 +87,14 @@ RUN \
     clean-layer.sh
 #was after vs code before
 
-#None of these are installed in upstream docker images but are present in current remote 
+#None of these are installed in upstream docker images but are present in current remote
 #Something like 400 mbs
 RUN \
     apt-get update --fix-missing && \
     apt-get install -y sudo apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-        # This is necessary for apt to access HTTPS sources: 
+        # This is necessary for apt to access HTTPS sources:
         apt-transport-https \
         gnupg-agent \
         gpg-agent \
@@ -195,7 +200,7 @@ RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
     # Cleanup
     clean-layer.sh
 
-#Copy the French language pack file, must be the 78.6.1esr version 
+#Copy the French language pack file, must be the 78.6.1esr version
 RUN wget https://ftp.mozilla.org/pub/firefox/releases/78.6.1esr/linux-x86_64/xpi/fr.xpi -O langpack-fr@firefox.mozilla.org.xpi && \
     mkdir --parents /usr/lib/firefox/distribution/extensions/ && \
     mv langpack-fr@firefox.mozilla.org.xpi /usr/lib/firefox/distribution/extensions/
@@ -204,9 +209,13 @@ RUN wget https://ftp.mozilla.org/pub/firefox/releases/78.6.1esr/linux-x86_64/xpi
 COPY French/Firefox/autoconfig.js /usr/lib/firefox/defaults/pref/
 COPY French/Firefox/firefox.cfg /usr/lib/firefox/
 
+
 #Install VsCode
 #COPY remote-desktop/vs-code-desktop.sh $RESOURCES_PATH
-RUN /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install
+RUN apt-get update --yes \
+    && apt-get install --yes nodejs npm \
+    && /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install \
+    && clean-layer.sh
 
 # Install Visual Studio Code extensions
 # https://github.com/cdr/code-server/issues/171
@@ -247,17 +256,19 @@ RUN \
 #QGIS: #btw need to set firefox to be the browser, set some browser env variable
 COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
 COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists
-#Copy over the path to have it recognized upon startup. This is required
-COPY qgis.pth /opt/conda/lib/python3.8/site-packages
+RUN /bin/bash $RESOURCES_PATH/qgis.sh \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
 
-#R-Studio this r-runtime messes with the building process
-#RUN /bin/bash $RESOURCES_PATH/r-runtime.sh && \
-RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists
+# WARNING: NOTE: Blair removed this
+##Copy over the path to have it recognized upon startup. This is required
+#COPY qgis.pth /opt/conda/lib/python3.8/site-packages
+
+# #R-Studio this r-runtime messes with the building process
+# #RUN /bin/bash $RESOURCES_PATH/r-runtime.sh && \
+# RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
+#     apt-get clean && \
+#     rm -rf /var/lib/apt/lists
 
 #Libre office
 RUN add-apt-repository ppa:libreoffice/ppa && \
@@ -267,11 +278,11 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     clean-layer.sh
 
 #Copy over french config for vscode
-#Both of these are required to have the language pack be recognized on install. 
+#Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
 COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
-#Tiger VNC 
+#Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
 RUN \
     cd ${RESOURCES_PATH} && \
@@ -285,7 +296,7 @@ RUN \
 
 #MISC Configuration Area
 #Copy over desktop files. First is dropdown, second is desktop and make themm executable
-COPY /desktop-files /usr/share/applications 
+COPY /desktop-files /usr/share/applications
 COPY /desktop-files /home/$NB_USER/Desktop
 #COPY /usr/share/applications/org.qgis.qgis.desktop /home/$NB_USER/Desktop
 RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
@@ -293,46 +304,52 @@ RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#The following lines are TEMPORARY / me trying to find a solution to the little bar at the top 
+#The following lines are TEMPORARY / me trying to find a solution to the little bar at the top
 #not being translated
-#this testing is not working currently 
+#this testing is not working currently
 COPY French/fr.json /resources/novnc/app/locale
-#^ might not work 
+#^ might not work
 #try writing directly to PO, this writes to the correct folder but the ui.js is still messy
 COPY French/fr.po /opt/conda/lib/python3.8/site-packages/jupyter_desktop/share/web/noVNC-1.1.0/po/
 #If this works put in a nicer spot
 COPY French/ui.js /opt/conda/lib/python3.8/site-packages/jupyter_desktop/share/web/noVNC-1.1.0/app/ui.js
-#End testing 
+#End testing
 
 #Removal area
 #Extra Icons
-RUN rm /usr/share/applications/exo-mail-reader.desktop 
+RUN rm /usr/share/applications/exo-mail-reader.desktop
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
 
 #ENV KF_LANG=fr
 
 # apt-get may result in root-owned directories/files under $HOME
-RUN chown -R $NB_UID:$NB_GID $HOME
+RUN usermod -l jovyan rstudio && \
+    chown -R $NB_UID:$NB_GID $HOME
+
+ENV NB_USER=$NB_USER
+
+# https://github.com/novnc/websockify/issues/413#issuecomment-664026092
+RUN apt-get update && apt-get install --yes websockify \
+    && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
+    && clean-layer.sh
 
 ADD . /opt/install
-RUN fix-permissions /opt/install
+#RUN fix-permissions /opt/install
 
-USER $NB_USER
-ENV DEFAULT_JUPYTER_URL=desktop
 
-#Instead of using the environment.yml file you can just do a 
-# regular (conda forge) conda install websockify 
-RUN conda install -c conda-forge websockify 
+#Instead of using the environment.yml file you can just do a
+# regular (conda forge) conda install websockify
+# RUN conda install -c conda-forge websockify
 #RUN cd /opt/install && \
 #   conda env update -n base --file environment.yml
 
-#Use this instead of infinity for now
-# Configure container startup
-WORKDIR /home/$NB_USER
-EXPOSE 8888
-COPY start-remote-desktop.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
-USER $NB_USER
-ENTRYPOINT ["tini", "--"]
-CMD ["start-remote-desktop.sh"]
+##Use this instead of infinity for now
+## Configure container startup
+#WORKDIR /home/$NB_USER
+#EXPOSE 8888
+#COPY start-remote-desktop.sh /usr/local/bin/
+#COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+#USER $NB_USER
+#ENTRYPOINT ["tini", "--"]
+#CMD ["start-remote-desktop.sh"]

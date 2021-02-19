@@ -113,7 +113,7 @@ JupyterLab: PyTorch Tensorflow CPU
 	done	
 
 # Remote Desktop
-RemoteDesktop: CPU
+RemoteDesktop:
 	mkdir -p $(OUT)/$@
 	echo "REMOTE DESKTOP" 
 	#Copies everything into a remote-desktop directory
@@ -124,6 +124,9 @@ RemoteDesktop: CPU
 
 	# keep $(SRC)/∞_CMD.Dockerfile out for now
 	$(CAT) \
-		$(TMP)/$<.Dockerfile \
-		$(SRC)/7_RemoteDesktop.Dockerfile \
+		$(SRC)/0_Rocker.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/6_RemoteDesktop.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
