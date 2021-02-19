@@ -1,5 +1,4 @@
-ARG BASE_VERSION=4.0.3
-FROM rocker/geospatial:$BASE_VERSION
+FROM rocker/geospatial:4.0.3
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"
