@@ -190,9 +190,11 @@ RUN curl -LO "${KUBECTL_URL}" \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
+    && echo "azcli: ok" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    && echo "oh-my-zsh: ok"
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
