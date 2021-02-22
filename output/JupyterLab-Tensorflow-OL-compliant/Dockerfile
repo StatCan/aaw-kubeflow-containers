@@ -237,6 +237,7 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment

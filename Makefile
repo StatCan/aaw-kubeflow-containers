@@ -26,7 +26,8 @@ clean:
 .output:
 	mkdir -p $(OUT)/ $(TMP)/
 
-all: JupyterLab RStudio
+# I think i need to add "RemoteDesktop" here
+all: JupyterLab RStudio RemoteDesktop
 	@echo "All dockerfiles created."
 
 build:
@@ -74,7 +75,7 @@ CPU: .output
 # Only one output version
 RStudio: CPU
 	mkdir -p $(OUT)/$@
-	cp -r resources/* $(OUT)/$@
+	cp -r resources/common/* $(OUT)/$@
 
 	$(CAT) \
 		$(TMP)/$<.Dockerfile \
@@ -90,7 +91,7 @@ JupyterLab: PyTorch Tensorflow CPU
 	
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
-		cp -r resources/* $(OUT)/$@-$${type}/; \
+		cp -r resources/common/* $(OUT)/$@-$${type}/; \
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
@@ -100,7 +101,7 @@ JupyterLab: PyTorch Tensorflow CPU
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
 		mkdir -p $(OUT)/$@-$${type}-$(OL); \
-		cp -r resources/* $(OUT)/$@-$${type}-$(OL)/; \
+		cp -r resources/common/* $(OUT)/$@-$${type}-$(OL)/; \
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
@@ -110,3 +111,19 @@ JupyterLab: PyTorch Tensorflow CPU
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}-$(OL)/Dockerfile; \
 	done	
+
+# Remote Desktop
+RemoteDesktop: CPU
+	mkdir -p $(OUT)/$@
+	echo "REMOTE DESKTOP" 
+	#Copies everything into a remote-desktop directory
+	cp -r scripts/remote-desktop $(OUT)/$@ 
+	cp -r resources/common/* $(OUT)/$@
+	#Copies and makes a French directory under output/RemoteDesktop, same level as remote-desktop
+	cp -r resources/remote-desktop/* $(OUT)/$@
+
+	# keep $(SRC)/∞_CMD.Dockerfile out for now
+	$(CAT) \
+		$(TMP)/$<.Dockerfile \
+		$(SRC)/7_RemoteDesktop.Dockerfile \
+	>   $(OUT)/$@/Dockerfile
