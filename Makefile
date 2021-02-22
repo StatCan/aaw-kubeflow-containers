@@ -110,7 +110,6 @@ JupyterLab: PyTorch Tensorflow CPU
 			$(SRC)/6_$(@)-$(OL).Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}-$(OL)/Dockerfile; \
-	done
 
 # Remote Desktop
 RemoteDesktop:

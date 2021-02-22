@@ -14,6 +14,7 @@ if ! hash qgis 2>/dev/null; then
   #I dont know if this apt-get install is the source of qgis not being recognized initially
   # / needing the qgis.pth file
 
+
 else
     echo "QGIS is already installed"
 fi

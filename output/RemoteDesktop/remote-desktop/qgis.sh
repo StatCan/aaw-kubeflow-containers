@@ -11,6 +11,7 @@ if ! hash qgis 2>/dev/null; then
   add-apt-repository "deb https://qgis.org/debian `lsb_release -c -s` main"
   apt-get update
   apt-get install -y qgis qgis-plugin-grass
+  
   #I dont know if this apt-get install is the source of qgis not being recognized initially
   # / needing the qgis.pth file
 
