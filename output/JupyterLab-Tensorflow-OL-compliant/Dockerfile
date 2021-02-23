@@ -305,6 +305,6 @@ COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
 
-# USER $NB_USER
+USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
