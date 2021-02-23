@@ -12,6 +12,9 @@
 # 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below).
 name: build
 on:
+  schedule:
+    # Execute at 2am EST every day
+    - cron:  '0 21 * * *'
   push:
     branches:
       - '*'
@@ -30,6 +33,7 @@ jobs:
           - JupyterLab-CPU-OL-compliant
           - JupyterLab-PyTorch-OL-compliant
           - JupyterLab-Tensorflow-OL-compliant
+          - RemoteDesktop
     runs-on: ubuntu-latest
     services:
       registry:
