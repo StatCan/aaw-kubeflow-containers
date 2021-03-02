@@ -27,7 +27,6 @@ if [ -n "${KF_LANG}" ]; then
         export LANG="en_US.utf8"
     else
         export LANG="fr_CA.utf8"
-
         #  User's browser lang is set to french, open jupyterlab in french (fr_FR)
         if [ "${DEFAULT_JUPYTER_URL}" != "/rstudio" ]; then
           export LANG="fr_FR"

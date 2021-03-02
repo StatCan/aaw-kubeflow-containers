@@ -114,7 +114,7 @@ RUN pip install --quiet \
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
-RUN pip --no-cache-dir install --quiet \
+RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \      
       'kubeflow-fairing==1.0.2' \
@@ -126,7 +126,7 @@ RUN pip --no-cache-dir install --quiet \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
 
 # kfp-azure-databricks needs to be run after kfp
-RUN pip --no-cache-dir install --quiet \
+RUN pip3 --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
 
@@ -187,9 +187,11 @@ RUN curl -LO "${KUBECTL_URL}" \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
+    && echo "azcli: ok" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    && echo "oh-my-zsh: ok"
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -234,6 +236,7 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
