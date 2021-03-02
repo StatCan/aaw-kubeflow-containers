@@ -10,6 +10,7 @@
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #
 # 2. Change the values for the REGISTRY
+
 # DEBUG: This is a temporary CI for testing.  This will be merged into push.yaml when complete, but must be tested on master branch (comment triggers only work on master)
 name: push on comment
 on:
@@ -23,7 +24,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  REGISTRY: scribby182
+  REGISTRY: k8scc01covidacr.azurecr.io
 jobs:
   # Do initial tests to see if we should run (push or an issue_comment on a PR) or if we should ignore (an issue_comment NOT on a PR)
   # Inspired by https://stackoverflow.com/a/61832535/5394584
@@ -40,12 +41,12 @@ jobs:
     - uses: ca-scribner/github-actions-recipes/get-pr-comment-context@86aad239d20c9f7555816dd634d60a896774c030
       id: pr_comment_context
       with: 
-        allowed_author_associations: '[OWNER, COLLABORATOR]'
+        allowed_author_associations: '[OWNER, COLLABORATOR, CONTRIBUTOR, MEMBER]'
     - name: Check if trigger is in scope
       id: am_i_in_scope
       shell: bash
       run: |
-        # In scope if push or if PR-comment saying "/deploy" from a contributor/owner
+        # In scope if push or if PR-comment saying "/deploy" from an allowed author
         if   [ ${{ github.event_name }} == "push" ] \
           || (     [ ${{ steps.pr_comment_context.outputs.is_pr_comment }} == "true" ] \
                 && [ ${{ steps.pr_comment_context.outputs.allowed_author }} == "true" ] \
@@ -58,8 +59,9 @@ jobs:
             # Return null if false
         fi
 
-  # Notify outside build-push, otherwise we get a notification for each matrix run
   notify-start:
+    # Notify of triggered start before build-push.  If done in build-push, this triggers
+    # once per matrix run
     needs:
       trigger-context
     if: needs.trigger-context.outputs.in_scope == 'true'  # Could also just be if in_scope, as it'll be empty if false
@@ -91,7 +93,8 @@ jobs:
           - JupyterLab-PyTorch
           - JupyterLab-Tensorflow
           - RStudio
-          - JupyterLab-CPU-OL-compliant     
+          - JupyterLab-CPU-OL-compliant
+          - RemoteDesktop
     runs-on: ubuntu-latest
     services:
       registry:
@@ -99,12 +102,26 @@ jobs:
         ports:
           - 5000:5000
     steps:
+    - name: Notify start via comment
+      if: needs.trigger-context.outputs.is_pr_comment
+      id: notify-start
+      uses: actions/github-script@v1
+      with: 
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `Build activated.  Track in [Github Actions](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/).  I will report back when things are pushed!`
+          })
+
     - uses: ca-scribner/github-actions-recipes/get-event-ref-on-pr@24abb2d699ce6c7f8374404e4ccc7bd453bdf81a
       id: event_ref
     - uses: actions/checkout@master
 
     # Depending on whether this is a push or a pr-comment, branch name is discoverable differently.
-    - name: Report branch name
+    - name: Report BRANCH_NAME env variable
       id: report-branch-name
       shell: bash
       run: |
@@ -135,10 +152,9 @@ jobs:
         echo "GITHUB_SHA=$BRANCH_SHA" >> $GITHUB_ENV  # This sets env.GITHUB_SHA for future steps, but wont overwrite $GITHUB_SHA in future steps(?!)
         echo "BRANCH_SHA=$BRANCH_SHA" >> $GITHUB_ENV
 
-    - name: Add SHORT_SHA env variable
+    - name: Report SHORT_SHA env variable
       run:  |
         # Use env.GITHUB_SHA in case this was overwritten above.  For some reason $GITHUB_SHA is not updated
-        
         FULL_SHA=${{ env.GITHUB_SHA }}
         echo "FULL_SHA=$FULL_SHA"
         SHORT_SHA=`echo ${FULL_SHA} | cut -c1-8`
@@ -154,10 +170,10 @@ jobs:
             exit 1
         fi
 
-    # Connect to Dockerhub registry
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
+    # Connect to Azure Container registry (ACR)
+    - uses: azure/docker-login@v1
       with:
+        login-server: ${{ env.REGISTRY }}
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
 
@@ -168,15 +184,6 @@ jobs:
         COMMIT=$(make get-commit)
         echo
         cd output/${{ matrix.notebook }}
-        
-        # DEBUG
-        ls -l
-        cat Dockerfile
-        echo "FROM alpine:3.5" > Dockerfile
-        echo "ARG BASE_VERSION=1" >> Dockerfile
-        cat Dockerfile
-        ls -l
-        
         docker build . --build-arg BASE_VERSION=$COMMIT -t localhost:5000/kubeflow-image:$SHORT_SHA
         docker push localhost:5000/kubeflow-image:$SHORT_SHA
         docker rmi localhost:5000/kubeflow-image:$SHORT_SHA
@@ -234,6 +241,8 @@ jobs:
             echo "Pushed $pushed_image"
         done
         
+        echo "::set-output name=pushed_images::${PUSHED_IMAGES[@]}"
+
     # This notification uses a semi-hardcoded image name.  There's probably a better way
     - name: Notify end via comment
       if: needs.trigger-context.outputs.is_pr_comment
@@ -243,15 +252,15 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           var IMAGE_NAME = process.env.IMAGE_NAME
-          var REGISTRY = process.env.REGISTRY
-          var SHORT_SHA = process.env.SHORT_SHA
+          var PUSHED_IMAGES = process.env.PUSHED_IMAGES
 
           github.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `Build complete for image: ${IMAGE_NAME}.  Test your image in [kubeflow](https://kubeflow.covid.cloud.statcan.ca/_/jupyter) by creating a Notebook Server using custom image ${REGISTRY}/${SHORT_SHA}`
+            body: `Build complete for image: ${IMAGE_NAME}.  Test your image in [kubeflow](https://kubeflow.covid.cloud.statcan.ca/_/jupyter) by creating a Notebook Server using one of (${PUSHED_IMAGES})`
           })
       env:
         IMAGE_NAME: ${{ matrix.notebook }}
         REGISTRY: ${{ env.REGISTRY }}
+        PUSHED_IMAGES: ${{ steps.push-image.outputs.pushed_images }}

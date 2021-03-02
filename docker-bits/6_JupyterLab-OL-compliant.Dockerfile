@@ -1,9 +1,9 @@
 # installs vscode server, python & conda packages and jupyter lab extensions.
-# This docker-bit also installs JupyterLab 3.0 as base image from docker-stacks still uses v2.2.9. 
-# This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+# Using JupyterLab 3.0 from docker-stacks base image. This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
-# TODO: Add jupyterlab-git when new version for Jupyterlab 3 is released
+# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
 #       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
 
 # Install vscode
@@ -27,22 +27,21 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN conda install -c conda-forge \
-      'jupyterlab==3.0.5' \
-    && \
-    pip install --quiet \
-      'jupyter-lsp==1.0.0' \
-      'jupyter-server-proxy==1.5.0' \
-      'kubeflow-kale==0.6.0' \
+RUN pip install --quiet \
+      'jupyter-lsp==1.1.3' \
+      'jupyter-server-proxy==1.6.0' \
+      'kubeflow-kale==0.6.1' \
+      'jupyterlab_execute_time==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets==7.6.3' \
-      'ipympl==0.5.8' \
+      'ipympl==0.6.3' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
       'nodejs==14.14.0' \
@@ -51,16 +50,17 @@ RUN conda install -c conda-forge \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.3.0' \
+      'jupyter-dash==0.4.0' \
     && \
+    # pip install --pre \
+    #   'jupyterlab-git==0.30.0b2' \
+    # && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension uninstall @bokeh/jupyter_bokeh jupyterlab-dash && \
     jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.3' \
+      '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
-      '@jupyterlab/toc' \
       '@hadim/jupyter-archive@3.0.0' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \

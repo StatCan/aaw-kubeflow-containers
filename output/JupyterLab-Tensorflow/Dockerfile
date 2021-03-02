@@ -8,7 +8,7 @@
 ###  docker-bits/0_CPU.Dockerfile
 ###############################
 
-ARG BASE_VERSION=42f4c82a07ff
+ARG BASE_VERSION=r-4.0.3
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -102,13 +102,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###############################
 
 # Install Tensorflow
-RUN conda create -n tensorflow && \
-    conda install -n tensorflow --quiet --yes \
-      'tensorflow-gpu' \
-      'keras' \
-      'ipykernel==5.3.4' \
+RUN pip install --quiet \
+        'tensorflow-gpu' \
+        'keras' \
+        'ipykernel==5.3.4' \
     && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -116,20 +114,19 @@ RUN conda create -n tensorflow && \
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
-RUN pip --no-cache-dir install --quiet \
+RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.2.0' \
-      'kfp-tekton==0.5.0' \
+      'kfp-server-api==1.3.0' \      
       'kubeflow-fairing==1.0.2' \
-      'ml-metadata==0.26.0' \
-      'kubeflow-metadata==0.3.1' \
+      'ml-metadata==0.27.0' \
+      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
 
 # kfp-azure-databricks needs to be run after kfp
-RUN pip --no-cache-dir install --quiet \
+RUN pip3 --no-cache-dir install --quiet \
       'fire==0.3.1' \
       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
 
@@ -190,9 +187,11 @@ RUN curl -LO "${KUBECTL_URL}" \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
+    && echo "azcli: ok" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    && echo "oh-my-zsh: ok"
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -209,6 +208,7 @@ RUN apt-get update && \
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
+# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -231,46 +231,46 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 RUN code-server --install-extension ms-python.python && \
     code-server --install-extension ikuyadeu.r && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp==0.9.3' \
-      'jupyter-server-proxy==1.5.0' \
-      'kubeflow-kale==0.6.0' \
+      'jupyterlab-lsp==3.4.1' \
+      'jupyter-lsp==1.1.3' \
+      'jupyter-server-proxy==1.6.0' \
+      'kubeflow-kale==0.6.1' \
+      'lckr-jupyterlab-variableinspector==3.0.6' \
+      'jupyterlab_execute_time==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipympl==0.5.8' \
+      'ipywidgets==7.6.3' \
+      'ipympl==0.6.3' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'jupyterlab-git==0.23.2' \
       'nodejs==14.14.0' \
       'python-language-server==0.36.2' \
+      'jupyterlab-translate==0.1.1' \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.3.0' \
+      'jupyter-dash==0.4.0' \
+    && \
+    pip install --pre \
+      'jupyterlab-git==0.30.0b2' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
-      '@ijmbarr/jupyterlab_spellchecker@0.2.0' \
-      '@hadim/jupyter-archive@0.7.0' \
-      '@krassowski/jupyterlab-lsp@2.1.0' \
-      '@lckr/jupyterlab_variableinspector@0.5.1' \
-      '@jupyterlab/github@2.0.0' \
-      '@jupyterlab/git@0.23.2' \
-      '@jupyterlab/server-proxy@2.1.1' \
-      '@jupyterlab/toc@4.0.0' \
-      'jupyterlab-execute-time@1.0.0' \
-      'jupyterlab-plotly@4.14.1' \
-      'jupyterlab-theme-solarized-dark@1.0.3' \
-      'jupyterlab-spreadsheet@0.3.2' \
-      'kubeflow-kale-labextension@0.6.0' \
-      'nbdime-jupyterlab@2.0.1' \
+      '@jupyterlab/server-proxy@2.1.2' \
+      '@ijmbarr/jupyterlab_spellchecker@0.3.0' \
+      '@hadim/jupyter-archive@3.0.0' \
+      'jupyterlab-plotly@4.14.3' \
+      'jupyterlab-spreadsheet@0.4.0' \
+      'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
@@ -279,6 +279,14 @@ RUN pip install --quiet \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
+
+# Install R and Julia language servers
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
+    conda install -c conda-forge 'r-languageserver' \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
