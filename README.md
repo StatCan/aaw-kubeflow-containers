@@ -6,6 +6,118 @@ Containers to be used with Kubeflow for Data Science.
 
 Our Container images are based on the community driven [jupyter/docker-stacks](https://github.com/jupyter/docker-stacks). This enables us to focus only on the additional toolsets that we require to enable our data scientists.
 
+## Usage
+
+### Generating Dockerfiles
+
+Use `make generate-dockerfiles` to generate all `Dockerfile`s.  These will be written to `./output/imagename`, along with any required files for the build context
+
+### Building and Tagging Docker Images
+
+Use `make build/IMAGENAME` to build an **already generated** (see above) `Dockerfile`.  This by default generates images with:
+* `repo=k8scc01covidacr.azurecr.io`
+* `tag=BRANCH_NAME`
+For example: `k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME`.  
+
+`make build` also accepts arguments for REPO and TAG to override these behaviours.  For example, `make build/jupyterlab-cpu REPO=myrepo TAG=notLatest`.
+
+`make post-build/IMAGENAME` is meant for anything that is commonly done after building an image, but currently only adds common tags.  It adds tags of SHA, SHORT_SHA, and BRANCH_NAME to the given image, and accepts a `SOURCE_FULL_IMAGE_NAME` argument if you're trying to tag an existing image that has a non-typical name.  For example:
+* `make post-build/IMAGENAME` will apply SHA, SHORT_SHA, and BRANCH_NAME tags to `k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME` (eg: using the default REPO and TAG names)
+* `make post-build/IMAGENAME SOURCE_FULL_IMAGE_NAME=oldRepo/oldImage:oldTag REPO=newRepo` will make the following new aliases for `oldRepo/oldImage:oldTag REPO=newRepo`:
+  * `newRepo/IMAGENAME:SHA`
+  * `newRepo/IMAGENAME:SHORT_SHA`
+  * `newRepo/IMAGENAME:BRANCH_NAME`
+
+### Pulling and Pushing Docker Images
+
+`make pull/IMAGENAME` and `make push/IMAGENAME` work similarly to `make build/IMAGENAME`.  `REPO` and `TAG` arguments are available to override their default values.
+
+**Note:** To use `make pull` or `make push`, you must first log in to ACR (`az acr login -n k8scc01covidacr`)
+**Note:** `make push` by default does `docker push --all-tags` in order to push the SHA, SHORT_SHA, etc., tags.  
+
+### Testing images
+
+Automated tests are included for the generated Docker images using `pytest`.  This testing suite is modified from the [docker-stacks](https://github.com/jupyter/docker-stacks) test suite.  Image testing is invoked through `make test/IMAGENAME`  (with optional `REPO` and `TAG` arguments like `make build`).
+
+Testing of a given image consists of general and image-specific tests:
+
+```
+└── tests
+    ├── general                             # General tests applied to all images
+    │   └── some_general_test.py
+    ├── jupyterlab-cpu                      # Test applied to a specific image
+    │   └── some_jupyterlab-cpu-specific_test.py
+    └── jupyterlab-tensorflow
+```
+
+Where `tests/general` tests are applied to all images, and `tests/IMAGENAME` are applied only to a specific image.  Pytest will start the image locally and then run the provided tests to determine if Jupyterlab is running, python packages are working properly, etc.  Tests are formatted using typical pytest formats (python files with `def test_SOMETHING()` functions).  `conftest.py` defines some standard scaffolding for image management, etc.
+
+## General Development Workflow
+
+### Modifying Dockerfiles (local testing)
+
+* Clone the repo
+* (optional) `make pull/IMAGENAME TAG=SOMEEXISTINGTAG` to pull an existing version of the image you are working on (this could be useful as a build cache to reduce development time below)
+* Change an image via the [docker-bits](/docker-bits) that are used to create it, **not the files in the output/ folder**.  Same goes for the shell scripts and json files - they should be modified from the [resources](/resources) folder. 
+  * For quick-iteration debugging you can directly edit the `./output` files, but make sure you commit any changes you want to keep back to the `./docker-bits`
+* After making your changes, generate new Dockerfiles through `make generate-dockerfiles`
+* Build your edited image using `make build/IMAGENAME` (or, if you pulled a version of it above, you can use `make build/IMAGENAME DARGS="--cache-from SOMEOLDREPO/SOMEOLDIMAGE:SOMETAG"`, which will use layers from the pulled image as cached layers if possible, speeding up your build)
+* Test your image:
+  * using automated tests through `make test/IMAGENAME`
+  * manually by `docker run --it -p 8888:8888 REPO/IMAGENAME:TAG`, then opening it in [http://localhost:8888](http://localhost:8888)
+
+### Modifying Dockerfiles (on-platform testing)
+
+GitHub Actions CI is enabled to do building, scanning, automated testing, and (optionally) pushing of our images to ACR.  Build, test, and scan CI triggers on:
+* any push to master
+* any push to an open PR
+This allows for easy scanning and automated testing for images.
+
+GitHub Actions CI also enables pushing built images to our ACR, making them accessible from the platform.  This occurs on:
+* any push to master
+* any push to an open PR **that also has the `auto-deploy` label on the PR**
+This allows developers to opt-in to on-platform testing.  For example, when you need to build in github and test on platform (or want someone else to be able to pull your image):
+* open a PR and add the `auto-deploy` label
+* push to your PR and watch the GitHub Action CI
+* access your image in Kubeflow via a custom image from any of:
+  * k8scc01covidacr.azurecr.io/IMAGENAME:SHA
+  * k8scc01covidacr.azurecr.io/IMAGENAME:SHORT_SHA
+  * k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME
+
+### Adding new Images
+
+Dockerfiles are defined using `make` with recipes defined in the `Makefile`.  They pull segments of `Dockerfile`s from [docker-bits](/docker-bits) and assemble them.  All output images should meet the following criteria:
+
+* be generated by calling `make generate-dockerfiles`
+* have outputs written to `output/imagename`, where `imagename` is a **valid Docker image name** (eg: all lowercase, no special characters)
+
+To add new images, edit the makefile such that it generates the `./output/imagename` directory.  You can usually follow the existing recipes (or even add an extra piece to them), or you can add a whole new `make` target (but make sure to add your new target to `make generate-dockerfiles` as well).
+
+### Modifying and Testing CI
+
+If making changes to CI that cannot be done on a branch (eg: changes to issue_comment triggers), you can:
+* fork the 'kubeflow-containers' repo
+* Modify the CI with 
+  * REGISTRY: (your own dockerhub repo, eg: "j-smith" (no need for the full url))
+  * Change 
+    ```
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    ```
+    to 
+    ```
+    - uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    ```
+  * In your forked repo, define secrets for REGISTRY_USERNAME and REGISTRY_PASSWORD with your dockerhub credentials (you should use an API token, not your actual dockerhub password)
+
+**Note:** Since pushing comes right at the end of the CI, in many cases you don't need to have a valid registry to test the CI on a fork.  It will fail on the push step, but all other steps will clearly work and you can know it should safely merge back into the main repo.
+
 ## Structure
 
 
@@ -67,46 +179,13 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
     ├── JupyterLab-CPU-OL-compliant/        # These images use JupyterLab 3.0 and contain only OL-compliant extensions
     ├── JupyterLab-PyTorch-OL-compliant/
     └── JupyterLab-Tensorflow-OL-compliant/
+└── tests
+    ├── general                             # General tests applied to all images
+    ├── jupyterlab-cpu                      # Test applied to a specific image
+    └── jupyterlab-tensorflow
+
+
 ```
-## Deployment Testing Instructions
-
-The output folder contains Dockerfiles for each Notebook made from a combination of different [docker-bits](/docker-bits). They are created on `make all`.
-
-Make your changes to the correct [docker-bits](/docker-bits) file and not the files in `output/` folder otherwise it will get overwritten. Same goes for the shell scripts and json files - they should be modified from the [resources](/resources) folder. 
-
-Now build and run your image:
-
-```bash
-# from kubeflow-containers directory
-make all
-cd output/<notebook-name>
-docker build . -t tagName:version
-docker run -p 8888:8888 tagName:version
-```
-Now open in http://localhost:8888/.
-
-### Development Testing Instructions for CI
-
-If making changes to CI that cannot be done on a branch (eg: changes to issue_comment triggers), you can:
-* fork the 'kubeflow-containers' repo
-* Modify the CI with 
-  * REGISTRY: (your own dockerhub repo, eg: "j-smith" (no need for the full url))
-  * Change 
-  	```
-    - uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-  	```
-  	to 
-  	```
-    - uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
-    ```
-  * In your forked repo, define secrets for REGISTRY_USERNAME and REGISTRY_PASSWORD with your dockerhub credentials (you should use an API token, not your actual dockerhub password)
 
 ## Troubleshooting
 If running using a VM and RStudio image was built successfully but is not opening correctly on localhost (error 5000 page), change your CPU allocation in your Linux VM settings to >= 3. You can also use your VM's system monitor to examine if all CPUs are 100% being used as your container is running. If so, increase CPU allocation. 
