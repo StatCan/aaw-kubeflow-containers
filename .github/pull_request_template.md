@@ -2,18 +2,11 @@
 
 **What your PR adds/fixes/removes**
 
-# Tests
+# Tests / Quality Checks
 
-## Hello Worlds
-
-- [ ] Does R work in a notebook?
-- [ ] Does Python work in a notebook?
-- [ ] Does Julia work in a notebook?
-
-## Imports
-
-- [ ] Does PyTorch run
-- [ ] Does Tensorflow run
+## Automated Testing/build and deployment
+- [ ] Does the image pass CI successfully (build, pass vulnerability scan, and pass automated test suite)?
+- [ ] If new features are added (new image, new binary, etc), have new automated tests been added to cover these?
 
 ## Official Languages
 
@@ -50,5 +43,3 @@ httpd.serve_forever()
 ```
 
 Open a tab with `https://kubeflow.covid.cloud.statcan.ca/notebook/$NAMESPACE/$SERVER/proxy/8000`
-
-- [ ] Does "Hello world" work?
