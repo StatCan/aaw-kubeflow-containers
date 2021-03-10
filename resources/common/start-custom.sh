@@ -58,6 +58,10 @@ fi
 # And https://github.com/blairdrummond/jupyter-rsession-proxy/blob/master/jupyter_rsession_proxy/__init__.py
 export RSERVER_WWW_ROOT_PATH=$NB_PREFIX/rstudio
 
+# Remove a Jupyterlab 2.x config setting that breaks Jupyterlab 3.x
+jq 'del(.NotebookApp.server_extensions)' $HOME/.jupyter/jupyter_notebook_config>
+    && mv -f $HOME/.jupyter/jupyter_notebook_config.json.tmp $HOME/.jupyter/jup>
+
 jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \

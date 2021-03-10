@@ -1,3 +1,0 @@
-#python path to let it know where to find the qgis package
-/usr/lib/python3/dist-packages/
-#if that doesnt work its without the / 
