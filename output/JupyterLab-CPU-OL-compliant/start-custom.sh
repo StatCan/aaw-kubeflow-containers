@@ -62,7 +62,7 @@ export RSERVER_WWW_ROOT_PATH=$NB_PREFIX/rstudio
 NOTEBOOK_CONFIG="$HOME/.jupyter/jupyter_notebook_config.json"
 NOTEBOOK_CONFIG_TMP="$HOME/.jupyter/jupyter_notebook_config.json.tmp"
 
-if [ -f "$NOTEBOOK_CONFIG"]; then
+if [ -f "$NOTEBOOK_CONFIG" ]; then
   jq 'del(.NotebookApp.server_extensions)' "$NOTEBOOK_CONFIG" > "$NOTEBOOK_CONFIG_TMP" \
       && mv -f "$NOTEBOOK_CONFIG_TMP" "$NOTEBOOK_CONFIG"
 fi
