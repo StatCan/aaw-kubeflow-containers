@@ -1,11 +1,11 @@
 
 ###############################
-###  .tmp/Tensorflow.Dockerfile
+###  .tmp/tensorflow.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_CPU.Dockerfile
+###  docker-bits/0_cpu.Dockerfile
 ###############################
 
 ARG BASE_VERSION=r-4.0.3
@@ -98,7 +98,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/2_Tensorflow.Dockerfile
+###  docker-bits/2_tensorflow.Dockerfile
 ###############################
 
 # Install Tensorflow
@@ -204,7 +204,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/6_JupyterLab.Dockerfile
+###  docker-bits/6_jupyterlab.Dockerfile
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.

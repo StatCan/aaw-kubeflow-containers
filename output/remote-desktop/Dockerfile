@@ -106,7 +106,7 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "oh-my-zsh: ok"
 
 ###############################
-###  docker-bits/6_RemoteDesktop.Dockerfile
+###  docker-bits/6_remote-desktop.Dockerfile
 ###############################
 
 USER root
@@ -383,7 +383,6 @@ RUN \
     rm /tmp/tigervnc.tar.gz && \
     clean-layer.sh
 
-
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
 COPY /desktop-files /usr/share/applications
@@ -394,7 +393,7 @@ RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
 #Configure the panel
-COPY desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
+COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
 #Extra Icons
@@ -441,7 +440,7 @@ ENV DEFAULT_JUPYTER_URL=desktop/?autoconnect=true
 ENV HOME=/home/jovyan
 
 ###############################
-###  docker-bits/∞_CMD_RemoteDesktop.Dockerfile
+###  docker-bits/∞_CMD_remote-desktop.Dockerfile
 ###############################
 
 # Configure container startup

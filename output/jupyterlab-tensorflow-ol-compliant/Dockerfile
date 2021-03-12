@@ -1,11 +1,11 @@
 
 ###############################
-###  .tmp/PyTorch.Dockerfile
+###  .tmp/tensorflow.Dockerfile
 ###############################
 
 
 ###############################
-###  docker-bits/0_CPU.Dockerfile
+###  docker-bits/0_cpu.Dockerfile
 ###############################
 
 ARG BASE_VERSION=r-4.0.3
@@ -19,17 +19,17 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/1_CUDA-11.0.Dockerfile
+###  docker-bits/1_CUDA-11.1.Dockerfile
 ###############################
 
-# Cuda stuff for v11.0
+# Cuda stuff for v11.1
 
-## https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/base/Dockerfile
+## https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/base/Dockerfile
 
 ###########################
 ### Base
 ###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/base/Dockerfile
+# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/base/Dockerfile
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
@@ -39,13 +39,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get purge --autoremove -y curl \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CUDA_VERSION 11.0.3
+ENV CUDA_VERSION 11.1.1
 
 # For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-cudart-11-0=11.0.221-1 \
-    cuda-compat-11-0 \
-    && ln -s cuda-11.0 /usr/local/cuda && \
+    cuda-cudart-11-1=11.1.74-1 \
+    cuda-compat-11-1 \
+    && ln -s cuda-11.1 /usr/local/cuda && \
     rm -rf /var/lib/apt/lists/*
 
 # Required for nvidia-docker v1
@@ -58,60 +58,55 @@ ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-ENV NVIDIA_REQUIRE_CUDA "cuda>=11.0 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 brand=tesla,driver>=450,driver<451"
+ENV NVIDIA_REQUIRE_CUDA "cuda>=11.1 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 brand=tesla,driver>=450,driver<451"
 
 # ###########################
 # ### Devel
 # ###########################
-# # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/devel/Dockerfile
+# # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/devel/Dockerfile
 #
-# $(curl -s https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/devel/Dockerfile)
+# $(curl -s https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/devel/Dockerfile)
 
 ###########################
 ### Runtime
 ###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/Dockerfile
+# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/runtime/Dockerfile
 
 ENV NCCL_VERSION 2.7.8
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-libraries-11-0=11.0.3-1 \
-    libnpp-11-0=11.1.0.245-1 \
-    cuda-nvtx-11-0=11.0.167-1 \
-    libcublas-11-0=11.2.0.252-1 \
-    libnccl2=$NCCL_VERSION-1+cuda11.0 \
+    cuda-libraries-11-1=11.1.1-1 \
+    libnpp-11-1=11.1.2.301-1 \
+    cuda-nvtx-11-1=11.1.74-1 \
+    libcublas-11-1=11.3.0.106-1 \
+    libnccl2=$NCCL_VERSION-1+cuda11.1 \
     && apt-mark hold libnccl2 \
     && rm -rf /var/lib/apt/lists/*
 
 ###########################
 ### CudNN
 ###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
+# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.1/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
 
 ENV CUDNN_VERSION 8.0.4.30
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcudnn8=$CUDNN_VERSION-1+cuda11.0 \
+    libcudnn8=$CUDNN_VERSION-1+cuda11.1 \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/2_PyTorch.Dockerfile
+###  docker-bits/2_tensorflow.Dockerfile
 ###############################
 
-# Install PyTorch
-RUN conda create -n torch python=3.7 && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'pytorch==1.6.0' \
-      'torchvision==0.7.0' \
-      'ipykernel==5.3.4' \
+# Install Tensorflow
+RUN pip install --quiet \
+        'tensorflow-gpu' \
+        'keras' \
+        'ipykernel==5.3.4' \
     && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'torchtext==0.7.0' \
-    && \
-    conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -209,11 +204,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 ###############################
-###  docker-bits/6_JupyterLab.Dockerfile
+###  docker-bits/6_jupyterlab-ol-compliant.Dockerfile
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
+# Using JupyterLab 3.0 from docker-stacks base image. This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
+
+# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
+
 # TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
+#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -241,11 +241,9 @@ RUN code-server --install-extension ms-python.python && \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyterlab-lsp==3.4.1' \
       'jupyter-lsp==1.1.3' \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
-      'lckr-jupyterlab-variableinspector==3.0.6' \
       'jupyterlab_execute_time==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
@@ -263,18 +261,17 @@ RUN pip install --quiet \
       -c plotly \
       'jupyter-dash==0.4.0' \
     && \
-    pip install --pre \
-      'jupyterlab-git==0.30.0b2' \
-    && \
+    # pip install --pre \
+    #   'jupyterlab-git==0.30.0b2' \
+    # && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
+      '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
-      '@ijmbarr/jupyterlab_spellchecker@0.3.0' \
       '@hadim/jupyter-archive@3.0.0' \
       'jupyterlab-plotly@4.14.3' \
-      'jupyterlab-spreadsheet@0.4.0' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
@@ -285,13 +282,7 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Install R and Julia language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    conda install -c conda-forge 'r-languageserver' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+RUN pip install git+https://github.com/JessicaBarh/jupyterlab-fr_FR
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
