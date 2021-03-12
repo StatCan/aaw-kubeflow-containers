@@ -56,6 +56,7 @@ jobs:
       REGISTRY_NAME: k8scc01covidacr
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
+      LOCAL_REPO: localhost:5000
     strategy:
       fail-fast: false
       matrix:
@@ -72,8 +73,6 @@ jobs:
           - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
-    env: 
-      LOCAL_REPO: localhost:5000
     services:
       registry:
         image: registry:2

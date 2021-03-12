@@ -208,6 +208,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
 
 # Configure container startup
 
+USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/

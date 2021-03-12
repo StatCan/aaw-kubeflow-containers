@@ -31,9 +31,11 @@ POST_BUILD_HOOK := post-build-hook.sh
 
 # Default labels
 DEFAULT_REPO := k8scc01covidacr.azurecr.io
-DEFAULT_TAG := $(shell git rev-parse --abbrev-ref HEAD)
 GIT_SHA := $(shell git rev-parse HEAD)
-BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
+# This works during local development, but if on a GitHub PR it will resolve to "HEAD"
+# so don't rely on it when on the GH runners!
+DEFAULT_TAG := $(shell ./make_helpers/get_branch_name.sh)
+BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
 OL := ol-compliant
 
 # Other
@@ -200,7 +202,8 @@ push/%: DARGS?=
 push/%: REPO?=$(DEFAULT_REPO)
 push/%:
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
-	echo "Pushing $${REPO}$(notdir $@) (all tags)" ;\
+	echo "Pushing the following tags for $${REPO}$(notdir $@) (all tags)" ;\
+	docker images $${REPO}$(notdir $@) --format="{{ .Tag }}" ;\
 	docker push --all-tags $(DARGS) "$${REPO}"$(notdir $@)
 
 ###################################
