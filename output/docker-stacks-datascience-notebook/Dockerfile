@@ -1,3 +1,9 @@
+FROM jupyter/datascience-notebook:r-4.0.3
+
+###############################
+###  docker-bits/∞_CMD.Dockerfile
+###############################
+
 # Configure container startup
 
 USER root
