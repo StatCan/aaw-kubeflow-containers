@@ -146,6 +146,7 @@ jobs:
 
     # Pull the local image back, then "build" it (will just tag the pulled image)
     - name: Pull image back from local repo
+      if: steps.should-i-push.outputs.boolean == 'true'
       run: docker pull ${{ steps.build-image.outputs.full_image_name }}
 
     # Rename the localhost:5000/imagename:tag built above to use the real repo
