@@ -20,9 +20,15 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
-RUN code-server --install-extension ms-python.python && \
-    code-server --install-extension ikuyadeu.r && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr && \
+ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
+
+RUN VS_PYTHON_VERSION="2020.5.86806" && \
+    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
+    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
+    code-server --install-extension ms-python-release.vsix && \
+    rm ms-python-release.vsix && \
+    code-server --install-extension ikuyadeu.r@1.6.2 && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.51.2 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
