@@ -3,8 +3,8 @@
 
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
-# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
-#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
+# Currently installing jupyterlab-git extensions from specific commit in repo master branch. This is temporary until a new release is made available on PIP.
+# Use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -38,7 +38,7 @@ RUN VS_PYTHON_VERSION="2020.5.86806" && \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp==1.1.3' \
+      'jupyter-lsp==1.1.4' \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
@@ -58,9 +58,11 @@ RUN pip install --quiet \
       -c plotly \
       'jupyter-dash==0.4.0' \
     && \
-    # pip install --pre \
-    #   'jupyterlab-git==0.30.0b2' \
-    # && \
+    pip install \
+      'git+http://github.com/jupyterlab/jupyterlab-git.git@0b1a0f274e85572f4de3b7347a20ac9830bbced1' \
+      'git+http://github.com/JessicaBarh/jupyterlab-lsp.git#egg=jupyterlab_lsp&subdirectory=python_packages/jupyterlab_lsp' \
+      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+    && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
@@ -78,8 +80,6 @@ RUN pip install --quiet \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
-
-RUN pip install git+https://github.com/JessicaBarh/jupyterlab-fr_FR
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
