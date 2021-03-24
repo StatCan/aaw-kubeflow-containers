@@ -3,8 +3,8 @@
 
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
 
-# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
-#       use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab
+# Currently installing jupyterlab-git extensions from specific commit in repo master branch. This is temporary until a new release is made available on PIP.
+# Use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
