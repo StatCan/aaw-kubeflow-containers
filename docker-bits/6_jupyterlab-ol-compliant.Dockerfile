@@ -59,8 +59,8 @@ RUN pip install --quiet \
       'jupyter-dash==0.4.0' \
     && \
     pip install \
-      'git+http://github.com/jupyterlab/jupyterlab-git.git@0b1a0f274e85572f4de3b7347a20ac9830bbced1' \
-      'git+http://github.com/JessicaBarh/jupyterlab-lsp.git#egg=jupyterlab_lsp&subdirectory=python_packages/jupyterlab_lsp' \
+      'git+http://github.com/jupyterlab/jupyterlab-git.git@267c149c9663de71b39c199c4f14cbea7307c64c' \
+      'git+https://github.com/JessicaBarh/jupyterlab-lsp.git@install-labextension#egg=jupyterlab-lsp&subdirectory=python_packages/jupyterlab_lsp' \
       'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
     && \
     conda clean --all -f -y && \
