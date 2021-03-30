@@ -182,6 +182,7 @@ If making changes to CI that cannot be done on a branch (eg: changes to issue_co
 └── tests
     ├── general                             # General tests applied to all images
     ├── jupyterlab-cpu                      # Test applied to a specific image
+    ├── jupyterlab-pytorch
     └── jupyterlab-tensorflow
 
 
