@@ -18,6 +18,11 @@
 - [ ] Does VS Code open?
 - [ ] Can you install extensions?
 
+## Code review
+
+- [ ] Have you added the `auto-deploy` tag to your PR before your most recent push to this repo?  This causes CI to build the image and push to our ACR, letting reviewers access the built image without having to create it themselves
+- [ ] Have you chosen a reviewer, attached them as a reviewer to this PR, and messaged them with the SHA-pinned image name for the final image to test (e.g. `k8scc01covidacr.azurecr.io/machine-learning-notebook-cpu:746d058e2f37e004da5ca483d121bfb9e0545f2b`)?
+
 ## Port/proxy
 
 Copy paste this into a python notebook:
