@@ -7,18 +7,15 @@
 ## Automated Testing/build and deployment
 - [ ] Does the image pass CI successfully (build, pass vulnerability scan, and pass automated test suite)?
 - [ ] If new features are added (new image, new binary, etc), have new automated tests been added to cover these?
-
-## Official Languages
-
-- [ ] Test all components JupyterLab components in French
+- [ ] If new features are added that require in-cluster testing (e.g. a new feature that needs to interact with kubernetes), have you added the `auto-deploy` tag to the PR before pushing in order to build and push the image to ACR so you can test it in cluster as a custom image?
 
 ## JupyterLab extensions
 
-- [ ] Does git work?
-- [ ] Does VS Code open?
+- [ ] Are all extensions "enabled" (`jupyter labextension list` from inside the notebook)?
 
 ## VS Code tests
 
+- [ ] Does VS Code open?
 - [ ] Can you install extensions?
 
 ## Port/proxy
