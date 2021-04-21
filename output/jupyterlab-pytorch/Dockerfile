@@ -216,8 +216,8 @@ RUN apt-get update && \
 # TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
 
 # Install vscode
-ARG VSCODE_VERSION=3.8.0
-ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a
+ARG VSCODE_VERSION=3.9.1
+ARG VSCODE_SHA=9e54ccff4c3f2b3f1837abf43a472e09c5bea697c00720b3f8967d4f43585e99
 ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -234,9 +234,9 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
-ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
+ARG SHA256py=11f89b561a0821b25d7cb612cad40c064e95676986497bcf658b0dca7f78e7e8
 
-RUN VS_PYTHON_VERSION="2020.5.86806" && \
+RUN VS_PYTHON_VERSION="2021.2.633441544" && \
     wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
     echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
     code-server --install-extension ms-python-release.vsix && \
