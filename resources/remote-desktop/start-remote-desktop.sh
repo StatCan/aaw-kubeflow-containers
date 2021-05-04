@@ -84,6 +84,9 @@ trap "rm -f $VNC_SOCKET" EXIT
 vncserver -SecurityTypes None -rfbunixpath $VNC_SOCKET -geometry 1680x1050 :1
 cat $HOME/.vnc/*.log
 
+# Makes an unbelievable difference
+xfconf-query -c xfwm4 -p /general/use_compositing -s false
+
 # Launch noVNC
 (
     # cd /tmp/novnc/
