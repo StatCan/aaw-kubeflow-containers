@@ -286,11 +286,21 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Install python, R and Julia language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
+# Install python, R, Julia and other useful language servers
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
+    && \
     conda install -c conda-forge \
       'r-languageserver' \
       'python-language-server' \
+    && \
+    npm install --save-dev \
+      'bash-language-server' \
+      'dockerfile-language-server-nodejs' \
+      'javascript-typescript-langserver' \
+      'sql-language-server' \
+      'unified-language-server' \
+      'vscode-json-languageserver-bin' \
+      'yaml-language-server' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
