@@ -57,9 +57,11 @@ fi
 
 
 # Create desktop shortcuts
-if [ -d /tmp/desktop-files ]; then
-    mkdir -p ~/.local/share/applications/
-    cp /tmp/desktop-files/*.desktop ~/.local/share/applications/
+if [ -d $RESOURCES_PATH/desktop-files ]; then
+    mkdir -p ~/.local/share/applications/ $HOME/Desktop
+    echo find $RESOURCES_PATH/desktop-files/ $HOME/Desktop/
+    find $RESOURCES_PATH/desktop-files/ -type f -iname "*.desktop" -exec cp {} $HOME/Desktop/ \;
+    rsync $RESOURCES_PATH/desktop-files/.config/ $HOME/.config/
     find $HOME/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
     mkdir -p $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
     cp /opt/install/desktop-files/.config/xfce4/xfce4-panel.xml $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
@@ -73,6 +75,9 @@ mkdir -p $HOME/.vnc
 unset SESSION_MANAGER
 unset DBUS_SESSION_BUS_ADDRESS
 startxfce4 &
+
+# Makes an unbelievable difference in speed
+(sleep 10 && xfconf-query -c xfwm4 -p /general/use_compositing -s false && dconf write /org/gnome/terminal/legacy/profiles/custom-command "'/bin/bash'") &
 EOF
     chmod +x $HOME/.vnc/xstartup
 }

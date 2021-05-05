@@ -275,7 +275,7 @@ RUN \
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
 COPY /desktop-files /usr/share/applications
-COPY /desktop-files /tmp/desktop-files
+COPY /desktop-files $RESOURCES_PATH/desktop-files
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
@@ -334,10 +334,10 @@ RUN pip3 install --force websockify==0.9.0 \
     && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
-    && mv /tmp/noVNC-${NO_VNC_VERSION} /tmp/novnc \
+    && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz
 
-COPY --chown=$NB_USER:100 canada.ico /tmp/favicon.ico
+COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
 USER root
 RUN apt-get update --yes \

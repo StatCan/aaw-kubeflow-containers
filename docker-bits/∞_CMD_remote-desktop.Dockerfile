@@ -5,6 +5,7 @@ WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-remote-desktop.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+RUN chsh -s /bin/bash $NB_USER
 
 # Add --user to all pip install calls
 COPY pip.conf /tmp/pip.conf
