@@ -1,8 +1,14 @@
 # installs vscode server, python & conda packages and jupyter lab extensions.
-# Using JupyterLab 3.0 from docker-stacks base image. This new version is not yet supported by some extensions so they have been removed until new compatible versions are available.
 
+# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support 
+# this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
+    # jupyterlab-kale
+    # jupyterlab-variableinspector
+    # jupyterlab-archive
+    # jupyterlab-spellchecker
+    # jupyterlab-spreadsheet
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# Using official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
+# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -65,7 +71,6 @@ RUN pip install --quiet \
     jupyter labextension install --no-build \
       '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
-      '@hadim/jupyter-archive@3.0.0' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
     && \
