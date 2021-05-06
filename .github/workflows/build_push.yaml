@@ -67,9 +67,6 @@ jobs:
           - jupyterlab-cpu
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
-          - jupyterlab-cpu-ol-compliant
-          - jupyterlab-pytorch-ol-compliant
-          - jupyterlab-tensorflow-ol-compliant
           - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
