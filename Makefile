@@ -36,7 +36,6 @@ GIT_SHA := $(shell git rev-parse HEAD)
 # so don't rely on it when on the GH runners!
 DEFAULT_TAG := $(shell ./make_helpers/get_branch_name.sh)
 BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
-OL := ol-compliant
 
 # Other
 DEFAULT_PORT := 8888
@@ -107,8 +106,7 @@ rstudio: cpu
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
-# create directories for current images and OL-compliant images
-# create OL images with OL-compliant docker-bits, temporary until we want to replace our JupyterLab images with the OL compliant ones
+# create directories for current images
 jupyterlab: pytorch tensorflow cpu 
 	
 	for type in $^; do \
@@ -122,16 +120,6 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
-		mkdir -p $(OUT)/$@-$${type}-$(OL); \
-		cp -r resources/common/* $(OUT)/$@-$${type}-$(OL)/; \
-		$(CAT) \
-			$(TMP)/$${type}.Dockerfile \
-			$(SRC)/3_Kubeflow.Dockerfile \
-			$(SRC)/4_CLI.Dockerfile \
-			$(SRC)/5_DB-Drivers.Dockerfile \
-			$(SRC)/6_$(@)-$(OL).Dockerfile \
-			$(SRC)/∞_CMD.Dockerfile \
-		>   $(OUT)/$@-$${type}-$(OL)/Dockerfile; \
 	done
 
 # Remote Desktop

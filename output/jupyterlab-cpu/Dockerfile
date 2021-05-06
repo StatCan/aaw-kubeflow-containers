@@ -116,7 +116,16 @@ RUN apt-get update && \
 ###############################
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
-# TODO: Change jupyterlab-git pre-release install to official v0.30.0 release once available
+
+# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support 
+# this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
+    # jupyterlab-kale
+    # jupyterlab-variableinspector
+    # jupyterlab-archive
+    # jupyterlab-spellchecker
+    # jupyterlab-spreadsheet
+# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
+# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.8.0
@@ -150,40 +159,36 @@ RUN VS_PYTHON_VERSION="2020.5.86806" && \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyterlab-lsp==3.4.1' \
-      'jupyter-lsp==1.1.3' \
+      'jupyter-lsp==1.2.0' \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
-      'lckr-jupyterlab-variableinspector==3.0.6' \
       'jupyterlab_execute_time==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
       'ipywidgets==7.6.3' \
-      'ipympl==0.6.3' \
+      'ipympl==0.7.0' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'nodejs==14.14.0' \
-      'python-language-server==0.36.2' \
-      'jupyterlab-translate==0.1.1' \
+      'nodejs==15.14.0' \
     && \
     conda install --quiet --yes \
       -c plotly \
       'jupyter-dash==0.4.0' \
     && \
-    pip install --pre \
-      'jupyterlab-git==0.30.0b2' \
+    pip install \
+      'jupyterlab-git==0.30.0' \
+      'jupyterlab-lsp==3.6.0' \
+      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
+      '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
-      '@ijmbarr/jupyterlab_spellchecker@0.3.0' \
-      '@hadim/jupyter-archive@3.0.0' \
       'jupyterlab-plotly@4.14.3' \
-      'jupyterlab-spreadsheet@0.4.0' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
@@ -194,9 +199,21 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Install R and Julia language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    conda install -c conda-forge 'r-languageserver' \
+# Install python, R, Julia and other useful language servers
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
+    && \
+    conda install -c conda-forge \
+      'r-languageserver' \
+      'python-language-server' \
+    && \
+    npm install --save-dev \
+      'bash-language-server' \
+      'dockerfile-language-server-nodejs' \
+      'javascript-typescript-langserver' \
+      'sql-language-server' \
+      'unified-language-server' \
+      'vscode-json-languageserver-bin' \
+      'yaml-language-server' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
