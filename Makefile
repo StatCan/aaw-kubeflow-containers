@@ -4,7 +4,7 @@
 # All the content is in `docker-bits`; this Makefile
 # just builds target dockerfiles by combining the dockerbits.
 #
-# Management of build, pull/push, and testing is modified from 
+# Management of build, pull/push, and testing is modified from
 # https://github.com/jupyter/docker-stacks
 
 # The docker-stacks tag
@@ -107,8 +107,8 @@ rstudio: cpu
 	>   $(OUT)/$@/Dockerfile
 
 # create directories for current images
-jupyterlab: pytorch tensorflow cpu 
-	
+jupyterlab: pytorch tensorflow cpu
+
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
 		cp -r resources/common/* $(OUT)/$@-$${type}/; \
@@ -156,9 +156,9 @@ pull/%: REPO?=$(DEFAULT_REPO)
 pull/%: TAG?=$(DEFAULT_TAG)
 pull/%:
 	# End repo with a single slash and start tag with a single colon, if they exist
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
-	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') ;\
-	echo "Pulling $${REPO}$(notdir $@)$${TAG}" ;\
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
+	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') &&\
+	echo "Pulling $${REPO}$(notdir $@)$${TAG}" &&\
 	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}"
 
 build/%: DARGS?=
@@ -166,14 +166,13 @@ build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)
 build/%: ## build the latest image
 	# End repo with exactly one trailing slash, unless it is empty
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
-	\
-	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)"; \
-	docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@); \
-	echo -n "Built image $$IMAGE_NAME of size: "; \
-	docker images $$IMAGE_NAME --format "{{.Size}}"; \
-	echo "::set-output name=full_image_name::$$IMAGE_NAME"; \
-	echo "::set-output name=image_tag::$(TAG)"; \
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
+	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
+	docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
+	echo -n "Built image $$IMAGE_NAME of size: " && \
+	docker images $$IMAGE_NAME --format "{{.Size}}" && \
+	echo "::set-output name=full_image_name::$$IMAGE_NAME" && \
+	echo "::set-output name=image_tag::$(TAG)" && \
 	echo "::set-output name=image_repo::$${REPO}"
 
 post-build/%: export REPO?=$(DEFAULT_REPO)
@@ -189,9 +188,9 @@ post-build/%:
 push/%: DARGS?=
 push/%: REPO?=$(DEFAULT_REPO)
 push/%:
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
-	echo "Pushing the following tags for $${REPO}$(notdir $@) (all tags)" ;\
-	docker images $${REPO}$(notdir $@) --format="{{ .Tag }}" ;\
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
+	echo "Pushing the following tags for $${REPO}$(notdir $@) (all tags)" &&\
+	docker images $${REPO}$(notdir $@) --format="{{ .Tag }}" &&\
 	docker push --all-tags $(DARGS) "$${REPO}"$(notdir $@)
 
 ###################################
