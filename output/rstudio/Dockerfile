@@ -8,10 +8,16 @@
 ###  docker-bits/0_cpu.Dockerfile
 ###############################
 
-ARG BASE_VERSION=r-4.0.3
+# Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
+# image updates, pin to the docker-stacks git commit SHA tag.
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
+# https://github.com/jupyter/docker-stacks/wiki
+
+ARG BASE_VERSION=512afd49b925
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
+
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 RUN apt-get update --yes \
@@ -155,6 +161,17 @@ RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
+
+###############################
+###  docker-bits/7_remove_vulnerabilities.Dockerfile
+###############################
+
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
+# This line of code should be removed once a solution or better alternative is found.
+RUN apt-get update --yes \
+    && dpkg -r --force-depends libpdfbox-java \
+    && rm -rf /var/lib/apt/lists/*
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile

@@ -1,6 +1,6 @@
 # installs vscode server, python & conda packages and jupyter lab extensions.
 
-# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support 
+# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support
 # this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
     # jupyterlab-kale
     # jupyterlab-variableinspector
@@ -11,8 +11,8 @@
 # TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=3.8.0
-ARG VSCODE_SHA=ee10f45b570050939cafd162fbdc52feaa03f2da89d7cdb8c42bea0a0358a32a
+ARG VSCODE_VERSION=3.10.0
+ARG VSCODE_SHA=ce4e252a47682319e27d836bb443d6246938db4be2c3bfbc80793a5939e35604
 ARG VSCODE_URL=https://github.com/cdr/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -29,15 +29,17 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
 COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
-ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
+ARG SHA256py=d32d8737858661451705faa9f176f8a1a03485b2d9984de40d45cc0403a3bcf4
+# Languagepacks.json needs to exist for code-server to recognize the languagepack
+COPY languagepacks.json $XDG_DATA_HOME/code-server/
 
-RUN VS_PYTHON_VERSION="2020.5.86806" && \
+RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
     echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
     code-server --install-extension ms-python-release.vsix && \
     rm ms-python-release.vsix && \
-    code-server --install-extension ikuyadeu.r@1.6.2 && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.51.2 && \
+    code-server --install-extension ikuyadeu.r@1.6.6 && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.56.2 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
@@ -87,16 +89,15 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
     conda install -c conda-forge \
       'r-languageserver' \
-      'python-language-server' \
+      'python-lsp-server' \
     && \
-    npm install --save-dev \
+    jlpm add --dev \
       'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
       'sql-language-server' \
       'unified-language-server' \
-      'vscode-json-languageserver-bin' \
-      'yaml-language-server' \
+      'yaml-language-server@0.18.0' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

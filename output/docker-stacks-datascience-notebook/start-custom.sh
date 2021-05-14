@@ -27,7 +27,7 @@ if [ -n "${KF_LANG}" ]; then
         export LANG="en_US.utf8"
     else
         export LANG="fr_CA.utf8"
-        #  User's browser lang is set to french, open jupyterlab in french (fr_FR)
+        #  User's browser lang is set to French, open jupyterlab and vs_code in French (fr_FR)
         if [ "${DEFAULT_JUPYTER_URL}" != "/rstudio" ]; then
           export LANG="fr_FR"
           lang_file="/home/${NB_USER}/.jupyter/lab/user-settings/@jupyterlab/translation-extension/plugin.jupyterlab-settings"
@@ -42,6 +42,8 @@ if [ -n "${KF_LANG}" ]; then
             echo     '   "locale": "'${LANG}'"'
             echo     '}'
           ) >> $lang_file
+          vscode_language="${XDG_DATA_HOME}/code-server/User/argv.json"
+          echo "{\"locale\":\"fr\"}" >> $vscode_language
         fi
     fi
 fi

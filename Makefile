@@ -8,7 +8,7 @@
 # https://github.com/jupyter/docker-stacks
 
 # The docker-stacks tag
-DOCKER-STACKS-UPSTREAM-TAG := r-4.0.3
+DOCKER-STACKS-UPSTREAM-TAG := 512afd49b925
 
 tensorflow-CUDA := 11.1
 pytorch-CUDA    := 11.0
@@ -103,6 +103,7 @@ rstudio: cpu
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
@@ -118,6 +119,7 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/4_CLI.Dockerfile \
 			$(SRC)/5_DB-Drivers.Dockerfile \
 			$(SRC)/6_$(@).Dockerfile \
+			$(SRC)/7_remove_vulnerabilities.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
 	done
@@ -135,6 +137,7 @@ remote-desktop:
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/6_remote-desktop.Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
