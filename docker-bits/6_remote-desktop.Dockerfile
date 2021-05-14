@@ -1,7 +1,11 @@
 USER root
 
+ENV NB_UID=1000
+ENV NB_GID=100
+
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
+COPY fix-permissions /usr/bin/fix-permissions
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
@@ -323,7 +327,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     echo "conda activate base" >> ~/.bashrc && \
     find /opt/conda/ -follow -type f -name '*.a' -delete && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy
+    /opt/conda/bin/conda clean -afy && \
+    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
@@ -335,7 +340,8 @@ RUN pip3 install --force websockify==0.9.0 \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
-    && rm /tmp/novnc.tar.gz
+    && rm /tmp/novnc.tar.gz \
+    && chown -R $NB_UID:$NB_GID /opt/novnc
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 

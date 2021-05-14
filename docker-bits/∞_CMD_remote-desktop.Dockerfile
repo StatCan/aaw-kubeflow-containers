@@ -1,6 +1,7 @@
 # Configure container startup
 
 USER root
+
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-remote-desktop.sh /usr/local/bin/
