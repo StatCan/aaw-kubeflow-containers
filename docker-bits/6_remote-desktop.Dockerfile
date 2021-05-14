@@ -5,7 +5,6 @@ ENV NB_GID=100
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
-COPY fix-permissions /usr/bin/fix-permissions
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
