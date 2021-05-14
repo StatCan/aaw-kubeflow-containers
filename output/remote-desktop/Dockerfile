@@ -3,7 +3,9 @@
 ###  docker-bits/0_Rocker.Dockerfile
 ###############################
 
-FROM rocker/geospatial:4.0.3
+# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged 
+# images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
+FROM rocker/geospatial:4.0.3@sha256:9e00ab4fec7b38a0edbadb07e7554bf3b7fa34d15c6fe42522a09ae88d336219
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"
@@ -438,6 +440,17 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #Set Defaults
 ENV DEFAULT_JUPYTER_URL=desktop/?autoconnect=true
 ENV HOME=/home/jovyan
+
+###############################
+###  docker-bits/7_remove_vulnerabilities.Dockerfile
+###############################
+
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
+# This line of code should be removed once a solution or better alternative is found.
+RUN apt-get update --yes \
+    && dpkg -r --force-depends libpdfbox-java \
+    && rm -rf /var/lib/apt/lists/*
 
 ###############################
 ###  docker-bits/∞_CMD_remote-desktop.Dockerfile

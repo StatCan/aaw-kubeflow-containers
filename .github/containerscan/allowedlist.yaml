@@ -9,5 +9,4 @@ general:
     - NSWG-ECO-427
     - CVE-2019-10746
     - CVE-2019-10747
-    - CVE-2019-0228
-    - CVE-2021-28918
+    - CVE-2021-23334 # static-eval - was deemed not a vulnerability

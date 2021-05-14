@@ -69,7 +69,7 @@ EXCLUDED_PACKAGES = [
     "bzip2",
     'nodejs', 
     # Jupyterlab extensions
-    'python-language-server',
+    'python-lsp-server',
     'jupyterlab-translate',
     'jupyter-dash',
     # Other
