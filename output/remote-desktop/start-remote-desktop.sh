@@ -96,6 +96,7 @@ cat $HOME/.vnc/*.log
     ./utils/launch.sh --web $(pwd) --vnc --unix-target=$VNC_SOCKET --listen 5678
 ) &
 
+NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
 nginx

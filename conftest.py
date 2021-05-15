@@ -50,15 +50,24 @@ class TrackedContainer(object):
         Docker client instance
     image_name: str
         Name of the docker image to launch
+    nb_prefix: str, optional
+        The NB_PREFIX arg, the base url for the server
     **kwargs: dict, optional
         Default keyword arguments to pass to docker.DockerClient.containers.run
     """
 
-    def __init__(self, docker_client, image_name, **kwargs):
+    def __init__(self, docker_client, image_name, nb_prefix="/notebook/user/name", **kwargs):
         self.container = None
         self.docker_client = docker_client
         self.image_name = image_name
         self.kwargs = kwargs
+
+        if not 'environment' in self.kwargs:
+            self.kwargs['environment'] = {}
+
+        # This base_url is important for kubeflow testing
+        self.kwargs['environment']['NB_PREFIX'] = nb_prefix
+
 
     def run(self, **kwargs):
         """Runs a docker container using the preconfigured image name
