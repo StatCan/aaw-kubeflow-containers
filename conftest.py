@@ -18,7 +18,7 @@ IMAGE_NAME_ENV_VAR="IMAGE_NAME"
 def http_client():
     """Requests session with retries and backoff."""
     s = requests.Session()
-    retries = Retry(total=6, backoff_factor=1)
+    retries = Retry(total=6, backoff_factor=5)
     s.mount('http://', HTTPAdapter(max_retries=retries))
     s.mount('https://', HTTPAdapter(max_retries=retries))
     return s
