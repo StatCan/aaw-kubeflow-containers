@@ -12,13 +12,15 @@ from requests.adapters import HTTPAdapter
 
 LOGGER = logging.getLogger(__name__)
 
-IMAGE_NAME_ENV_VAR="IMAGE_NAME"
+IMAGE_NAME_ENV_VAR = "IMAGE_NAME"
+NB_PREFIX_ENV_VAR = "NB_PREFIX"
+
 
 @pytest.fixture(scope='session')
 def http_client():
     """Requests session with retries and backoff."""
     s = requests.Session()
-    retries = Retry(total=6, backoff_factor=5)
+    retries = Retry(total=9, backoff_factor=1)
     s.mount('http://', HTTPAdapter(max_retries=retries))
     s.mount('https://', HTTPAdapter(max_retries=retries))
     return s
@@ -36,8 +38,24 @@ def image_name():
     image_name = os.getenv(IMAGE_NAME_ENV_VAR)
     LOGGER.debug(f"Found image_name {image_name} in env variable {IMAGE_NAME_ENV_VAR}")
     if image_name is None or len(image_name) == 0:
-    	raise ValueError(f"Image name not found in environment variable {IMAGE_NAME_ENV_VAR}.  Did you forget to set it?")
+        raise ValueError(f"Image name not found in environment variable {IMAGE_NAME_ENV_VAR}.  Did you forget to set it?")
     return image_name
+
+
+@pytest.fixture(scope='session')
+def nb_prefix():
+    """
+    NB_PREFIX environment variable for test
+
+    Used in the notebook redirect path (eg: localhost:8888/$NB_PREFIX)
+    """
+    nb_prefix = os.getenv(NB_PREFIX_ENV_VAR)
+    LOGGER.debug(f"Found nb_prefix {nb_prefix} in env variable {NB_PREFIX_ENV_VAR}")
+    if nb_prefix is None or len(nb_prefix) == 0:
+        LOGGER.debug(f"nb_prefix not found in environment variable {NB_PREFIX_ENV_VAR}.  Did you forget to set it?"
+                     f"  Setting to empty string")
+        nb_prefix = ""
+    return nb_prefix
 
 
 class TrackedContainer(object):
@@ -56,18 +74,11 @@ class TrackedContainer(object):
         Default keyword arguments to pass to docker.DockerClient.containers.run
     """
 
-    def __init__(self, docker_client, image_name, nb_prefix="/notebook/user/name", **kwargs):
+    def __init__(self, docker_client, image_name, **kwargs):
         self.container = None
         self.docker_client = docker_client
         self.image_name = image_name
         self.kwargs = kwargs
-
-        if not 'environment' in self.kwargs:
-            self.kwargs['environment'] = {}
-
-        # This base_url is important for kubeflow testing
-        self.kwargs['environment']['NB_PREFIX'] = nb_prefix
-
 
     def run(self, **kwargs):
         """Runs a docker container using the preconfigured image name
@@ -105,7 +116,7 @@ class TrackedContainer(object):
 
 
 @pytest.fixture(scope='function')
-def container(docker_client, image_name):
+def container(docker_client, image_name, nb_prefix):
     """Notebook container with initial configuration appropriate for testing
     (e.g., HTTP port exposed to the host for HTTP calls).
 
@@ -117,7 +128,8 @@ def container(docker_client, image_name):
         detach=True,
         ports={
             '8888/tcp': 8888
-        }
+        },
+        environment={'NB_PREFIX': nb_prefix},
     )
     yield container
     container.remove()

@@ -3,13 +3,12 @@
 import logging
 
 LOGGER = logging.getLogger(__name__)
-ENV = {
-    "NB_PREFIX":"/notebook/username/test",
-}
+
 
 def test_server_alive(container, http_client, url="http://localhost:8888"):
     """Notebook server should eventually appear with a recognizable page."""
 
+    # Redirect url to NB_PREFIX if it is set in the container environment
     url = "{}{}/".format(url, container.kwargs['environment']['NB_PREFIX'])
 
     LOGGER.info("Running test_server_alive")
@@ -25,11 +24,23 @@ def test_server_alive(container, http_client, url="http://localhost:8888"):
     # Also accepting RStudio
     # TODO: This general test accepts many different images.
     #       Could refactor to have specific tests that are more pointed
-    assert any((
-        "<title>JupyterLab" in resp.text,
-        "<title>Jupyter Notebook</title>" in resp.text,
-        "<title>RStudio:" in resp.text,  # RStudio
-        '<html lang="en" class="noVNC_loading">' in resp.text,  # remote-desktop using noVNC
-        '<html lang="fr" class="noVNC_loading">' in resp.text,  # remote-desktop using noVNC
-        '<span id="running_list_info">Currently running Jupyter processes</span>' in resp.text,
-        )), "Image does not appear to start to JupyterLab page.  Try starting yourself and browsing to it to see what is happening"
+
+    # Define various possible expected texts (this catches different expected outcomes like a JupyterLab interface,
+    # RStudio, etc.).  If any of these pass, the test passes
+    assertion_expected_texts = [
+        "<title>JupyterLab",
+        "<title>Jupyter Notebook</title>",
+        "<title>RStudio:",
+        '<html lang="en" class="noVNC_loading">',  # Remote desktop
+        '<html lang="fr" class="noVNC_loading">',  # Remote desktop
+        '<span id="running_list_info">Currently running Jupyter processes</span>',
+    ]
+    assertions = [s in resp.text for s in assertion_expected_texts]
+
+    # Log assertions to screen for easier debugging
+    LOGGER.debug("Status of tests look for that indicate notebook is up:")
+    for i, (text, assertion) in enumerate(zip(assertion_expected_texts, assertions)):
+        LOGGER.debug(f"{i}: '{text}' in resp.text = {assertion}")
+
+    assert any(assertions), "Image does not appear to start to JupyterLab page.  " \
+                            "Try starting yourself and browsing to it to see what is happening"
