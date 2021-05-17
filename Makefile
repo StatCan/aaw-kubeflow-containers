@@ -250,5 +250,5 @@ dev/%: ## run a foreground container for a stack (useful for local testing)
 	# End repo with exactly one trailing slash, unless it is empty
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" ;\
-	echo "\n###############\nLaunching docker container.  Connect to it via localhost:$(PORT)$(NB_PREFIX)\n###############\n" ;\
+	echo "\n###############\nLaunching docker container.  Connect to it via http://localhost:$(PORT)$(NB_PREFIX)\n###############\n" ;\
     docker run -it --rm -p $(PORT):8888 -e NB_PREFIX=$(NB_PREFIX) $(DARGS) $${IMAGE_NAME} $(ARGS)
