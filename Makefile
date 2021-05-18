@@ -251,4 +251,9 @@ dev/%: ## run a foreground container for a stack (useful for local testing)
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" ;\
 	echo "\n###############\nLaunching docker container.  Connect to it via http://localhost:$(PORT)$(NB_PREFIX)\n###############\n" ;\
-    docker run -it --rm -p $(PORT):8888 -e NB_PREFIX=$(NB_PREFIX) $(DARGS) $${IMAGE_NAME} $(ARGS)
+	if xdg-open --version > /dev/null; then\
+		( sleep 5 && xdg-open "http://localhost:8888$(NB_PREFIX)" ) & \
+	else\
+		( sleep 5 && open "http://localhost:8888$(NB_PREFIX)" ) &  \
+	fi; \
+	docker run -it --rm -p $(PORT):8888 -e NB_PREFIX=$(NB_PREFIX) $(DARGS) $${IMAGE_NAME} $(ARGS)
