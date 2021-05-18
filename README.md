@@ -37,6 +37,12 @@ For example: `k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME`.
 
 ### Testing images
 
+#### Running and Connecting to Images Locally/Interactively
+
+To test an image interactively, use `make dev/IMAGENAME`.  This `docker run`'s a built image, automatically forwarding ports to your local machine and providing a link to connect to.  
+
+#### Automated Testing
+
 Automated tests are included for the generated Docker images using `pytest`.  This testing suite is modified from the [docker-stacks](https://github.com/jupyter/docker-stacks) test suite.  Image testing is invoked through `make test/IMAGENAME`  (with optional `REPO` and `TAG` arguments like `make build`).
 
 Testing of a given image consists of general and image-specific tests:

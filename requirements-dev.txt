@@ -7,3 +7,4 @@ requests
 # sphinx-intl
 tabulate
 # transifex-client
+six

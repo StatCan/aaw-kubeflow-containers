@@ -6,6 +6,9 @@
 #
 # Management of build, pull/push, and testing is modified from
 # https://github.com/jupyter/docker-stacks
+#
+# Tests/some elements of makefile strongly inspired by
+# https://github.com/jupyter/docker-stacks/blob/master/Makefile
 
 # The docker-stacks tag
 DOCKER-STACKS-UPSTREAM-TAG := 512afd49b925
@@ -39,7 +42,7 @@ BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
 
 # Other
 DEFAULT_PORT := 8888
-
+DEFAULT_NB_PREFIX := /notebook/username/notebookname
 
 .PHONY: clean .output generate-dockerfiles
 
@@ -222,6 +225,7 @@ install-python-dev-venv:
 
 test/%: REPO?=$(DEFAULT_REPO)
 test/%: TAG?=$(DEFAULT_TAG)
+test/%: NB_PREFIX?=$(DEFAULT_NB_PREFIX)
 test/%: check-test-prereqs # Run all generic and image-specific tests against an image
 	# End repo with exactly one trailing slash, unless it is empty
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
@@ -234,4 +238,22 @@ test/%: check-test-prereqs # Run all generic and image-specific tests against an
 		echo "Found specific tests folder";\
 	fi;\
 	echo "Running tests on folders '$${TESTS}'";\
-	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" $(PYTHON) -m pytest -m "not info" $${TESTS}
+	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" NB_PREFIX=$(DEFAULT_NB_PREFIX) $(PYTHON) -m pytest -m "not info" $${TESTS}
+
+dev/%: ARGS?=
+dev/%: DARGS?=
+dev/%: NB_PREFIX?=$(DEFAULT_NB_PREFIX)
+dev/%: PORT?=8888
+dev/%: REPO?=$(DEFAULT_REPO)
+dev/%: TAG?=$(DEFAULT_TAG)
+dev/%: ## run a foreground container for a stack (useful for local testing)
+	# End repo with exactly one trailing slash, unless it is empty
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') ;\
+	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" ;\
+	echo "\n###############\nLaunching docker container.  Connect to it via http://localhost:$(PORT)$(NB_PREFIX)\n###############\n" ;\
+	if xdg-open --version > /dev/null; then\
+		( sleep 5 && xdg-open "http://localhost:8888$(NB_PREFIX)" ) & \
+	else\
+		( sleep 5 && open "http://localhost:8888$(NB_PREFIX)" ) &  \
+	fi; \
+	docker run -it --rm -p $(PORT):8888 -e NB_PREFIX=$(NB_PREFIX) $(DARGS) $${IMAGE_NAME} $(ARGS)

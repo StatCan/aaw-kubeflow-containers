@@ -3,15 +3,15 @@
 ###  docker-bits/0_Rocker.Dockerfile
 ###############################
 
-# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged 
+# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
 # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
 FROM rocker/geospatial:4.0.3@sha256:9e00ab4fec7b38a0edbadb07e7554bf3b7fa34d15c6fe42522a09ae88d336219
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"
 ARG HOME=/home/$NB_USER
-ARG NB_UID="1000"
-ARG NB_GID="100"
+ENV NB_UID="1000"
+ENV NB_GID="100"
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -23,6 +23,9 @@ RUN apt-get update --yes \
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
     && rm -rf /var/lib/apt/lists/*
+
+# Users should install R packages in their home directory
+RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -112,6 +115,9 @@ RUN curl -LO "${KUBECTL_URL}" \
 ###############################
 
 USER root
+
+ENV NB_UID=1000
+ENV NB_GID=100
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
@@ -388,14 +394,14 @@ RUN \
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
 COPY /desktop-files /usr/share/applications
-COPY /desktop-files /home/$NB_USER/Desktop
-RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
+COPY /desktop-files $RESOURCES_PATH/desktop-files
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
 #Configure the panel
-COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
+# Done at runtime
+# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
 #Extra Icons
@@ -405,7 +411,7 @@ RUN apt-get remove -y -q light-locker
 
 
 # apt-get may result in root-owned directories/files under $HOME
-RUN usermod -l jovyan rstudio && \
+RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
@@ -415,7 +421,8 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-ADD . /opt/install
+#ADD . /opt/install
+#RUN pwd && echo && ls /opt/install
 
 #Install Miniconda
 #Has to be appended, else messes with qgis
@@ -435,11 +442,34 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     echo "conda activate base" >> ~/.bashrc && \
     find /opt/conda/ -follow -type f -name '*.a' -delete && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy
+    /opt/conda/bin/conda clean -afy && \
+    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
-ENV DEFAULT_JUPYTER_URL=desktop/?autoconnect=true
-ENV HOME=/home/jovyan
+ENV HOME=/home/$NB_USER
+
+ARG NO_VNC_VERSION=1.2.0
+ARG NO_VNC_SHA=36c476b26df4684f1002e15c3d7e034c9e6ee4521e5fa8aac37309f954a07a01
+RUN pip3 install --force websockify==0.9.0 \
+    && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
+    && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
+    && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
+    && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
+    && rm /tmp/novnc.tar.gz \
+    && chown -R $NB_UID:$NB_GID /opt/novnc
+
+COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
+
+USER root
+RUN apt-get update --yes \
+    && apt-get install --yes nginx \
+    && chown -R $NB_USER:100 /var/log/nginx \
+    && chown $NB_USER:100 /etc/nginx \
+    && chmod -R 755 /var/log/nginx \
+    && rm -rf /var/lib/apt/lists/*
+RUN chown -R $NB_USER /home/$NB_USER
+USER $NB_USER
+COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
@@ -448,9 +478,11 @@ ENV HOME=/home/jovyan
 # Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
 # Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
 # This line of code should be removed once a solution or better alternative is found.
+USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+USER $NB_USER
 
 ###############################
 ###  docker-bits/∞_CMD_remote-desktop.Dockerfile
@@ -458,10 +490,18 @@ RUN apt-get update --yes \
 
 # Configure container startup
 
+USER root
+
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-remote-desktop.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+RUN chsh -s /bin/bash $NB_USER
+
+# Add --user to all pip install calls
+COPY pip.conf /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-remote-desktop.sh"]

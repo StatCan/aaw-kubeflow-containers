@@ -1,5 +1,8 @@
 USER root
 
+ENV NB_UID=1000
+ENV NB_GID=100
+
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
 
@@ -275,14 +278,14 @@ RUN \
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
 COPY /desktop-files /usr/share/applications
-COPY /desktop-files /home/$NB_USER/Desktop
-RUN find /home/$NB_USER/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
+COPY /desktop-files $RESOURCES_PATH/desktop-files
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
 #Configure the panel
-COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
+# Done at runtime
+# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
 #Extra Icons
@@ -292,7 +295,7 @@ RUN apt-get remove -y -q light-locker
 
 
 # apt-get may result in root-owned directories/files under $HOME
-RUN usermod -l jovyan rstudio && \
+RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
@@ -302,7 +305,8 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-ADD . /opt/install
+#ADD . /opt/install
+#RUN pwd && echo && ls /opt/install
 
 #Install Miniconda
 #Has to be appended, else messes with qgis
@@ -322,8 +326,31 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     echo "conda activate base" >> ~/.bashrc && \
     find /opt/conda/ -follow -type f -name '*.a' -delete && \
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy
+    /opt/conda/bin/conda clean -afy && \
+    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
-ENV DEFAULT_JUPYTER_URL=desktop/?autoconnect=true
-ENV HOME=/home/jovyan
+ENV HOME=/home/$NB_USER
+
+ARG NO_VNC_VERSION=1.2.0
+ARG NO_VNC_SHA=36c476b26df4684f1002e15c3d7e034c9e6ee4521e5fa8aac37309f954a07a01
+RUN pip3 install --force websockify==0.9.0 \
+    && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
+    && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
+    && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
+    && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
+    && rm /tmp/novnc.tar.gz \
+    && chown -R $NB_UID:$NB_GID /opt/novnc
+
+COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
+
+USER root
+RUN apt-get update --yes \
+    && apt-get install --yes nginx \
+    && chown -R $NB_USER:100 /var/log/nginx \
+    && chown $NB_USER:100 /etc/nginx \
+    && chmod -R 755 /var/log/nginx \
+    && rm -rf /var/lib/apt/lists/*
+RUN chown -R $NB_USER /home/$NB_USER
+USER $NB_USER
+COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
