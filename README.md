@@ -124,6 +124,38 @@ If making changes to CI that cannot be done on a branch (eg: changes to issue_co
 
 **Note:** Since pushing comes right at the end of the CI, in many cases you don't need to have a valid registry to test the CI on a fork.  It will fail on the push step, but all other steps will clearly work and you can know it should safely merge back into the main repo.
 
+## Other Development Notes
+
+## Development Notes
+
+### Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files
+
+Installs in the `Dockerfile`s occur as the **root** user, but all `Dockerfile`s end with `USER jovyan` to ensure end users do not have excess priviledges.  This means that installation of anything that should be user editable (eg: `pip` and `conda` installs, additional files in `/home/$NB_USER`, etc.) will by default be owned by **root**.  This causes issues for users later if they write to these locations (eg: `pip install` or `conda install` of any package, or by editing a user settings file in their `/home/$NB_USER`).
+
+To fix this issue, end any `RUN` command that edits any user-editable files with:
+
+```
+fix-permissions $CONDA_DIR && \
+fix-permissions /home/$NB_USER
+```
+
+This fix edits the permissions of files in these locations to allow user access.  Note that if these are not applied **in the same layer as when the new files were added** it will result in a duplication of data in the layer because the act of changing permissions on a file from a previous layer requires a copy of that file into the current layer.  So something like:
+
+```
+RUN add_1GB_file_with_wrong_permissions_to_NB_USER.sh && \
+	fix-permissions /home/$NB_USER
+```
+
+would add a single layer of about 1GB, whereas
+
+```
+RUN add_1GB_file_with_wrong_permissions_to_NB_USER.sh
+
+RUN fix-permissions /home/$NB_USER
+```
+
+would add two layers, each about 1GB (2GB total).
+
 ## Structure
 
 
