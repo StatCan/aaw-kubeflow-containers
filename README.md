@@ -124,6 +124,36 @@ If making changes to CI that cannot be done on a branch (eg: changes to issue_co
 
 **Note:** Since pushing comes right at the end of the CI, in many cases you don't need to have a valid registry to test the CI on a fork.  It will fail on the push step, but all other steps will clearly work and you can know it should safely merge back into the main repo.
 
+## Other Development Notes
+
+### Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files
+
+The Dockerfiles in this repo are intended to construct compute environments for a non-root user **jovyan** to ensure the end user has the least privileges required for their task, but installation of some of the software needed by the user must be done as the **root** user.  This means that installation of anything that should be user editable (eg: `pip` and `conda` installs, additional files in `/home/$NB_USER`, etc.) will by default be owned by **root** and not modifiable by **jovyan**. **Therefore we must change the permissions of these files to allow the user specific access for modification.**  For example, most pip install/conda install commands occur as the root user and result in new files in the $CONDA_DIR directory that will be owned by **root** and cause issues if user **jovyan** tried to update or uninstall these packages (as they by default will not have permission to change/remove these files).
+
+To fix this issue, end any `RUN` command that edits any user-editable files with:
+
+```
+fix-permissions $CONDA_DIR && \
+fix-permissions /home/$NB_USER
+```
+
+This fix edits the permissions of files in these locations to allow user access.  Note that if these are not applied **in the same layer as when the new files were added** it will result in a duplication of data in the layer because the act of changing permissions on a file from a previous layer requires a copy of that file into the current layer.  So something like:
+
+```
+RUN add_1GB_file_with_wrong_permissions_to_NB_USER.sh && \
+	fix-permissions /home/$NB_USER
+```
+
+would add a single layer of about 1GB, whereas
+
+```
+RUN add_1GB_file_with_wrong_permissions_to_NB_USER.sh
+
+RUN fix-permissions /home/$NB_USER
+```
+
+would add two layers, each about 1GB (2GB total).
+
 ## Structure
 
 
