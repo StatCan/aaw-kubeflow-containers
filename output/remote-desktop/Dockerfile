@@ -16,13 +16,20 @@ ENV NB_GID="100"
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+#Fix-permissions
+COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
+RUN chmod u+x /usr/bin/fix-permissions.sh
+
+
 RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && fix-permissions $CONDA_DIR \
+    && fix-permissions /home/$NB_USER
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
@@ -40,12 +47,16 @@ RUN pip3 --no-cache-dir install --quiet \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' \ 
+      && fix-permissions $CONDA_DIR \
+      && fix-permissions /home/$NB_USER
 
 # kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
       'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
+      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' \
+      && fix-permissions $CONDA_DIR \
+      && fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -137,7 +148,9 @@ ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
 
 RUN python3 -m pip install \
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
+    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server' \
+    && fix-permissions $CONDA_DIR \
+    && fix-permissions /home/$NB_USER 
 
 #Fix-permissions
 COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
@@ -462,7 +475,9 @@ RUN pip3 install --force websockify==0.9.0 \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc
+    && chown -R $NB_UID:$NB_GID /opt/novnc \ 
+    && fix-permissions $CONDA_DIR \
+    && fix-permissions /home/$NB_USER
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
