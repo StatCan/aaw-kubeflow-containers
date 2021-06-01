@@ -376,6 +376,10 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
     clean-layer.sh
 
+#Install PSPP
+RUN /bin/bash $RESOURCES_PATH/pspp.sh \
+    && clean-layer.sh
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -423,6 +427,8 @@ RUN apt-get update && apt-get install --yes websockify \
 
 #ADD . /opt/install
 #RUN pwd && echo && ls /opt/install
+
+
 
 #Install Miniconda
 #Has to be appended, else messes with qgis
