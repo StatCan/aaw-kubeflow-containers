@@ -77,6 +77,7 @@ unset DBUS_SESSION_BUS_ADDRESS
 startxfce4 &
 
 # Makes an unbelievable difference in speed
+(sleep 10 && xdg-settings set default-web-browser firefox.desktop) &
 (sleep 10 && xfconf-query -c xfwm4 -p /general/use_compositing -s false && dconf write /org/gnome/terminal/legacy/profiles/custom-command "'/bin/bash'") &
 EOF
     chmod +x $HOME/.vnc/xstartup
