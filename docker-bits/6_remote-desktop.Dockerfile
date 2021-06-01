@@ -25,9 +25,9 @@ RUN python3 -m pip install \
     && fix-permissions $CONDA_DIR \
     && fix-permissions /home/$NB_USER 
 
-#Fix-permissions
-COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
-RUN chmod u+x /usr/bin/fix-permissions.sh
+# #Fix-permissions
+# COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
+# RUN chmod u+x /usr/bin/fix-permissions.sh
 
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
@@ -184,7 +184,7 @@ RUN \
     # configure dynamic linker run-time bindings
     ldconfig && \
     # Fix permissions
-    fix-permissions.sh && \
+    fix-permissions && \
     # Cleanup
     clean-layer.sh
 
@@ -238,7 +238,7 @@ RUN \
     rm -fr vscode-loc && \
     npm uninstall -g vsce && \
     # Fix permissions
-    fix-permissions.sh $HOME/.vscode/extensions/ && \
+    fix-permissions $HOME/.vscode/extensions/ && \
     # Cleanup
     clean-layer.sh
 

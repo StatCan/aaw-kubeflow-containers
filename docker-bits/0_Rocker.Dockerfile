@@ -12,8 +12,8 @@ USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 #Fix-permissions
-COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
-RUN chmod u+x /usr/bin/fix-permissions.sh
+COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
+RUN chmod u+x /usr/bin/fix-permissions
 
 
 RUN apt-get update --yes \
