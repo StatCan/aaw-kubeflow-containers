@@ -21,9 +21,7 @@ ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
 
 RUN python3 -m pip install \
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server' \
-    && fix-permissions $CONDA_DIR \
-    && fix-permissions /home/$NB_USER 
+    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server' 
 
 # #Fix-permissions
 # COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
@@ -348,9 +346,7 @@ RUN pip3 install --force websockify==0.9.0 \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc \ 
-    && fix-permissions $CONDA_DIR \
-    && fix-permissions /home/$NB_USER
+    && chown -R $NB_UID:$NB_GID /opt/novnc 
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 

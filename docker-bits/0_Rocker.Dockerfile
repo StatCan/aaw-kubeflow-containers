@@ -22,9 +22,7 @@ RUN apt-get update --yes \
 
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/* \
-    && fix-permissions $CONDA_DIR \
-    && fix-permissions /home/$NB_USER
+    && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
