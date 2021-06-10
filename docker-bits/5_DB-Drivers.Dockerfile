@@ -5,3 +5,4 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+    

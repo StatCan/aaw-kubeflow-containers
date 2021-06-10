@@ -15,7 +15,6 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
 RUN chmod u+x /usr/bin/fix-permissions
 
-
 RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
