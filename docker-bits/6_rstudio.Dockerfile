@@ -32,7 +32,9 @@ RUN conda install --quiet --yes \
 
 RUN python3 -m pip install \
       'git+git://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
-      'jupyter-shiny-proxy==1.1'
+      'jupyter-shiny-proxy==1.1' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 

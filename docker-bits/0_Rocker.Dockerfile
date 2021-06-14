@@ -11,13 +11,17 @@ ENV NB_GID="100"
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+#Fix-permissions
+COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
+RUN chmod u+x /usr/bin/fix-permissions
+
 RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/

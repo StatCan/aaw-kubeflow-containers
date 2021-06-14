@@ -28,6 +28,8 @@ RUN apt-get update --yes \
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
+USER root
+
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \      
@@ -37,12 +39,16 @@ RUN pip3 --no-cache-dir install --quiet \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985'
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 # kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
       'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks'
+      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -115,7 +121,9 @@ RUN curl -LO "${KUBECTL_URL}" \
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
     pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/6_rstudio.Dockerfile
@@ -155,7 +163,9 @@ RUN conda install --quiet --yes \
 
 RUN python3 -m pip install \
       'git+git://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
-      'jupyter-shiny-proxy==1.1'
+      'jupyter-shiny-proxy==1.1' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 

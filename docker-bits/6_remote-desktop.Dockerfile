@@ -23,10 +23,6 @@ RUN mkdir $RESOURCES_PATH
 RUN python3 -m pip install \
     'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
 
-#Fix-permissions
-COPY remote-desktop/fix-permissions.sh /usr/bin/fix-permissions.sh
-RUN chmod u+x /usr/bin/fix-permissions.sh
-
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
 
@@ -182,7 +178,7 @@ RUN \
     # configure dynamic linker run-time bindings
     ldconfig && \
     # Fix permissions
-    fix-permissions.sh && \
+    fix-permissions && \
     # Cleanup
     clean-layer.sh
 
@@ -236,7 +232,7 @@ RUN \
     rm -fr vscode-loc && \
     npm uninstall -g vsce && \
     # Fix permissions
-    fix-permissions.sh $HOME/.vscode/extensions/ && \
+    fix-permissions $HOME/.vscode/extensions/ && \
     # Cleanup
     clean-layer.sh
 
