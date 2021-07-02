@@ -100,9 +100,7 @@ cat $HOME/.vnc/*.log
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
-if [ -f /run/secrets/kubernetes.io/serviceaccount/namespace ]; then
-    export NB_NAMESPACE=$(cat /run/secrets/kubernetes.io/serviceaccount/namespace)
-fi
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 nginx
 wait

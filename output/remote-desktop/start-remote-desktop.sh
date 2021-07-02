@@ -100,5 +100,7 @@ cat $HOME/.vnc/*.log
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+
 nginx
 wait
