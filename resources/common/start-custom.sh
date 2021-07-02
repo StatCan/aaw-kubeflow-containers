@@ -69,6 +69,10 @@ if [ -f "$NOTEBOOK_CONFIG" ]; then
       && mv -f "$NOTEBOOK_CONFIG_TMP" "$NOTEBOOK_CONFIG"
 fi
 
+if [ -f /run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+    export NB_NAMESPACE=$(cat /run/secrets/kubernetes.io/serviceaccount/namespace)
+fi
+
 jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
