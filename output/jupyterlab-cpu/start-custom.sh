@@ -16,8 +16,8 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
       conda init bash
       conda init zsh
     fi
-    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.bashrc 
-    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc    
+    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.bashrc
+    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
 fi
 
@@ -68,6 +68,8 @@ if [ -f "$NOTEBOOK_CONFIG" ]; then
   jq 'del(.NotebookApp.server_extensions)' "$NOTEBOOK_CONFIG" > "$NOTEBOOK_CONFIG_TMP" \
       && mv -f "$NOTEBOOK_CONFIG_TMP" "$NOTEBOOK_CONFIG"
 fi
+
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
