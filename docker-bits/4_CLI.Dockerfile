@@ -2,27 +2,26 @@ USER root
 
 # Remove diverted man binary to prevent man-pages being replaced with "minimized" message.
 RUN if  [ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]; then \
-        rm -f /usr/bin/man; \
-        dpkg-divert --quiet --remove --rename /usr/bin/man; \
+    rm -f /usr/bin/man; \
+    dpkg-divert --quiet --remove --rename /usr/bin/man; \
     fi
-
 # Dependencies
 RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
-      'jq' \
-      'less' \
-      'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
-      'zip' \
-      'zsh' \
-      'wget' \
-      'curl' \
+    apt-get install -y --no-install-recommends \
+    'byobu' \
+    'htop' \
+    'jq' \
+    'less' \
+    'openssl' \
+    'ranger' \
+    'tig' \
+    'tmux' \
+    'tree' \
+    'vim' \
+    'zip' \
+    'zsh' \
+    'wget' \
+    'curl' \
   && \
     rm -rf /var/lib/apt/lists/*
 
@@ -61,4 +60,16 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok"         
+    && echo "oh-my-zsh: ok" 
+
+# Remove the manpage blacklist, install man, install docs
+RUN sed -i 's,^path-exclude=/usr/share/man/,#path-exclude=/usr/share/man/,' /etc/dpkg/dpkg.cfg.d/excludes  \
+    && apt-get update \
+    && dpkg -l | grep ^ii | cut -d' ' -f3 | xargs apt-get install -yq --no-install-recommends --reinstall man \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+# Workaround for a mandb bug, should be fixed in mandb
+# https://git.savannah.gnu.org/cgit/man-db.git/commit/?id=8197d7824f814c5d4b992b4c8730b5b0f7ec589a
+RUN echo "MANPATH_MAP ${CONDA_DIR}/bin ${CONDA_DIR}/man" >> /etc/manpath.config \
+    && echo "MANPATH_MAP ${CONDA_DIR}/bin ${CONDA_DIR}/share/man" >> /etc/manpath.config \
+    && mandb
