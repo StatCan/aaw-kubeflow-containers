@@ -1,5 +1,11 @@
 USER root
 
+# Remove diverted man binary to prevent man-pages being replaced with "minimized" message.
+RUN if  [ "$(dpkg-divert --truename /usr/bin/man)" = "/usr/bin/man.REAL" ]; then \
+        rm -f /usr/bin/man; \
+        dpkg-divert --quiet --remove --rename /usr/bin/man; \
+    fi
+
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
@@ -55,4 +61,4 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok"
+    && echo "oh-my-zsh: ok"         
