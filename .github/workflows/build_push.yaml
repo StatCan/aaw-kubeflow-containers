@@ -63,10 +63,10 @@ jobs:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list 
           # - docker-stacks-datascience-notebook # Debugging
-          - rstudio
-          - jupyterlab-cpu
-          - jupyterlab-pytorch
-          - jupyterlab-tensorflow
+          # - rstudio
+          # - jupyterlab-cpu
+          # - jupyterlab-pytorch
+          # - jupyterlab-tensorflow
           - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
@@ -102,18 +102,18 @@ jobs:
 
     # Image testing
     
-    - name: Set Up Python for Test Suite
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
+    # - name: Set Up Python for Test Suite
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: 3.8
 
-    - name: Set up venv for Test Suite
-      run: |
-        python -m pip install --upgrade pip
-        make install-python-dev-venv
+    # - name: Set up venv for Test Suite
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     make install-python-dev-venv
 
-    - name: Test image
-      run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+    # - name: Test image
+    #   run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Image scanning
 
