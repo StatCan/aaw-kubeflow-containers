@@ -35,90 +35,90 @@ RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
-# USER root
+USER root
 
-# RUN pip3 --no-cache-dir install --quiet \
-#       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-#       'kfp-server-api==1.3.0' \      
-#       'kubeflow-fairing==1.0.2' \
-#       'ml-metadata==0.27.0' \
-#       'kubeflow-metadata==0.2.0' \
-#       'kubeflow-pytorchjob==0.1.3' \
-#       'kubeflow-tfjob==0.1.3' \
-#       'minio==5.0.10' \
-#       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
-#       fix-permissions $CONDA_DIR && \
-#       fix-permissions /home/$NB_USER
+RUN pip3 --no-cache-dir install --quiet \
+      'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
+      'kfp-server-api==1.3.0' \      
+      'kubeflow-fairing==1.0.2' \
+      'ml-metadata==0.27.0' \
+      'kubeflow-metadata==0.2.0' \
+      'kubeflow-pytorchjob==0.1.3' \
+      'kubeflow-tfjob==0.1.3' \
+      'minio==5.0.10' \
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
-# # kfp-azure-databricks needs to be run after kfp
-# RUN pip3 --no-cache-dir install --quiet \
-#       'fire==0.3.1' \
-#       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
-#       fix-permissions $CONDA_DIR && \
-#       fix-permissions /home/$NB_USER
+# kfp-azure-databricks needs to be run after kfp
+RUN pip3 --no-cache-dir install --quiet \
+      'fire==0.3.1' \
+      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
-# ###############################
-# ###  docker-bits/4_CLI.Dockerfile
-# ###############################
+###############################
+###  docker-bits/4_CLI.Dockerfile
+###############################
 
-# USER root
+USER root
 
-# # Dependencies
-# RUN apt-get update && \
-#   apt-get install -y --no-install-recommends \
-#       'byobu' \
-#       'htop' \
-#       'jq' \
-#       'less' \
-#       'openssl' \
-#       'ranger' \
-#       'tig' \
-#       'tmux' \
-#       'tree' \
-#       'vim' \
-#       'zip' \
-#       'zsh' \
-#       'wget' \
-#       'curl' \
-#   && \
-#     rm -rf /var/lib/apt/lists/*
+# Dependencies
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+      'byobu' \
+      'htop' \
+      'jq' \
+      'less' \
+      'openssl' \
+      'ranger' \
+      'tig' \
+      'tmux' \
+      'tree' \
+      'vim' \
+      'zip' \
+      'zsh' \
+      'wget' \
+      'curl' \
+  && \
+    rm -rf /var/lib/apt/lists/*
 
-# ARG KUBECTL_VERSION=v1.15.10
-# ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-# ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+ARG KUBECTL_VERSION=v1.15.10
+ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
 
-# ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
-# ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
-# ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
+ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
+ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
+ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
 
-# ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# # ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
+ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
+# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
-# ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
-# ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
+ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
+ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-# # Add helpers for shell initialization
-# COPY shell_helpers.sh /tmp/shell_helpers.sh
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
 
-# # kubectl, mc, and az
-# RUN curl -LO "${KUBECTL_URL}" \
-#     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
-#     && chmod +x ./kubectl \
-#     && sudo mv ./kubectl /usr/local/bin/kubectl \
-#   && \
-#     wget --quiet -O mc "${MC_URL}" \
-#     && echo "${MC_SHA} mc" | sha256sum -c - \
-#     && chmod +x mc \
-#     && mv mc /usr/local/bin/mc-original \
-#   && \
-#     curl -sLO https://aka.ms/InstallAzureCLIDeb \
-#     && bash InstallAzureCLIDeb \
-#     && rm InstallAzureCLIDeb \
-#     && echo "azcli: ok" \
-#   && \
-#     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-#     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-#     && echo "oh-my-zsh: ok"
+# kubectl, mc, and az
+RUN curl -LO "${KUBECTL_URL}" \
+    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+    && chmod +x ./kubectl \
+    && sudo mv ./kubectl /usr/local/bin/kubectl \
+  && \
+    wget --quiet -O mc "${MC_URL}" \
+    && echo "${MC_SHA} mc" | sha256sum -c - \
+    && chmod +x mc \
+    && mv mc /usr/local/bin/mc-original \
+  && \
+    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    && bash InstallAzureCLIDeb \
+    && rm InstallAzureCLIDeb \
+    && echo "azcli: ok" \
+  && \
+    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    && echo "oh-my-zsh: ok"
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile

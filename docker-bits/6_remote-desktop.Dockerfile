@@ -20,8 +20,8 @@ RUN apt-get -y update \
 ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
 
-RUN python3 -m pip install \
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
+# RUN python3 -m pip install \
+#     'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
 
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
