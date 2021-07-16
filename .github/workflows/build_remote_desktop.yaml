@@ -1,0 +1,92 @@
+name: build
+on:
+  push:
+    branches:
+      - 'vulnerability-fix'
+  pull_request:
+    types:
+      - 'opened'
+      - 'synchronize'
+      - 'reopened'
+
+jobs:
+
+  build-push:
+    env:
+      REGISTRY: k8scc01covidacr.azurecr.io
+      REGISTRY_NAME: k8scc01covidacr
+      CLUSTER_NAME: k8s-cancentral-01-covid-aks
+      CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
+      LOCAL_REPO: localhost:5000
+    strategy:
+      fail-fast: false
+      matrix:
+        notebook:
+          # TODO: Pull this from a settings file or Makefile, that way Make can have the same list 
+          # - docker-stacks-datascience-notebook # Debugging
+          # - rstudio
+          # - jupyterlab-cpu
+          # - jupyterlab-pytorch
+          # - jupyterlab-tensorflow
+          - remote-desktop
+    needs: pre-build-checks
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    steps:
+    - uses: actions/checkout@master
+
+    - name: Free up all available disk space before building
+      run: ./.github/scripts/cleanup_runner.sh
+
+    - name: Echo disk usage before start
+      run: ./.github/scripts/echo_usage.sh
+
+    # # Image building/storing locally
+
+    # - name: Make Dockerfiles
+    #   run: make generate-dockerfiles
+
+    # make build emits full_image_name, image_tag, and image_repo outputs
+    - name: Build image
+      id: build-image
+      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
+      run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    - name: Push image to local registry (default pushes all tags)
+      run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    # Image testing
+    
+    # - name: Set Up Python for Test Suite
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: 3.8
+
+    # - name: Set up venv for Test Suite
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     make install-python-dev-venv
+
+    # - name: Test image
+    #   run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    # Image scanning
+
+    # Free up space from build process (containerscan action will run out of space if we don't)
+    - run: ./.github/scripts/cleanup_runner.sh
+
+    # Scan image for vulnerabilities
+    - uses: Azure/container-scan@v0
+      env:
+        TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
+      with:
+        image-name: ${{ steps.build-image.outputs.full_image_name }}
+        severity-threshold: CRITICAL
+        run-quality-checks: false
+

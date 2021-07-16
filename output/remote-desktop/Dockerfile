@@ -35,90 +35,90 @@ RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
-USER root
+# USER root
 
-RUN pip3 --no-cache-dir install --quiet \
-      'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \      
-      'kubeflow-fairing==1.0.2' \
-      'ml-metadata==0.27.0' \
-      'kubeflow-metadata==0.2.0' \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
+# RUN pip3 --no-cache-dir install --quiet \
+#       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
+#       'kfp-server-api==1.3.0' \      
+#       'kubeflow-fairing==1.0.2' \
+#       'ml-metadata==0.27.0' \
+#       'kubeflow-metadata==0.2.0' \
+#       'kubeflow-pytorchjob==0.1.3' \
+#       'kubeflow-tfjob==0.1.3' \
+#       'minio==5.0.10' \
+#       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+#       fix-permissions $CONDA_DIR && \
+#       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
+# # kfp-azure-databricks needs to be run after kfp
+# RUN pip3 --no-cache-dir install --quiet \
+#       'fire==0.3.1' \
+#       'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+#       fix-permissions $CONDA_DIR && \
+#       fix-permissions /home/$NB_USER
 
-###############################
-###  docker-bits/4_CLI.Dockerfile
-###############################
+# ###############################
+# ###  docker-bits/4_CLI.Dockerfile
+# ###############################
 
-USER root
+# USER root
 
-# Dependencies
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
-      'jq' \
-      'less' \
-      'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
-      'zip' \
-      'zsh' \
-      'wget' \
-      'curl' \
-  && \
-    rm -rf /var/lib/apt/lists/*
+# # Dependencies
+# RUN apt-get update && \
+#   apt-get install -y --no-install-recommends \
+#       'byobu' \
+#       'htop' \
+#       'jq' \
+#       'less' \
+#       'openssl' \
+#       'ranger' \
+#       'tig' \
+#       'tmux' \
+#       'tree' \
+#       'vim' \
+#       'zip' \
+#       'zsh' \
+#       'wget' \
+#       'curl' \
+#   && \
+#     rm -rf /var/lib/apt/lists/*
 
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+# ARG KUBECTL_VERSION=v1.15.10
+# ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+# ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
 
-ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
-ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
-ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
+# ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
+# ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
+# ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
 
-ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
+# ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
+# # ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
-ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
-ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
+# ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
+# ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
+# # Add helpers for shell initialization
+# COPY shell_helpers.sh /tmp/shell_helpers.sh
 
-# kubectl, mc, and az
-RUN curl -LO "${KUBECTL_URL}" \
-    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
-    && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
-  && \
-    wget --quiet -O mc "${MC_URL}" \
-    && echo "${MC_SHA} mc" | sha256sum -c - \
-    && chmod +x mc \
-    && mv mc /usr/local/bin/mc-original \
-  && \
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
-    && bash InstallAzureCLIDeb \
-    && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" \
-  && \
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok"
+# # kubectl, mc, and az
+# RUN curl -LO "${KUBECTL_URL}" \
+#     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+#     && chmod +x ./kubectl \
+#     && sudo mv ./kubectl /usr/local/bin/kubectl \
+#   && \
+#     wget --quiet -O mc "${MC_URL}" \
+#     && echo "${MC_SHA} mc" | sha256sum -c - \
+#     && chmod +x mc \
+#     && mv mc /usr/local/bin/mc-original \
+#   && \
+#     curl -sLO https://aka.ms/InstallAzureCLIDeb \
+#     && bash InstallAzureCLIDeb \
+#     && rm InstallAzureCLIDeb \
+#     && echo "azcli: ok" \
+#   && \
+#     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
+#     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+#     && echo "oh-my-zsh: ok"
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile
@@ -146,8 +146,8 @@ RUN apt-get -y update \
 ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
 
-# RUN python3 -m pip install \
-#     'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
+RUN python3 -m pip install \
+    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
 
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
@@ -309,109 +309,109 @@ RUN \
     clean-layer.sh
 
 
-# Install Firefox
-RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
-    # Cleanup
-    clean-layer.sh
+# # Install Firefox
+# RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
+#     # Cleanup
+#     clean-layer.sh
 
-#Copy the French language pack file, must be the 86 version
-RUN wget https://addons.mozilla.org/firefox/downloads/file/3731010/francais_language_pack-86.0buildid20210222142601-fx.xpi  -O langpack-fr@firefox.mozilla.org.xpi && \
-    mkdir --parents /usr/lib/firefox/distribution/extensions/ && \
-    mv langpack-fr@firefox.mozilla.org.xpi /usr/lib/firefox/distribution/extensions/
+# #Copy the French language pack file, must be the 86 version
+# RUN wget https://addons.mozilla.org/firefox/downloads/file/3731010/francais_language_pack-86.0buildid20210222142601-fx.xpi  -O langpack-fr@firefox.mozilla.org.xpi && \
+#     mkdir --parents /usr/lib/firefox/distribution/extensions/ && \
+#     mv langpack-fr@firefox.mozilla.org.xpi /usr/lib/firefox/distribution/extensions/
 
-#Configure and set up Firefox to start up in a specific language (depends on LANG env variable)
-COPY French/Firefox/autoconfig.js /usr/lib/firefox/defaults/pref/
-COPY French/Firefox/firefox.cfg /usr/lib/firefox/
-
-
-#Install VsCode
-RUN apt-get update --yes \
-    && apt-get install --yes nodejs npm \
-    && /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install \
-    && clean-layer.sh
-
-# Install Visual Studio Code extensions
-# https://github.com/cdr/code-server/issues/171
-ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
-ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-RUN \
-    cd $RESOURCES_PATH && \
-    mkdir -p $HOME/.vscode/extensions/ && \
-    # Install python extension - (newer versions are 30MB bigger)
-    VS_PYTHON_VERSION="2020.5.86806" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
-    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-    bsdtar -xf ms-python-release.vsix extension && \
-    rm ms-python-release.vsix && \
-    mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-    VS_FRENCH_VERSION="1.50.2" && \
-    VS_LOCALE_REPO_VERSION="1.50" && \
-    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git &&\
-    cd vscode-loc && \
-    npm install -g vsce && \
-    cd i18n/vscode-language-pack-fr && \
-    vsce package && \
-    bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
-    mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
-    cd ../../../ && \
-    # -fr option is required. git clone protects the directory and cannot delete it without -fr
-    rm -fr vscode-loc && \
-    npm uninstall -g vsce && \
-    # Fix permissions
-    fix-permissions $HOME/.vscode/extensions/ && \
-    # Cleanup
-    clean-layer.sh
+# #Configure and set up Firefox to start up in a specific language (depends on LANG env variable)
+# COPY French/Firefox/autoconfig.js /usr/lib/firefox/defaults/pref/
+# COPY French/Firefox/firefox.cfg /usr/lib/firefox/
 
 
-#QGIS
-COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
+# #Install VsCode
+# RUN apt-get update --yes \
+#     && apt-get install --yes nodejs npm \
+#     && /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install \
+#     && clean-layer.sh
 
-#R-Studio
-RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists
+# # Install Visual Studio Code extensions
+# # https://github.com/cdr/code-server/issues/171
+# ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
+# ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
+# RUN \
+#     cd $RESOURCES_PATH && \
+#     mkdir -p $HOME/.vscode/extensions/ && \
+#     # Install python extension - (newer versions are 30MB bigger)
+#     VS_PYTHON_VERSION="2020.5.86806" && \
+#     wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
+#     echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
+#     bsdtar -xf ms-python-release.vsix extension && \
+#     rm ms-python-release.vsix && \
+#     mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
+#     VS_FRENCH_VERSION="1.50.2" && \
+#     VS_LOCALE_REPO_VERSION="1.50" && \
+#     git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git &&\
+#     cd vscode-loc && \
+#     npm install -g vsce && \
+#     cd i18n/vscode-language-pack-fr && \
+#     vsce package && \
+#     bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
+#     mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
+#     cd ../../../ && \
+#     # -fr option is required. git clone protects the directory and cannot delete it without -fr
+#     rm -fr vscode-loc && \
+#     npm uninstall -g vsce && \
+#     # Fix permissions
+#     fix-permissions $HOME/.vscode/extensions/ && \
+#     # Cleanup
+#     clean-layer.sh
 
-#Libre office
-RUN add-apt-repository ppa:libreoffice/ppa && \
-    apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
-    apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
-    clean-layer.sh
 
-#Install PSPP
-RUN /bin/bash $RESOURCES_PATH/pspp.sh \
-    && clean-layer.sh
+# #QGIS
+# COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
+# COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
+# RUN /bin/bash $RESOURCES_PATH/qgis.sh \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists
 
-#Copy over french config for vscode
-#Both of these are required to have the language pack be recognized on install.
-COPY French/vscode/argv.json /home/$NB_USER/.vscode/
-COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
+# #R-Studio
+# RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
+#      apt-get clean && \
+#      rm -rf /var/lib/apt/lists
 
-#Tiger VNC
-ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
-RUN \
-    cd ${RESOURCES_PATH} && \
-    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
-    echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
-    tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
-    rm /tmp/tigervnc.tar.gz && \
-    clean-layer.sh
+# #Libre office
+# RUN add-apt-repository ppa:libreoffice/ppa && \
+#     apt-get install -y eog && \
+#     apt-get install -y libreoffice-calc libreoffice-gtk3 && \
+#     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
+#     clean-layer.sh
 
-#MISC Configuration Area
-#Copy over desktop files. First location is dropdown, then desktop, and make them executable
-COPY /desktop-files /usr/share/applications
-COPY /desktop-files $RESOURCES_PATH/desktop-files
+# #Install PSPP
+# RUN /bin/bash $RESOURCES_PATH/pspp.sh \
+#     && clean-layer.sh
 
-#Copy over French Language files
-COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
+# #Copy over french config for vscode
+# #Both of these are required to have the language pack be recognized on install.
+# COPY French/vscode/argv.json /home/$NB_USER/.vscode/
+# COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
+# #Tiger VNC
+# ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
+# RUN \
+#     cd ${RESOURCES_PATH} && \
+#     wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
+#     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
+#     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
+#     rm /tmp/tigervnc.tar.gz && \
+#     clean-layer.sh
+
+# #MISC Configuration Area
+# #Copy over desktop files. First location is dropdown, then desktop, and make them executable
+# COPY /desktop-files /usr/share/applications
+# COPY /desktop-files $RESOURCES_PATH/desktop-files
+
+# #Copy over French Language files
+# COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
+
+# #Configure the panel
+# # Done at runtime
+# # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
 #Extra Icons
