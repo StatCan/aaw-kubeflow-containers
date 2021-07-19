@@ -309,58 +309,58 @@ RUN \
     clean-layer.sh
 
 
-# # Install Firefox
-# RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
-#     # Cleanup
-#     clean-layer.sh
+# Install Firefox
+RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
+    # Cleanup
+    clean-layer.sh
 
-# #Copy the French language pack file, must be the 86 version
-# RUN wget https://addons.mozilla.org/firefox/downloads/file/3731010/francais_language_pack-86.0buildid20210222142601-fx.xpi  -O langpack-fr@firefox.mozilla.org.xpi && \
-#     mkdir --parents /usr/lib/firefox/distribution/extensions/ && \
-#     mv langpack-fr@firefox.mozilla.org.xpi /usr/lib/firefox/distribution/extensions/
+#Copy the French language pack file, must be the 86 version
+RUN wget https://addons.mozilla.org/firefox/downloads/file/3731010/francais_language_pack-86.0buildid20210222142601-fx.xpi  -O langpack-fr@firefox.mozilla.org.xpi && \
+    mkdir --parents /usr/lib/firefox/distribution/extensions/ && \
+    mv langpack-fr@firefox.mozilla.org.xpi /usr/lib/firefox/distribution/extensions/
 
-# #Configure and set up Firefox to start up in a specific language (depends on LANG env variable)
-# COPY French/Firefox/autoconfig.js /usr/lib/firefox/defaults/pref/
-# COPY French/Firefox/firefox.cfg /usr/lib/firefox/
+#Configure and set up Firefox to start up in a specific language (depends on LANG env variable)
+COPY French/Firefox/autoconfig.js /usr/lib/firefox/defaults/pref/
+COPY French/Firefox/firefox.cfg /usr/lib/firefox/
 
 
-# #Install VsCode
-# RUN apt-get update --yes \
-#     && apt-get install --yes nodejs npm \
-#     && /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install \
-#     && clean-layer.sh
+#Install VsCode
+RUN apt-get update --yes \
+    && apt-get install --yes nodejs npm \
+    && /bin/bash $RESOURCES_PATH/vs-code-desktop.sh --install \
+    && clean-layer.sh
 
-# # Install Visual Studio Code extensions
-# # https://github.com/cdr/code-server/issues/171
-# ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
-# ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-# RUN \
-#     cd $RESOURCES_PATH && \
-#     mkdir -p $HOME/.vscode/extensions/ && \
-#     # Install python extension - (newer versions are 30MB bigger)
-#     VS_PYTHON_VERSION="2020.5.86806" && \
-#     wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
-#     echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-#     bsdtar -xf ms-python-release.vsix extension && \
-#     rm ms-python-release.vsix && \
-#     mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-#     VS_FRENCH_VERSION="1.50.2" && \
-#     VS_LOCALE_REPO_VERSION="1.50" && \
-#     git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git &&\
-#     cd vscode-loc && \
-#     npm install -g vsce && \
-#     cd i18n/vscode-language-pack-fr && \
-#     vsce package && \
-#     bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
-#     mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
-#     cd ../../../ && \
-#     # -fr option is required. git clone protects the directory and cannot delete it without -fr
-#     rm -fr vscode-loc && \
-#     npm uninstall -g vsce && \
-#     # Fix permissions
-#     fix-permissions $HOME/.vscode/extensions/ && \
-#     # Cleanup
-#     clean-layer.sh
+# Install Visual Studio Code extensions
+# https://github.com/cdr/code-server/issues/171
+ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
+ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
+RUN \
+    cd $RESOURCES_PATH && \
+    mkdir -p $HOME/.vscode/extensions/ && \
+    # Install python extension - (newer versions are 30MB bigger)
+    VS_PYTHON_VERSION="2020.5.86806" && \
+    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
+    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
+    bsdtar -xf ms-python-release.vsix extension && \
+    rm ms-python-release.vsix && \
+    mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
+    VS_FRENCH_VERSION="1.50.2" && \
+    VS_LOCALE_REPO_VERSION="1.50" && \
+    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git &&\
+    cd vscode-loc && \
+    npm install -g vsce && \
+    cd i18n/vscode-language-pack-fr && \
+    vsce package && \
+    bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
+    mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
+    cd ../../../ && \
+    # -fr option is required. git clone protects the directory and cannot delete it without -fr
+    rm -fr vscode-loc && \
+    npm uninstall -g vsce && \
+    # Fix permissions
+    fix-permissions $HOME/.vscode/extensions/ && \
+    # Cleanup
+    clean-layer.sh
 
 
 # #QGIS
