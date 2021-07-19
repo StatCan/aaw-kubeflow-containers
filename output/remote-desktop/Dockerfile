@@ -363,55 +363,55 @@ RUN \
     clean-layer.sh
 
 
-# #QGIS
-# COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
-# COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-# RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists
+#QGIS
+COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
+COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
+RUN /bin/bash $RESOURCES_PATH/qgis.sh \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
 
-# #R-Studio
-# RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-#      apt-get clean && \
-#      rm -rf /var/lib/apt/lists
+#R-Studio
+RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
+     apt-get clean && \
+     rm -rf /var/lib/apt/lists
 
-# #Libre office
-# RUN add-apt-repository ppa:libreoffice/ppa && \
-#     apt-get install -y eog && \
-#     apt-get install -y libreoffice-calc libreoffice-gtk3 && \
-#     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
-#     clean-layer.sh
+#Libre office
+RUN add-apt-repository ppa:libreoffice/ppa && \
+    apt-get install -y eog && \
+    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
+    apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
+    clean-layer.sh
 
-# #Install PSPP
-# RUN /bin/bash $RESOURCES_PATH/pspp.sh \
-#     && clean-layer.sh
+#Install PSPP
+RUN /bin/bash $RESOURCES_PATH/pspp.sh \
+    && clean-layer.sh
 
-# #Copy over french config for vscode
-# #Both of these are required to have the language pack be recognized on install.
-# COPY French/vscode/argv.json /home/$NB_USER/.vscode/
-# COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
+#Copy over french config for vscode
+#Both of these are required to have the language pack be recognized on install.
+COPY French/vscode/argv.json /home/$NB_USER/.vscode/
+COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
-# #Tiger VNC
-# ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
-# RUN \
-#     cd ${RESOURCES_PATH} && \
-#     wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
-#     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
-#     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
-#     rm /tmp/tigervnc.tar.gz && \
-#     clean-layer.sh
+#Tiger VNC
+ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
+RUN \
+    cd ${RESOURCES_PATH} && \
+    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
+    echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
+    rm /tmp/tigervnc.tar.gz && \
+    clean-layer.sh
 
-# #MISC Configuration Area
-# #Copy over desktop files. First location is dropdown, then desktop, and make them executable
-# COPY /desktop-files /usr/share/applications
-# COPY /desktop-files $RESOURCES_PATH/desktop-files
+#MISC Configuration Area
+#Copy over desktop files. First location is dropdown, then desktop, and make them executable
+COPY /desktop-files /usr/share/applications
+COPY /desktop-files $RESOURCES_PATH/desktop-files
 
-# #Copy over French Language files
-# COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
+#Copy over French Language files
+COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-# #Configure the panel
-# # Done at runtime
-# # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
+#Configure the panel
+# Done at runtime
+# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
 #Extra Icons
