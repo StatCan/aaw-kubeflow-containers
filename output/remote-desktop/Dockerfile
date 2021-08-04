@@ -385,6 +385,10 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
 RUN /bin/bash $RESOURCES_PATH/pspp.sh \
     && clean-layer.sh
 
+#Install Minio
+RUN /bin/bash/ $RESOURCES_PATH/minio.sh \
+    && clean-layer.sh
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
