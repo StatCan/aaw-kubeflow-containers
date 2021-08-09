@@ -182,7 +182,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install selenium && \   
+RUN pip3 install --quiet 'selenium' && \   
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -273,9 +273,7 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
-COPY remote-desktop/minio.sh /usr/bin/minio.sh
-RUN /bin/bash $RESOURCES_PATH/minio.sh \
-    && clean-layer.sh
+COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
     
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
