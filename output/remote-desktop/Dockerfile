@@ -317,7 +317,6 @@ RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.
     chmod +x /tmp/geckodriver && \
     mv /tmp/geckodriver /usr/bin/geckodriver && \
     rm /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
-    rm /tmp/geckodriver && \
     clean-layer.sh
 
 # Install Firefox
