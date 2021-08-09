@@ -16,7 +16,7 @@ with open('/vault/secrets/minio-standard-tenant-1.json') as f:
     accessKey= d["MINIO_ACCESS_KEY"]
     secretKey= d["MINIO_SECRET_KEY"]
 
-driver = webdriver.Firefox(executable_path="/tmp/geckodriver")
+driver = webdriver.Firefox(executable_path="/usr/bin/geckodriver")
 driver.get("https://minio-standard-tenant-1.covid.cloud.statcan.ca/minio/login")
 
 access_key= '//*[@id="accessKey"]'

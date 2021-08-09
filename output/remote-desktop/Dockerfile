@@ -315,7 +315,9 @@ RUN pip3 install selenium && \
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
     tar -xf /tmp/geckodriver-v0.28.0-linux64.tar.gz -C /tmp/ && \
     chmod +x /tmp/geckodriver && \
+    mv /tmp/geckodriver /usr/bin/geckodriver && \
     rm /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
+    rm /tmp/geckodriver && \
     clean-layer.sh
 
 # Install Firefox
@@ -373,11 +375,11 @@ RUN \
 
 
 #QGIS
-# COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
-# COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-# RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists
+COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
+COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
+RUN /bin/bash $RESOURCES_PATH/qgis.sh \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists
 
 #R-Studio
 RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
