@@ -182,6 +182,16 @@ RUN \
     # Cleanup
     clean-layer.sh
 
+RUN pip3 install selenium && \   
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+#Install geckodriver
+RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
+    tar -xf /tmp/geckodriver-v0.28.0-linux64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/geckodriver && \
+    rm /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
+    clean-layer.sh
 
 # Install Firefox
 RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
@@ -238,11 +248,11 @@ RUN \
 
 
 #QGIS
-COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
+# COPY qgis-2020.gpg.key $RESOURCES_PATH/qgis-2020.gpg.key
+# COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
+# RUN /bin/bash $RESOURCES_PATH/qgis.sh \
+#     && apt-get clean \
+#     && rm -rf /var/lib/apt/lists
 
 #R-Studio
 RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
@@ -261,12 +271,11 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
     && clean-layer.sh
 
 #Install Minio
-RUN pip3 install selenium \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-RUN /bin/bash/ $RESOURCES_PATH/minio.sh \
+COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
+COPY remote-desktop/minio.sh /usr/bin/minio.sh
+RUN /bin/bash $RESOURCES_PATH/minio.sh \
     && clean-layer.sh
-
+    
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
