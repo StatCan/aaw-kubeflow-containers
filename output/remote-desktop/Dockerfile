@@ -307,6 +307,17 @@ RUN \
     # Cleanup
     clean-layer.sh
 
+RUN pip3 install --quiet 'selenium' && \   
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+#Install geckodriver
+RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
+    tar -xf /tmp/geckodriver-v0.28.0-linux64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/geckodriver && \
+    mv /tmp/geckodriver /usr/bin/geckodriver && \
+    rm /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
+    clean-layer.sh
 
 # Install Firefox
 RUN /bin/bash $RESOURCES_PATH/firefox.sh --install && \
@@ -385,6 +396,10 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
 RUN /bin/bash $RESOURCES_PATH/pspp.sh \
     && clean-layer.sh
 
+#Install Minio
+COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
+COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
+    
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
