@@ -10,7 +10,7 @@
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
 # image updates, pin to the docker-stacks git commit SHA tag.
-# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=512afd49b925
@@ -32,7 +32,7 @@ USER root
 
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \      
+      'kfp-server-api==1.3.0' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
@@ -138,8 +138,8 @@ RUN apt-get update && \
     rm /tmp/rstudio.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     #Harden rstudio-server
-    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \ 
-    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
+    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
@@ -169,13 +169,13 @@ RUN python3 -m pip install \
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/statcan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
 # Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
 # This line of code should be removed once a solution or better alternative is found.
 USER root
@@ -194,7 +194,7 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 
 # Add --user to all pip install calls
 COPY pip.conf /tmp/pip.conf

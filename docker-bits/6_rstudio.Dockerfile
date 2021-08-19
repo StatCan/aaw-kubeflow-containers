@@ -8,8 +8,8 @@ RUN apt-get update && \
     rm /tmp/rstudio.deb && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     #Harden rstudio-server
-    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \ 
-    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \ 
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
+    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
@@ -39,4 +39,4 @@ RUN python3 -m pip install \
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/R-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-r-notebooks.git

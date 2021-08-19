@@ -26,7 +26,7 @@ RUN apt-get update --yes \
 
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/*
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
@@ -39,7 +39,7 @@ USER root
 
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \      
+      'kfp-server-api==1.3.0' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
@@ -307,7 +307,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \   
+RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -399,7 +399,7 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-    
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -501,7 +501,7 @@ COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/statcan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
 # Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
 # This line of code should be removed once a solution or better alternative is found.
 USER root

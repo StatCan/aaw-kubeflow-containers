@@ -8,12 +8,12 @@
     # jupyterlab-spellchecker
     # jupyterlab-spreadsheet
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
+# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the statcan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.10.2-nodownload
 ARG VSCODE_SHA=8d5a7cef22ef0bafef635518721efd348cfecd40e65c076908e17b33fe1cc62c
-ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+ARG VSCODE_URL=https://github.com/statcan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -65,7 +65,7 @@ RUN pip install --quiet \
     pip install \
       'jupyterlab-git==0.30.0' \
       'jupyterlab-lsp==3.6.0' \
-      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+      'git+https://github.com/statcan/jupyterlab-language-pack-fr_FR.git' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
@@ -107,4 +107,4 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
 ENV DEFAULT_JUPYTER_URL=/lab
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-jupyter-notebooks
