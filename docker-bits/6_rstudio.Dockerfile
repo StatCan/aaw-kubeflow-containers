@@ -39,4 +39,4 @@ RUN python3 -m pip install \
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
