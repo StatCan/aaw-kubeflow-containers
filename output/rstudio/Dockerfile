@@ -31,7 +31,7 @@ RUN apt-get update --yes \
 USER root
 
 RUN pip3 --no-cache-dir install --quiet \
-      'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
+      'git+https://github.com/StatCan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
@@ -169,13 +169,13 @@ RUN python3 -m pip install \
 RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/statcan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
 # Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
 # This line of code should be removed once a solution or better alternative is found.
 USER root
