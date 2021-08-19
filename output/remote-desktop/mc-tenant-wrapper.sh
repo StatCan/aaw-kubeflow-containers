@@ -16,4 +16,4 @@ for  f in $(ls /vault/secrets/minio-* | grep -v -E '\..*'); do
      touch /tmp/.minio-$tenant
  fi
 done
-$MC $@
+$MC "$@"
