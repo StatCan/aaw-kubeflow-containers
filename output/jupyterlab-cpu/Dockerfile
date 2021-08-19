@@ -10,7 +10,7 @@
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
 # image updates, pin to the docker-stacks git commit SHA tag.
-# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=512afd49b925
@@ -32,7 +32,7 @@ USER root
 
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/statcan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \      
+      'kfp-server-api==1.3.0' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
@@ -138,12 +138,12 @@ RUN apt-get update && \
     # jupyterlab-spellchecker
     # jupyterlab-spreadsheet
 # JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
+# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the statcan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=3.10.2-nodownload
 ARG VSCODE_SHA=8d5a7cef22ef0bafef635518721efd348cfecd40e65c076908e17b33fe1cc62c
-ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+ARG VSCODE_URL=https://github.com/statcan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -195,7 +195,7 @@ RUN pip install --quiet \
     pip install \
       'jupyterlab-git==0.30.0' \
       'jupyterlab-lsp==3.6.0' \
-      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+      'git+https://github.com/statcan/jupyterlab-language-pack-fr_FR.git' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
@@ -237,13 +237,13 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
 ENV DEFAULT_JUPYTER_URL=/lab
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/jupyter-notebooks
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/statcan/aaw-contrib-jupyter-notebooks
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/statcan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
 # Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
 # This line of code should be removed once a solution or better alternative is found.
 USER root
@@ -262,7 +262,7 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 
 # Add --user to all pip install calls
 COPY pip.conf /tmp/pip.conf
