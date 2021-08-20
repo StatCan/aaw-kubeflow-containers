@@ -10,7 +10,7 @@
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
 # image updates, pin to the docker-stacks git commit SHA tag.
-# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=512afd49b925
@@ -194,7 +194,7 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
 
 # Add --user to all pip install calls
 COPY pip.conf /tmp/pip.conf
