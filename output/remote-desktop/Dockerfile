@@ -26,7 +26,7 @@ RUN apt-get update --yes \
 
 RUN /rocker_scripts/install_shiny_server.sh \
     && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
@@ -307,7 +307,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \
+RUN pip3 install --quiet 'selenium' && \   
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -399,7 +399,7 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-
+    
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
