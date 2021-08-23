@@ -71,6 +71,8 @@ fi
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
+printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
+
 jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
@@ -81,3 +83,4 @@ jupyter server --notebook-dir=/home/${NB_USER} \
                  --ServerApp.authenticate_prometheus=False \
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
+
