@@ -81,3 +81,12 @@ jupyter server --notebook-dir=/home/${NB_USER} \
                  --ServerApp.authenticate_prometheus=False \
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
+
+echo "KUBERNETES_SERVICE_PORT=443" >> /opt/conda/lib/R/etc/Renviron 
+echo "KUBERNETES_SERVICE_PORT_HTTPS=443" >> /opt/conda/lib/R/etc/Renviron 
+echo "KUBERNETES_PORT_443_TCP=tcp://10.135.0.1:443" >> /opt/conda/lib/R/etc/Renviron
+echo "KUBERNETES_PORT_443_TCP_ADDR=10.135.0.1" >> /opt/conda/lib/R/etc/Renviron
+echo "KUBERNETES_PORT_443_TCP_PROTO=tcp" >> /opt/conda/lib/R/etc/Renviron
+echo "KUBERNETES_SERVICE_HOST=10.135.0.1" >> /opt/conda/lib/R/etc/Renviron
+echo "KUBERNETES_PORT=tcp://10.135.0.1:443" >> /opt/conda/lib/R/etc/Renviron
+echo "KUBERNETES_PORT_443_TCP_PORT=443" >> /opt/conda/lib/R/etc/Renviron
