@@ -1,0 +1,4 @@
+local({
+    r <- list("dev-cran-remote" = "https://jfrog.aaw.cloud.statcan.ca/artifactory/dev-cran-remote/")
+    options(repos = r)
+})

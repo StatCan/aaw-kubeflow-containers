@@ -98,7 +98,7 @@ cpu: .output
 # Only one output version
 rstudio: cpu
 	mkdir -p $(OUT)/$@
-	cp -r resources/common/* $(OUT)/$@
+	cp -r resources/common/. $(OUT)/$@
 
 	$(CAT) \
 		$(TMP)/$<.Dockerfile \
@@ -115,7 +115,7 @@ jupyterlab: pytorch tensorflow cpu
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
-		cp -r resources/common/* $(OUT)/$@-$${type}/; \
+		cp -r resources/common/. $(OUT)/$@-$${type}/; \
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
@@ -132,8 +132,8 @@ remote-desktop:
 	mkdir -p $(OUT)/$@
 	echo "REMOTE DESKTOP"
 	cp -r scripts/remote-desktop $(OUT)/$@
-	cp -r resources/common/* $(OUT)/$@
-	cp -r resources/remote-desktop/* $(OUT)/$@
+	cp -r resources/common/. $(OUT)/$@
+	cp -r resources/remote-desktop/. $(OUT)/$@
 
 	$(CAT) \
 		$(SRC)/0_Rocker.Dockerfile \

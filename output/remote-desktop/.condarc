@@ -1,0 +1,4 @@
+channels:
+  - https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
+auto_update_conda: false
+show_channel_urls: true
