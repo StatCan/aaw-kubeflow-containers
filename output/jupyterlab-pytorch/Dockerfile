@@ -169,6 +169,8 @@ RUN apt-get update && \
       'zsh' \
       'wget' \
       'curl' \
+      'tesseract-ocr' \
+      'libtesseract-dev' \
   && \
     rm -rf /var/lib/apt/lists/*
 
@@ -347,6 +349,9 @@ USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+# Remove https://github.com/advisories/GHSA-9j49-mfvp-vmhm
+# THIS IS JUST FOR TESTING DO NOT MERGE
+RUN npm uninstall pac-resolver
 USER $NB_USER
 
 ###############################

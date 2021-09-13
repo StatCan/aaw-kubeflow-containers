@@ -17,6 +17,8 @@ RUN apt-get update && \
       'zsh' \
       'wget' \
       'curl' \
+      'tesseract-ocr' \
+      'libtesseract-dev' \
   && \
     rm -rf /var/lib/apt/lists/*
 
