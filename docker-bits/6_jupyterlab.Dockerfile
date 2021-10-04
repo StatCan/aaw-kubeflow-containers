@@ -12,7 +12,7 @@
 
 # Install vscode
 ARG VSCODE_VERSION=3.10.2-nodownload-v2
-ARG VSCODE_SHA=2c8e3d40070bb79a92e5709f965a22ed8bba7c6ebd9a1519577be634ed3b5c7d
+ARG VSCODE_SHA=d18671869374c31ae07d4628e0fb9360e50b0cb9ceb8dd3867d3c3b8a47e7d8e
 ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
