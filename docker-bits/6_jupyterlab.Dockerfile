@@ -11,8 +11,8 @@
 # TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=3.10.2-nodownload-v2
-ARG VSCODE_SHA=d18671869374c31ae07d4628e0fb9360e50b0cb9ceb8dd3867d3c3b8a47e7d8e
+ARG VSCODE_VERSION=v3.10.2-nodownload-v3
+ARG VSCODE_SHA=62429655dedfdf5d19db88cf06da01c91413f402eae268ee3b90c041ebc6f622
 ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
