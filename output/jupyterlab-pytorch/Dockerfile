@@ -322,7 +322,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
-      'sql-language-server' \
+      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this 
       'unified-language-server' \
       'yaml-language-server@0.18.0' \
     && \
