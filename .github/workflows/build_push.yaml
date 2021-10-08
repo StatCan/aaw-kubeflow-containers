@@ -121,7 +121,7 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0.1
+    - uses: Azure/container-scan@v0
       env:
         TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
