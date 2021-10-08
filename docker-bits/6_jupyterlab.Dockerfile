@@ -84,6 +84,19 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
+#TEST DELETE IF FAILURE
+# pyyaml??? 
+RUN pip3 --no-cache-dir install --quiet \
+      'Pillow==8.3.0' \
+      'notebook==6.4.1' \
+      'pyyaml==5.4.1' \
+      'jupyterlab==3.0.17' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+      
+#END TEST DELETE IF FAILURE
+
+
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
