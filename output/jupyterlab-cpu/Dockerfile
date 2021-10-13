@@ -223,8 +223,8 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-#TEST DELETE IF FAILURE
-# pyyaml??? 
+# Update and pin packages
+# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
       'Pillow==8.3.0' \
       'notebook==6.4.1' \
@@ -232,8 +232,6 @@ RUN pip3 --no-cache-dir install --quiet \
       'jupyterlab==3.0.17' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
-      
-#END TEST DELETE IF FAILURE
 
 
 # Install python, R, Julia and other useful language servers
