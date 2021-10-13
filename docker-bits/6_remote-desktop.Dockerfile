@@ -182,7 +182,10 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \   
+RUN pip3 install --quiet \
+    'selenium' \
+    #See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+    'cryptography==35.0.0' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
