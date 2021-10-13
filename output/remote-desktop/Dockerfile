@@ -316,12 +316,13 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet \
-    'selenium' \
-    #See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-    'cryptography==35.0.0' && \
+RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
+# Upgrade cryptography in the conda environment
+# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN conda install --quiet --yes cryptography=3.4.8
 
 #Install geckodriver
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
