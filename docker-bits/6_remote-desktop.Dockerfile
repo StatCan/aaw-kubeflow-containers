@@ -182,7 +182,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \   
+RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -345,6 +345,10 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
+
+# Upgrade cryptography in the conda environment
+# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN conda install --quiet --yes cryptography=3.4.8
 
 #Set Defaults
 ENV HOME=/home/$NB_USER

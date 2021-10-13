@@ -30,6 +30,15 @@ RUN apt-get update --yes \
 
 USER root
 
+# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN pip3 --no-cache-dir install --quiet \
+      'Pillow==8.3.0' \
+      'notebook==6.4.1' \
+      'PyYAML==5.4.1' \
+      'jupyterlab==3.0.17' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER      
+
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/StatCan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \
@@ -141,8 +150,8 @@ RUN apt-get update && \
 # TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=3.10.2-nodownload
-ARG VSCODE_SHA=8d5a7cef22ef0bafef635518721efd348cfecd40e65c076908e17b33fe1cc62c
+ARG VSCODE_VERSION=3.10.2-nodownload-v3
+ARG VSCODE_SHA=62429655dedfdf5d19db88cf06da01c91413f402eae268ee3b90c041ebc6f622
 ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -214,6 +223,17 @@ RUN pip install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
+# Update and pin packages
+# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN pip3 --no-cache-dir install --quiet \
+      'Pillow==8.3.0' \
+      'notebook==6.4.1' \
+      'pyyaml==5.4.1' \
+      'jupyterlab==3.0.17' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
+
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
@@ -225,7 +245,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
-      'sql-language-server' \
+      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this 
       'unified-language-server' \
       'yaml-language-server@0.18.0' \
     && \

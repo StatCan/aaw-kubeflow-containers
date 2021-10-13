@@ -37,6 +37,15 @@ RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 
 USER root
 
+# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN pip3 --no-cache-dir install --quiet \
+      'Pillow==8.3.0' \
+      'notebook==6.4.1' \
+      'PyYAML==5.4.1' \
+      'jupyterlab==3.0.17' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER      
+
 RUN pip3 --no-cache-dir install --quiet \
       'git+https://github.com/StatCan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
       'kfp-server-api==1.3.0' \
@@ -307,7 +316,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \   
+RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -470,6 +479,10 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
+
+# Upgrade cryptography in the conda environment
+# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN conda install --quiet --yes cryptography=3.4.8
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
