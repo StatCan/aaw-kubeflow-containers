@@ -1,4 +1,4 @@
 local({
-    r <- list("dev-cran-remote" = "http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/dev-cran-remote/")
+    r <- list("dev-cran-remote" = "http://jfrog-platform-artifactory-ha.jfrog-system.svc.cluster.local:8081/artifactory/dev-cran-remote/")
     options(repos = r)
 })
