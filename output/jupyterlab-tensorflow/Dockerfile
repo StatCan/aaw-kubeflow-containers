@@ -388,6 +388,16 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system
 
+# TEST USING A .netrc file
+# Try using anonymous@.... 
+# I dont want things printed in output when trying to install
+# can change the value in .netrc to be a secret later
+# I have tested this with my own artifactory and it seems to work fine 
+#COPY .netrc ~/.netrc
+#RUN chown $NB_USER ~/.netrc
+#RUN chmod 0600 ~/.netrc
+
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
