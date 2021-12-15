@@ -89,7 +89,10 @@ pytorch tensorflow: .output
 	> $(TMP)/$@.Dockerfile
 
 cpu: .output
-	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
+	$(CAT) \
+	  $(SRC)/0_$@.Dockerfile \
+	  $(SRC)/2_$@.Dockerfile \
+	> $(TMP)/$@.Dockerfile
 
 ################################
 ###    R-Studio & Jupyter    ###
