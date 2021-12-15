@@ -75,9 +75,9 @@ all:
 generate-dockerfiles: clean jupyterlab rstudio remote-desktop docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
-#############################
-###   Bases GPU & Spark   ###
-#############################
+##############################
+###   Bases GPU & Custom   ###
+##############################
 
 # Configure the "Bases".
 #
