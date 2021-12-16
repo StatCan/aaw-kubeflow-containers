@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=512afd49b925
+ARG BASE_VERSION=9ed3b8de5de1
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -23,6 +23,11 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
+
+# Python is downgraded because of ml-metadata
+RUN conda install -c conda-forge python=3.8.12 -y && \
+  fix-permissions $CONDA_DIR && \
+  fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/1_CUDA-11.0.Dockerfile
@@ -129,7 +134,7 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.3.0' \
+      'Pillow==8.4.0' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
       'jupyterlab==3.0.17' && \
@@ -292,7 +297,6 @@ RUN pip install --quiet \
       'ipympl==0.7.0' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'nodejs==15.14.0' \
     && \
     conda install --quiet --yes \
       -c plotly \
@@ -323,7 +327,7 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.3.0' \
+      'Pillow==8.4.0' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
       'jupyterlab==3.0.17' && \

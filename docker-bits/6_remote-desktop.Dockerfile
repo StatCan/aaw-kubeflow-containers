@@ -231,9 +231,9 @@ RUN \
     mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
     VS_FRENCH_VERSION="1.50.2" && \
     VS_LOCALE_REPO_VERSION="1.50" && \
-    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git &&\
+    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git && \
     cd vscode-loc && \
-    npm install -g vsce && \
+    npm install -g --unsafe-perm vsce@1.103.1 && \
     cd i18n/vscode-language-pack-fr && \
     vsce package && \
     bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
@@ -329,8 +329,8 @@ RUN apt-get update && apt-get install --yes websockify \
 #Has to be appended, else messes with qgis
 ENV PATH $PATH:/opt/conda/bin
 
-ARG CONDA_VERSION=py38_4.9.2
-ARG CONDA_MD5=122c8c9beb51e124ab32a0fa6426c656
+ARG CONDA_VERSION=py38_4.10.3
+ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
 
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
     echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
@@ -345,10 +345,6 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
-
-# Upgrade cryptography in the conda environment
-# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN conda install --quiet --yes cryptography=3.4.8
 
 #Set Defaults
 ENV HOME=/home/$NB_USER

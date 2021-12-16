@@ -77,6 +77,9 @@ EXCLUDED_PACKAGES = [
     "protobuf",
     "r-irkernel",
     "unixodbc",
+    "bzip2",
+    "openssl",
+    "ca-certificates",
 ]
 
 
