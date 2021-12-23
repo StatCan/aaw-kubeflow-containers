@@ -73,7 +73,7 @@ export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
-jupyter server --notebook-dir=/home/${NB_USER} \
+/opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
                  --port=8888 \
