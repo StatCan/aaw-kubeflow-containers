@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=512afd49b925
+ARG BASE_VERSION=9ed3b8de5de1
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -23,6 +23,11 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
+
+# Python is downgraded because of ml-metadata
+RUN conda install -c conda-forge python=3.8.12 -y && \
+  fix-permissions $CONDA_DIR && \
+  fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/2_cpu.Dockerfile
@@ -55,7 +60,7 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.3.0' \
+      'Pillow==8.4.0' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
       'jupyterlab==3.0.17' && \
@@ -178,15 +183,15 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN conda install --quiet --yes \
-      'r-rodbc==1.3_16' \
-      'r-tidymodels==0.1.2' \
-      'r-arrow==2.0.0' \
+      'r-rodbc==1.3_19' \
+      'r-tidymodels==0.1.3' \
+      'r-arrow==4.0.0' \
       'r-aws.s3==0.3.21' \
-      'r-catools==1.18.0' \
+      'r-catools==1.18.2' \
       'r-hdf5r==1.3.3' \
-      'r-odbc==1.3.0' \
-      'r-sf==0.9_6' \
-      'r-e1071==1.7_4' \
+      'r-odbc==1.3.3' \
+      'r-sf==1.0_4' \
+      'r-e1071==1.7_8' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

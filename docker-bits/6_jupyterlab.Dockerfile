@@ -56,7 +56,6 @@ RUN pip install --quiet \
       'ipympl==0.7.0' \
       'jupyter_contrib_nbextensions==0.5.1' \
       'nb_conda_kernels==2.3.1' \
-      'nodejs==15.14.0' \
     && \
     conda install --quiet --yes \
       -c plotly \
@@ -87,7 +86,7 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.3.0' \
+      'Pillow==8.4.0' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
       'jupyterlab==3.0.17' && \
