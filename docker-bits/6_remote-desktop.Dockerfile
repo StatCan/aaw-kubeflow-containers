@@ -285,7 +285,8 @@ ENV OMPP_UID=$NB_UID
 ENV OMPP_GID=$NB_GID
 # Where OpenM++ should look for files when building models
 ENV OM_ROOT=/opt/openmpp
-
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3
 RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
