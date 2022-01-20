@@ -112,19 +112,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###  docker-bits/2_pytorch.Dockerfile
 ###############################
 
-# Install PyTorch
+#Install PyTorch
 RUN conda create -n torch python=3.7 && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'pytorch==1.6.0' \
-      'torchvision==0.7.0' \
-      'ipykernel==5.3.4' \
-    && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'torchtext==0.7.0' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+   conda install -n torch --quiet --yes -c pytorch \
+     'pytorch==1.6.0' \
+     'torchvision==0.7.0' \
+     'ipykernel==5.3.4' \
+   && \
+   conda install -n torch --quiet --yes -c pytorch \
+     'torchtext==0.7.0' \
+   && \
+   conda clean --all -f -y && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -134,7 +134,7 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.4.0' \
+      'Pillow==9.0.0' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
       'jupyterlab==3.0.17' && \
@@ -327,7 +327,7 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.4.0' \
+      'Pillow==9.0.0' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
       'jupyterlab==3.0.17' && \
