@@ -60,7 +60,7 @@ Where `tests/general` tests are applied to all images, and `tests/IMAGENAME` are
 
 ## General Development Workflow
 
-### Running AAW Locally (simple instructions)
+### 💻 Running AAW Locally (simple instructions)
 
 1. Clone the repository with `git clone https://github.com/StatCan/aaw-kubeflow-containers`.
 2. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`.
