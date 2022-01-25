@@ -39,7 +39,7 @@ For example: `k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME`.
 
 #### Running and Connecting to Images Locally/Interactively
 
-To test an image interactively, use `make dev/IMAGENAME`.  This `docker run`'s a built image, automatically forwarding ports to your local machine and providing a link to connect to.  
+To test an image interactively, use `make dev/IMAGENAME`.  This `docker run`'s a built image, automatically forwarding ports to your local machine and providing a link to connect to.
 
 #### Automated Testing
 
@@ -60,6 +60,25 @@ Where `tests/general` tests are applied to all images, and `tests/IMAGENAME` are
 
 ## General Development Workflow
 
+### Running AAW Locally (simple instructions)
+
+1. Clone the repository with `git clone https://github.com/StatCan/aaw-kubeflow-containers`.
+2. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`.
+3. Run `make install-python-dev-venv` to build a development Python virtual environment.
+4. Test your image using automated tests through `make test/IMAGENAME`, e.g. run `make test/jupyterlab-tensorflow`.
+5. Find your images (required for the next step) with `docker images`. You should see a table printed in the console with your images. For example you may see:
+
+```
+username@hostname:~$ docker images
+REPOSITORY                                         TAG            IMAGE ID       CREATED          SIZE
+k8scc01covidacr.azurecr.io/jupyterlab-tensorflow   master         13f8dc0e4f7a   26 minutes ago   14.6GB
+k8scc01covidacr.azurecr.io/jupyterlab-pytorch      master         2b9acb795079   19 hours ago     15.5GB
+jupyter/datascience-notebook                       9ed3b8de5de1   9a0c8d86de1a   5 weeks ago      4.25GB
+```
+
+7. Run your image with `docker run -p 8888:8888 REPO/IMAGENAME:TAG`, e.g. `docker run -p 8888:8888 k8scc01covidacr.azurecr.io/jupyterlab-tensorflow:master`.
+8. Open [http://localhost:8888](http://localhost:8888) or `<ip-address-of-server>:8888`.
+
 ### Modifying Dockerfiles (local testing)
 
 * Clone the repo
@@ -70,7 +89,7 @@ Where `tests/general` tests are applied to all images, and `tests/IMAGENAME` are
 * Build your edited image using `make build/IMAGENAME` (or, if you pulled a version of it above, you can use `make build/IMAGENAME DARGS="--cache-from SOMEOLDREPO/SOMEOLDIMAGE:SOMETAG"`, which will use layers from the pulled image as cached layers if possible, speeding up your build)
 * Test your image:
   * using automated tests through `make test/IMAGENAME`
-  * manually by `docker run --it -p 8888:8888 REPO/IMAGENAME:TAG`, then opening it in [http://localhost:8888](http://localhost:8888)
+  * manually by `docker run -it -p 8888:8888 REPO/IMAGENAME:TAG`, then opening it in [http://localhost:8888](http://localhost:8888)
 
 ### Modifying Dockerfiles (on-platform testing)
 
