@@ -408,6 +408,25 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
+
+# OpenM++ Install
+ENV OMPP_VERSION="1.9.4"
+ENV OMPP_PKG_DATE="20211130"
+# OpenM++ environment settings
+ENV OMPP_USER=$NB_USER
+ENV OMPP_GROUP=100
+ENV OMPP_UID=$NB_UID
+ENV OMPP_GID=$NB_GID
+# Where OpenM++ should look for files when building models
+ENV OM_ROOT=/opt/openmpp
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3
+RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
+    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
+    && chown -R $NB_UID:$NB_GID $OM_ROOT
+# Copy the desktop icon into place for the web UI
+COPY openmpp.png $RESOURCES_PATH/openmpp.png
     
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
