@@ -32,7 +32,7 @@ if [ -n "${KF_LANG}" ]; then
             echo     '   // Définit la langue d'\''affichage de l'\''interface. Exemples: '\''es_CO'\'', '\''fr'\''.'
             echo     '   "locale": "'${LANG}'"'
             echo     '}'
-          ) >> $lang_file
+          ) > $lang_file
         fi
     fi
 
