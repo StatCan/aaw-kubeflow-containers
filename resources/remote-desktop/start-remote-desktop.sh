@@ -94,7 +94,7 @@ cat $HOME/.vnc/*.log
 (
     # cd /tmp/novnc/
     cd /opt/novnc/
-    ./utils/novnc_proxy --web $(pwd) --vnc --unix-target=$VNC_SOCKET --listen 5678
+    ./utils/novnc_proxy --web $(pwd) --heartbeat 30 --vnc --unix-target=$VNC_SOCKET --listen 5678
 ) &
 
 NB_PREFIX=${NB_PREFIX:-/vnc}
