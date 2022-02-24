@@ -192,6 +192,7 @@ RUN pip install --quiet \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
+      'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
@@ -249,7 +250,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
-      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this 
+      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this
       'unified-language-server' \
       'yaml-language-server@0.18.0' \
     && \
