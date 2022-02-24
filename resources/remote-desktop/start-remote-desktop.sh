@@ -93,8 +93,8 @@ cat $HOME/.vnc/*.log
 # Launch noVNC
 (
     # cd /tmp/novnc/
-    cd /usr/local/lib/python3.8/dist-packages/jupyter_desktop/share/web/noVNC-1.1.0/
-    ./utils/launch.sh --web $(pwd) --vnc --unix-target=$VNC_SOCKET --listen 5678
+    cd /opt/novnc/
+    ./utils/novnc_proxy --web $(pwd) --vnc --unix-target=$VNC_SOCKET --listen 5678
 ) &
 
 NB_PREFIX=${NB_PREFIX:-/vnc}

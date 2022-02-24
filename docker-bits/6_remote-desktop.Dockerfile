@@ -293,7 +293,7 @@ RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/open
     && chown -R $NB_UID:$NB_GID $OM_ROOT
 # Copy the desktop icon into place for the web UI
 COPY openmpp.png $RESOURCES_PATH/openmpp.png
-    
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -368,8 +368,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #Set Defaults
 ENV HOME=/home/$NB_USER
 
-ARG NO_VNC_VERSION=1.2.0
-ARG NO_VNC_SHA=36c476b26df4684f1002e15c3d7e034c9e6ee4521e5fa8aac37309f954a07a01
+ARG NO_VNC_VERSION=1.3.0
+ARG NO_VNC_SHA=ee8f91514c9ce9f4054d132f5f97167ee87d9faa6630379267e569d789290336
 RUN pip3 install --force websockify==0.9.0 \
     && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
