@@ -510,7 +510,9 @@ RUN pip3 install --force websockify==0.9.0 \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc
+    && chown -R $NB_UID:$NB_GID /opt/novnc \
+    && wget https://gist.githubusercontent.com/sylus/cb01e59056780a2161186139b25818fb/raw/f9822b28ce4975955499f96cc7017f6ef66e7a35/feat-notebook-Patch-noVNC-for-notebooks.patch \
+    && patch /opt/novnc/vnc_lite.html -p1 < feat-notebook-Patch-noVNC-for-notebooks.patch
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
