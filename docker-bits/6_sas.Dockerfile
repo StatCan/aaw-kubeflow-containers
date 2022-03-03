@@ -1,5 +1,5 @@
 # SAS
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.1 as SASHome
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.2 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -11,8 +11,11 @@ RUN useradd -m sas && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-RUN chown -R sas:sasstaff /usr/local/SASHome && \
-    ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagic1 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
     usermod -a -G sasstaff jovyan && \
     chmod -R 0775 /usr/local/SASHome/studioconfig
 
@@ -41,3 +44,5 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension install --py sas_kernel.theme && \
     jupyter nbextension enable sas_kernel.theme --py && \
     jupyter nbextension list
+
+RUN pip install git+https://git.zacharyseguin.ca/temp/jupyter-sasstudio-proxy.git
