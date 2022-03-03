@@ -307,7 +307,7 @@ ENV SASPY_VERSION="4.1.0"
 
 RUN pip install sas_kernel
 
-COPY sascfg.py /opt/conda/lib/python3.8/site-packages/saspy/sascfg.py
+COPY sascfg.py /opt/conda/lib/python3.9/site-packages/saspy/sascfg.py
 
 RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension enable sas_kernel.showSASLog --py && \
@@ -316,6 +316,8 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension list
 
 RUN pip install git+https://git.zacharyseguin.ca/temp/jupyter-sasstudio-proxy.git
+
+ENV DEFAULT_JUPYTER_URL=/lab
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
