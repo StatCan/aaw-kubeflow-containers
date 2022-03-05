@@ -45,6 +45,9 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension enable sas_kernel.theme --py && \
     jupyter nbextension list
 
-RUN pip install git+https://git.zacharyseguin.ca/temp/jupyter-sasstudio-proxy.git
+# Jupyter SASStudio Proxy
+
+COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
+RUN pip install /opt/jupyter-sasstudio-proxy/
 
 ENV DEFAULT_JUPYTER_URL=/lab
