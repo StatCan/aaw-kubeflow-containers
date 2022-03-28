@@ -168,7 +168,7 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'git+git://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
+      'git+https://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
