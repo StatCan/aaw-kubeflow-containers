@@ -4,7 +4,7 @@
 #
 # This workflow triggers on:
 # * a push to master
-# * any create/synchronize to a PR (eg: any time you push an update to a PR).  
+# * any create/synchronize to a PR (eg: any time you push an update to a PR).
 #
 # Image build/test/scan will run on any of the above events.
 # Image push will run only if:
@@ -61,9 +61,10 @@ jobs:
       fail-fast: false
       matrix:
         notebook:
-          # TODO: Pull this from a settings file or Makefile, that way Make can have the same list 
+          # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           # - docker-stacks-datascience-notebook # Debugging
           - rstudio
+          - sas
           - jupyterlab-cpu
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
@@ -101,7 +102,7 @@ jobs:
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Image testing
-    
+
     - name: Set Up Python for Test Suite
       uses: actions/setup-python@v2
       with:
