@@ -85,6 +85,12 @@ jobs:
     - name: Echo disk usage before start
       run: ./.github/scripts/echo_usage.sh
 
+    - name: Get current notebook name
+      id: notebook-name
+      shell: bash
+      run: |
+        echo ::set-output name=NOTEBOOK_NAME::${{ matrix.notebook }}
+
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
       with:
@@ -130,7 +136,7 @@ jobs:
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
-      if: ${{ matrix.notebook }} != 'sas'
+      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       env:
         TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
