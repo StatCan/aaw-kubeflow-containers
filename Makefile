@@ -72,7 +72,7 @@ generate-Spark:
 all:
 	@echo 'Did you mean to generate all Dockerfiles?  That has been renamed to `make generate-dockerfiles`'
 
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop docker-stacks-datascience-notebook
+generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
 #############################
@@ -105,6 +105,23 @@ rstudio: cpu
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
+		$(SRC)/6_$(@).Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>   $(OUT)/$@/Dockerfile
+
+# Only one output version
+sas: cpu
+	mkdir -p $(OUT)/$@
+	cp -r resources/common/. $(OUT)/$@
+	cp -r resources/sas/. $(OUT)/$@
+
+	$(CAT) \
+		$(TMP)/$<.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/5_DB-Drivers.Dockerfile \
+		$(SRC)/6_jupyterlab.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \

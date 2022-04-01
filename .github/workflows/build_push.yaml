@@ -4,7 +4,7 @@
 #
 # This workflow triggers on:
 # * a push to master
-# * any create/synchronize to a PR (eg: any time you push an update to a PR).  
+# * any create/synchronize to a PR (eg: any time you push an update to a PR).
 #
 # Image build/test/scan will run on any of the above events.
 # Image push will run only if:
@@ -61,9 +61,10 @@ jobs:
       fail-fast: false
       matrix:
         notebook:
-          # TODO: Pull this from a settings file or Makefile, that way Make can have the same list 
+          # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           # - docker-stacks-datascience-notebook # Debugging
           - rstudio
+          - sas
           - jupyterlab-cpu
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
@@ -84,6 +85,19 @@ jobs:
     - name: Echo disk usage before start
       run: ./.github/scripts/echo_usage.sh
 
+    - name: Get current notebook name
+      id: notebook-name
+      shell: bash
+      run: |
+        echo ::set-output name=NOTEBOOK_NAME::${{ matrix.notebook }}
+
+    # Connect to Azure Container registry (ACR)
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
     # Image building/storing locally
 
     - name: Make Dockerfiles
@@ -101,7 +115,7 @@ jobs:
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Image testing
-    
+
     - name: Set Up Python for Test Suite
       uses: actions/setup-python@v2
       with:
@@ -122,6 +136,7 @@ jobs:
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
+      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       env:
         TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
@@ -151,14 +166,6 @@ jobs:
     - name: Tag images with real repository
       if: steps.should-i-push.outputs.boolean == 'true'
       run: make post-build/${{ matrix.notebook }} SOURCE_FULL_IMAGE_NAME=${{ steps.build-image.outputs.full_image_name }}
-
-    # Connect to Azure Container registry (ACR)
-    - uses: azure/docker-login@v1
-      if: steps.should-i-push.outputs.boolean == 'true'
-      with:
-        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: Push image to ACR
       if: steps.should-i-push.outputs.boolean == 'true'
