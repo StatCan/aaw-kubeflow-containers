@@ -130,6 +130,7 @@ jobs:
 
     # Scan image for vulnerabilities
     - uses: Azure/container-scan@v0
+      if: ${{ matrix.notebook }} != 'sas'
       env:
         TRIVY_TIMEOUT: 10m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
