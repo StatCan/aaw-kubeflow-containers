@@ -87,7 +87,6 @@ jobs:
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
-      if: steps.should-i-push.outputs.boolean == 'true'
       with:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
