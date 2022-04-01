@@ -85,6 +85,14 @@ jobs:
     - name: Echo disk usage before start
       run: ./.github/scripts/echo_usage.sh
 
+    # Connect to Azure Container registry (ACR)
+    - uses: azure/docker-login@v1
+      if: steps.should-i-push.outputs.boolean == 'true'
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
     # Image building/storing locally
 
     - name: Make Dockerfiles
@@ -152,14 +160,6 @@ jobs:
     - name: Tag images with real repository
       if: steps.should-i-push.outputs.boolean == 'true'
       run: make post-build/${{ matrix.notebook }} SOURCE_FULL_IMAGE_NAME=${{ steps.build-image.outputs.full_image_name }}
-
-    # Connect to Azure Container registry (ACR)
-    - uses: azure/docker-login@v1
-      if: steps.should-i-push.outputs.boolean == 'true'
-      with:
-        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.REGISTRY_USERNAME }}
-        password: ${{ secrets.REGISTRY_PASSWORD }}
 
     - name: Push image to ACR
       if: steps.should-i-push.outputs.boolean == 'true'
