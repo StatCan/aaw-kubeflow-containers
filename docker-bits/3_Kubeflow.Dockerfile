@@ -10,7 +10,8 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'openpyxl==3.0.9' \ # needed for reading Excel files into Pandas
+      # openpyxl is needed for reading Excel files into Pandas
+      'openpyxl==3.0.9' \
       'kfp==1.7.2' \
       'kfp-server-api==1.7.1' \
       'ml-metadata==0.27.0' \
