@@ -298,6 +298,26 @@ COPY openmpp.png $RESOURCES_PATH/openmpp.png
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
 COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
+# JUST A TEST
+RUN apt-get update && apt-get install -y software-properties-common --no-install-recommends \
+            && apt-get install -y chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg \
+            && ln -s /usr/bin/chromium-browser /usr/bin/google-chrome \
+            && apt-get clean \
+            && rm -rf /var/lib/apt/lists/*
+
+RUN wget -q https://chromedriver.storage.googleapis.com/85.0.4183.87/chromedriver_linux64.zip && \
+	unzip chromedriver_linux64.zip && \
+	rm chromedriver_linux64.zip && \
+	chmod a+x chromedriver && \
+	mv chromedriver /usr/bin/ && \
+	wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - && \
+	echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
+RUN sudo apt-get update  && \
+	sudo apt-get -y install google-chrome-stable && \
+	sudo apt-get clean 
+
+
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
 RUN \
