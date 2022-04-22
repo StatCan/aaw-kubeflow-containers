@@ -432,7 +432,7 @@ RUN apt-get update && apt-get install -y software-properties-common --no-install
             && apt-get clean \
             && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://chromedriver.storage.googleapis.com/85.0.4183.87/chromedriver_linux64.zip && \
+RUN wget -q https://chromedriver.storage.googleapis.com/100.0.4896.60/chromedriver_linux64.zip && \
 	unzip chromedriver_linux64.zip && \
 	rm chromedriver_linux64.zip && \
 	chmod a+x chromedriver && \
