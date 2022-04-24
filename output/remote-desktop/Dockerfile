@@ -307,7 +307,6 @@ RUN \
     clean-layer.sh
 
 RUN pip3 install --quiet 'selenium' && \
-    'webdriver-manager' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -445,6 +444,9 @@ RUN sudo apt-get update  && \
 	sudo apt-get -y install google-chrome-stable && \
 	sudo apt-get clean 
 
+RUN pip install --quiet 'webdriver-manager' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
