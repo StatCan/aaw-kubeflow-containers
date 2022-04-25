@@ -72,7 +72,7 @@ generate-Spark:
 all:
 	@echo 'Did you mean to generate all Dockerfiles?  That has been renamed to `make generate-dockerfiles`'
 
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
+generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas webscraping docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
 #############################
@@ -157,6 +157,23 @@ remote-desktop:
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/6_remote-desktop.Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
+	>   $(OUT)/$@/Dockerfile
+
+# Webscraping
+webscraping:
+	mkdir -p $(OUT)/$@
+	echo "REMOTE DESKTOP"
+	cp -r scripts/remote-desktop $(OUT)/$@
+	cp -r resources/common/. $(OUT)/$@
+	cp -r resources/remote-desktop/. $(OUT)/$@
+
+	$(CAT) \
+		$(SRC)/0_Rocker.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/6_webscraping.Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>   $(OUT)/$@/Dockerfile

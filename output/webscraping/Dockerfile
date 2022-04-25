@@ -1,3 +1,130 @@
+
+###############################
+###  docker-bits/0_Rocker.Dockerfile
+###############################
+
+# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
+# images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
+FROM rocker/geospatial:4.0.3@sha256:9e00ab4fec7b38a0edbadb07e7554bf3b7fa34d15c6fe42522a09ae88d336219
+
+# For compatibility with docker stacks
+ARG NB_USER="jovyan"
+ARG HOME=/home/$NB_USER
+ENV NB_UID="1000"
+ENV NB_GID="100"
+
+USER root
+ENV PATH="/home/jovyan/.local/bin/:${PATH}"
+
+#Fix-permissions
+COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
+RUN chmod u+x /usr/bin/fix-permissions
+
+RUN apt-get update --yes \
+    && apt-get install --yes python3-pip tini language-pack-fr \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN /rocker_scripts/install_shiny_server.sh \
+    && pip3 install jupyter \
+    && rm -rf /var/lib/apt/lists/* 
+
+# Users should install R packages in their home directory
+RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
+
+###############################
+###  docker-bits/3_Kubeflow.Dockerfile
+###############################
+
+USER root
+
+# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN pip3 --no-cache-dir install --quiet \
+      'Pillow==9.0.1' \
+      'notebook==6.4.1' \
+      'PyYAML==5.4.1' \
+      'jupyterlab==3.0.17' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
+RUN pip3 --no-cache-dir install --quiet \
+      'kfp==1.7.2' \
+      'kfp-server-api==1.7.1' \
+      'ml-metadata==0.27.0' \
+      'kubeflow-metadata==0.2.0' \
+      'kubeflow-pytorchjob==0.1.3' \
+      'kubeflow-tfjob==0.1.3' \
+      'minio==5.0.10' \
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
+# kfp-azure-databricks needs to be run after kfp
+RUN pip3 --no-cache-dir install --quiet \
+      'fire==0.3.1' \
+      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
+###############################
+###  docker-bits/4_CLI.Dockerfile
+###############################
+
+USER root
+
+# Dependencies
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+      'byobu' \
+      'htop' \
+      'jq' \
+      'less' \
+      'openssl' \
+      'ranger' \
+      'tig' \
+      'tmux' \
+      'tree' \
+      'vim' \
+      'zip' \
+      'zsh' \
+      'wget' \
+      'curl' \
+  && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+
+ARG KUBECTL_VERSION=v1.15.10
+ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+
+ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
+# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
+
+ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
+ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
+
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
+# kubectl, mc, and az
+RUN curl -LO "${KUBECTL_URL}" \
+    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+    && chmod +x ./kubectl \
+    && sudo mv ./kubectl /usr/local/bin/kubectl \
+  && \
+    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    && bash InstallAzureCLIDeb \
+    && rm InstallAzureCLIDeb \
+    && echo "azcli: ok" \
+  && \
+    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
+    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    && echo "oh-my-zsh: ok"
+
+###############################
+###  docker-bits/6_webscraping.Dockerfile
+###############################
+
 USER root
 
 ENV NB_UID=1000
@@ -179,9 +306,15 @@ RUN \
     # Cleanup
     clean-layer.sh
 
+# try conda install instead
 RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
+RUN conda install --quiet --yes \
+    -c conda-forge \
+    'selenium' \
+    'webdriver-manager'
 
 #Install geckodriver
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
@@ -244,55 +377,6 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-
-#QGIS
-COPY qgis-2021.gpg.key $RESOURCES_PATH/qgis-2021.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-#R-Studio
-RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists
-
-#Libre office
-RUN add-apt-repository ppa:libreoffice/ppa && \
-    apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
-    apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
-    clean-layer.sh
-
-#Install PSPP
-RUN /bin/bash $RESOURCES_PATH/pspp.sh \
-    && clean-layer.sh
-
-#Install Minio
-COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
-COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-
-# OpenM++ Install
-ENV OMPP_VERSION="1.9.8"
-ENV OMPP_PKG_DATE="20220323"
-ARG SHA256ompp=9882798fe2738729cac14d8a62cac8c285fca44e12b8b575ec0d0e6b03ab7a02
-# OpenM++ environment settings
-ENV OMPP_USER=$NB_USER
-ENV OMPP_GROUP=100
-ENV OMPP_UID=$NB_UID
-ENV OMPP_GID=$NB_GID
-# Where OpenM++ should look for files when building models
-ENV OM_ROOT=/opt/openmpp
-# OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3
-RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
-    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
-    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
-    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
-    && chown -R $NB_UID:$NB_GID $OM_ROOT
-# Copy the desktop icon into place for the web UI
-COPY openmpp.png $RESOURCES_PATH/openmpp.png
-
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -339,10 +423,6 @@ COPY /desktop-files $RESOURCES_PATH/desktop-files
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
-
 #Removal area
 #Extra Icons
 RUN rm /usr/share/applications/exo-mail-reader.desktop
@@ -360,10 +440,6 @@ ENV NB_USER=$NB_USER
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
-
-#ADD . /opt/install
-#RUN pwd && echo && ls /opt/install
-
 
 
 #Install Miniconda
@@ -415,3 +491,46 @@ RUN apt-get update --yes \
 RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
+
+###############################
+###  docker-bits/7_remove_vulnerabilities.Dockerfile
+###############################
+
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
+# This line of code should be removed once a solution or better alternative is found.
+USER root
+RUN apt-get update --yes \
+    && dpkg -r --force-depends libpdfbox-java \
+    && rm -rf /var/lib/apt/lists/*
+USER $NB_USER
+
+###############################
+###  docker-bits/∞_CMD_remote-desktop.Dockerfile
+###############################
+
+# Configure container startup
+
+USER root
+
+WORKDIR /home/$NB_USER
+EXPOSE 8888
+COPY start-remote-desktop.sh /usr/local/bin/
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+RUN chsh -s /bin/bash $NB_USER
+
+# Add --user to all pip install calls and point pip to Artifactory repository
+COPY pip.conf /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+
+# Point conda to Artifactory repository
+COPY .condarc /tmp/.condarc
+RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
+
+# Point R to Artifactory repository
+COPY Rprofile.site /tmp/Rprofile.site
+RUN cat /tmp/Rprofile.site >> /usr/local/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
+
+USER $NB_USER
+ENTRYPOINT ["tini", "--"]
+CMD ["start-remote-desktop.sh"]

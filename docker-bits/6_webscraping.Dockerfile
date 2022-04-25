@@ -179,9 +179,15 @@ RUN \
     # Cleanup
     clean-layer.sh
 
+# try conda install instead
 RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
+RUN conda install --quiet --yes \
+    -c conda-forge \
+    'selenium' \
+    'webdriver-manager'
 
 #Install geckodriver
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
@@ -244,55 +250,6 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-
-#QGIS
-COPY qgis-2021.gpg.key $RESOURCES_PATH/qgis-2021.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-#R-Studio
-RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists
-
-#Libre office
-RUN add-apt-repository ppa:libreoffice/ppa && \
-    apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
-    apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
-    clean-layer.sh
-
-#Install PSPP
-RUN /bin/bash $RESOURCES_PATH/pspp.sh \
-    && clean-layer.sh
-
-#Install Minio
-COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
-COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-
-# OpenM++ Install
-ENV OMPP_VERSION="1.9.8"
-ENV OMPP_PKG_DATE="20220323"
-ARG SHA256ompp=9882798fe2738729cac14d8a62cac8c285fca44e12b8b575ec0d0e6b03ab7a02
-# OpenM++ environment settings
-ENV OMPP_USER=$NB_USER
-ENV OMPP_GROUP=100
-ENV OMPP_UID=$NB_UID
-ENV OMPP_GID=$NB_GID
-# Where OpenM++ should look for files when building models
-ENV OM_ROOT=/opt/openmpp
-# OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3
-RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
-    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
-    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
-    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
-    && chown -R $NB_UID:$NB_GID $OM_ROOT
-# Copy the desktop icon into place for the web UI
-COPY openmpp.png $RESOURCES_PATH/openmpp.png
-
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -339,10 +296,6 @@ COPY /desktop-files $RESOURCES_PATH/desktop-files
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
-
 #Removal area
 #Extra Icons
 RUN rm /usr/share/applications/exo-mail-reader.desktop
@@ -360,10 +313,6 @@ ENV NB_USER=$NB_USER
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
-
-#ADD . /opt/install
-#RUN pwd && echo && ls /opt/install
-
 
 
 #Install Miniconda
