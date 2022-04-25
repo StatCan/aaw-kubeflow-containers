@@ -184,10 +184,6 @@ RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-RUN conda install --quiet --yes \
-    -c conda-forge \
-    'selenium' \
-    'webdriver-manager'
 
 #Install geckodriver
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
@@ -336,6 +332,15 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
 
+RUN conda install --quiet --yes \
+    -c conda-forge \
+    'selenium' \
+    'webdriver-manager' \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+    
 #Set Defaults
 ENV HOME=/home/$NB_USER
 
