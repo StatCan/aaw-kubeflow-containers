@@ -470,6 +470,11 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #    conda clean --all -f -y && \
 #    fix-permissions $CONDA_DIR && \
 #    fix-permissions /home/$NB_USER
+RUN pip --no-cache-dir install --quiet \
+      'selenium' \
+      'webdriver-manager' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
