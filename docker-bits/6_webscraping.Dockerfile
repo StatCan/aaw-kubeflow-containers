@@ -179,10 +179,10 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-# try conda install instead
-RUN pip3 install --quiet 'selenium' && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+# try conda install instead this pip does not work
+#RUN pip3 install --quiet 'selenium' && \
+#    fix-permissions $CONDA_DIR && \
+#    fix-permissions /home/$NB_USER
 
 
 #Install geckodriver
@@ -286,8 +286,10 @@ RUN \
 
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
-COPY /desktop-files /usr/share/applications
-COPY /desktop-files $RESOURCES_PATH/desktop-files
+COPY /desktop-files/code.desktop /usr/share/applications
+COPY /desktop-files/code.desktop $RESOURCES_PATH/desktop-files
+COPY /desktop-files/firefox.desktop /usr/share/applications
+COPY /desktop-files/firefox.desktop $RESOURCES_PATH/desktop-files
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
@@ -332,15 +334,16 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
 
-RUN conda install --quiet --yes \
-    -c conda-forge \
-    'selenium' \
-    'webdriver-manager' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-    
+# This makes the tests fail
+#RUN conda install --quiet --yes \
+#    -c conda-forge \
+#    'selenium' \
+#    'webdriver-manager' \
+#    && \
+#    conda clean --all -f -y && \
+#    fix-permissions $CONDA_DIR && \
+#    fix-permissions /home/$NB_USER
+
 #Set Defaults
 ENV HOME=/home/$NB_USER
 
