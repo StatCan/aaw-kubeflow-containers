@@ -98,16 +98,26 @@ GitHub Actions CI is enabled to do building, scanning, automated testing, and (o
 * any push to an open PR
 This allows for easy scanning and automated testing for images.
 
-GitHub Actions CI also enables pushing built images to our ACR, making them accessible from the platform.  This occurs on:
-* any push to master
-* any push to an open PR **that also has the `auto-deploy` label on the PR**
-This allows developers to opt-in to on-platform testing.  For example, when you need to build in github and test on platform (or want someone else to be able to pull your image):
+GitHub Actions CI also enables pushing built images to our ACRs, making them accessible from the platform. 
+
+Pushes to the `master` branch will push to the k8scc01covidacr.azurecr.io ACR and these are accessible from both the dev and prod cluster.
+You can access these images using any of the following:
+* k8scc01covidacr.azurecr.io/IMAGENAME:SHA
+* k8scc01covidacr.azurecr.io/IMAGENAME:SHORT_SHA
+* k8scc01covidacr.azurecr.io/IMAGENAME:latest
+* k8scc01covidacr.azurecr.io/IMAGENAME:v1
+
+
+Any push to an open PR **that also has the `auto-deploy` label on the PR**
+This allows developers to opt-in to on-platform testing. For example, when you need to build in github and test on platform (or want someone else to be able to pull your image):
 * open a PR and add the `auto-deploy` label
 * push to your PR and watch the GitHub Action CI
-* access your image in Kubeflow via a custom image from any of:
-  * k8scc01covidacr.azurecr.io/IMAGENAME:SHA
-  * k8scc01covidacr.azurecr.io/IMAGENAME:SHORT_SHA
-  * k8scc01covidacr.azurecr.io/IMAGENAME:BRANCH_NAME
+* access your image in Kubeflow DEV via a custom image from any of:
+  * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHA
+  * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHORT_SHA
+  * k8scc01covidacrdev.azurecr.io/IMAGENAME:dev (for convenience in testing)
+
+Images pushed to the dev acr are only available to the DEV cluster, attempting to use them in prod will fail.
 
 ### Adding new Images
 
@@ -145,6 +155,13 @@ If making changes to CI that cannot be done on a branch (eg: changes to issue_co
 
 ## Other Development Notes
 
+### The `latest` and `v1` tags for the master branch
+
+These are intended to be `long-lived` in that they will not change. Subsequent pushes will clobber the previous `jupyterlab-cpu:latest` image. Previously when we built and pushed to master with updates to an image, we would need to go and change the spawner to use that new image. This will allow us to have them reference `jupyterlab-cpu:latest` and remove us from needing to update it. Additionally, upon changing the `ImagePullPolicy` to `Always` we could do restarts of workloads and then guarantee that users are on the 'latest' image.
+
+The `v1` tag is intended for when we encounter a breaking change but still want to support the features of that current image. We would then branch off and modify the CI as well as increment the tag. 
+
+---
 ### Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files
 
 The Dockerfiles in this repo are intended to construct compute environments for a non-root user **jovyan** to ensure the end user has the least privileges required for their task, but installation of some of the software needed by the user must be done as the **root** user.  This means that installation of anything that should be user editable (eg: `pip` and `conda` installs, additional files in `/home/$NB_USER`, etc.) will by default be owned by **root** and not modifiable by **jovyan**. **Therefore we must change the permissions of these files to allow the user specific access for modification.**  For example, most pip install/conda install commands occur as the root user and result in new files in the $CONDA_DIR directory that will be owned by **root** and cause issues if user **jovyan** tried to update or uninstall these packages (as they by default will not have permission to change/remove these files).
