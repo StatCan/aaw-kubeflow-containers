@@ -1,6 +1,6 @@
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
 # image updates, pin to the docker-stacks git commit SHA tag.
-# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=9ed3b8de5de1
