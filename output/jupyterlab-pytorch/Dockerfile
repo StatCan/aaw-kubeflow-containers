@@ -205,8 +205,7 @@ COPY shell_helpers.sh /tmp/shell_helpers.sh
 
 # Install OpenJDK-8
 RUN apt-get update && \
-    apt-get install -y openjdk-8-jdk && \
-    apt-get install -y ant && \
+    apt-get install -y openjdk-8-jre && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -226,11 +225,11 @@ RUN curl -LO "${KUBECTL_URL}" \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
     && echo "oh-my-zsh: ok" \
   && \
-    wget -q "${TRINO_URL}" -O /tmp/trino \
-    && echo ${TRINO_SHA} /tmp/trino | sha256sum -c \
+    wget -q "${TRINO_URL}" -O /tmp/trino-original \
+    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
-    && chmod +x /tmp/trino \
-    && sudo mv /tmp/trino /usr/local/bin/trino
+    && chmod +x /tmp/trino-original \
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -393,7 +392,9 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY trino-wrapper.sh /usr/local/bin/trino
+RUN chmod +x /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
