@@ -164,7 +164,7 @@ remote-desktop:
 # Webscraping
 webscraping:
 	mkdir -p $(OUT)/$@
-	echo "REMOTE DESKTOP"
+	echo "WEBSCRAPING"
 	cp -r scripts/remote-desktop $(OUT)/$@
 	cp -r resources/common/. $(OUT)/$@
 	cp -r resources/remote-desktop/. $(OUT)/$@

@@ -139,7 +139,7 @@ jobs:
     - uses: Azure/container-scan@v0
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       env:
-        TRIVY_TIMEOUT: 15m0s  # Trivy default is 2min.  Some images take a bit longer
+        TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
       with:
         image-name: ${{ steps.build-image.outputs.full_image_name }}
         severity-threshold: CRITICAL
