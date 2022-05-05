@@ -1,4 +1,4 @@
-FROM jupyter/datascience-notebook:512afd49b925
+FROM jupyter/datascience-notebook:9ed3b8de5de1
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
@@ -10,7 +10,9 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY trino-wrapper.sh /usr/local/bin/trino
+RUN chmod +x /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
