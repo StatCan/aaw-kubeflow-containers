@@ -262,3 +262,4 @@ would add two layers, each about 1GB (2GB total).
 ## Troubleshooting
 If running using a VM and RStudio image was built successfully but is not opening correctly on localhost (error 5000 page), change your CPU allocation in your Linux VM settings to >= 3. You can also use your VM's system monitor to examine if all CPUs are 100% being used as your container is running. If so, increase CPU allocation. 
 This was tested on Linux Ubuntu 20.04 virtual machine.
+hello world
