@@ -298,11 +298,6 @@ RUN usermod -l $NB_USER rstudio && \
 
 ENV NB_USER=$NB_USER
 
-# https://github.com/novnc/websockify/issues/413#issuecomment-664026092
-RUN apt-get update && apt-get install --yes websockify \
-    && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
-    && clean-layer.sh
-
 
 #Install Miniconda
 #Has to be appended, else messes with qgis

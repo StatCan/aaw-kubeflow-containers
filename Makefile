@@ -171,7 +171,6 @@ webscraping:
 
 	$(CAT) \
 		$(SRC)/0_Rocker.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/6_webscraping.Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
