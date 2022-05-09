@@ -463,8 +463,11 @@ COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
-#Extra Icons
-RUN rm /usr/share/applications/exo-mail-reader.desktop
+#Extra Icons, Chrome is only for webscraping image
+RUN rm /usr/share/applications/exo-mail-reader.desktop && \
+    rm /usr/share/applications/chrome.desktop && \
+    rm $RESOURCES_PATH/desktop-files/chrome.desktop
+
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
 

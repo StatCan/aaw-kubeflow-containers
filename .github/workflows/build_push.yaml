@@ -70,7 +70,7 @@ jobs:
           #- jupyterlab-cpu
           #- jupyterlab-pytorch
           #- jupyterlab-tensorflow
-          #- remote-desktop
+          - remote-desktop
           - webscraping
     needs: pre-build-checks
     runs-on: ubuntu-latest
