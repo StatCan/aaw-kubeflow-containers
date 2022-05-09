@@ -277,10 +277,14 @@ RUN \
 
 #MISC Configuration Area
 #Copy over desktop files. First location is dropdown, then desktop, and make them executable
-COPY /desktop-files/code.desktop /usr/share/applications
-COPY /desktop-files/code.desktop $RESOURCES_PATH/desktop-files/code.desktop
-COPY /desktop-files/firefox.desktop /usr/share/applications
-COPY /desktop-files/firefox.desktop $RESOURCES_PATH/desktop-files/firefox.desktop
+#COPY /desktop-files/code.desktop /usr/share/applications
+#COPY /desktop-files/code.desktop $RESOURCES_PATH/desktop-files/code.desktop
+#COPY /desktop-files/firefox.desktop /usr/share/applications
+#COPY /desktop-files/firefox.desktop $RESOURCES_PATH/desktop-files/firefox.desktop
+#COPY /desktop-files/chrome.desktop /usr/share/applications/chrome.desktop
+#COPY /desktop-files/chrome.desktop $RESOURCES_PATH/desktop-files/chrome.desktop
+COPY /desktop-files/chrome.desktop /desktop-files/code.desktop /desktop-files/firefox.desktop $RESOURCES_PATH/desktop-files/
+COPY /desktop-files/chrome.desktop /desktop-files/code.desktop /desktop-files/firefox.desktop /usr/share/applications/
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
