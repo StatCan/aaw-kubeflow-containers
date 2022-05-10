@@ -400,8 +400,11 @@ COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Point conda to Artifactory repository
-RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system
+#TEMPORARILY CHANGE TO PUBLIC URL SO I CAN TEST on dev / locally
+RUN conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
+    conda config --remove channels conda-forge --system && \
+    conda config --add envs_dirs /home/$NB_USER/conda-persistent --system && \
+    conda config --add pkgs_dirs /home/$NB_USER/conda-persistent --system
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
