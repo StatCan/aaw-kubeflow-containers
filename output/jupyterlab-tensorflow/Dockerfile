@@ -399,16 +399,19 @@ RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
 COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
-RUN mkdir /home/$NB_USER/conda && \ 
+# .conda already exists with an environments.txt
+RUN mkdir /home/$NB_USER/.conda-pack && \ 
     fix-permissions /home/$NB_USER
-    
+
 # Point conda to Artifactory repository
 #TEMPORARILY CHANGE TO PUBLIC URL SO I CAN TEST on dev / locally
 RUN conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system && \
-    conda config --add envs_dirs /home/$NB_USER/conda --system && \
-    conda config --add pkgs_dirs /home/$NB_USER/conda --system && \
-    conda config --set root_prefix /home/$NB_USER/conda 
+    conda config --add envs_dirs /home/$NB_USER/.conda-pack  --system && \
+    conda config --add pkgs_dirs /home/$NB_USER/.conda-pack  --system && \
+    conda config --set root_prefix /home/$NB_USER/.conda-pack  
+
+ENV CONDA_DIR /home/$NB_USER/.conda-pack
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
