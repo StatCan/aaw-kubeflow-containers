@@ -73,6 +73,9 @@ export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
+# See if moving it here makes tests pass
+conda config --set root_prefix /home/$NB_USER/.conda-pack --system 
+
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \

@@ -33,14 +33,14 @@ RUN conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/a
     #&& \
     #conda config --add envs_dirs /home/$NB_USER/.conda-pack  --system && \
     #conda config --add pkgs_dirs /home/$NB_USER/.conda-pack  --system && \
-    #conda config --set root_prefix /home/$NB_USER/.conda-pack --system 
+    #conda config --set root_prefix /home/$NB_USER/.conda-pack --system #try moving this to the start-custom.sh
 
 #ENV CONDA_DIR /home/$NB_USER/.conda-pack
 
-# CHECK HOW BIG THE CONDA CLONE TAKES
+# CHECK HOW BIG THE CONDA CLONE TAKES this increases the size of the docker image
+# running the conda clone with these downloaded packages in the start custom increases wait time for startup
+# script to 3 mins
 #RUN conda create --name downloadedpkg --clone /opt/conda
-# idk check how this works
-RUN touch /home/$NB_USER/test.txt
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
