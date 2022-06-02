@@ -6,7 +6,7 @@
 # Pointer to the real mc CLI
 MC=/usr/local/bin/mc-original
 
-for  f in $(ls /vault/secrets/minio-* | grep -v -E '\..*'); do
+for  f in $(ls /vault/secrets/* | grep -v -E '\..*'); do
  tenant=$(basename "$f" | sed 's/^minio-//') # remove minio- prefix 
  if [ ! -f /tmp/.minio-$tenant ] || [ $f -nt /tmp/.minio-$tenant ]; then
      (

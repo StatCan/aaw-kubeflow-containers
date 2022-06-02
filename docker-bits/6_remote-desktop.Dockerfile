@@ -20,9 +20,6 @@ RUN apt-get -y update \
 ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
 
-RUN python3 -m pip install \
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
-
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
 
@@ -274,7 +271,28 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-    
+
+# OpenM++ Install
+ENV OMPP_VERSION="1.9.8"
+ENV OMPP_PKG_DATE="20220323"
+ARG SHA256ompp=9882798fe2738729cac14d8a62cac8c285fca44e12b8b575ec0d0e6b03ab7a02
+# OpenM++ environment settings
+ENV OMPP_USER=$NB_USER
+ENV OMPP_GROUP=100
+ENV OMPP_UID=$NB_UID
+ENV OMPP_GID=$NB_GID
+# Where OpenM++ should look for files when building models
+ENV OM_ROOT=/opt/openmpp
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3
+RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
+    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
+    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
+    && chown -R $NB_UID:$NB_GID $OM_ROOT
+# Copy the desktop icon into place for the web UI
+COPY openmpp.png $RESOURCES_PATH/openmpp.png
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -349,15 +367,18 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #Set Defaults
 ENV HOME=/home/$NB_USER
 
-ARG NO_VNC_VERSION=1.2.0
-ARG NO_VNC_SHA=36c476b26df4684f1002e15c3d7e034c9e6ee4521e5fa8aac37309f954a07a01
+ARG NO_VNC_VERSION=1.3.0
+ARG NO_VNC_SHA=ee8f91514c9ce9f4054d132f5f97167ee87d9faa6630379267e569d789290336
 RUN pip3 install --force websockify==0.9.0 \
     && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc
+    && chown -R $NB_UID:$NB_GID /opt/novnc \
+    && cd /opt/novnc/ \
+    && wget https://gist.githubusercontent.com/sylus/cb01e59056780a2161186139b25818fb/raw/99ebd62a304c661d5612ad72ebc318f70d02741c/feat-notebook-Patch-noVNC-for-notebooks.patch \
+    && patch -p1 < feat-notebook-Patch-noVNC-for-notebooks.patch
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 

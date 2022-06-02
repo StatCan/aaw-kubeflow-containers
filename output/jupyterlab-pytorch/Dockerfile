@@ -10,7 +10,7 @@
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
 # image updates, pin to the docker-stacks git commit SHA tag.
-# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from 
+# It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=9ed3b8de5de1
@@ -112,19 +112,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###  docker-bits/2_pytorch.Dockerfile
 ###############################
 
-# Install PyTorch
+#Install PyTorch
 RUN conda create -n torch python=3.7 && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'pytorch==1.6.0' \
-      'torchvision==0.7.0' \
-      'ipykernel==5.3.4' \
-    && \
-    conda install -n torch --quiet --yes -c pytorch \
-      'torchtext==0.7.0' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+   conda install -n torch --quiet --yes -c pytorch \
+     'pytorch==1.6.0' \
+     'torchvision==0.7.0' \
+     'ipykernel==5.3.4' \
+   && \
+   conda install -n torch --quiet --yes -c pytorch \
+     'torchtext==0.7.0' \
+   && \
+   conda clean --all -f -y && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -134,16 +134,16 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.4.0' \
+      'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
       'jupyterlab==3.0.17' && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER      
+      fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'git+https://github.com/StatCan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \
+      'kfp==1.7.2' \
+      'kfp-server-api==1.7.1' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
@@ -186,13 +186,11 @@ RUN apt-get update && \
   && \
     rm -rf /var/lib/apt/lists/*
 
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+
 ARG KUBECTL_VERSION=v1.15.10
 ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
-
-ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
-ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
-ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 # ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
@@ -200,19 +198,23 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
+ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
+
+# Install OpenJDK-8
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jre && \
+    apt-get clean && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
-  && \
-    wget --quiet -O mc "${MC_URL}" \
-    && echo "${MC_SHA} mc" | sha256sum -c - \
-    && chmod +x mc \
-    && mv mc /usr/local/bin/mc-original \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -221,7 +223,13 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok"
+    && echo "oh-my-zsh: ok" \
+  && \
+    wget -q "${TRINO_URL}" -O /tmp/trino-original \
+    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
+    && echo "trinocli: ok" \
+    && chmod +x /tmp/trino-original \
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -289,6 +297,7 @@ RUN pip install --quiet \
       'jupyter-server-proxy==1.6.0' \
       'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
+      'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
@@ -327,7 +336,7 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.4.0' \
+      'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
       'jupyterlab==3.0.17' && \
@@ -346,7 +355,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
-      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this 
+      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this
       'unified-language-server' \
       'yaml-language-server@0.18.0' \
     && \
@@ -383,7 +392,8 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc 
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf

@@ -39,16 +39,16 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==8.4.0' \
+      'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
       'jupyterlab==3.0.17' && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER      
+      fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'git+https://github.com/StatCan/kubeflow-pipelines@b47c8de7f2915722c5c91bf3b1c7d54b946ef2a6#subdirectory=sdk/python/' \
-      'kfp-server-api==1.3.0' \
+      'kfp==1.7.2' \
+      'kfp-server-api==1.7.1' \
       'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
@@ -91,13 +91,11 @@ RUN apt-get update && \
   && \
     rm -rf /var/lib/apt/lists/*
 
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+
 ARG KUBECTL_VERSION=v1.15.10
 ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
-
-ARG MC_VERSION=mc.RELEASE.2021-01-05T05-03-58Z
-ARG MC_URL=https://dl.min.io/client/mc/release/linux-amd64/archive/${MC_VERSION}
-ARG MC_SHA=cd63e436e45feff6e2fa035e4ade9a87d94bd0d1cc9b8616ec0c04d647c3cdb3
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 # ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
@@ -105,19 +103,23 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
+ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
+
+# Install OpenJDK-8
+RUN apt-get update && \
+    apt-get install -y openjdk-8-jre && \
+    apt-get clean && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # kubectl, mc, and az
 RUN curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
-  && \
-    wget --quiet -O mc "${MC_URL}" \
-    && echo "${MC_SHA} mc" | sha256sum -c - \
-    && chmod +x mc \
-    && mv mc /usr/local/bin/mc-original \
   && \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
@@ -126,7 +128,13 @@ RUN curl -LO "${KUBECTL_URL}" \
   && \
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok"
+    && echo "oh-my-zsh: ok" \
+  && \
+    wget -q "${TRINO_URL}" -O /tmp/trino-original \
+    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
+    && echo "trinocli: ok" \
+    && chmod +x /tmp/trino-original \
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile
@@ -153,9 +161,6 @@ RUN apt-get -y update \
 
 ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
-
-RUN python3 -m pip install \
-    'git+git://github.com/Ito-Matsuda/jupyter-desktop-server#egg=jupyter-desktop-server'
 
 # Copy installation scripts
 COPY remote-desktop $RESOURCES_PATH
@@ -408,7 +413,28 @@ RUN /bin/bash $RESOURCES_PATH/pspp.sh \
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-    
+
+# OpenM++ Install
+ENV OMPP_VERSION="1.9.8"
+ENV OMPP_PKG_DATE="20220323"
+ARG SHA256ompp=9882798fe2738729cac14d8a62cac8c285fca44e12b8b575ec0d0e6b03ab7a02
+# OpenM++ environment settings
+ENV OMPP_USER=$NB_USER
+ENV OMPP_GROUP=100
+ENV OMPP_UID=$NB_UID
+ENV OMPP_GID=$NB_GID
+# Where OpenM++ should look for files when building models
+ENV OM_ROOT=/opt/openmpp
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3
+RUN wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
+    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
+    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} $OM_ROOT \
+    && chown -R $NB_UID:$NB_GID $OM_ROOT
+# Copy the desktop icon into place for the web UI
+COPY openmpp.png $RESOURCES_PATH/openmpp.png
+
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
@@ -483,15 +509,18 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #Set Defaults
 ENV HOME=/home/$NB_USER
 
-ARG NO_VNC_VERSION=1.2.0
-ARG NO_VNC_SHA=36c476b26df4684f1002e15c3d7e034c9e6ee4521e5fa8aac37309f954a07a01
+ARG NO_VNC_VERSION=1.3.0
+ARG NO_VNC_SHA=ee8f91514c9ce9f4054d132f5f97167ee87d9faa6630379267e569d789290336
 RUN pip3 install --force websockify==0.9.0 \
     && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc
+    && chown -R $NB_UID:$NB_GID /opt/novnc \
+    && cd /opt/novnc/ \
+    && wget https://gist.githubusercontent.com/sylus/cb01e59056780a2161186139b25818fb/raw/99ebd62a304c661d5612ad72ebc318f70d02741c/feat-notebook-Patch-noVNC-for-notebooks.patch \
+    && patch -p1 < feat-notebook-Patch-noVNC-for-notebooks.patch
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
