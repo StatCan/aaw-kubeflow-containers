@@ -85,6 +85,7 @@ pytorch tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
+        $(SRC)/2_cpu.Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
