@@ -71,6 +71,9 @@ fi
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
+export DID_I_RESTART=yes
+echo "The person reading this is cool <3" >> /home/${NB_USER}/openme.txt
+
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
