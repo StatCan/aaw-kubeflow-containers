@@ -75,9 +75,9 @@ all:
 generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
-#############################
-###   Bases GPU & Spark   ###
-#############################
+##############################
+###   Bases GPU & Custom   ###
+##############################
 
 # Configure the "Bases".
 #
@@ -85,11 +85,15 @@ pytorch tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
+        $(SRC)/2_cpu.Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
 cpu: .output
-	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
+	$(CAT) \
+	  $(SRC)/0_$@.Dockerfile \
+	  $(SRC)/2_$@.Dockerfile \
+	> $(TMP)/$@.Dockerfile
 
 ################################
 ###    R-Studio & Jupyter    ###
