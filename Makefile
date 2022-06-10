@@ -115,13 +115,13 @@ rstudio: cpu
 	>   $(OUT)/$@/Dockerfile
 
 # Only one output version
-sas: cpu
+sas:
 	mkdir -p $(OUT)/$@
 	cp -r resources/common/. $(OUT)/$@
 	cp -r resources/sas/. $(OUT)/$@
 
 	$(CAT) \
-		$(TMP)/$<.Dockerfile \
+		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
