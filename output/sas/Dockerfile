@@ -299,7 +299,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 ###############################
 
 # SAS
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.2 as SASHome
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
