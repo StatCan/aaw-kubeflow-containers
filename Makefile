@@ -81,19 +81,16 @@ generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-
 
 # Configure the "Bases".
 #
+# Revert Stan's change made in PR#306 that includes $(SRC)/2_cpu.Dockerfile It really balloons the size of the image
 pytorch tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
-        $(SRC)/2_cpu.Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
 cpu: .output
-	$(CAT) \
-	  $(SRC)/0_$@.Dockerfile \
-	  $(SRC)/2_$@.Dockerfile \
-	> $(TMP)/$@.Dockerfile
+	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
 
 ################################
 ###    R-Studio & Jupyter    ###

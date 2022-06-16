@@ -44,16 +44,16 @@ RUN conda install -c conda-forge python=3.8.12 -y && \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub | apt-key add - && \
-    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
-    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
     apt-get purge --autoremove -y curl \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CUDA_VERSION 11.0.3
 
 # For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y wget && \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-keyring_1.0-1_all.deb && \
+    dpkg -i cuda-keyring_1.0-1_all.deb && \
+    apt-get update && apt-get install -y --no-install-recommends \
     cuda-cudart-11-0=11.0.221-1 \
     cuda-compat-11-0 \
     && ln -s cuda-11.0 /usr/local/cuda && \
@@ -83,7 +83,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.0 brand=tesla,driver>=418,driver<419 brand=tes
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/Dockerfile
 
-ENV NCCL_VERSION 2.7.8
+ENV NCCL_VERSION 2.12.12
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-libraries-11-0=11.0.3-1 \
@@ -99,7 +99,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
 
-ENV CUDNN_VERSION 8.0.4.30
+ENV CUDNN_VERSION 8.0.5.39
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
@@ -107,28 +107,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcudnn8=$CUDNN_VERSION-1+cuda11.0 \
     && apt-mark hold libcudnn8 && \
     rm -rf /var/lib/apt/lists/*
-
-###############################
-###  docker-bits/2_cpu.Dockerfile
-###############################
-
-# Create conda environment (CPU only) with many useful packages.
-
-RUN conda create -n pycpu --yes \
-      python==3.10.4 ipython==8.4.0 sphinx==5.0.0 \
-      boto==2.49.0 s3fs==2022.5.0 \
-      dos2unix==7.4.1 parallel==20220522 \
-      dask==2022.5.2 numpy==1.22.4 pandas==1.4.2 pyarrow==8.0.0 scipy==1.8.1 \
-      scikit-learn==1.1.1 xgboost==1.5.1 \
-      matplotlib==3.5.2 pillow==9.1.1 \
-      gdal==3.4.3 geopandas==0.10.2 rasterio==1.2.10 \
-      opencv==4.5.5 scikit-image==0.19.2 \
-      gensim==4.2.0 nltk==3.6.7 spacy==3.3.0 \
-      pytorch==1.11.0 torchaudio==0.11.0 torchvision==0.12.0 cpuonly==2.0 \
-      -c pytorch -c conda-forge && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/2_pytorch.Dockerfile
