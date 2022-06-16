@@ -81,8 +81,9 @@ jobs:
     steps:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy') 
+      # dev temporary change .... don't push to master
       run: | 
-        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
+        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
