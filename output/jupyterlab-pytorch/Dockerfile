@@ -160,6 +160,19 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
+# JOSE TEST
+RUN apt update && \
+  apt install -y software-properties-common && \
+  add-apt-repository ppa:ubuntugis/ubuntugis-unstable && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+      'libudunits2-dev' \
+      'libgdal-dev' \
+      'libgeos-dev' \
+      'libproj-dev' \
+  && \
+    rm -rf /var/lib/apt/lists/*
+
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
 ###############################

@@ -65,12 +65,13 @@ jobs:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           #- docker-stacks-datascience-notebook # Debugging
-          - rstudio
-          - sas
+          # temporary comment out dont fill up acr
+          #- rstudio
+          #- sas
           - jupyterlab-cpu
-          - jupyterlab-pytorch
-          - jupyterlab-tensorflow
-          - remote-desktop
+          #- jupyterlab-pytorch
+          #- jupyterlab-tensorflow
+          #- remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
@@ -81,8 +82,9 @@ jobs:
     steps:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
+      # TEMP jose fix revert later
       run: | 
-        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
+        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
