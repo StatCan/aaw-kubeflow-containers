@@ -13,8 +13,8 @@
 # The docker-stacks tag
 DOCKER-STACKS-UPSTREAM-TAG := 9ed3b8de5de1
 
-tensorflow-CUDA := 11.1
-pytorch-CUDA    := 11.0
+tensorflow-CUDA := 11.6
+pytorch-CUDA    := 11.7
 
 # https://stackoverflow.com/questions/5917413/concatenate-multiple-files-but-include-filename-as-section-headers
 CAT := awk '(FNR==1){print "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\#\#\#  " FILENAME "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n"}1'

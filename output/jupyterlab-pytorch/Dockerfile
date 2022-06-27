@@ -30,7 +30,7 @@ RUN conda install -c conda-forge python=3.8.12 -y && \
   fix-permissions /home/$NB_USER
 
 ###############################
-###  docker-bits/1_CUDA-11.0.Dockerfile
+###  docker-bits/1_CUDA-11.7.Dockerfile
 ###############################
 
 # Cuda stuff for v11.0

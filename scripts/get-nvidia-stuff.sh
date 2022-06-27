@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=11.0
+VERSION=11.7
 
 # Use an argument if available.
 if test -n "$1"; then
