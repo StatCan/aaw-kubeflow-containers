@@ -33,7 +33,7 @@ RUN conda install -c conda-forge python=3.8.12 -y && \
 ###  docker-bits/1_CUDA-11.7.Dockerfile
 ###############################
 
-# Cuda stuff for v11.0
+# Cuda stuff for v11.7
 
 ## https://gitlab.com/nvidia/container-images/cuda/-/blob/92d100e5ad724656d3b7315db8ce268ab7cb9d91/dist/11.7.0/ubuntu1804/base/Dockerfile
 
@@ -83,7 +83,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.7 brand=tesla,driver>=450,driver<451 brand=tes
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/blob/92d100e5ad724656d3b7315db8ce268ab7cb9d91/dist/11.7.0/ubuntu1804/runtime/Dockerfile
 
-# ENV NCCL_VERSION 2.12.12
+ENV NCCL_VERSION 2.12.12
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-libraries-11-7=11.7.0-1 \
@@ -91,23 +91,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-nvtx-11-7=11.7.50-1 \
     libcusparse-11-7=11.7.3.50-1 \
     libcublas-11-7=11.10.1.25-1 \
-    #libnccl2=$NCCL_VERSION-1+cuda11.7 \
+    libnccl2=$NCCL_VERSION-1+cuda11.7 \
     && apt-mark hold libnccl2 \
     && rm -rf /var/lib/apt/lists/*
-
-###########################
-### CudNN
-###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist/11.0/ubuntu18.04-x86_64/runtime/cudnn8/Dockerfile
-
-# ENV CUDNN_VERSION 8.4.1.50
-
-# LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
-
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     libcudnn8=$CUDNN_VERSION-1+cuda11.6 \
-#     && apt-mark hold libcudnn8 && \
-#     rm -rf /var/lib/apt/lists/*
 
 ###############################
 ###  docker-bits/2_pytorch.Dockerfile
