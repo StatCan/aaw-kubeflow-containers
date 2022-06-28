@@ -238,8 +238,8 @@ would add two layers, each about 1GB (2GB total).
 │
 ├── docker-bits                             # The docker snippets. Numbering indicates the DAG.
 │   ├── 0_CPU.Dockerfile
-│   ├── 1_CUDA-11.0.Dockerfile
-│   ├── 1_CUDA-11.1.Dockerfile
+│   ├── 1_CUDA-11.6.Dockerfile
+│   ├── 1_CUDA-11.7.Dockerfile
 │   ├── 2_PyTorch.Dockerfile
 │   ├── 2_Tensorflow.Dockerfile
 │   ├── 3_Kubeflow.Dockerfile
