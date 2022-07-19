@@ -21,6 +21,15 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     touch /home/$NB_USER/.zsh-installed
 fi
 
+# create .profile
+cat <<EOF > $HOME/.profile
+if [ -n "$BASH_VERSION" ]; then
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
+fi
+EOF
+
 # Configure the language
 if [ -n "${KF_LANG}" ]; then
     if [ "${KF_LANG}" = "en" ]; then
