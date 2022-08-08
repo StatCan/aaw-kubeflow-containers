@@ -247,11 +247,12 @@ RUN apt-get update && \
 # TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=3.10.2-nodownload-v3
-ARG VSCODE_SHA=62429655dedfdf5d19db88cf06da01c91413f402eae268ee3b90c041ebc6f622
-ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+ARG VSCODE_VERSION=4.5.1
+ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
+ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
+ENV CS_DISABLE_FILE_DOWNLOADS=1
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
     && apt-get update \
