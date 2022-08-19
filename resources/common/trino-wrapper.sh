@@ -7,7 +7,7 @@ GET_AUTH_TOKEN="$(kubectl get secret trino-auth -n $NB_NAMESPACE --template={{.d
 
 SERVER=https://trino.aaw-dev.cloud.statcan.ca
 
-export TRINO_PASSWORD=$GET_AUTH_TOKEN
+export TRINO_PASSWORD=$GET_AUTH_TOKEN 
 
 # Trino client pass in server, user, access token and additional options the user can configures
 trino-original --server $SERVER --debug --user $NB_NAMESPACE "$@"
