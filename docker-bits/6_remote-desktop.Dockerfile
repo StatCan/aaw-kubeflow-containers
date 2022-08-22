@@ -246,7 +246,7 @@ RUN \
 
 
 #QGIS
-COPY qgis-2021.gpg.key $RESOURCES_PATH/qgis-2021.gpg.key
+COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
 COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
 RUN /bin/bash $RESOURCES_PATH/qgis.sh \
     && apt-get clean \
