@@ -64,13 +64,13 @@ jobs:
       matrix:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
-          #- docker-stacks-datascience-notebook # Debugging
-          - rstudio
-          - sas
+          # - docker-stacks-datascience-notebook # Debugging
+          # - rstudio
+          # - sas
           - jupyterlab-cpu
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
-          - remote-desktop
+          # - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
@@ -82,7 +82,7 @@ jobs:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
       run: | 
-        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
+        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
@@ -156,14 +156,14 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
-    - uses: Azure/container-scan@v0
-      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-      env:
-        TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
-      with:
-        image-name: ${{ steps.build-image.outputs.full_image_name }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # - uses: Azure/container-scan@v0
+    #  if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
+    #  env:
+    #    TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
+    #  with:
+    #    image-name: ${{ steps.build-image.outputs.full_image_name }}
+    #    severity-threshold: CRITICAL
+    #    run-quality-checks: false
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
