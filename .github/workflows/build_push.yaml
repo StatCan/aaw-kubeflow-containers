@@ -156,14 +156,17 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
+    # Todo: 
+    # - Uncomment once upstream resolves  https://github.com/Azure/container-scan/issues/143
+    # - update to v0.1
     # - uses: Azure/container-scan@v0
-    #  if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-    #  env:
-    #    TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
-    #  with:
-    #    image-name: ${{ steps.build-image.outputs.full_image_name }}
-    #    severity-threshold: CRITICAL
-    #    run-quality-checks: false
+    #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
+    #   env:
+    #     TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
+    #   with:
+    #     image-name: ${{ steps.build-image.outputs.full_image_name }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
