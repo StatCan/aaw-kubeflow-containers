@@ -64,7 +64,7 @@ jobs:
       matrix:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
-          - docker-stacks-datascience-notebook # Debugging
+          # - docker-stacks-datascience-notebook # Debugging
           - rstudio
           - sas
           - jupyterlab-cpu
