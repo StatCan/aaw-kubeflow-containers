@@ -28,3 +28,8 @@ to install R, Python, or Julia packages.
 Have fun!!!
 
 EOF
+
+# Set default location for temp JNA storage if using blob fuse filesystem for home directory
+if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
+  export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
+fi
