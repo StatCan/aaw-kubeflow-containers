@@ -264,7 +264,7 @@ would add two layers, each about 1GB (2GB total).
 ├── ├── remote-desktop                      # directory containing files only for the remote desktop
 |      ├── desktop-files                    # desktop configuration 
 |      ├── French                           # files to support i18n of remote desktop
-|      ├── qgis-2020.gpg.key
+|      ├── qgis-2022.gpg.key                # expires annually aug ~8 
 |      └── start-remote-desktop.sh
 |      
 │
