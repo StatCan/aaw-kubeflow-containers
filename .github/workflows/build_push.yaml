@@ -159,17 +159,17 @@ jobs:
     # Todo: 
     # - Uncomment once upstream resolves  https://github.com/Azure/container-scan/issues/143
     # - update to v0.1
-    - uses: Azure/container-scan@v0
-      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-      env:
-        TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
-      with:
-        image-name: ${{ steps.build-image.outputs.full_image_name }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
+    # - uses: Azure/container-scan@v0
+    #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
+    #   env:
+    #     TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
+    #   with:
+    #     image-name: ${{ steps.build-image.outputs.full_image_name }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
 
-    - name: Run Trivy image scan
-      uses: aquasecurity/trivy-action@master
+    - name: Aqua Security Trivy
+      uses: aquasecurity/trivy-action@0.7.1
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       # env:
         # TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer, can also remove secret scan to speed up
