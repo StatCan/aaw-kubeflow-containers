@@ -165,12 +165,16 @@ jobs:
     #     severity-threshold: CRITICAL
     #     run-quality-checks: false
 
-    - uses: aquasecurity/trivy-action@master
+    - name: Run Trivy image scan
+      uses: aquasecurity/trivy-action@master
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       env:
         TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer, can also remove secret scan to speed up
+        TRIVY_USERNAME: Username
+        TRIVY_PASSWORD: Password
       with:
-        image-ref: ${{ steps.build-image.outputs.full_image_name }}
+        # image-ref: ${{ steps.build-image.outputs.full_image_name }}
+        image-ref: 'localhost:5000/${{ steps.notebook-name.outputs.NOTEBOOK_NAME }}:${{ github.sha }}]'
         format: 'table'
         exit-code: '1'
         ignore-unfixed: false
