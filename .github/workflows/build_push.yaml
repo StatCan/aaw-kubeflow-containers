@@ -64,7 +64,7 @@ jobs:
       matrix:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
-          #- docker-stacks-datascience-notebook # Debugging
+          # - docker-stacks-datascience-notebook # Debugging
           - rstudio
           - sas
           - jupyterlab-cpu
@@ -156,6 +156,9 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
+    # Todo: 
+    # - Uncomment once upstream resolves  https://github.com/Azure/container-scan/issues/143
+    # - update to v0.1
     # - uses: Azure/container-scan@v0
     #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
     #   env:
