@@ -167,7 +167,7 @@ jobs:
         image-name: ${{ steps.build-image.outputs.full_image_name }}
         severity-threshold: CRITICAL
         run-quality-checks: false
-        trivy_version: "0.29.1"
+        trivy-version: "0.29.1"
 
     # - name: Aqua Security Trivy
     #   uses: aquasecurity/trivy-action@0.7.1
