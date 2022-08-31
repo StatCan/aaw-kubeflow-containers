@@ -169,15 +169,15 @@ jobs:
         run-quality-checks: false
         trivy-version: "0.29.1"
 
-    - name: Aqua Security Trivy 1
+    - name: Aqua Security Trivy
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin latest
-        trivy image ${{ steps.build-image.outputs.full_image_name }} 
+        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
       
-    - name: Aqua Security Trivy 2
-      uses: docker://docker.io/aquasec/trivy:0.2.1
-      with:
-        args: --cache-dir /var/lib/trivy --exit-code 1 --severity CRITICAL ${{ steps.build-image.outputs.full_image_name }}
+    # - name: Aqua Security Trivy 2
+    #   uses: docker://docker.io/aquasec/trivy:latest
+    #   with:
+    #     args: --cache-dir /var/lib/trivy --exit-code 1 --severity CRITICAL ${{ steps.build-image.outputs.full_image_name }}
     #   uses: aquasecurity/trivy-action@0.7.1
     #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
     #   # env:
