@@ -159,35 +159,22 @@ jobs:
     # Todo: 
     # - Uncomment once upstream resolves  https://github.com/Azure/container-scan/issues/143
     # - update to v0.1
-    - uses: Azure/container-scan@v0.1
-      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-      env:
-        TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
-      with:
-        image-name: ${{ steps.build-image.outputs.full_image_name }}
-        severity-threshold: CRITICAL
-        run-quality-checks: false
-        trivy-version: "0.29.1"
+    # - uses: Azure/container-scan@v0.1
+    #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
+    #   env:
+    #     TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
+    #   with:
+    #     image-name: ${{ steps.build-image.outputs.full_image_name }}
+    #     severity-threshold: CRITICAL
+    #     run-quality-checks: false
+    #     trivy-version: "0.29.1"
 
     - name: Aqua Security Trivy
+      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin latest
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
       
-    # - name: Aqua Security Trivy 2
-    #   uses: docker://docker.io/aquasec/trivy:latest
-    #   with:
-    #     args: --cache-dir /var/lib/trivy --exit-code 1 --severity CRITICAL ${{ steps.build-image.outputs.full_image_name }}
-    #   uses: aquasecurity/trivy-action@0.7.1
-    #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-    #   # env:
-    #     # TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer, can also remove secret scan to speed up
-    #   with:
-    #     image-ref: ${{ steps.build-image.outputs.full_image_name }}
-    #     format: 'table'
-    #     exit-code: '1'
-    #     ignore-unfixed: false
-    #     severity: 'CRITICAL'
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
