@@ -2,6 +2,7 @@
 # * Builds, tests, and scans all images
 # * (optionally) pushes the images to ACR
 #
+#
 # This workflow triggers on:
 # * a push to master
 # * any create/synchronize to a PR (eg: any time you push an update to a PR).
