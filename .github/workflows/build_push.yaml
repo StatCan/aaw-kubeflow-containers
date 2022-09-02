@@ -59,6 +59,7 @@ jobs:
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
+      TRIVY_VERSION: 0.31.3
     strategy:
       fail-fast: false
       matrix:
@@ -156,23 +157,11 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
-    # Todo: 
-    # - Uncomment once upstream resolves  https://github.com/Azure/container-scan/issues/143
-    # - update to v0.1
-    # - uses: Azure/container-scan@v0.1
-    #   if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
-    #   env:
-    #     TRIVY_TIMEOUT: 30m0s  # Trivy default is 2min.  Some images take a bit longer
-    #   with:
-    #     image-name: ${{ steps.build-image.outputs.full_image_name }}
-    #     severity-threshold: CRITICAL
-    #     run-quality-checks: false
-    #     trivy-version: "0.29.1"
-
-    - name: Aqua Security Trivy
+    - name: Aqua Security Trivy image scan
+    # see https://github.com/StatCan/daaas-private/issues/11 -- should be re-enabled
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       run: |
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin latest
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
       
 
