@@ -178,7 +178,6 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $XDG_DATA_HOME/code-server/extensions 
 
 # Fix for VSCode extensions and CORS
-# COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
 ARG SHA256py=d32d8737858661451705faa9f176f8a1a03485b2d9984de40d45cc0403a3bcf4
