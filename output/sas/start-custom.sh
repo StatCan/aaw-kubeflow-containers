@@ -93,3 +93,8 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
+# persist vscode server remote settings (Machine dir)
+VS_CODE_SETTINGS=${XDG_DATA_HOME}/code-server/Machine/settings.json
+if [! -f "$VS_CODE_SETTINGS" ]; then
+    cp vscode-overrides.json "$VS_CODE_SETTINGS"
+fi
