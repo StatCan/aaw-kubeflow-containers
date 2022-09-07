@@ -19,6 +19,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system
 
+# TESTING PURPOSES ONLY
+ENV KF_LANG=fr
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]

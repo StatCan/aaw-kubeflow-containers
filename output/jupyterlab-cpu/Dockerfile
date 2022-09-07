@@ -193,7 +193,7 @@ RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     code-server --install-extension ms-python-release.vsix && \
     rm ms-python-release.vsix && \
     code-server --install-extension ikuyadeu.r@1.6.6 && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.56.2 && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
@@ -311,6 +311,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system
+
+# TESTING PURPOSES ONLY
+ENV KF_LANG=fr
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
