@@ -10,4 +10,4 @@ SERVER=https://trino.aaw-dev.cloud.statcan.ca
 export TRINO_PASSWORD=$GET_AUTH_TOKEN
 
 # Trino client pass in server, user, access token and additional options the user can configures
-trino-original --server $SERVER --debug --user $NB_NAMESPACE --password $TRINO_PASSWORD "$@"
+trino-original --server $SERVER --debug --user $NB_NAMESPACE --password "$@"
