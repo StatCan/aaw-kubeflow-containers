@@ -349,8 +349,8 @@ WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
-RUN . trino-wrapper.sh
 COPY trino-wrapper.sh /usr/local/bin/trino
+RUN . trino-wrapper.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
