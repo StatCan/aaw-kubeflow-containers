@@ -29,6 +29,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'trino-update'
   pull_request:
     types:
       - 'opened'
@@ -82,14 +83,14 @@ jobs:
     steps:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
-      run: | 
+      run: |
         echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
-   
+
     - name: Set ENV variables for pushes to master
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: | 
-        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
+      run: |
+        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
         echo "IS_LATEST=true" >> "$GITHUB_ENV"
 
@@ -113,14 +114,14 @@ jobs:
         login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
-    
+
     # Connect to Azure DEV Container registry (ACR)
     - uses: azure/docker-login@v1
       with:
         login-server: ${{ env.DEV_REGISTRY_NAME }}.azurecr.io
         username: ${{ secrets.DEV_REGISTRY_USERNAME }}
         password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    
+
     # Image building/storing locally
     - name: Make Dockerfiles
       run: make generate-dockerfiles
@@ -163,7 +164,7 @@ jobs:
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-      
+
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
@@ -186,7 +187,7 @@ jobs:
     # (get above's name from build-image's output)
     - name: Tag images with real repository
       if: steps.should-i-push.outputs.boolean == 'true'
-      run: > 
+      run: >
         make post-build/${{ matrix.notebook }} DEFAULT_REPO=$REGISTRY IS_LATEST=$IS_LATEST
         IMAGE_VERSION=$IMAGE_VERSION SOURCE_FULL_IMAGE_NAME=${{ steps.build-image.outputs.full_image_name }}
 

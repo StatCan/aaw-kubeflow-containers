@@ -12,11 +12,12 @@ RUN pip3 --no-cache-dir install --quiet \
 RUN pip3 --no-cache-dir install --quiet \
       'kfp==1.7.2' \
       'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
+      'ml-metadata==1.10.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
+      'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
