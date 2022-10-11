@@ -186,8 +186,8 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
-ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/396/trino-cli-396-executable.jar
+ARG TRINO_SHA=438347986c281a2cf419131ce999d6db1bb37488b141f68de62325e1cbbc927a
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
 
