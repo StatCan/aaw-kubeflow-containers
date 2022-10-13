@@ -79,6 +79,8 @@ if [ -f "$NOTEBOOK_CONFIG" ]; then
 fi
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+export TRINO_PASSWORD="$(kubectl get secret trino-auth -n $NB_NAMESPACE --template={{.data.password}} | base64 -d)"
+
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
