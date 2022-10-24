@@ -91,6 +91,10 @@ trap "rm -f $VNC_SOCKET" EXIT
 vncserver -SecurityTypes None -rfbunixpath $VNC_SOCKET -geometry 1680x1050 :1
 cat $HOME/.vnc/*.log
 
+NB_PREFIX=${NB_PREFIX:-/vnc}
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+export TRINO_PASSWORD="$(kubectl get secret trino-auth -n $NB_NAMESPACE --template={{.data.password}} | base64 -d)"
+
 # Launch noVNC
 (
     # cd /tmp/novnc/
@@ -99,8 +103,6 @@ cat $HOME/.vnc/*.log
 ) &
 
 NB_PREFIX=${NB_PREFIX:-/vnc}
-export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
-export TRINO_PASSWORD="$(kubectl get secret trino-auth -n $NB_NAMESPACE --template={{.data.password}} | base64 -d)"
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
 
