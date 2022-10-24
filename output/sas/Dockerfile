@@ -330,6 +330,13 @@ RUN pip install /opt/jupyter-sasstudio-proxy/
 
 ENV DEFAULT_JUPYTER_URL=/lab
 
+
+# SAS GConfid
+
+COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
+
+COPY sas.cfg /usr/local/SASHome/SASFoundation/9.4/
+
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
