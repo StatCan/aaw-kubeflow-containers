@@ -18,7 +18,7 @@ ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV XDG_DATA_HOME=$HOME/.local/share
+ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -28,7 +28,8 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $XDG_DATA_HOME/code-server/extensions 
+    && mkdir -p $HOME/.local/share \
+    && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
