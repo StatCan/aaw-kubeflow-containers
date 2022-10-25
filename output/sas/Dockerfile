@@ -179,6 +179,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $HOME/.local/share \
     && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
+COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
@@ -191,6 +192,7 @@ RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     rm ms-python-release.vsix && \
     code-server --install-extension ikuyadeu.r@1.6.6 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+    code-server --install-extension Quarto@1.51.0 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
