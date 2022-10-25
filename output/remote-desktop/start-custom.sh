@@ -84,6 +84,15 @@ export TRINO_PASSWORD="$(kubectl get secret trino-auth -n $NB_NAMESPACE --templa
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
+VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
+VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
+if [-f "$VS_CODE_PRESISTED" ]; then
+    cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
+else
+    cp vscode-overrides.json "$VS_CODE_SETTINGS"
+fi
+
+
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
@@ -96,7 +105,5 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
 # persist vscode server remote settings (Machine dir)
-VS_CODE_SETTINGS=${XDG_DATA_HOME}/code-server/Machine/settings.json
-if [! -f "$VS_CODE_SETTINGS" ]; then
-    cp vscode-overrides.json "$VS_CODE_SETTINGS"
-fi
+VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
+cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
