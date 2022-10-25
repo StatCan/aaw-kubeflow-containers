@@ -44,6 +44,7 @@ RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     rm ms-python-release.vsix && \
     code-server --install-extension ikuyadeu.r@1.6.6 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+    code-server --install-extension Quarto@1.51.0 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
