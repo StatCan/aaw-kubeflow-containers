@@ -60,3 +60,4 @@ ENV DEFAULT_JUPYTER_URL=/lab
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 
 COPY sasv9.cfg /usr/local/SASHome/SASFoundation/9.4/
+COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/

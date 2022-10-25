@@ -176,7 +176,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $XDG_DATA_HOME/code-server/extensions 
+    && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
@@ -336,6 +336,7 @@ ENV DEFAULT_JUPYTER_URL=/lab
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 
 COPY sasv9.cfg /usr/local/SASHome/SASFoundation/9.4/
+COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
