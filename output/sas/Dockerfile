@@ -166,7 +166,7 @@ ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV XDG_DATA_HOME=$HOME/.local/share
+ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -176,8 +176,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
+    && mkdir -p $HOME/.local/share \
     && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
+COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
@@ -190,6 +192,7 @@ RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     rm ms-python-release.vsix && \
     code-server --install-extension ikuyadeu.r@1.6.6 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+    code-server --install-extension quarto.quarto@1.51.0 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
@@ -289,6 +292,39 @@ COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
+# Install vscode
+ARG VSCODE_VERSION=4.5.1
+ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
+ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+
+ENV CS_DISABLE_FILE_DOWNLOADS=1
+ENV XDG_DATA_HOME=/etc/share
+ENV SERVICE_URL=https://extensions.coder.com/api
+
+RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
+    && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+    && apt-get update \
+    && apt-get install -y nginx \
+    && dpkg -i ./vscode.deb \
+    && rm ./vscode.deb \
+    && rm -f /etc/apt/sources.list.d/vscode.list \
+    && mkdir -p $HOME/.local/share \
+    && mkdir -p $XDG_DATA_HOME/code-server/extensions
+
+# Fix for VSCode extensions and CORS
+# Languagepacks.json needs to exist for code-server to recognize the languagepack
+COPY languagepacks.json $XDG_DATA_HOME/code-server/
+ARG SHA256py=d32d8737858661451705faa9f176f8a1a03485b2d9984de40d45cc0403a3bcf4
+
+RUN VS_PYTHON_VERSION="2021.5.829140558" && \
+    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
+    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
+    code-server --install-extension ms-python-release.vsix && \
+    rm ms-python-release.vsix && \
+    code-server --install-extension ikuyadeu.r@1.6.6 && \
+    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+    fix-permissions $XDG_DATA_HOME
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
@@ -335,7 +371,6 @@ ENV DEFAULT_JUPYTER_URL=/lab
 
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
-
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
