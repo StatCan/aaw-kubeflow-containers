@@ -281,21 +281,17 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
-USER root
 
-RUN useradd -m sas && \
-    groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
+RUN pip install --quiet \
+    'git+https://github.com/betatim/vscode-binder'
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
-
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
 # Install vscode
 ARG VSCODE_VERSION=4.5.1
 ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+
+USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
 ENV XDG_DATA_HOME=/etc/share
@@ -324,6 +320,15 @@ RUN VS_PYTHON_VERSION="2021.5.829140558" && \
     code-server --install-extension ikuyadeu.r@1.6.6 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
     fix-permissions $XDG_DATA_HOME
+
+RUN useradd -m sas && \
+    groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff sas && \
+    echo "sas:sas" | chpasswd
+
+COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
