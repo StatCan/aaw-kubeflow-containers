@@ -37,11 +37,7 @@ COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
 ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN VS_PYTHON_VERSION="2022.16.1" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/archive/refs/tags/$VS_PYTHON_VERSION.tar.gz && \
-    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-    code-server --install-extension ms-python-release.vsix && \
-    rm ms-python-release.vsix && \
+RUN code-server --install-extension ms-python.python@2022.16.1 && \
     code-server --install-extension ikuyadeu.r@2.4.0 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
     code-server --install-extension quarto.quarto@1.53.1 && \
