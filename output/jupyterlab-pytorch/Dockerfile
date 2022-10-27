@@ -272,16 +272,16 @@ COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
-ARG SHA256py=d32d8737858661451705faa9f176f8a1a03485b2d9984de40d45cc0403a3bcf4
+ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN VS_PYTHON_VERSION="2021.5.829140558" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
+RUN VS_PYTHON_VERSION="2022.16.1" && \
+    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/archive/refs/tags/$VS_PYTHON_VERSION.tar.gz && \
     echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
     code-server --install-extension ms-python-release.vsix && \
     rm ms-python-release.vsix && \
-    code-server --install-extension ikuyadeu.r@1.6.6 && \
+    code-server --install-extension ikuyadeu.r@2.4.0 && \
     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
-    code-server --install-extension quarto.quarto@1.51.0 && \
+    code-server --install-extension quarto.quarto@1.53.1 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
