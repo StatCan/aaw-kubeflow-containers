@@ -289,6 +289,7 @@ ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_
 
 USER root
 
+
 ENV CS_DISABLE_FILE_DOWNLOADS=1
 ENV XDG_DATA_HOME=/etc/share
 ENV SERVICE_URL=https://extensions.coder.com/api
@@ -302,6 +303,17 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
     && mkdir -p $HOME/.local/share \
     && mkdir -p $XDG_DATA_HOME/code-server/extensions
+
+# Install Quarto
+ARG QUARTO_VERSION=1.2.247
+ARG QUARTO_SHA=00012da73de3ac6e98715bff127679b12c567b9a56f906163c8997a9e9d7610b
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v1.2.247/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+
+RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/quarto-${QUARTO_VERSION} && \
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
