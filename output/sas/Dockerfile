@@ -314,8 +314,12 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
     code-server --install-extension quarto.quarto@1.53.1 && \
     fix-permissions $XDG_DATA_HOME
 
-RUN groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff jovyan && \
+RUN useradd -m sas && \
+    groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff sas && \
+    echo "sas:sas" | chpasswd
+
+RUN usermod -a -G sasstaff jovyan && \
     echo "jovyan:sas" | chpasswd
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
