@@ -41,7 +41,7 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 
 RUN groupadd -g 1337 supergroup && \
     useradd -m sas && \
-    usermod -a -g supergroup sas && \
+    usermod -a -G supergroup sas && \
     groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
