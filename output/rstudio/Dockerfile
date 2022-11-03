@@ -152,8 +152,8 @@ RUN apt-get update && \
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=1.4.1103
-ARG SHA256=552baf1bbfd98fc36a3f63c430cce3ceb16dd41de723a535fa27d254ff6afa62
+ARG RSTUDIO_VERSION=2022.07.2-576
+ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
 RUN apt-get update && \
     curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
@@ -170,8 +170,8 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_19' \
-      'r-tidymodels==0.1.3' \
-      'r-arrow==4.0.0' \
+      'r-tidymodels==1.0.0' \
+      'r-arrow==9.0.0' \
       'r-aws.s3==0.3.21' \
       'r-catools==1.18.2' \
       'r-hdf5r==1.3.3' \
