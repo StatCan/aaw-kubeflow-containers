@@ -16,4 +16,4 @@ fi
 export TRINO_PASSWORD=$GET_AUTH_TOKEN
 
 # Trino client pass in server, user, access token and additional options the user can configures
-trino-original --debug --user $NB_NAMESPACE --server $SERVER --password "$@"
+trino-original --debug --user $NB_NAMESPACE --server $SERVER --access-token $GET_TOKEN "$@"
