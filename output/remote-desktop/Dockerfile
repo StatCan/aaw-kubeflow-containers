@@ -475,7 +475,7 @@ RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
-
+ENV NB_NAMESPACE=$NB_NAMESPACE
 # https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \

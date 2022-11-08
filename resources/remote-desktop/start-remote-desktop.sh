@@ -67,6 +67,9 @@ if [ -d $RESOURCES_PATH/desktop-files ]; then
     cp /opt/install/desktop-files/.config/xfce4/xfce4-panel.xml $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
 fi
 
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+export JWT="$(echo /var/run/secrets/kubernetes.io/serviceaccount/token)"
+
 mkdir -p $HOME/.vnc
 [ -f $HOME/.vnc/xstartup ] || {
     cat <<EOF > $HOME/.vnc/xstartup
@@ -99,8 +102,6 @@ cat $HOME/.vnc/*.log
 
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
-
-export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 nginx
 wait
