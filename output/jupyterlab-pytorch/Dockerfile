@@ -340,11 +340,12 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'r-languageserver' \
       'python-lsp-server' \
     && \
-    npm i -g bash-language-server  && \
-    dockerfile-language-server-nodejs &&  \
-    javascript-typescript-langserver && \
-    unified-language-server && \
-    yaml-language-server@0.18.0  && \
+    npm i -g \
+    'bash-language-server'  \
+    'dockerfile-language-server-nodejs' \
+    'javascript-typescript-langserver' \
+    'unified-language-server' \
+    'yaml-language-server@0.18.0'  && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER  \
