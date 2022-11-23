@@ -251,8 +251,8 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'r-languageserver' \
       'python-lsp-server' \
     && \
+    npm i -g bash-language-server && \
     jlpm add --dev \
-      'bash-language-server' \
       'dockerfile-language-server-nodejs' \
       'javascript-typescript-langserver' \
       #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this
