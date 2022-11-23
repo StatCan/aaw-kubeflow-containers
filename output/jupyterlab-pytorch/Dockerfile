@@ -340,13 +340,15 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'r-languageserver' \
       'python-lsp-server' \
     && \
-    jlpm add --dev \
-      'bash-language-server' \
-      'dockerfile-language-server-nodejs' \
-      'javascript-typescript-langserver' \
-      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this
-      'unified-language-server' \
-      'yaml-language-server@0.18.0' \
+    npm i -g \
+    'bash-language-server'  \
+    'dockerfile-language-server-nodejs' \
+    'javascript-typescript-langserver' \
+    'unified-language-server' \
+    'yaml-language-server@0.18.0'  && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER  \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \

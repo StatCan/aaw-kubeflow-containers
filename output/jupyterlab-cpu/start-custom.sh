@@ -82,9 +82,9 @@ export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
-
+mkdir -p vscode-settings
 VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
-VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
+VS_CODE_PRESISTED=$HOME/vscode-settings/share/code-server/Machine/settings.json
 if [-f "$VS_CODE_PRESISTED" ]; then
     cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
 else
@@ -104,5 +104,5 @@ fi
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
 # persist vscode server remote settings (Machine dir)
-VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
+VS_CODE_SETTINGS_PERSIST=$HOME/vscode-settings/share/code-server/Machine/settings.json
 cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
