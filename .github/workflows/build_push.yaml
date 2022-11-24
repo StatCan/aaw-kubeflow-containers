@@ -85,7 +85,7 @@ jobs:
       # DO NOT PUSH THIS TO MAIN
       run: | 
         echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
-        echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=dev-jose" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'

@@ -4,10 +4,18 @@ if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
 fi
 
+echo "--------------------Checking if we want to sleep infinitely--------------------"
+if [[ -z "${INFINITY_SLEEP}" ]]; then
+  echo "--------------------zzzzzz--------------------"
+  sleep infinity
+else
+  echo "--------------------Not sleeping--------------------"
+fi
+
+
 echo "--------------------start-custom.sh starting, it is ready--------------------"
 
-#No for now
-#test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
+test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
