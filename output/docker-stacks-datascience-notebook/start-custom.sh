@@ -113,6 +113,10 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 #     cp vscode-overrides.json "$VS_CODE_SETTINGS"
 # fi
 
+pip list
+
+conda list
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
