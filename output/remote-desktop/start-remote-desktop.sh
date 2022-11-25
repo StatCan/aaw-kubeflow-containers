@@ -69,6 +69,7 @@ fi
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(echo /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export PIP_REQUIRE_VIRTUALENV=true
 
 mkdir -p $HOME/.vnc
 [ -f $HOME/.vnc/xstartup ] || {

@@ -4,10 +4,17 @@ if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
 fi
 
+echo "--------------------Checking if we want to sleep infinitely--------------------"
+if [[ -z "${INFINITY_SLEEP}" ]]; then
+  echo "--------------------Not sleeping--------------------"
+else
+  echo "--------------------zzzzzz--------------------"
+  sleep infinity
+fi
+
 echo "--------------------start-custom.sh starting, it is ready--------------------"
 
-#No for now
-#test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
+test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
@@ -94,6 +101,7 @@ echo "broken configuration settings removed"
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export PIP_REQUIRE_VIRTUALENV=true
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 #mkdir -p vscode-settings
