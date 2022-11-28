@@ -1,18 +1,17 @@
 #!/bin/bash
 
+echo "--------------------Starting up--------------------"
 if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
 fi
 
-echo "--------------------Checking if we want to sleep infinitely--------------------"
+echo "Checking if we want to sleep infinitely"
 if [[ -z "${INFINITY_SLEEP}" ]]; then
-  echo "--------------------Not sleeping--------------------"
+  echo "Not sleeping"
 else
   echo "--------------------zzzzzz--------------------"
   sleep infinity
 fi
-
-echo "--------------------start-custom.sh starting, it is ready--------------------"
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
@@ -104,14 +103,14 @@ export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 export PIP_REQUIRE_VIRTUALENV=true
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
-#mkdir -p vscode-settings
-# VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
-# VS_CODE_PRESISTED=$HOME/vscode-settings/share/code-server/Machine/settings.json
-# if [-f "$VS_CODE_PRESISTED" ]; then
-#     cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
-# else
-#     cp vscode-overrides.json "$VS_CODE_SETTINGS"
-# fi
+
+VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
+VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
+if [-f "$VS_CODE_PRESISTED" ]; then
+  cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
+else
+  cp vscode-overrides.json "$VS_CODE_SETTINGS"
+fi
 
 echo "--------------------starting jupyter--------------------"
 
@@ -126,7 +125,7 @@ echo "--------------------starting jupyter--------------------"
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
-echo "--------------------shutting down--------------------"
+echo "--------------------shutting down, persisting VS_CODE settings--------------------"
 # persist vscode server remote settings (Machine dir)
-#VS_CODE_SETTINGS_PERSIST=$HOME/vscode-settings/share/code-server/Machine/settings.json
-#cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
+VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
+cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
