@@ -1,13 +1,19 @@
 #!/bin/bash
 
+echo "--------------------Starting up--------------------"
 if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
 fi
 
-echo "--------------------start-custom.sh starting, it is ready--------------------"
+echo "Checking if we want to sleep infinitely"
+if [[ -z "${INFINITY_SLEEP}" ]]; then
+  echo "Not sleeping"
+else
+  echo "--------------------zzzzzz--------------------"
+  sleep infinity
+fi
 
-#No for now
-#test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
+test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
@@ -94,16 +100,17 @@ echo "broken configuration settings removed"
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export PIP_REQUIRE_VIRTUALENV=true
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
-#mkdir -p vscode-settings
-# VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
-# VS_CODE_PRESISTED=$HOME/vscode-settings/share/code-server/Machine/settings.json
-# if [-f "$VS_CODE_PRESISTED" ]; then
-#     cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
-# else
-#     cp vscode-overrides.json "$VS_CODE_SETTINGS"
-# fi
+
+VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
+VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
+if [-f "$VS_CODE_PRESISTED" ]; then
+  cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
+else
+  cp vscode-overrides.json "$VS_CODE_SETTINGS"
+fi
 
 echo "--------------------starting jupyter--------------------"
 
@@ -118,7 +125,7 @@ echo "--------------------starting jupyter--------------------"
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
-echo "--------------------shutting down--------------------"
+echo "--------------------shutting down, persisting VS_CODE settings--------------------"
 # persist vscode server remote settings (Machine dir)
-#VS_CODE_SETTINGS_PERSIST=$HOME/vscode-settings/share/code-server/Machine/settings.json
-#cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
+VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
+cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST

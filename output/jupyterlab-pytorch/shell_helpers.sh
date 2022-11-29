@@ -24,6 +24,11 @@ Conda
 It's recommended that you use conda to create virtual environments and
 to install R, Python, or Julia packages.
 
+Python
+=====
+
+Please make use of python venv's to avoid installing over jupyterlab required
+packages. Not doing so could result in your notebook becoming unusable.
 
 Have fun!!!
 
