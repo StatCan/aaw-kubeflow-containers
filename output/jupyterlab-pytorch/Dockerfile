@@ -44,6 +44,9 @@ RUN conda install -c conda-forge python=3.8.12 -y && \
 ###########################
 # https://gitlab.com/nvidia/container-images/cuda/-/blob/92d100e5ad724656d3b7315db8ce268ab7cb9d91/dist/11.7.0/ubuntu1804/base/Dockerfile
 
+# might need to add this to 11.6??? just test first
+ENV NVIDIA_DISABLE_REQUIRE="true"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
     apt-get purge --autoremove -y curl \
