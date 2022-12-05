@@ -85,6 +85,18 @@ export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(echo /var/run/secrets/kubernetes.io/serviceaccount/token)"
 export PIP_REQUIRE_VIRTUALENV=true
 
+echo "Checking if Python venv exists"
+if [[ -d "base-python-venv" ]]; then
+  echo "Base python venv exists, not going to create again, activating it"
+  source $HOME/base-python-venv/bin/activate
+else
+  echo "Creating python venv"
+  python3 -m venv $HOME/base-python-venv
+  echo "adding include-system-site-packages"
+  echo "include-system-site-packages = true" >> pyvenv.cfg
+  source $HOME/base-python-venv/bin/activate
+fi
+
 mkdir -p $HOME/.vnc
 [ -f $HOME/.vnc/xstartup ] || {
     cat <<EOF > $HOME/.vnc/xstartup

@@ -112,6 +112,18 @@ else
   cp vscode-overrides.json "$VS_CODE_SETTINGS"
 fi
 
+echo "Checking if Python venv exists"
+if [[ -d "base-python-venv" ]]; then
+  echo "Base python venv exists, not going to create again, activating it"
+  source $HOME/base-python-venv/bin/activate
+else
+  echo "Creating python venv"
+  python3 -m venv $HOME/base-python-venv
+  echo "adding include-system-site-packages"
+  echo "include-system-site-packages = true" >> pyvenv.cfg
+  source $HOME/base-python-venv/bin/activate
+fi
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
