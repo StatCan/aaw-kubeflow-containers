@@ -29,6 +29,8 @@ Python
 
 Please make use of python venv's to avoid installing over jupyterlab required
 packages. Not doing so could result in your notebook becoming unusable.
+You can activate the default environment by running
+source base-python-venv/bin/activate
 
 Have fun!!!
 
@@ -38,3 +40,6 @@ EOF
 if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
   export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
 fi
+
+# Activate the base python venv by default
+source $HOME/base-python-venv/bin/activate
