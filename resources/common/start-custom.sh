@@ -102,6 +102,15 @@ export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 export PIP_REQUIRE_VIRTUALENV=true
 
+echo "Checking if Python venv exists"
+if [[ -d "base-python-venv" ]]; then
+  echo "Base python venv exists, not going to create again"
+else
+  echo "Creating python venv"
+  python3 -m venv $HOME/base-python-venv
+  echo "adding include-system-site-packages"
+fi
+
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
 VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
