@@ -68,7 +68,7 @@ jobs:
           # - docker-stacks-datascience-notebook # Debugging
           #- rstudio
           #- sas
-          #- jupyterlab-cpu
+          - jupyterlab-cpu
           - jupyterlab-pytorch
           #- jupyterlab-tensorflow
           #- remote-desktop
