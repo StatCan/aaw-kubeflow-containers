@@ -1,7 +1,16 @@
 #!/bin/bash
 
+echo "--------------------Starting up--------------------"
 if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
+fi
+
+echo "Checking if we want to sleep infinitely"
+if [[ -z "${INFINITY_SLEEP}" ]]; then
+  echo "Not sleeping"
+else
+  echo "--------------------zzzzzz--------------------"
+  sleep infinity
 fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
@@ -47,6 +56,10 @@ if [ -n "${KF_LANG}" ]; then
         mv /tmp/file.json.tmp $HOME/.vscode/argv.json
     fi
 fi
+
+echo "language has been configured"
+
+
 # Configure KFP multi-user
 if [ -n "${NB_NAMESPACE}" ]; then
 mkdir -p $HOME/.config/kfp
@@ -55,6 +68,7 @@ cat <<EOF > $HOME/.config/kfp/context.json
 EOF
 fi
 
+echo "KFP multi-user has been configured"
 
 # Create desktop shortcuts
 if [ -d $RESOURCES_PATH/desktop-files ]; then
@@ -65,6 +79,19 @@ if [ -d $RESOURCES_PATH/desktop-files ]; then
     find $HOME/Desktop -type f -iname "*.desktop" -exec chmod +x {} \;
     mkdir -p $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
     cp /opt/install/desktop-files/.config/xfce4/xfce4-panel.xml $HOME/.config/xfce4/xfconf/xfce-perchannel-xml/
+fi
+
+export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+export JWT="$(echo /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export PIP_REQUIRE_VIRTUALENV=true
+
+echo "Checking if Python venv exists"
+if [[ -d "base-python-venv" ]]; then
+  echo "Base python venv exists, not going to create again"
+else
+  echo "Creating python venv"
+  python3 -m venv $HOME/base-python-venv
+  echo "adding include-system-site-packages"
 fi
 
 mkdir -p $HOME/.vnc
@@ -90,6 +117,8 @@ trap "rm -f $VNC_SOCKET" EXIT
 vncserver -SecurityTypes None -rfbunixpath $VNC_SOCKET -geometry 1680x1050 :1
 cat $HOME/.vnc/*.log
 
+echo "novnc has been configured, launching novnc"
+#TODO: Investigate adding vscode extensions to be persisted
 # Launch noVNC
 (
     # cd /tmp/novnc/
@@ -99,8 +128,6 @@ cat $HOME/.vnc/*.log
 
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
-
-export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 nginx
 wait

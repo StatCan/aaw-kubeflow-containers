@@ -246,7 +246,7 @@ RUN \
 
 
 #QGIS
-COPY qgis-2021.gpg.key $RESOURCES_PATH/qgis-2021.gpg.key
+COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
 COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
 RUN /bin/bash $RESOURCES_PATH/qgis.sh \
     && apt-get clean \
@@ -332,7 +332,7 @@ RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
-
+ENV NB_NAMESPACE=$NB_NAMESPACE
 # https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \

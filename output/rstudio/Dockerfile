@@ -23,11 +23,13 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
-
+# Added common conda configuration file to the user's home
+COPY .condarc /home/$NB_USER/.condarc
 # Python is downgraded because of ml-metadata
 RUN conda install -c conda-forge python=3.8.12 -y && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
+
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -52,6 +54,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==5.0.10' \
+      'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
@@ -151,10 +154,16 @@ RUN apt-get update && \
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=1.4.1103
-ARG SHA256=552baf1bbfd98fc36a3f63c430cce3ceb16dd41de723a535fa27d254ff6afa62
+ARG RSTUDIO_VERSION=2022.07.2-576
+ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
 RUN apt-get update && \
-    curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
+    apt install -y --no-install-recommends software-properties-common dirmngr && \
+    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
+    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/" && \
+    apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
+    apt-get update && apt-get -y dist-upgrade
+
+RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
@@ -183,12 +192,10 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'git+https://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
+      'jupyter-rsession-proxy==2.1.0' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
-
-RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
 
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git

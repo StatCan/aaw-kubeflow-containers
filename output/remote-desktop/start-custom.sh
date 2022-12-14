@@ -1,7 +1,16 @@
 #!/bin/bash
 
+echo "--------------------Starting up--------------------"
 if [ -d /var/run/secrets/kubernetes.io/serviceaccount ]; then
   while ! curl -s -f http://127.0.0.1:15020/healthz/ready; do sleep 1; done
+fi
+
+echo "Checking if we want to sleep infinitely"
+if [[ -z "${INFINITY_SLEEP}" ]]; then
+  echo "Not sleeping"
+else
+  echo "--------------------zzzzzz--------------------"
+  sleep infinity
 fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
@@ -20,6 +29,19 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
 fi
+
+echo "shell has been configured"
+
+# create .profile
+cat <<EOF > $HOME/.profile
+if [ -n "$BASH_VERSION" ]; then
+    if [ -f "$HOME/.bashrc" ]; then
+        . "$HOME/.bashrc"
+    fi
+fi
+EOF
+
+echo ".profile has been created"
 
 # Configure the language
 if [ -n "${KF_LANG}" ]; then
@@ -47,6 +69,9 @@ if [ -n "${KF_LANG}" ]; then
         fi
     fi
 fi
+
+echo "language has been configured"
+
 # Configure KFP multi-user
 if [ -n "${NB_NAMESPACE}" ]; then
 mkdir -p $HOME/.config/kfp
@@ -54,6 +79,8 @@ cat <<EOF > $HOME/.config/kfp/context.json
 {"namespace": "${NB_NAMESPACE}"}
 EOF
 fi
+
+echo "KFP multi-user has been configured"
 
 # Introduced by RStudio 1.4
 # See https://github.com/jupyterhub/jupyter-rsession-proxy/issues/95
@@ -69,9 +96,32 @@ if [ -f "$NOTEBOOK_CONFIG" ]; then
       && mv -f "$NOTEBOOK_CONFIG_TMP" "$NOTEBOOK_CONFIG"
 fi
 
+echo "broken configuration settings removed"
+
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
+export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export PIP_REQUIRE_VIRTUALENV=true
+
+echo "Checking if Python venv exists"
+if [[ -d "base-python-venv" ]]; then
+  echo "Base python venv exists, not going to create again"
+else
+  echo "Creating python venv"
+  python3 -m venv $HOME/base-python-venv
+  echo "adding include-system-site-packages"
+fi
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
+
+VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
+VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
+if [-f "$VS_CODE_PRESISTED" ]; then
+  cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
+else
+  cp vscode-overrides.json "$VS_CODE_SETTINGS"
+fi
+
+echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
@@ -84,3 +134,7 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
+echo "--------------------shutting down, persisting VS_CODE settings--------------------"
+# persist vscode server remote settings (Machine dir)
+VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
+cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
