@@ -39,5 +39,5 @@ if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
   export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
 fi
 
-# Activate the base python venv by default
-source $HOME/base-python-venv/bin/activate
+# Activate the base python venv by default revert for now, is causing issues
+# source $HOME/base-python-venv/bin/activate
