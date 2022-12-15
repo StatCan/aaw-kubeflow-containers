@@ -117,7 +117,7 @@ if [[ -f "$HOME/.condarc" ]]; then
   echo ".condarc file exists, not going to do anything"
 else
   echo "Creating basic .condarc file"
-  printf 'envs_dirs:\n  - $HOME/.conda/envs' > .condarc
+  printf 'envs_dirs:\n  - $HOME/.conda/envs' > $HOME/.condarc
 fi
 
 
