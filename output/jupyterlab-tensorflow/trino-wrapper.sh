@@ -19,4 +19,4 @@ fi
 
 # Trino client pass in server, user, access token and additional options the user can configures
 # trino-original --debug --user $NB_NAMESPACE --server $SERVER --access-token $JWT_TOKEN "$@"
-trino-original --server $SERVER --debug "$@"
+trino-original --debug "$@"
