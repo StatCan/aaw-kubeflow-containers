@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get token from default service account
-JWT_TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+#JWT_TOKEN="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 
 # Enable for PW Auth
 #GET_AUTH_TOKEN="$(kubectl get secret trino-auth -n $NB_NAMESPACE --template={{.data.password}} | base64 -d)"
@@ -19,4 +19,4 @@ fi
 
 # Trino client pass in server, user, access token and additional options the user can configures
 # trino-original --debug --user $NB_NAMESPACE --server $SERVER --access-token $JWT_TOKEN "$@"
-trino-original --debug "$@"
+trino-original --server $SERVER --debug --external-authentication "$@"
