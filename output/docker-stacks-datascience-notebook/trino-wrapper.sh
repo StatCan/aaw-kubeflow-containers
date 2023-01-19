@@ -3,7 +3,7 @@
 # Use protb trino instance
 if [ -d "/etc/protb" ]
 then
-    SERVER=http://trino-protb.trino-protb-system.svc.cluster.local:8080
+    SERVER=http://trino-protb.aaw-dev.cloud.statcan.ca
 else
     SERVER=https://trino.aaw-dev.cloud.statcan.ca
 fi
