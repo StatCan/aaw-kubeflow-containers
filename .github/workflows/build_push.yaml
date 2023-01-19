@@ -66,12 +66,12 @@ jobs:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           # - docker-stacks-datascience-notebook # Debugging
-          #- rstudio
-          #- sas
-          #- jupyterlab-cpu
+          - rstudio
+          - sas
+          - jupyterlab-cpu
           - jupyterlab-pytorch
-          #- jupyterlab-tensorflow
-          #- remote-desktop
+          - jupyterlab-tensorflow
+          - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
