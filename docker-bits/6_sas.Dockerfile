@@ -108,5 +108,9 @@ ENV DEFAULT_JUPYTER_URL=/lab
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
+# Rstudio thing
+RUN conda install rstudio
+RUN pip install jupyter-rsession-proxy
+
 # Enable X command on SAS Studio
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
