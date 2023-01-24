@@ -13,9 +13,3 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
-
-# Python is downgraded because of ml-metadata
-#RUN conda install -c conda-forge python=3.8.12 -y && \
-#  fix-permissions $CONDA_DIR && \
-#  fix-permissions /home/$NB_USER
-
