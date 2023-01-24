@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=7285848c0a11
+ARG BASE_VERSION=ed2908bbb62e
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -48,7 +48,7 @@ RUN pip3 --no-cache-dir install --quiet \
 RUN pip3 --no-cache-dir install --quiet \
       'kfp==1.7.2' \
       'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
+      'ml-metadata==1.12.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
@@ -201,7 +201,6 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 RUN pip install --quiet \
       'jupyter-lsp==1.2.0' \
       'jupyter-server-proxy==1.6.0' \
-      'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
       'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \

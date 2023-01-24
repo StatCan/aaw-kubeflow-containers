@@ -47,7 +47,6 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 RUN pip install --quiet \
       'jupyter-lsp==1.2.0' \
       'jupyter-server-proxy==1.6.0' \
-      'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
       'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
