@@ -30,7 +30,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'jupyterlab==3.5.3' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
@@ -233,7 +233,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'jupyterlab==3.5.3' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
