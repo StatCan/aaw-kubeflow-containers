@@ -96,7 +96,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Tensorflow
 RUN pip install --quiet \
-        'tensorflow-gpu' \
+        'tensorflow' \
         'keras' \
         'ipykernel==5.3.4' \
     && \
