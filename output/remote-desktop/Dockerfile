@@ -47,8 +47,6 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kfp==1.7.2' \
-      'kfp-server-api==1.7.1' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
