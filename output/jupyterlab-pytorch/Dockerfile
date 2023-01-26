@@ -133,12 +133,8 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
       'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
