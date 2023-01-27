@@ -1,6 +1,6 @@
 # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
 # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-FROM rocker/geospatial:4.0.3@sha256:9e00ab4fec7b38a0edbadb07e7554bf3b7fa34d15c6fe42522a09ae88d336219
+FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"

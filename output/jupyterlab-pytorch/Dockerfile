@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=9ed3b8de5de1
+ARG BASE_VERSION=ed2908bbb62e
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -23,12 +23,6 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
-
-# Python is downgraded because of ml-metadata
-RUN conda install -c conda-forge python=3.8.12 -y && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
-
 
 ###############################
 ###  docker-bits/1_CUDA-11.7.Dockerfile
@@ -125,14 +119,11 @@ RUN pip3 --no-cache-dir install --quiet \
       'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'PyYAML==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'jupyterlab==3.5.3' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kfp==1.7.2' \
-      'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
       'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
@@ -142,10 +133,8 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      'fire==0.3.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
@@ -285,7 +274,6 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 RUN pip install --quiet \
       'jupyter-lsp==1.2.0' \
       'jupyter-server-proxy==1.6.0' \
-      'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
       'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
@@ -329,7 +317,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'jupyterlab==3.5.3' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 

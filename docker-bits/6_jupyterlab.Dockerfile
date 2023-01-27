@@ -47,7 +47,6 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 RUN pip install --quiet \
       'jupyter-lsp==1.2.0' \
       'jupyter-server-proxy==1.6.0' \
-      'kubeflow-kale==0.6.1' \
       'jupyterlab_execute_time==2.0.1' \
       'markupsafe==2.0.1' \
       'git+https://github.com/betatim/vscode-binder' \
@@ -91,7 +90,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'Pillow==9.0.1' \
       'notebook==6.4.1' \
       'pyyaml==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'jupyterlab==3.5.3' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
