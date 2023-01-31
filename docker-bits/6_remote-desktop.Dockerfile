@@ -368,7 +368,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 ENV HOME=/home/$NB_USER
 
 ARG NO_VNC_VERSION=1.3.0
-ARG NO_VNC_SHA=ee8f91514c9ce9f4054d132f5f97167ee87d9faa6630379267e569d789290336
+ARG NO_VNC_SHA=c646a66470eb299f4659ddd712d3280a7dda735c97fe3b8467a7a6ba4b426c28
 RUN pip3 install --force websockify==0.9.0 \
     && wget https://github.com/novnc/noVNC/archive/refs/tags/v${NO_VNC_VERSION}.tar.gz -O /tmp/novnc.tar.gz \
     && echo "${NO_VNC_SHA} /tmp/novnc.tar.gz" | sha256sum -c - \
