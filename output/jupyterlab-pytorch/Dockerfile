@@ -385,7 +385,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system
+    conda config --remove channels conda-forge --system && \
+    conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
+    conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
