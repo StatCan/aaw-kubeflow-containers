@@ -371,7 +371,6 @@ RUN \
     npm install -g --unsafe-perm vsce@1.103.1 && \
     cd i18n/vscode-language-pack-fr && \
     vsce package && \
-    ls -a && \
     bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
     mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
     cd ../../../ && \
