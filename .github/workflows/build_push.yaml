@@ -82,7 +82,6 @@ jobs:
     steps:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
-      ## REVERT LATER
       run: | 
         echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
