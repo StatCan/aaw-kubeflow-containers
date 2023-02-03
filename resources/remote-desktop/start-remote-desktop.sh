@@ -51,7 +51,7 @@ if [ -n "${KF_LANG}" ]; then
         export LANGUAGE="fr_FR.UTF-8"
         export LC_ALL="fr_FR.UTF-8"
         #Set the locale for vscode
-        #mkdir -p $HOME/.vscode
+        mkdir -p $HOME/.vscode
         jq -e '.locale="fr"' $HOME/.vscode/argv.json > /tmp/file.json.tmp
         mv /tmp/file.json.tmp $HOME/.vscode/argv.json
     fi
@@ -137,6 +137,9 @@ echo "novnc has been configured, launching novnc"
 
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
+
+echo "list vs code extensions"
+code --list-extensions
 
 nginx
 wait
