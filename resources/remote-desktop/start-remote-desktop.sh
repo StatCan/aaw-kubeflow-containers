@@ -138,8 +138,5 @@ echo "novnc has been configured, launching novnc"
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
-echo "list vs code extensions"
-code --list-extensions
-
 nginx
 wait
