@@ -3,10 +3,8 @@
 # Stops script execution if a command has an error
 set -e
 
-#Will want to update this version of VSCode
-SHA256=6c117339d77b9593ad20b6eb4601ff7d0fd468922550d500edf07e3071e9a041
-VERSION=1.46.0
-
+SHA256=0e84eedab8b1fca67597c03303185504d40da93b4953d73c7f4ef8a8df8e3eb8
+VERSION=1.74.3
 
 if [ ! -f "/usr/share/code/code" ]; then
     echo "Installing VS Code. Please wait..."
