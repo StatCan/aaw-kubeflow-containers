@@ -72,6 +72,7 @@ jobs:
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
           - remote-desktop
+          - webscraping
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:

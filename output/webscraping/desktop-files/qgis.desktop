@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=QGIS Desktop
+Comment=
+Exec=/usr/bin/qgis %F
+Icon=qgis
+Path=
+Terminal=false
+StartupNotify=false

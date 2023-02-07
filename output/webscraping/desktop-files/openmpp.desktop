@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=OpenM++
+Exec=/opt/openmpp/bin/ompp_ui_linux.sh
+Icon=/resources/openmpp.png
+Terminal=false
+Categories=Development;

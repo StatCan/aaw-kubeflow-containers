@@ -1,141 +1,3 @@
-
-###############################
-###  docker-bits/0_Rocker.Dockerfile
-###############################
-
-# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
-# images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
-
-# For compatibility with docker stacks
-ARG NB_USER="jovyan"
-ARG HOME=/home/$NB_USER
-ENV NB_UID="1000"
-ENV NB_GID="100"
-
-USER root
-ENV PATH="/home/jovyan/.local/bin/:${PATH}"
-
-#Fix-permissions
-COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
-RUN chmod u+x /usr/bin/fix-permissions
-
-RUN apt-get update --yes \
-    && apt-get install --yes python3-pip tini language-pack-fr \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN /rocker_scripts/install_shiny_server.sh \
-    && pip3 install jupyter \
-    && rm -rf /var/lib/apt/lists/* 
-
-# Users should install R packages in their home directory
-RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
-
-###############################
-###  docker-bits/3_Kubeflow.Dockerfile
-###############################
-
-USER root
-
-# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'PyYAML==5.4.1' \
-      'jupyterlab==3.5.3' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-metadata==0.2.0' \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
-      'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-###############################
-###  docker-bits/4_CLI.Dockerfile
-###############################
-
-USER root
-
-# Dependencies
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
-      'jq' \
-      'less' \
-      'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
-      'zip' \
-      'zsh' \
-      'wget' \
-      'curl' \
-  && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
-
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
-
-ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
-
-ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
-ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
-
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/396/trino-cli-396-executable.jar
-ARG TRINO_SHA=438347986c281a2cf419131ce999d6db1bb37488b141f68de62325e1cbbc927a
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
-
-# Install OpenJDK-8
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jre && \
-    apt-get clean && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# kubectl, mc, and az
-RUN curl -LO "${KUBECTL_URL}" \
-    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
-    && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
-  && \
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
-    && bash InstallAzureCLIDeb \
-    && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" \
-  && \
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok" \
-  && \
-    wget -q "${TRINO_URL}" -O /tmp/trino-original \
-    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
-    && echo "trinocli: ok" \
-    && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
-
-###############################
-###  docker-bits/6_remote-desktop.Dockerfile
-###############################
-
 USER root
 
 ENV NB_UID=1000
@@ -317,10 +179,6 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
 #Install geckodriver
 RUN wget --quiet https://github.com/mozilla/geckodriver/releases/download/v0.28.0/geckodriver-v0.28.0-linux64.tar.gz -O /tmp/geckodriver-v0.28.0-linux64.tar.gz && \
     tar -xf /tmp/geckodriver-v0.28.0-linux64.tar.gz -C /tmp/ && \
@@ -364,8 +222,8 @@ RUN \
     bsdtar -xf ms-python-release.vsix extension && \
     rm ms-python-release.vsix && \
     mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-    VS_FRENCH_VERSION="1.68.3" && \
-    VS_LOCALE_REPO_VERSION="1.68.3" && \
+    VS_FRENCH_VERSION="1.50.2" && \
+    VS_LOCALE_REPO_VERSION="1.50" && \
     git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git && \
     cd vscode-loc && \
     npm install -g --unsafe-perm vsce@1.103.1 && \
@@ -382,58 +240,30 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-#QGIS
-COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
-COPY remote-desktop/qgis.sh $RESOURCES_PATH/qgis.sh
-RUN /bin/bash $RESOURCES_PATH/qgis.sh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists
-
-#R-Studio
-RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists
-
-#Libre office
-RUN add-apt-repository ppa:libreoffice/ppa && \
-    apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
-    apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
-    clean-layer.sh
-
-#Install PSPP
-RUN /bin/bash $RESOURCES_PATH/pspp.sh \
-    && clean-layer.sh
-
-#Install Minio
-COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
-COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
-
-# Install OpenM++
-ENV OMPP_VERSION="1.9.9"
-# IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ENV OMPP_PKG_DATE="20220505"
-ARG SHA256ompp=479a9a79356a4dd331bcc6cf00110d40feecd6c37f004156f9b4739db2e8ae90
-# OpenM++ environment settings
-ENV OMPP_USER=$NB_USER
-ENV OMPP_GROUP=100
-ENV OMPP_UID=$NB_UID
-ENV OMPP_GID=$NB_GID
-# OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
-    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
-    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
-    && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
-    && mkdir /opt/openmpp \
-    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
-    && chown -R $NB_UID:$NB_GID /opt/openmpp
-# Copy the desktop icon into place for the web UI
-COPY openmpp.png $RESOURCES_PATH/openmpp.png
-
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
 COPY French/vscode/argv.json /home/$NB_USER/.vscode/
 COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
+
+# Chrome driver and webscraping utilities.
+RUN apt-get update && apt-get install -y software-properties-common --no-install-recommends \
+            && apt-get install -y chromium-browser chromium-browser-l10n chromium-codecs-ffmpeg \
+            && ln -s /usr/bin/chromium-browser /usr/bin/google-chrome \
+            && apt-get clean \
+            && rm -rf /var/lib/apt/lists/*
+
+# We cannot pin a chrome installation so this has to be updated every now and then.
+RUN wget -q https://chromedriver.storage.googleapis.com/100.0.4896.60/chromedriver_linux64.zip && \
+	unzip chromedriver_linux64.zip && \
+	rm chromedriver_linux64.zip && \
+	chmod a+x chromedriver && \
+	mv chromedriver /usr/bin/ && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - && \
+	echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+
+RUN sudo apt-get update  && \
+	sudo apt-get -y install google-chrome-stable && \
+	sudo apt-get clean 
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
@@ -446,23 +276,15 @@ RUN \
     clean-layer.sh
 
 #MISC Configuration Area
-#Copy over desktop files. First location is dropdown, then desktop, and make them executable
-COPY /desktop-files /usr/share/applications
-COPY /desktop-files $RESOURCES_PATH/desktop-files
+COPY /desktop-files/chrome.desktop /desktop-files/code.desktop /desktop-files/firefox.desktop $RESOURCES_PATH/desktop-files/
+COPY /desktop-files/chrome.desktop /desktop-files/code.desktop /desktop-files/firefox.desktop /usr/share/applications/
 
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
-
 #Removal area
-#Extra Icons, Chrome is only for webscraping image
-RUN rm /usr/share/applications/exo-mail-reader.desktop && \
-    rm /usr/share/applications/chrome.desktop && \
-    rm $RESOURCES_PATH/desktop-files/chrome.desktop
-
+#Extra Icons
+RUN rm /usr/share/applications/exo-mail-reader.desktop
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
 
@@ -472,15 +294,6 @@ RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
-ENV NB_NAMESPACE=$NB_NAMESPACE
-# https://github.com/novnc/websockify/issues/413#issuecomment-664026092
-RUN apt-get update && apt-get install --yes websockify \
-    && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
-    && clean-layer.sh
-
-#ADD . /opt/install
-#RUN pwd && echo && ls /opt/install
-
 
 
 #Install Miniconda
@@ -503,6 +316,13 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
+
+#Install packages necessary for webscraping by default
+RUN /opt/conda/bin/pip --no-cache-dir install --quiet \
+      'selenium' \
+      'webdriver-manager' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
@@ -532,48 +352,3 @@ RUN apt-get update --yes \
 RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
-
-###############################
-###  docker-bits/7_remove_vulnerabilities.Dockerfile
-###############################
-
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
-# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
-# This line of code should be removed once a solution or better alternative is found.
-USER root
-RUN apt-get update --yes \
-    && dpkg -r --force-depends libpdfbox-java \
-    && rm -rf /var/lib/apt/lists/*
-USER $NB_USER
-
-###############################
-###  docker-bits/∞_CMD_remote-desktop.Dockerfile
-###############################
-
-# Configure container startup
-
-USER root
-
-WORKDIR /home/$NB_USER
-EXPOSE 8888
-COPY start-remote-desktop.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
-COPY trino-wrapper.sh /usr/local/bin/trino
-RUN chmod +x /usr/local/bin/trino
-RUN chsh -s /bin/bash $NB_USER
-
-# Add --user to all pip install calls and point pip to Artifactory repository
-COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
-
-# Point conda to Artifactory repository
-COPY .condarc /tmp/.condarc
-RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
-
-# Point R to Artifactory repository
-COPY Rprofile.site /tmp/Rprofile.site
-RUN cat /tmp/Rprofile.site >> /usr/local/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
-
-USER $NB_USER
-ENTRYPOINT ["tini", "--"]
-CMD ["start-remote-desktop.sh"]
