@@ -259,7 +259,7 @@ RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
 #Libre office
 RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
+    apt-get install -y libreoffice-calc libreoffice-writer libreoffice-gtk3 && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
     clean-layer.sh
 
