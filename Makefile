@@ -10,9 +10,8 @@
 # Tests/some elements of makefile strongly inspired by
 # https://github.com/jupyter/docker-stacks/blob/master/Makefile
 
-# Don't mind me it's for testing
 # The docker-stacks tag
-DOCKER-STACKS-UPSTREAM-TAG := 7285848c0a11
+DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
 
 tensorflow-CUDA := 11.7
 pytorch-CUDA    := 11.7
