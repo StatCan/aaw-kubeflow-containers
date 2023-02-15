@@ -143,6 +143,7 @@ RUN \
         subversion \
         jed \
         git \
+        git-gui \
         # odbc drivers
         unixodbc unixodbc-dev \
         # Image support
