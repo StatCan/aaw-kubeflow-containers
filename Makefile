@@ -118,6 +118,7 @@ sas:
 	cp -r resources/sas/. $(OUT)/$@
 
 	$(CAT) \
+		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
