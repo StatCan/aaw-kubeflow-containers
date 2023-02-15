@@ -119,7 +119,12 @@ sas:
 
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/5_DB-Drivers.Dockerfile \
+		$(SRC)/6_jupyterlab.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
