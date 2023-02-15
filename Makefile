@@ -118,7 +118,7 @@ sas:
 	cp -r resources/sas/. $(OUT)/$@
 
 	$(CAT) \
-		$(SRC)/0_cpu.Dockerfile \
+		$(SRC)/0_cpu_sas.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \

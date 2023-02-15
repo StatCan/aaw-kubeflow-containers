@@ -1,6 +1,6 @@
 
 ###############################
-###  docker-bits/0_cpu.Dockerfile
+###  docker-bits/0_cpu_sas.Dockerfile
 ###############################
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
@@ -9,6 +9,8 @@
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION=ed2908bbb62e
+
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -265,7 +267,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 ###############################
 
 # SAS
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
+# FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 # FROM jupyter/datascience-notebook:$BASE_VERSION This layer already exists in 0_cpu... why is it here again?
 
 # Already exists in 6_jupyterlab
