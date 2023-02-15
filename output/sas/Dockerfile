@@ -266,34 +266,34 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 
 # SAS
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM jupyter/datascience-notebook:$BASE_VERSION
+# FROM jupyter/datascience-notebook:$BASE_VERSION This layer already exists in 0_cpu... why is it here again?
 
-
-RUN pip install --quiet \
-    'git+https://github.com/betatim/vscode-binder'
+# Already exists in 6_jupyterlab
+# RUN pip install --quiet \
+#     'git+https://github.com/betatim/vscode-binder'
 
 
 # Install vscode
-ARG VSCODE_VERSION=4.5.1
-ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
-ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+# ARG VSCODE_VERSION=4.5.1
+# ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
+# ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
-USER root
+# USER root
 
 
-ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV XDG_DATA_HOME=/etc/share
-ENV SERVICE_URL=https://extensions.coder.com/api
+# ENV CS_DISABLE_FILE_DOWNLOADS=1
+# ENV XDG_DATA_HOME=/etc/share
+# ENV SERVICE_URL=https://extensions.coder.com/api
 
-RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
-    && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
-    && apt-get update \
-    && apt-get install -y nginx \
-    && dpkg -i ./vscode.deb \
-    && rm ./vscode.deb \
-    && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $HOME/.local/share \
-    && mkdir -p $XDG_DATA_HOME/code-server/extensions
+# RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
+#     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+#     && apt-get update \
+#     && apt-get install -y nginx \
+#     && dpkg -i ./vscode.deb \
+#     && rm ./vscode.deb \
+#     && rm -f /etc/apt/sources.list.d/vscode.list \
+#     && mkdir -p $HOME/.local/share \
+#     && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
 # Install Quarto
 ARG QUARTO_VERSION=1.2.247
@@ -308,14 +308,14 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
 
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
-COPY languagepacks.json $XDG_DATA_HOME/code-server/
-ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
+# COPY languagepacks.json $XDG_DATA_HOME/code-server/
+# ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN code-server --install-extension ms-python.python@2022.16.1 && \
-    code-server --install-extension REditorSupport.r@2.7.0 && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
-    code-server --install-extension quarto.quarto@1.53.1 && \
-    fix-permissions $XDG_DATA_HOME
+# RUN code-server --install-extension ms-python.python@2022.16.1 && \
+#     code-server --install-extension REditorSupport.r@2.7.0 && \
+#     code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+#     code-server --install-extension quarto.quarto@1.53.1 && \
+#     fix-permissions $XDG_DATA_HOME
 
 RUN groupadd -g 1337 supergroup && \
     useradd -m sas && \
@@ -367,14 +367,22 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
-ENV DEFAULT_JUPYTER_URL=/lab
+# set in 6_jupyterlab
+# ENV DEFAULT_JUPYTER_URL=/lab 
 
 # SAS GConfid
 
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
-# Jupyter-resession-proxy
+# Enable X command on SAS Studio
+COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
+
+###############################
+###  docker-bits/6_rstudio.Dockerfile
+###############################
+
+# install rstudio-server
 ARG RSTUDIO_VERSION=2022.07.2-576
 ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
 RUN apt-get update && \
@@ -399,6 +407,7 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
+
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_19' \
@@ -416,13 +425,13 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.1.0' && \
+      'jupyter-rsession-proxy==2.1.0' \
+      'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
-RUN pip install jupyter-rsession-proxy
 
-# Enable X command on SAS Studio
-COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
+ENV DEFAULT_JUPYTER_URL="/rstudio"
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
