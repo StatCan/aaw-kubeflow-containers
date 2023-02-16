@@ -101,8 +101,8 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
-# set in 6_jupyterlab
-# ENV DEFAULT_JUPYTER_URL=/lab 
+# Must be set in deepest image
+ENV DEFAULT_JUPYTER_URL=/lab 
 
 # SAS GConfid
 
