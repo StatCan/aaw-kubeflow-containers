@@ -365,8 +365,8 @@ RUN \
     bsdtar -xf ms-python-release.vsix extension && \
     rm ms-python-release.vsix && \
     mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-    VS_FRENCH_VERSION="1.68.3" && \
-    VS_LOCALE_REPO_VERSION="1.68.3" && \
+    VS_FRENCH_VERSION="1.75.0" && \
+    VS_LOCALE_REPO_VERSION="1.75.0" && \
     git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git && \
     cd vscode-loc && \
     npm install -g --unsafe-perm vsce@1.103.1 && \
