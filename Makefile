@@ -13,8 +13,8 @@
 # The docker-stacks tag
 DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
 
-TensorFlow-CUDA := 11.6.2
-PyTorch-CUDA    := 11.6.2
+tensorflow-CUDA := 11.6.2
+pytorch-CUDA    := 11.6.2
 
 # https://stackoverflow.com/questions/5917413/concatenate-multiple-files-but-include-filename-as-section-headers
 CAT := awk '(FNR==1){print "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\#\#\#  " FILENAME "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n"}1'
@@ -59,8 +59,8 @@ get-docker-stacks-upstream-tag:
 	@echo $(DOCKER-STACKS-UPSTREAM-TAG)
 
 generate-CUDA:
-	bash scripts/get-nvidia-stuff.sh $(TensorFlow-CUDA) > $(SRC)/1_CUDA-$(TensorFlow-CUDA).Dockerfile
-	bash scripts/get-nvidia-stuff.sh    $(PyTorch-CUDA) > $(SRC)/1_CUDA-$(PyTorch-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh $(tensorflow-CUDA := 11.6.2-CUDA) > $(SRC)/1_CUDA-$(tensorflow-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh    $(pytorch-CUDA) > $(SRC)/1_CUDA-$(pytorch-CUDA).Dockerfile
 
 generate-Spark:
 	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
