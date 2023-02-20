@@ -175,7 +175,6 @@ COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
-COPY argv.json $XDG_DATA_HOME/code-server/User/
 ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
 RUN code-server --install-extension ms-python.python@2022.16.1 && \
