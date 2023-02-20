@@ -1,7 +1,5 @@
 #!/bin/bash
 
-VERSION=11.7
-
 # Use an argument if available.
 if test -n "$1"; then
     VERSION=$1
@@ -14,7 +12,7 @@ fi
 
 REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist
 CUDNN=cudnn8
-OS=ubuntu18.04-x86_64
+OS=ubuntu1804
 
 cat <<EOF | grep -v '^\(FROM\|ARG IMAGE_NAME\|LABEL maintainer\)' # > 1_CUDA-$VERSION.Dockerfile
 # Cuda stuff for v$VERSION
