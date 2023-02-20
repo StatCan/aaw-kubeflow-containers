@@ -95,10 +95,13 @@ jobs:
 
     - uses: actions/checkout@master
 
+    - name: Echo disk usage before clean up
+      run: ./.github/scripts/echo_usage.sh
+
     - name: Free up all available disk space before building
       run: ./.github/scripts/cleanup_runner.sh
 
-    - name: Echo disk usage before start
+    - name: Echo disk usage before build start
       run: ./.github/scripts/echo_usage.sh
 
     - name: Get current notebook name
@@ -129,6 +132,9 @@ jobs:
     - name: Build image
       id: build-image
       run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    - name: Echo disk usage after build completion
+      run: ./.github/scripts/echo_usage.sh
 
     - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
       run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
