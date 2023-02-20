@@ -1,6 +1,20 @@
 
 
 # ------------------------------- MACROS ------------------------------- # 
+# macro to print a line of equals
+# (silly but works)
+printSeparationLine() {
+    str=${1:=}
+    num=${2:-80}
+    counter=1
+    output=""
+    while [ $counter -le $num ]
+    do
+        output="${output}${str}"
+        counter=$((counter+1))
+    done
+    echo "${output}"
+}
 # macro to compute available space
 # REF: https://unix.stackexchange.com/a/42049/60849
 # REF: https://stackoverflow.com/a/450821/408734
