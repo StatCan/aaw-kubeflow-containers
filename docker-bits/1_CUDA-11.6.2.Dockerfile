@@ -15,14 +15,7 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.6 brand=tesla,driver>=418,driver<419 brand=tes
 ENV NV_CUDA_CUDART_VERSION 11.6.55-1
 ENV NV_CUDA_COMPAT_PACKAGE cuda-compat-11-6
 
-
-ENV NVARCH sbsa
-ENV NVIDIA_REQUIRE_CUDA "cuda>=11.6"
-ENV NV_CUDA_CUDART_VERSION 11.6.55-1
-
-
 ARG TARGETARCH
-
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
@@ -32,8 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CUDA_VERSION 11.6.2
-
-RUN rm /etc/apt/sources.list.d/cuda.list
 
 # For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
 RUN apt-get update && apt-get install -y --no-install-recommends \
