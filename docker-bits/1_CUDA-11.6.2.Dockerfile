@@ -15,7 +15,9 @@ ENV NVIDIA_REQUIRE_CUDA "cuda>=11.6 brand=tesla,driver>=418,driver<419 brand=tes
 ENV NV_CUDA_CUDART_VERSION 11.6.55-1
 ENV NV_CUDA_COMPAT_PACKAGE cuda-compat-11-6
 
+
 ARG TARGETARCH
+
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
@@ -39,7 +41,6 @@ RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
 ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
 
-COPY NGC-DL-CONTAINER-LICENSE /
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES all
@@ -102,10 +103,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-mark hold ${NV_LIBCUBLAS_PACKAGE_NAME} ${NV_LIBNCCL_PACKAGE_NAME}
 
 # Add entrypoint items
-COPY entrypoint.d/ /opt/nvidia/entrypoint.d/
-COPY nvidia_entrypoint.sh /opt/nvidia/
 ENV NVIDIA_PRODUCT_NAME="CUDA"
-ENTRYPOINT ["/opt/nvidia/nvidia_entrypoint.sh"]
 
 ###########################
 ### CudNN

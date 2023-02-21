@@ -14,7 +14,7 @@ REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist
 CUDNN=cudnn8
 OS=ubuntu1804
 
-cat <<EOF | grep -v '^\(FROM\|ARG IMAGE_NAME\|LABEL maintainer\)' # > 1_CUDA-$VERSION.Dockerfile
+cat <<EOF | grep -v '^\(FROM\|COPY\|ENTRYPOINT\|ARG IMAGE_NAME\|LABEL maintainer\)' # > 1_CUDA-$VERSION.Dockerfile
 # Cuda stuff for v$VERSION
 
 ## $REPO/$VERSION/$OS/base/Dockerfile
