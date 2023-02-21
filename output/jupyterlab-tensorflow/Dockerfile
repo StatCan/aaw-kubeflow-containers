@@ -63,6 +63,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ENV CUDA_VERSION 11.6.2
 
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+
 # For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-cudart-11-6=${NV_CUDA_CUDART_VERSION} \
