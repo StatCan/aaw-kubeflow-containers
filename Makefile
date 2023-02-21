@@ -59,7 +59,7 @@ get-docker-stacks-upstream-tag:
 	@echo $(DOCKER-STACKS-UPSTREAM-TAG)
 
 generate-CUDA:
-	bash scripts/get-nvidia-stuff.sh $(tensorflow-CUDA := 11.6.2-CUDA) > $(SRC)/1_CUDA-$(tensorflow-CUDA).Dockerfile
+	bash scripts/get-nvidia-stuff.sh $(tensorflow-CUDA) > $(SRC)/1_CUDA-$(tensorflow-CUDA).Dockerfile
 	bash scripts/get-nvidia-stuff.sh    $(pytorch-CUDA) > $(SRC)/1_CUDA-$(pytorch-CUDA).Dockerfile
 
 generate-Spark:
