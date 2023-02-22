@@ -119,6 +119,9 @@ ENV NV_LIBCUBLAS_PACKAGE ${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
 
 ARG TARGETARCH
 
+RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu/pool/main/libu/liburcu/liburcu6_0.11.1-2_amd64.deb \
+    && dpkg -i /tmp/liburcu6_0.11.1-2_amd64.deb \
+    && rm /tmp/liburcu6_0.11.1-2_amd64.deb
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
@@ -128,9 +131,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NV_LIBCUBLAS_PACKAGE} \
     ${NV_LIBNCCL_PACKAGE} \
     && rm -rf /var/lib/apt/lists/*
-
-# Keep apt from auto upgrading the cublas and nccl packages. See https://gitlab.com/nvidia/container-images/cuda/-/issues/88
-RUN apt-mark hold ${NV_LIBCUBLAS_PACKAGE_NAME} ${NV_LIBNCCL_PACKAGE_NAME}
 
 # Add entrypoint items
 ENV NVIDIA_PRODUCT_NAME="CUDA"
