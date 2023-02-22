@@ -234,8 +234,6 @@ RUN apt-get update && \
     # jupyterlab-archive
     # jupyterlab-spellchecker
     # jupyterlab-spreadsheet
-# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
 ARG VSCODE_VERSION=4.10.0
@@ -292,7 +290,7 @@ RUN pip install --quiet \
     pip install \
       'jupyterlab-git==0.30.0' \
       'jupyterlab-lsp==3.6.0' \
-      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+      'jupyterlab-language-pack-fr-FR' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
