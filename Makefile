@@ -11,7 +11,7 @@
 # https://github.com/jupyter/docker-stacks/blob/master/Makefile
 
 # The docker-stacks tag
-DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
+DOCKER-STACKS-UPSTREAM-TAG := cde8b4389ade
 
 tensorflow-CUDA := 11.7
 pytorch-CUDA    := 11.7

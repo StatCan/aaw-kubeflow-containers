@@ -3,7 +3,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=ed2908bbb62e
+ARG BASE_VERSION=cde8b4389ade
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
