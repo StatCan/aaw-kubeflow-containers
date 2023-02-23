@@ -77,6 +77,10 @@ RUN apt-get update && \
   && \
     rm -rf /var/lib/apt/lists/*
 
+#update libssl3 package to fix CVE
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.8_amd64.deb && \
+  sudo dpkg -i libssl3_3.0.2-0ubuntu1.8_amd64.deb
+
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
 ARG KUBECTL_VERSION=v1.15.10
@@ -277,8 +281,8 @@ RUN apt-get update && \
     apt-get update && apt-get -y dist-upgrade
 
 #install libssl1.1 dependency for rstudio-server on ubuntu 22.04
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
-    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb && \
+    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.17_amd64.deb
 
 RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
