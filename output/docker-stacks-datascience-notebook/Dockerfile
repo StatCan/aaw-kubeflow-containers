@@ -1,4 +1,4 @@
-FROM jupyter/datascience-notebook:cde8b4389ade
+FROM jupyter/datascience-notebook:1840ddc9dc35
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
