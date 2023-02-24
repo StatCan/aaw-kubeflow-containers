@@ -5,4 +5,7 @@ USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+
+
+RUN pip install cryptography==39.0.1
 USER $NB_USER
