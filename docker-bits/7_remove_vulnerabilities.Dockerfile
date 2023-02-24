@@ -6,6 +6,6 @@ RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
 
-
-RUN pip install cryptography==39.0.1
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+RUN pip install --force-reinstall cryptography==39.0.1
 USER $NB_USER

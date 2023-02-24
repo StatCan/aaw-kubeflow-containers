@@ -361,7 +361,7 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN pip install cryptography==39.0.1
+RUN pip install --force-reinstall cryptography==39.0.1
 USER $NB_USER
 
 ###############################
