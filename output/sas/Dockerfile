@@ -410,12 +410,7 @@ RUN apt-get update --yes \
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
 # Install Tensorflow
-RUN pip install --force-reinstall --user \
-        'pyOpenSSL==23.0.0' \
-        'cryptography' \
-    && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+RUN pip install --force-reinstall --user pyOpenSSL==23.0.0
 USER $NB_USER
 
 ###############################
