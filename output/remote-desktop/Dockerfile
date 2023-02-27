@@ -547,6 +547,7 @@ RUN apt-get update --yes \
 # Install Tensorflow
 RUN pip install --force-reinstall --user \
         'pyOpenSSL==23.0.0' \
+        'cryptography' \
     && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
