@@ -49,3 +49,9 @@ RUN python3 -m pip install \
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
