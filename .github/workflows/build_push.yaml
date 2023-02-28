@@ -169,7 +169,6 @@ jobs:
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-      
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
@@ -200,3 +199,14 @@ jobs:
       if: steps.should-i-push.outputs.boolean == 'true'
       run: |
         make push/${{ matrix.notebook }} DEFAULT_REPO=$REGISTRY
+
+    #https://github.com/rtCamp/action-slack-notify
+    # Should not have this trigger on PRs I would assume
+    - name: Slack Notification Job failure
+      if: ${{ failure() }} && github.event_name != 'pull_request'
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: aaw-kubeflow-containers-notifications
+        SLACK_TITLE: 'ERROR ERROR: SELF DESTRUCTING GITHUB ACTION' 
+        SLACK_MESSAGE: 'Build has failed!'
