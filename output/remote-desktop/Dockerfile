@@ -545,7 +545,7 @@ RUN apt-get update --yes \
 
 USER $NB_USER
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
-RUN pip install --force-reinstall pyOpenSSL==23.0.0
+RUN conda install --yes --quiet --force-reinstall -c conda-forge pyopenssl==23.0.0
 
 ###############################
 ###  docker-bits/∞_CMD_remote-desktop.Dockerfile
