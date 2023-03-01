@@ -58,7 +58,7 @@ if [ -n "${KF_LANG}" ]; then
 fi
 
 echo "language has been configured"
-
+touch /home/$NB_USER/.hushlogin
 
 # Configure KFP multi-user
 if [ -n "${NB_NAMESPACE}" ]; then
