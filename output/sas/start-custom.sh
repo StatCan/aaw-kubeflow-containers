@@ -28,6 +28,7 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     cat /tmp/shell_helpers.sh >> /home/$NB_USER/.bashrc
     cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
+    touch /home/$NB_USER/.hushlogin
 fi
 
 echo "shell has been configured"
