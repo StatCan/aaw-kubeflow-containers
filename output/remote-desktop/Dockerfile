@@ -531,6 +531,12 @@ RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+#Has to install as user $NB_USER for the remote desktop image
+RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
+USER root
+
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
