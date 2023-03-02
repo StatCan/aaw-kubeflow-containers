@@ -53,12 +53,6 @@ jobs:
             echo 'output folder and docker-bits/resources out of sync!'
             exit 1
         fi
-    - name: Slack Notification
-      if: failure() && github.event_name=='schedule'
-      uses: act10ns/slack@v1
-      with: 
-        status: failure
-        message: Build failed. https://github.com/StatCan/aaw-kubeflow-containers/actions/runs/${{github.run_id}}
         
   build-push:
     env:
