@@ -58,7 +58,7 @@ jobs:
       uses: act10ns/slack@v1
       with: 
         status: failure
-        message: Build failed. https://github.com/StatCan/disclosure-vetting-application/actions/runs/${{github.run_id}}
+        message: Build failed. https://github.com/StatCan/aaw-kubeflow-containers/actions/runs/${{github.run_id}}
         
   build-push:
     env:
@@ -214,4 +214,4 @@ jobs:
       uses: act10ns/slack@v1
       with: 
         status: failure
-        message: Build failed. https://github.com/StatCan/disclosure-vetting-application/actions/runs/${{github.run_id}}
+        message: Build failed. https://github.com/StatCan/aaw-kubeflow-containers/actions/runs/${{github.run_id}}
