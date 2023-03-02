@@ -31,6 +31,9 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     touch /home/$NB_USER/.hushlogin
 fi
 
+export VISUAL="/usr/bin/nano"
+export EDITOR="$VISUAL"
+
 echo "shell has been configured"
 
 # create .profile
