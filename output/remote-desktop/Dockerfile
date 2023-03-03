@@ -383,7 +383,7 @@ RUN \
     && fix-permissions $XDG_DATA_HOME \
     && clean-layer.sh
 
-USER jovyan
+USER $NB_USER
 RUN code —-user-data-dir $VS_CODE_DIR/data —-extensions-dir $VS_CODE_DIR/extensions
 USER root
 
