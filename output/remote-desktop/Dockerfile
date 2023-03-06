@@ -141,8 +141,8 @@ USER root
 ENV NB_UID=1000
 ENV NB_GID=100
 ENV XDG_DATA_HOME=/etc/share
-ENV VS_CODE_DIR=$XDG_DATA_HOME/code
-ENV VSCODE_EXTENSIONS=$VS_CODE_DIR/extensions
+ENV VSCODE_DIR=$XDG_DATA_HOME/code
+ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
@@ -361,13 +361,13 @@ ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 RUN \
     cd $RESOURCES_PATH \
     && mkdir -p $HOME/.local/share \
-    && mkdir -p $VS_CODE_DIR/extensions \
+    && mkdir -p $VSCODE_DIR/extensions \
     && VS_PYTHON_VERSION="2020.5.86806" \
     && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
     && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
     && bsdtar -xf ms-python-release.vsix extension \
     && rm ms-python-release.vsix \
-    && mv extension $VS_CODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
+    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
     && VS_FRENCH_VERSION="1.68.3" \
     && VS_LOCALE_REPO_VERSION="1.68.3" \
     && git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
@@ -376,7 +376,7 @@ RUN \
     && cd i18n/vscode-language-pack-fr \
     && vsce package \
     && bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension \
-    && mv extension $VS_CODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
+    && mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
     && cd ../../../ \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
     && rm -fr vscode-loc \
