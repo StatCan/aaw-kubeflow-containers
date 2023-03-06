@@ -34,7 +34,9 @@ on:
       - 'opened'
       - 'synchronize'
       - 'reopened'
-
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  
 jobs:
   # Any checks that run pre-build
   pre-build-checks:
@@ -51,7 +53,7 @@ jobs:
             echo 'output folder and docker-bits/resources out of sync!'
             exit 1
         fi
-
+        
   build-push:
     env:
       REGISTRY_NAME: k8scc01covidacr
@@ -200,3 +202,10 @@ jobs:
       if: steps.should-i-push.outputs.boolean == 'true'
       run: |
         make push/${{ matrix.notebook }} DEFAULT_REPO=$REGISTRY
+        
+    - name: Slack Notification
+      if: failure() && github.event_name=='schedule'
+      uses: act10ns/slack@v1
+      with: 
+        status: failure
+        message: Build failed. https://github.com/StatCan/aaw-kubeflow-containers/actions/runs/${{github.run_id}}

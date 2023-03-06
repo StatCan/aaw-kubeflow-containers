@@ -24,6 +24,12 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
@@ -221,7 +227,8 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site

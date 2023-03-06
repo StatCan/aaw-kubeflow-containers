@@ -24,6 +24,12 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
@@ -150,12 +156,10 @@ RUN apt-get update && \
     # jupyterlab-archive
     # jupyterlab-spellchecker
     # jupyterlab-spreadsheet
-# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=4.5.1
-ARG VSCODE_SHA=f43e217706044aea9d8ae4f8ce1185c3ebfadf980bcf668ab94ecccb70e99709
+ARG VSCODE_VERSION=4.10.0
+ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -182,7 +186,7 @@ ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
 RUN code-server --install-extension ms-python.python@2022.16.1 && \
     code-server --install-extension REditorSupport.r@2.7.0 && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.68.3 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
     code-server --install-extension quarto.quarto@1.53.1 && \
     fix-permissions $XDG_DATA_HOME
 
@@ -208,7 +212,7 @@ RUN pip install --quiet \
     pip install \
       'jupyterlab-git==0.30.0' \
       'jupyterlab-lsp==3.6.0' \
-      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+      'jupyterlab-language-pack-fr-FR' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
@@ -293,7 +297,8 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
