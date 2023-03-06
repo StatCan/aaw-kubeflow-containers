@@ -4,7 +4,7 @@ ENV NB_UID=1000
 ENV NB_GID=100
 ENV XDG_DATA_HOME=/etc/share
 ENV VS_CODE_DIR=$XDG_DATA_HOME/code
-ENV VSCODE_EXTENSIONS=${VS_CODE_DIR}/extensions
+ENV VSCODE_EXTENSIONS=$VS_CODE_DIR/extensions
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
