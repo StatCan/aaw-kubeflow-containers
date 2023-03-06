@@ -383,7 +383,7 @@ RUN \
     && fix-permissions $XDG_DATA_HOME \
     && clean-layer.sh
 
-RUN code --no-sandbox —-user-data-dir $VS_CODE_DIR/data —-extensions-dir $VS_CODE_DIR/extensions
+RUN code --extensions-dir $VS_CODE_DIR/extensions --no-sandbox --user-data-dir $VS_CODE_DIR/data
 
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
