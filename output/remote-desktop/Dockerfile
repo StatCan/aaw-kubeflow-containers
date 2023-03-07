@@ -538,6 +538,7 @@ COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
 USER root
 
+
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
