@@ -130,6 +130,7 @@ RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu
     && rm /tmp/liburcu6_0.11.1-2_amd64.deb
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    nvidia-cuda-toolkit \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-6=${NV_NVTX_VERSION} \
