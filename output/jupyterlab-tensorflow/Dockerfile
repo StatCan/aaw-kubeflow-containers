@@ -139,6 +139,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NV_LIBNCCL_PACKAGE} \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get remove libnvidia-compute-495 -y
+
 # Add entrypoint items
 ENV NVIDIA_PRODUCT_NAME="CUDA"
 
