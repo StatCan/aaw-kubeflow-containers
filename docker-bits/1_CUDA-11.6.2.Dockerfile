@@ -94,6 +94,7 @@ RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu
     && rm /tmp/liburcu6_0.11.1-2_amd64.deb
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    cuda-compat-11-6=510.47.03 \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-6=${NV_NVTX_VERSION} \
@@ -102,7 +103,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NV_LIBNCCL_PACKAGE} \
     && rm -rf /var/lib/apt/lists/*
 
-ENV CUDA_DIR "/usr/lib/cuda"
+ENV CUDA_DIR "/usr/local/cuda"
 ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:$CUDA_DIR"
 ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
 
