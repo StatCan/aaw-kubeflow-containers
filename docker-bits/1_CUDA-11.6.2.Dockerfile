@@ -32,15 +32,17 @@ ENV CUDA_VERSION 11.6.2
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-cudart-11-6=${NV_CUDA_CUDART_VERSION} \
     ${NV_CUDA_COMPAT_PACKAGE} \
+    cuda-toolkit-11-6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Required for nvidia-docker v1
 RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
     && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
 
+ENV CUDA_DIR "/usr/local/cuda"
 ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
-
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$CUDA_DIR
+ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES all
@@ -94,7 +96,6 @@ RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu
     && rm /tmp/liburcu6_0.11.1-2_amd64.deb
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-compat-11-6=510.47.03 \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-6=${NV_NVTX_VERSION} \
@@ -102,10 +103,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ${NV_LIBCUBLAS_PACKAGE} \
     ${NV_LIBNCCL_PACKAGE} \
     && rm -rf /var/lib/apt/lists/*
-
-ENV CUDA_DIR "/usr/local/cuda"
-ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:$CUDA_DIR"
-ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
 
 # Add entrypoint items
 ENV NVIDIA_PRODUCT_NAME="CUDA"
