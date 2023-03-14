@@ -32,7 +32,6 @@ ENV CUDA_VERSION 11.6.2
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-cudart-11-6=${NV_CUDA_CUDART_VERSION} \
     ${NV_CUDA_COMPAT_PACKAGE} \
-    cuda-toolkit-11-6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Required for nvidia-docker v1
@@ -97,6 +96,7 @@ RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
+    cuda-toolkit-11-6 \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-6=${NV_NVTX_VERSION} \
     libcusparse-11-6=${NV_LIBCUSPARSE_VERSION} \
