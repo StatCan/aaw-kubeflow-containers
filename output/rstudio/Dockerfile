@@ -47,7 +47,7 @@ RUN pip3 --no-cache-dir install --quiet \
 
 RUN pip3 --no-cache-dir install --quiet \
       'kubeflow-metadata==0.3.1' \
-      'kubeflow-pytorchjob==0.3.1' \
+      'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==7.1.13' \
       'joblib==1.2.0' \
