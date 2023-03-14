@@ -179,7 +179,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --quiet \
         'tensorflow' \
         'keras' \
-        'ipykernel==5.3.4' \
+        'ipykernel==6.21.3' \
     && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -192,25 +192,25 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'PyYAML==5.4.1' \
-      'jupyterlab==3.5.3' && \
+      'pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'PyYAML==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-metadata==0.2.0' \
-      'kubeflow-pytorchjob==0.1.3' \
+      'kubeflow-metadata==0.3.1' \
+      'kubeflow-pytorchjob==0.3.1' \
       'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
+      'minio==7.1.13' \
       'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' && \
+      'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
@@ -292,7 +292,7 @@ RUN curl -LO "${KUBECTL_URL}" \
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
+    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -346,26 +346,26 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp==1.2.0' \
-      'jupyter-server-proxy==1.6.0' \
-      'jupyterlab_execute_time==2.0.1' \
-      'markupsafe==2.0.1' \
+      'jupyter-lsp==1.5.1' \
+      'jupyter-server-proxy==3.2.2' \
+      'jupyterlab_execute_time==2.3.1' \
+      'markupsafe==2.1.2' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipywidgets==7.6.3' \
-      'ipympl==0.7.0' \
-      'jupyter_contrib_nbextensions==0.5.1' \
+      'ipywidgets==8.0.4' \
+      'ipympl==0.9.3' \
+      'jupyter_contrib_nbextensions==0.7.0' \
       'nb_conda_kernels==2.3.1' \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.4.0' \
+      'jupyter-dash==0.4.2' \
     && \
     pip install \
-      'jupyterlab-git==0.30.0' \
-      'jupyterlab-lsp==3.6.0' \
+      'jupyterlab-git==0.41.0' \
+      'jupyterlab-lsp==3.10.2' \
       'jupyterlab-language-pack-fr-FR' \
     && \
     conda clean --all -f -y && \
@@ -388,10 +388,10 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'pyyaml==5.4.1' \
-      'jupyterlab==3.5.3' && \
+      'pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'pyyaml==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
