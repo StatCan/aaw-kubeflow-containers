@@ -556,15 +556,11 @@ RUN pip3 --no-cache-dir install --quiet \
       'setuptools==67.6.0' \
       'pyjwt==2.6.0' \
       'oauthlib==3.2.2' \
-      'nbconvert==7.2.10' \
       'mpmath==1.3.0' \
-      'mako==1.2.4' \
       'lxml==4.9.2' \
-      'notebook-shim==0.2.2'\
-      'jupyter-server==2.4.0' \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
-      
+
 USER $NB_USER
 
 ###############################
