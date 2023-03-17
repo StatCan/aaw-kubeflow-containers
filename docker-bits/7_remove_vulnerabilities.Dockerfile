@@ -6,6 +6,8 @@ RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
 
+# Forcibly upgrade packages to patch vulnerabilities
+# See https://github.com/StatCan/daaas-private/issues/58#issuecomment-1471863092 for more details.
 RUN pip3 --no-cache-dir install --quiet \
       'wheel==0.40.0' \
       'setuptools==67.6.0' \

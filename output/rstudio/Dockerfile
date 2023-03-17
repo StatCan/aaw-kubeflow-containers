@@ -38,7 +38,7 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
+      'Pillow==9.4.0' \
       'notebook==6.5.3' \
       'PyYAML==6.0' \
       'jupyterlab==3.6.1' && \
@@ -46,7 +46,6 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'ml-metadata==1.12.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
       'minio==7.1.13' \
@@ -211,6 +210,8 @@ RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
 
+# Forcibly upgrade packages to patch vulnerabilities
+# See https://github.com/StatCan/daaas-private/issues/58#issuecomment-1471863092 for more details.
 RUN pip3 --no-cache-dir install --quiet \
       'wheel==0.40.0' \
       'setuptools==67.6.0' \
