@@ -74,9 +74,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
     && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
 
+ENV CUDA_DIR "/usr/local/cuda"
 ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64
-
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$CUDA_DIR
+ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
 
 # nvidia-container-runtime
 ENV NVIDIA_VISIBLE_DEVICES all
@@ -130,8 +131,8 @@ RUN wget -q -O /tmp/liburcu6_0.11.1-2_amd64.deb http://mirrors.kernel.org/ubuntu
     && rm /tmp/liburcu6_0.11.1-2_amd64.deb
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    nvidia-cuda-toolkit \
     cuda-libraries-11-6=${NV_CUDA_LIB_VERSION} \
+    cuda-toolkit-11-6 \
     ${NV_LIBNPP_PACKAGE} \
     cuda-nvtx-11-6=${NV_NVTX_VERSION} \
     libcusparse-11-6=${NV_LIBCUSPARSE_VERSION} \
