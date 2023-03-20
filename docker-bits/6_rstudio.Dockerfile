@@ -26,15 +26,15 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN conda install --quiet --yes \
-      'r-rodbc==1.3_19' \
-      'r-tidymodels==0.1.3' \
-      'r-arrow==4.0.0' \
-      'r-aws.s3==0.3.21' \
+      'r-rodbc==1.3_20' \
+      'r-tidymodels==1.0.0' \
+      'r-arrow==10.0.1' \
+      'r-aws.s3==0.3.22' \
       'r-catools==1.18.2' \
-      'r-hdf5r==1.3.3' \
-      'r-odbc==1.3.3' \
-      'r-sf==1.0_4' \
-      'r-e1071==1.7_8' \
+      'r-hdf5r==1.3.8' \
+      'r-odbc==1.3.4' \
+      'r-sf==1.0_7' \
+      'r-e1071==1.7_13' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
