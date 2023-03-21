@@ -362,12 +362,12 @@ RUN \
     cd $RESOURCES_PATH \
     && mkdir -p $HOME/.local/share \
     && mkdir -p $VSCODE_DIR/extensions \
-    && VS_PYTHON_VERSION="2020.5.86806" \
-    && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
-    && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
-    && bsdtar -xf ms-python-release.vsix extension \
-    && rm ms-python-release.vsix \
-    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
+#    && VS_PYTHON_VERSION="2020.5.86806" \
+#    && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
+#    && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
+#    && bsdtar -xf ms-python-release.vsix extension \
+#    && rm ms-python-release.vsix \
+#    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
     #&& VS_FRENCH_VERSION="1.68.3" \
     #&& VS_LOCALE_REPO_VERSION="1.68.3" \
     #&& git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
