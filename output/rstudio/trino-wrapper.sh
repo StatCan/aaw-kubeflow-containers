@@ -16,6 +16,7 @@ then
     else
         SERVER=https://trino.aaw.cloud.statcan.ca
     fi
+fi
 
 # Trino client pass in server, user, access token and additional options the user can configures
 trino-original --server $SERVER --debug --external-authentication "$@"
