@@ -22,3 +22,6 @@ RUN pip3 --no-cache-dir install --quiet \
       'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+COPY aaw-suspend-server.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
