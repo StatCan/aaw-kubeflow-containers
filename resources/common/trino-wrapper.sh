@@ -1,6 +1,6 @@
 #!/bin/bash
-# Dev cluster
 if [[ $KUBERNETES_SERVICE_HOST =~ ".131." ]];
+then
     # Use protb trino instance
     if [ -d "/etc/protb" ]
     then
@@ -8,8 +8,8 @@ if [[ $KUBERNETES_SERVICE_HOST =~ ".131." ]];
     else
         SERVER=https://trino.aaw-dev.cloud.statcan.ca
     fi
-then
 # Prod cluster
+else
     if [ -d "/etc/protb" ]
     then
         SERVER=https://trino-protb.aaw.cloud.statcan.ca
@@ -17,6 +17,5 @@ then
         SERVER=https://trino.aaw.cloud.statcan.ca
     fi
 fi
-
 # Trino client pass in server, user, access token and additional options the user can configures
 trino-original --server $SERVER --debug --external-authentication "$@"
