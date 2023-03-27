@@ -306,7 +306,7 @@ COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
 RUN \
     cd ${RESOURCES_PATH} && \
-    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.13.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
+    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
     rm /tmp/tigervnc.tar.gz && \
