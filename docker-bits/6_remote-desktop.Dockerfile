@@ -72,6 +72,9 @@ RUN \
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
     apt-get install -y --no-install-recommends gftp && \
+    # Perf monitoring tools
+    apt-get install -y --no-install-recommends linux-tools-$(uname -r) && \
+    apt-get install -y --no-install-recommends linux-tools-generic && \
     # Cleanup
     # Large package: gnome-user-guide 50MB app-install-data 50MB
     apt-get remove -y app-install-data gnome-user-guide && \
@@ -303,7 +306,7 @@ COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
 RUN \
     cd ${RESOURCES_PATH} && \
-    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
+    wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.13.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
     rm /tmp/tigervnc.tar.gz && \
@@ -339,10 +342,29 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-#ADD . /opt/install
-#RUN pwd && echo && ls /opt/install
+# Install AMD AOCC
+ARG AOCC_VERSION=4.0.0
+ARG AOCC_SHA256=2729ec524cbc927618e479994330eeb72df5947e90cfcc49434009eee29bf7d4
+RUN cd ${RESOURCES_PATH} && \
+    wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+    echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
+    tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
+    cd ./aocc-compiler-${AOCC_VERSION} && \
+    sh ./install.sh && \
+    rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+    clean-layer.sh
 
-
+# Install AMD AOCL
+ARG AOCL_VERSION=4.0
+ARG AOCL_SHA256=8a249e727beb8005639b4887074e1ea75020267ed1ac25520876a7ad21d0f4f6
+RUN cd ${RESOURCES_PATH} && \
+    wget --quiet https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-${AOCL_VERSION}.tar.gz -O /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
+    echo "${AOCL_SHA256} /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" | sha256sum -c - && \
+    tar xf /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar -C ./ && \
+    cd ./aocl-linux-aocc-${AOCL_VERSION} && \
+    sh ./install.sh -t /home/jovyan/aocl/${AOCL_VERSION} && \
+    rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
+    clean-layer.sh
 
 #Install Miniconda
 #Has to be appended, else messes with qgis
