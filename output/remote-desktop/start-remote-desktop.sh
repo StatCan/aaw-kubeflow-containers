@@ -138,5 +138,7 @@ echo "novnc has been configured, launching novnc"
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
+bash /home/jovyan/amd/aocl/4.0/setenv_aocl.sh ilp64
+
 nginx
 wait
