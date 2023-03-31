@@ -74,7 +74,7 @@ RUN \
     apt-get install -y --no-install-recommends gftp && \
     # Perf monitoring tools
     apt-get install -y --no-install-recommends linux-tools-$(uname -r) && \
-    apt-get install -y --no-install-recommends linux-tools-generic && \
+    apt-get install -y --no-install-recommends linux-cloud-tools-$(uname -r) && \
     # Cleanup
     # Large package: gnome-user-guide 50MB app-install-data 50MB
     apt-get remove -y app-install-data gnome-user-guide && \
@@ -362,7 +362,8 @@ RUN cd ${RESOURCES_PATH} && \
     echo "${AOCL_SHA256} /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" | sha256sum -c - && \
     tar xf /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar -C ./ && \
     cd ./aocl-linux-aocc-${AOCL_VERSION} && \
-    /bin/bash ./install.sh -t /opt/aocl/${AOCL_VERSION} && \
+    /bin/bash ./install.sh -t /opt/amd/aocl && \
+    cp setenv_aocl.sh /opt/amd/aocl/${AOCL_VERSION} &&\
     rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
     clean-layer.sh
 
