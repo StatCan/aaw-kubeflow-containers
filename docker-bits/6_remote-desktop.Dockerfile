@@ -292,8 +292,8 @@ COPY openmpp.png $RESOURCES_PATH/openmpp.png
 
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
-COPY French/vscode/argv.json $HOME/VSCode-linux-x64/data
-COPY French/vscode/languagepacks.json $HOME/VSCode-linux-x64/data/user-data
+COPY French/vscode/argv.json /usr/share/VSCode-linux-x64/data
+COPY French/vscode/languagepacks.json /usr/share/VSCode-linux-x64/data/user-data
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
