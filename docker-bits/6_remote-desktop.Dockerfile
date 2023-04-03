@@ -220,7 +220,6 @@ ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 ENV VSCODE_EXTENSIONS=$HOME/VSCode-linux-x64/data/extensions
 RUN \
     cd $HOME/VSCode-linux-x64/data \
-    && mkdir -p extensions \
     && VS_PYTHON_VERSION="2020.5.86806" \
     && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
     && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
@@ -239,9 +238,9 @@ RUN \
     && cd ../../../ \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
     && rm -fr vscode-loc \
-    && npm uninstall -g vsce \
-    && fix-permissions $VSCODE_EXTENSIONS\
-    && clean-layer.sh
+    && npm uninstall -g vsce 
+#    && fix-permissions $VSCODE_EXTENSIONS\
+#    && clean-layer.sh
     
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key

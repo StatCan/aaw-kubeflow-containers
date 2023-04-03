@@ -13,6 +13,8 @@ if [ ! -f "/home/jovyan/VSCode-linux-x64" ]; then
     echo "${SHA256} ./vscode.tar.gz" | sha256sum -c -
     tar -xzf ./vscode.tar.gz
     mkdir VSCode-linux-x64/data
+    mkdir VSCode-linux-x64/data/extensions
+    mkdir VSCode-linux-x64/data/user-data
     rm ./vscode.tar.gz
 else
     echo "VS Code is already installed"
