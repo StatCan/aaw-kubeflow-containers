@@ -3,8 +3,8 @@ Name=Visual Studio Code
 Comment=Code Editing. Redefined.
 Comment[fr]=Modification du code. Redéfini
 GenericName=Text Editor
-Exec=/home/jovyan/VSCode-linux-x64/code --no-sandbox --unity-launch %F
-Icon=/home/jovyan/VSCode-linux-x64/resources/app/resources/linux/code.png
+Exec=/usr/share/VSCode-linux-x64/code --no-sandbox --unity-launch %F
+Icon=/usr/share/VSCode-linux-x64/resources/app/resources/linux/code.png
 Type=Application
 StartupNotify=false
 StartupWMClass=Code
@@ -17,5 +17,5 @@ X-Desktop-File-Install-Version=0.23
 
 [Desktop Action new-empty-window]
 Name=New Empty Window
-Exec=/home/jovyan/VSCode-linux-x64/code --no-sandbox --new-window %F
-Icon=/home/jovyan/VSCode-linux-x64/resources/app/resources/linux/code.png
+Exec=/usr/share/VSCode-linux-x64/code --no-sandbox --new-window %F
+Icon=/usr/share/VSCode-linux-x64/resources/app/resources/linux/code.png

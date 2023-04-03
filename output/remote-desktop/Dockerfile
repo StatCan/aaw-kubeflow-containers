@@ -355,9 +355,9 @@ RUN apt-get update --yes \
 # https://github.com/cdr/code-server/issues/171
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-ENV VSCODE_EXTENSIONS=$HOME/VSCode-linux-x64/data/extensions
+ENV VSCODE_EXTENSIONS=/usr/share/VSCode-linux-x64/data/extensions
 RUN \
-    cd $HOME/VSCode-linux-x64/data \
+    cd /usr/share/VSCode-linux-x64/data \
     && VS_PYTHON_VERSION="2020.5.86806" \
     && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
     && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
