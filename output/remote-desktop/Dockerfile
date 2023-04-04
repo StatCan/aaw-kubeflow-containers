@@ -377,7 +377,7 @@ RUN \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
     && rm -fr vscode-loc \
     && npm uninstall -g vsce \
-    && fix-permissions /usr/share/code \
+    && fix-permissions /usr/share/code/data \
     && clean-layer.sh
     
 #QGIS
