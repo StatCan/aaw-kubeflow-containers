@@ -217,9 +217,9 @@ RUN apt-get update --yes \
 # https://github.com/cdr/code-server/issues/171
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-ENV VSCODE_EXTENSIONS=/usr/share/code/data/extensions
+ENV VSCODE_EXTENSIONS=/resources/code/data/extensions
 RUN \
-    cd /usr/share/code/data \
+    cd /resources/code/data \
     && VS_PYTHON_VERSION="2020.5.86806" \
     && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
     && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
@@ -239,7 +239,7 @@ RUN \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
     && rm -fr vscode-loc \
     && npm uninstall -g vsce \
-    && fix-permissions /usr/share/code/data \
+    && fix-permissions /resources/code/data \
     && clean-layer.sh
     
 #QGIS
@@ -292,8 +292,8 @@ COPY openmpp.png $RESOURCES_PATH/openmpp.png
 
 #Copy over french config for vscode
 #Both of these are required to have the language pack be recognized on install.
-COPY French/vscode/argv.json /usr/share/code/data
-COPY French/vscode/languagepacks.json /usr/share/code/data/user-data
+COPY French/vscode/argv.json /resources/code/data
+COPY French/vscode/languagepacks.json /resources/code/data/user-data
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31

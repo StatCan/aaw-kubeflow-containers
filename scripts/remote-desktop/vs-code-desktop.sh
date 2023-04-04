@@ -3,12 +3,12 @@
 # Stops script execution if a command has an error
 set -e
 
-SHA256=4203ec7e216841ea97aedc4c77ae9973b7aa827734eb03fb165108cbb2cf11c1
-VERSION=1.76.2
+SHA256=0e84eedab8b1fca67597c03303185504d40da93b4953d73c7f4ef8a8df8e3eb8
+VERSION=1.74.3
 
-if [ ! -f "/usr/share/code/code" ]; then
+if [ ! -f "/resources/code/code" ]; then
     echo "Installing VS Code. Please wait..."
-    cd /usr/share
+    cd $RESOURCES_PATH
     wget -q https://update.code.visualstudio.com/${VERSION}/linux-x64/stable -O ./vscode.tar.gz
     echo "${SHA256} ./vscode.tar.gz" | sha256sum -c -
     tar -xf ./vscode.tar.gz --no-same-owner
