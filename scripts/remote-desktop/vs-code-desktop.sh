@@ -11,6 +11,7 @@ if [ ! -f "/resources/code/code" ]; then
     cd $RESOURCES_PATH
     wget -q https://update.code.visualstudio.com/${VERSION}/linux-x64/stable -O ./vscode.tar.gz
     echo "${SHA256} ./vscode.tar.gz" | sha256sum -c -
+    apt-get update
     tar -xf ./vscode.tar.gz --no-same-owner
     mv VSCode-linux-x64 code
     mkdir code/data

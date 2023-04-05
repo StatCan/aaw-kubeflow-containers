@@ -61,7 +61,7 @@ jobs:
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
-      TRIVY_VERSION: "v0.31.3"
+      TRIVY_VERSION: "v0.39.0"
     strategy:
       fail-fast: false
       matrix:
