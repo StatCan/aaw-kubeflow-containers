@@ -3,7 +3,7 @@
 # Stops script execution if a command has an error
 set -e
 
-SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+SHA256=c5d1cba85d23a0c96c4d97f89432598c143888e0005a2962fbd1b6be75d74ca4
 VERSION=1.74.3
 
 if [ ! -f "/resources/code/code" ]; then
