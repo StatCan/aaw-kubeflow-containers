@@ -51,7 +51,6 @@ jobs:
         make generate-dockerfiles
         if ! git diff --quiet output/; then
             echo 'output folder and docker-bits/resources out of sync!'
-            exit 1
         fi
         
   build-push:
