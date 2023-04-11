@@ -138,7 +138,10 @@ echo "novnc has been configured, launching novnc"
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
-bash /opt/amd/aocl/4.0/setenv_aocl.sh ilp64
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if lscpu | grep -q AuthenticAMD ; then
+  bash /opt/amd/aocl/4.0/setenv_aocl.sh lp64
+fi
 
 nginx
 wait

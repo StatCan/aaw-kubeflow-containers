@@ -230,9 +230,6 @@ RUN \
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
     apt-get install -y --no-install-recommends gftp && \
-    # Perf monitoring tools
-    apt-get install -y --no-install-recommends linux-tools-$(uname -r) && \
-    apt-get install -y --no-install-recommends linux-cloud-tools-$(uname -r) && \
     # Cleanup
     # Large package: gnome-user-guide 50MB app-install-data 50MB
     apt-get remove -y app-install-data gnome-user-guide && \
