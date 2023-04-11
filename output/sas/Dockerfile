@@ -316,6 +316,8 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
+COPY .Rprofile $HOME
+
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
