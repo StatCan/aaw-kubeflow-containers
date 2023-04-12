@@ -2,3 +2,10 @@ local({
     r <- list("dev-cran-remote" = "http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/dev-cran-remote/")
     options(repos = r)
 })
+
+base_dir <- "/home/jovyan/R/"
+package_dir <- paste0(base_dir, "r-packages-", R.Version()$major,".",R.Version()$minor)
+
+dir.create(file.path(package_dir))
+
+.libPaths(new = package_dir)
