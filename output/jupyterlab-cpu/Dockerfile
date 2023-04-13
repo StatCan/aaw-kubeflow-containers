@@ -338,7 +338,7 @@ COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Add .Rprofile to /home/jovyan
-COPY .Rprofile /tmp/.Rprofile
+COPY Rprofile /tmp/.Rprofile
 RUN cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
 
 # Point conda to Artifactory repository
