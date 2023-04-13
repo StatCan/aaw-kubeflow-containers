@@ -498,7 +498,7 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 # Add .Rprofile to /home/jovyan
 COPY Rprofile /tmp/.Rprofile
 RUN cat /tmp/.Rprofile >> /home/jovyan/.Rprofile && rm /tmp/.Rprofile
-RUN echo "base_dir <- "/home/jovyan/.R/" >> /home/jovyan/.Rprofile \
+RUN echo "base_dir <- \"/home/jovyan/.R/\" >> /home/jovyan/.Rprofile \
     && echo "package_dir <- paste0(base_dir, \"r-packages-\", R.Version()$major, \".\", R.Version()$minor)" >> /home/jovyan/.Rprofile \
     && echo "dir.create(file.path(package_dir))" >> /home/jovyan/.Rprofile \
     && echo ".libPaths(new = package_dir)" >> /home/jovyan/.Rprofile
