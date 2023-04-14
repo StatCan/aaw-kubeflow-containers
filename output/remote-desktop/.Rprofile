@@ -1,6 +1,5 @@
-base_dir <- "/home/jovyan/.R/"
-package_dir <- paste0(base_dir, "r-packages-", R.Version()$major, ".", R.Version()$minor)
+package_dir <- paste0("~/R/", "r-packages-", R.Version()$major, ".", R.Version()$minor)
 
-dir.create(file.path(package_dir))
+dir.create(package_dir, recursive = T, showWarnings = F)
 
 .libPaths(new = package_dir)
