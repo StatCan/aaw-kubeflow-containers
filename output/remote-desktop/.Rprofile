@@ -8,7 +8,6 @@ dir.create(package_dir, recursive = T, showWarnings = F)
 
 .libPaths(new = package_dir)
 
-
 if !(find.package("markdown", quiet = TRUE)) {
     install.packages("markdown", lib = package_dir)
 }
