@@ -41,3 +41,9 @@ fi
 
 # Activate the base python venv by default revert for now, is causing issues
 # source $HOME/base-python-venv/bin/activate
+
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if [ lscpu | grep -q AuthenticAMD ] && [ -d "${AOCL_PATH}" ] ; then
+  echo "AuthenticAMD platform detected"
+  bash ${AOCL_PATH}/setenv_aocl.sh lp64
+fi
