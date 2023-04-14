@@ -1,4 +1,3 @@
-NB_USER <- Sys.getenv("NB_USER")
 
 home_dir <- paste0("/home/", NB_USER)
 
