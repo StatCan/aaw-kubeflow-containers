@@ -6,7 +6,3 @@ package_dir <- paste0(home_dir, "/R/", "r-packages-", R.Version()$major, ".", R.
 dir.create(package_dir, recursive = T, showWarnings = F)
 
 .libPaths(new = package_dir)
-
-if !(find.package("markdown", quiet = TRUE)) {
-    install.packages("markdown")
-}
