@@ -3,7 +3,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=9ed3b8de5de1
+ARG BASE_VERSION=ed2908bbb62e
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -14,7 +14,8 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
-# Python is downgraded because of ml-metadata
-RUN conda install -c conda-forge python=3.8.12 -y && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER

@@ -30,7 +30,7 @@ def test_server_alive(container, http_client, url="http://localhost:8888"):
     assertion_expected_texts = [
         "<title>JupyterLab",
         "<title>Jupyter Notebook</title>",
-        "<title>RStudio:",
+        "<title>RStudio</title>",
         '<html lang="en" class="noVNC_loading">',  # Remote desktop
         '<html lang="fr" class="noVNC_loading">',  # Remote desktop
         '<span id="running_list_info">Currently running Jupyter processes</span>',

@@ -2,6 +2,9 @@ USER root
 
 ENV NB_UID=1000
 ENV NB_GID=100
+ENV XDG_DATA_HOME=/etc/share
+ENV VSCODE_DIR=$XDG_DATA_HOME/code
+ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
@@ -143,6 +146,7 @@ RUN \
         subversion \
         jed \
         git \
+        git-gui \
         # odbc drivers
         unixodbc unixodbc-dev \
         # Image support
@@ -217,33 +221,30 @@ RUN apt-get update --yes \
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 RUN \
-    cd $RESOURCES_PATH && \
-    mkdir -p $HOME/.vscode/extensions/ && \
-    # Install python extension - (newer versions are 30MB bigger)
-    VS_PYTHON_VERSION="2020.5.86806" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
-    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-    bsdtar -xf ms-python-release.vsix extension && \
-    rm ms-python-release.vsix && \
-    mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-    VS_FRENCH_VERSION="1.50.2" && \
-    VS_LOCALE_REPO_VERSION="1.50" && \
-    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git && \
-    cd vscode-loc && \
-    npm install -g --unsafe-perm vsce@1.103.1 && \
-    cd i18n/vscode-language-pack-fr && \
-    vsce package && \
-    bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
-    mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
-    cd ../../../ && \
+    cd $RESOURCES_PATH \
+    && mkdir -p $HOME/.local/share \
+    && mkdir -p $VSCODE_DIR/extensions \
+    && VS_PYTHON_VERSION="2020.5.86806" \
+    && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
+    && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
+    && bsdtar -xf ms-python-release.vsix extension \
+    && rm ms-python-release.vsix \
+    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
+    && VS_FRENCH_VERSION="1.68.3" \
+    && VS_LOCALE_REPO_VERSION="1.68.3" \
+    && git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
+    && cd vscode-loc \
+    && npm install -g --unsafe-perm vsce@1.103.1 \
+    && cd i18n/vscode-language-pack-fr \
+    && vsce package \
+    && bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension \
+    && mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
+    && cd ../../../ \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
-    rm -fr vscode-loc && \
-    npm uninstall -g vsce && \
-    # Fix permissions
-    fix-permissions $HOME/.vscode/extensions/ && \
-    # Cleanup
-    clean-layer.sh
-
+    && rm -fr vscode-loc \
+    && npm uninstall -g vsce \
+    && fix-permissions $XDG_DATA_HOME \
+    && clean-layer.sh
 
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
@@ -260,7 +261,7 @@ RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
 #Libre office
 RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
+    apt-get install -y libreoffice-calc libreoffice-writer libreoffice-gtk3 && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
     clean-layer.sh
 
@@ -332,7 +333,7 @@ RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
-
+ENV NB_NAMESPACE=$NB_NAMESPACE
 # https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
@@ -392,3 +393,10 @@ RUN apt-get update --yes \
 RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
+
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+#Has to install as user $NB_USER for the remote desktop image
+RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
+USER root
+

@@ -5,7 +5,7 @@
 
 # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
 # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-FROM rocker/geospatial:4.0.3@sha256:9e00ab4fec7b38a0edbadb07e7554bf3b7fa34d15c6fe42522a09ae88d336219
+FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"
@@ -39,31 +39,29 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'PyYAML==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'Pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'PyYAML==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kfp==1.7.2' \
-      'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
-      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
+      'minio==7.1.13' \
+      'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+COPY aaw-suspend-server.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -103,8 +101,13 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
-ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
+ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
+
+ARG ARGO_CLI_VERSION=v3.4.5
+ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
+ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
+
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
 
@@ -115,26 +118,39 @@ RUN apt-get update && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# kubectl, mc, and az
-RUN curl -LO "${KUBECTL_URL}" \
+
+RUN \ 
+    # kubectl
+    curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
+    # AzureCLI
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
   && \
+    # zsh
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
     && echo "oh-my-zsh: ok" \
   && \
+    # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
     && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+  && \
+    # argo cli
+    curl -sLO  ${ARGO_CLI_URL}\
+    && echo "${ARGO_CLI_SHA}  argo-linux-amd64.gz"  | sha256sum -c - \
+    && gunzip argo-linux-amd64.gz \
+    && chmod +x argo-linux-amd64 \
+    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && argo version
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile
@@ -144,6 +160,9 @@ USER root
 
 ENV NB_UID=1000
 ENV NB_GID=100
+ENV XDG_DATA_HOME=/etc/share
+ENV VSCODE_DIR=$XDG_DATA_HOME/code
+ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
 COPY clean-layer.sh /usr/bin/clean-layer.sh
 RUN chmod +x /usr/bin/clean-layer.sh
@@ -285,6 +304,7 @@ RUN \
         subversion \
         jed \
         git \
+        git-gui \
         # odbc drivers
         unixodbc unixodbc-dev \
         # Image support
@@ -359,33 +379,30 @@ RUN apt-get update --yes \
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 RUN \
-    cd $RESOURCES_PATH && \
-    mkdir -p $HOME/.vscode/extensions/ && \
-    # Install python extension - (newer versions are 30MB bigger)
-    VS_PYTHON_VERSION="2020.5.86806" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
-    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-    bsdtar -xf ms-python-release.vsix extension && \
-    rm ms-python-release.vsix && \
-    mv extension $HOME/.vscode/extensions/ms-python.python-$VS_PYTHON_VERSION && \
-    VS_FRENCH_VERSION="1.50.2" && \
-    VS_LOCALE_REPO_VERSION="1.50" && \
-    git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git && \
-    cd vscode-loc && \
-    npm install -g --unsafe-perm vsce@1.103.1 && \
-    cd i18n/vscode-language-pack-fr && \
-    vsce package && \
-    bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension && \
-    mv extension $HOME/.vscode/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION && \
-    cd ../../../ && \
+    cd $RESOURCES_PATH \
+    && mkdir -p $HOME/.local/share \
+    && mkdir -p $VSCODE_DIR/extensions \
+    && VS_PYTHON_VERSION="2020.5.86806" \
+    && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
+    && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
+    && bsdtar -xf ms-python-release.vsix extension \
+    && rm ms-python-release.vsix \
+    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
+    && VS_FRENCH_VERSION="1.68.3" \
+    && VS_LOCALE_REPO_VERSION="1.68.3" \
+    && git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
+    && cd vscode-loc \
+    && npm install -g --unsafe-perm vsce@1.103.1 \
+    && cd i18n/vscode-language-pack-fr \
+    && vsce package \
+    && bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension \
+    && mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
+    && cd ../../../ \
     # -fr option is required. git clone protects the directory and cannot delete it without -fr
-    rm -fr vscode-loc && \
-    npm uninstall -g vsce && \
-    # Fix permissions
-    fix-permissions $HOME/.vscode/extensions/ && \
-    # Cleanup
-    clean-layer.sh
-
+    && rm -fr vscode-loc \
+    && npm uninstall -g vsce \
+    && fix-permissions $XDG_DATA_HOME \
+    && clean-layer.sh
 
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
@@ -402,7 +419,7 @@ RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
 #Libre office
 RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y eog && \
-    apt-get install -y libreoffice-calc libreoffice-gtk3 && \
+    apt-get install -y libreoffice-calc libreoffice-writer libreoffice-gtk3 && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \
     clean-layer.sh
 
@@ -474,7 +491,7 @@ RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
-
+ENV NB_NAMESPACE=$NB_NAMESPACE
 # https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
@@ -535,6 +552,13 @@ RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+#Has to install as user $NB_USER for the remote desktop image
+RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
+USER root
+
+
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
@@ -546,6 +570,19 @@ USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+
+# Forcibly upgrade packages to patch vulnerabilities
+# See https://github.com/StatCan/daaas-private/issues/58#issuecomment-1471863092 for more details.
+RUN pip3 --no-cache-dir install --quiet \
+      'wheel==0.40.0' \
+      'setuptools==67.6.0' \
+      'pyjwt==2.6.0' \
+      'oauthlib==3.2.2' \
+      'mpmath==1.3.0' \
+      'lxml==4.9.2' \
+      && fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
 USER $NB_USER
 
 ###############################
@@ -560,11 +597,14 @@ WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-remote-desktop.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY trino-wrapper.sh /usr/local/bin/trino
+RUN chmod +x /usr/local/bin/trino
 RUN chsh -s /bin/bash $NB_USER
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Point conda to Artifactory repository
 COPY .condarc /tmp/.condarc

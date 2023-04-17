@@ -1,6 +1,6 @@
 
 ###############################
-###  docker-bits/0_cpu.Dockerfile
+###  docker-bits/0_cpu_sas.Dockerfile
 ###############################
 
 # Docker-stacks version tags (eg: `r-4.0.3`) are LIVE images that are frequently updated.  To avoid unexpected
@@ -8,7 +8,9 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=9ed3b8de5de1
+ARG BASE_VERSION=ed2908bbb62e
+
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -19,10 +21,11 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
-# Python is downgraded because of ml-metadata
-RUN conda install -c conda-forge python=3.8.12 -y && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -32,31 +35,29 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'PyYAML==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'Pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'PyYAML==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kfp==1.7.2' \
-      'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
-      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
+      'minio==7.1.13' \
+      'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+COPY aaw-suspend-server.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -96,8 +97,13 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
-ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
+ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
+
+ARG ARGO_CLI_VERSION=v3.4.5
+ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
+ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
+
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
 
@@ -108,26 +114,39 @@ RUN apt-get update && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# kubectl, mc, and az
-RUN curl -LO "${KUBECTL_URL}" \
+
+RUN \ 
+    # kubectl
+    curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
+    # AzureCLI
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
   && \
+    # zsh
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
     && echo "oh-my-zsh: ok" \
   && \
+    # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
     && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+  && \
+    # argo cli
+    curl -sLO  ${ARGO_CLI_URL}\
+    && echo "${ARGO_CLI_SHA}  argo-linux-amd64.gz"  | sha256sum -c - \
+    && gunzip argo-linux-amd64.gz \
+    && chmod +x argo-linux-amd64 \
+    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && argo version
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -136,7 +155,7 @@ RUN curl -LO "${KUBECTL_URL}" \
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
+    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -154,15 +173,18 @@ RUN apt-get update && \
     # jupyterlab-archive
     # jupyterlab-spellchecker
     # jupyterlab-spreadsheet
-# JupyterLab 3.0 introduced i18n and i10n which now allows us to have a fully official languages compliant image.
-# TODO: use official package jupyterlab-language-pack-fr-FR when released by Jupyterlab instead of the StatCan/jupyterlab-language-pack-fr_FR repo.
 
 # Install vscode
-ARG VSCODE_VERSION=3.10.2-nodownload-v3
-ARG VSCODE_SHA=62429655dedfdf5d19db88cf06da01c91413f402eae268ee3b90c041ebc6f622
-ARG VSCODE_URL=https://github.com/StatCan/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
+ARG VSCODE_VERSION=4.10.0
+ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
+ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
+
+ENV CS_DISABLE_FILE_DOWNLOADS=1
+ENV XDG_DATA_HOME=/etc/share
+ENV SERVICE_URL=https://extensions.coder.com/api
+
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
     && apt-get update \
@@ -170,49 +192,44 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p /etc/share/code-server/extensions
+    && mkdir -p $HOME/.local/share \
+    && mkdir -p $XDG_DATA_HOME/code-server/extensions
 
+COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 # Fix for VSCode extensions and CORS
-ENV XDG_DATA_HOME=/etc/share
-ENV SERVICE_URL=https://extensions.coder.com/api
-COPY vscode-overrides.json $XDG_DATA_HOME/code-server/User/settings.json
-ARG SHA256py=d32d8737858661451705faa9f176f8a1a03485b2d9984de40d45cc0403a3bcf4
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
+ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN VS_PYTHON_VERSION="2021.5.829140558" && \
-    wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix && \
-    echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - && \
-    code-server --install-extension ms-python-release.vsix && \
-    rm ms-python-release.vsix && \
-    code-server --install-extension ikuyadeu.r@1.6.6 && \
-    code-server --install-extension MS-CEINTL.vscode-language-pack-fr@1.56.2 && \
+RUN code-server --install-extension ms-python.python@2022.16.1 && \
+    code-server --install-extension REditorSupport.r@2.7.0 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
+    code-server --install-extension quarto.quarto@1.53.1 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
 RUN pip install --quiet \
-      'jupyter-lsp==1.2.0' \
-      'jupyter-server-proxy==1.6.0' \
-      'kubeflow-kale==0.6.1' \
-      'jupyterlab_execute_time==2.0.1' \
-      'markupsafe==2.0.1' \
+      'jupyter-lsp==1.5.1' \
+      'jupyter-server-proxy==3.2.2' \
+      'jupyterlab_execute_time==2.3.1' \
+      'markupsafe==2.1.2' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
     conda install --quiet --yes \
     -c conda-forge \
-      'ipywidgets==7.6.3' \
-      'ipympl==0.7.0' \
-      'jupyter_contrib_nbextensions==0.5.1' \
+      'ipywidgets==8.0.4' \
+      'ipympl==0.9.3' \
+      'jupyter_contrib_nbextensions==0.7.0' \
       'nb_conda_kernels==2.3.1' \
     && \
     conda install --quiet --yes \
       -c plotly \
-      'jupyter-dash==0.4.0' \
+      'jupyter-dash==0.4.2' \
     && \
     pip install \
-      'jupyterlab-git==0.30.0' \
-      'jupyterlab-lsp==3.6.0' \
-      'git+https://github.com/StatCan/jupyterlab-language-pack-fr_FR.git' \
+      'jupyterlab-git==0.41.0' \
+      'jupyterlab-lsp==3.10.2' \
+      'jupyterlab-language-pack-fr-FR' \
     && \
     conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
@@ -234,10 +251,10 @@ RUN pip install --quiet \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'pyyaml==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'pyyaml==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
@@ -249,13 +266,15 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
       'r-languageserver' \
       'python-lsp-server' \
     && \
-    jlpm add --dev \
-      'bash-language-server' \
-      'dockerfile-language-server-nodejs' \
-      'javascript-typescript-langserver' \
-      #'sql-language-server' \  #Removed due to vulnerabilities and lack of updates upstream on this
-      'unified-language-server' \
-      'yaml-language-server@0.18.0' \
+    npm i -g \
+    'bash-language-server'  \
+    'dockerfile-language-server-nodejs' \
+    'javascript-typescript-langserver' \
+    'unified-language-server' \
+    'yaml-language-server@0.18.0'  && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER  \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
@@ -268,21 +287,88 @@ ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
 
 ###############################
+###  docker-bits/6_rstudio.Dockerfile
+###############################
+
+# install rstudio-server
+ARG RSTUDIO_VERSION=2022.07.2-576
+ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
+RUN apt-get update && \
+    apt install -y --no-install-recommends software-properties-common dirmngr && \
+    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
+    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" && \
+    apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
+    apt-get update && apt-get -y dist-upgrade
+
+#install libssl1.1 dependency for rstudio-server on ubuntu 22.04
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
+    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+
+RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
+    echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
+    apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
+    rm /tmp/rstudio.deb && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    #Harden rstudio-server
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
+    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
+    echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
+    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
+ENV PATH=$PATH:/usr/lib/rstudio-server/bin
+
+# Install some default R packages
+RUN conda install --quiet --yes \
+      'r-rodbc==1.3_20' \
+      'r-tidymodels==1.0.0' \
+      'r-arrow==10.0.1' \
+      'r-aws.s3==0.3.22' \
+      'r-catools==1.18.2' \
+      'r-hdf5r==1.3.8' \
+      'r-odbc==1.3.4' \
+      'r-sf==1.0_7' \
+      'r-e1071==1.7_13' \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN python3 -m pip install \
+      'jupyter-rsession-proxy==2.1.0' \
+      'jupyter-shiny-proxy==1.1' && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
+# If using the docker bit in other Dockerfiles, this must get written over in a later layer
+ENV DEFAULT_JUPYTER_URL="/rstudio"
+ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+
+###############################
 ###  docker-bits/6_sas.Dockerfile
 ###############################
 
 # SAS
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM jupyter/datascience-notebook:$BASE_VERSION
 
-USER root
+# Install Quarto
+ARG QUARTO_VERSION=1.2.247
+ARG QUARTO_SHA=00012da73de3ac6e98715bff127679b12c567b9a56f906163c8997a9e9d7610b
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v1.2.247/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
-RUN useradd -m sas && \
+RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/quarto-${QUARTO_VERSION} && \
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
+
+RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
+    usermod -a -G supergroup sas && \
     groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
@@ -323,7 +409,16 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
-ENV DEFAULT_JUPYTER_URL=/lab
+# Must be set in deepest image
+ENV DEFAULT_JUPYTER_URL=/lab 
+
+# SAS GConfid
+
+COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
+COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
+
+# Enable X command on SAS Studio
+COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
@@ -336,6 +431,19 @@ USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+
+# Forcibly upgrade packages to patch vulnerabilities
+# See https://github.com/StatCan/daaas-private/issues/58#issuecomment-1471863092 for more details.
+RUN pip3 --no-cache-dir install --quiet \
+      'wheel==0.40.0' \
+      'setuptools==67.6.0' \
+      'pyjwt==2.6.0' \
+      'oauthlib==3.2.2' \
+      'mpmath==1.3.0' \
+      'lxml==4.9.2' \
+      && fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
 USER $NB_USER
 
 ###############################
@@ -353,7 +461,8 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
@@ -361,7 +470,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system
+    conda config --remove channels conda-forge --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]

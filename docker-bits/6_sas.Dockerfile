@@ -1,15 +1,26 @@
 # SAS
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM jupyter/datascience-notebook:$BASE_VERSION
 
-USER root
+# Install Quarto
+ARG QUARTO_VERSION=1.2.247
+ARG QUARTO_SHA=00012da73de3ac6e98715bff127679b12c567b9a56f906163c8997a9e9d7610b
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v1.2.247/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
-RUN useradd -m sas && \
+RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/quarto-${QUARTO_VERSION} && \
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
+
+RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
+    usermod -a -G supergroup sas && \
     groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
@@ -50,4 +61,13 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
-ENV DEFAULT_JUPYTER_URL=/lab
+# Must be set in deepest image
+ENV DEFAULT_JUPYTER_URL=/lab 
+
+# SAS GConfid
+
+COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
+COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
+
+# Enable X command on SAS Studio
+COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/

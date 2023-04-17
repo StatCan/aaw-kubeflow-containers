@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=9ed3b8de5de1
+ARG BASE_VERSION=ed2908bbb62e
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -24,10 +24,11 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
-# Python is downgraded because of ml-metadata
-RUN conda install -c conda-forge python=3.8.12 -y && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
+#updates package to fix CVE-2023-0286 https://github.com/StatCan/daaas-private/issues/57
+#TODO: Evaluate if this is still necessary when updating the base image
+RUN pip install --force-reinstall cryptography==39.0.1 && \
+   fix-permissions $CONDA_DIR && \
+   fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -37,31 +38,29 @@ USER root
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.0.1' \
-      'notebook==6.4.1' \
-      'PyYAML==5.4.1' \
-      'jupyterlab==3.0.17' && \
+      'Pillow==9.4.0' \
+      'notebook==6.5.3' \
+      'PyYAML==6.0' \
+      'jupyterlab==3.6.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 RUN pip3 --no-cache-dir install --quiet \
-      'kfp==1.7.2' \
-      'kfp-server-api==1.7.1' \
-      'ml-metadata==0.27.0' \
-      'kubeflow-metadata==0.2.0' \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
-      'minio==5.0.10' \
+      'minio==7.1.13' \
+      'joblib==1.2.0' \
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# kfp-azure-databricks needs to be run after kfp
 RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.3.1' \
-      'git+https://github.com/kubeflow/pipelines@1d86111d8f152d3ed7506ea59cee1bfbc28abbf9#egg=kfp-azure-databricks&subdirectory=samples/contrib/azure-samples/kfp-azure-databricks' && \
+      'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+COPY aaw-suspend-server.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -101,8 +100,13 @@ ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
 
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/377/trino-cli-377-executable.jar
-ARG TRINO_SHA=e81935c3611e2a6c7c2f64720addf5724df235e180919eae31b1b817c925c3ef
+ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
+ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
+
+ARG ARGO_CLI_VERSION=v3.4.5
+ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
+ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
+
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
 
@@ -113,26 +117,39 @@ RUN apt-get update && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# kubectl, mc, and az
-RUN curl -LO "${KUBECTL_URL}" \
+
+RUN \ 
+    # kubectl
+    curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
+    # AzureCLI
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
   && \
+    # zsh
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
     && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
     && echo "oh-my-zsh: ok" \
   && \
+    # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
     && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original
+    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+  && \
+    # argo cli
+    curl -sLO  ${ARGO_CLI_URL}\
+    && echo "${ARGO_CLI_SHA}  argo-linux-amd64.gz"  | sha256sum -c - \
+    && gunzip argo-linux-amd64.gz \
+    && chmod +x argo-linux-amd64 \
+    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && argo version
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -141,7 +158,7 @@ RUN curl -LO "${KUBECTL_URL}" \
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.30' && \
+    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -151,10 +168,20 @@ RUN apt-get update && \
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=1.4.1103
-ARG SHA256=552baf1bbfd98fc36a3f63c430cce3ceb16dd41de723a535fa27d254ff6afa62
+ARG RSTUDIO_VERSION=2022.07.2-576
+ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
 RUN apt-get update && \
-    curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
+    apt install -y --no-install-recommends software-properties-common dirmngr && \
+    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
+    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" && \
+    apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
+    apt-get update && apt-get -y dist-upgrade
+
+#install libssl1.1 dependency for rstudio-server on ubuntu 22.04
+RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
+    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+
+RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
@@ -168,28 +195,27 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN conda install --quiet --yes \
-      'r-rodbc==1.3_19' \
-      'r-tidymodels==0.1.3' \
-      'r-arrow==4.0.0' \
-      'r-aws.s3==0.3.21' \
+      'r-rodbc==1.3_20' \
+      'r-tidymodels==1.0.0' \
+      'r-arrow==10.0.1' \
+      'r-aws.s3==0.3.22' \
       'r-catools==1.18.2' \
-      'r-hdf5r==1.3.3' \
-      'r-odbc==1.3.3' \
-      'r-sf==1.0_4' \
-      'r-e1071==1.7_8' \
+      'r-hdf5r==1.3.8' \
+      'r-odbc==1.3.4' \
+      'r-sf==1.0_7' \
+      'r-e1071==1.7_13' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'git+https://github.com/blairdrummond/jupyter-rsession-proxy#egg=jupyter-rsession-proxy' \
+      'jupyter-rsession-proxy==2.1.0' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-RUN chown $NB_USER:users /var/lib/rstudio-server/rstudio.sqlite
-
+# If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
 
@@ -204,6 +230,19 @@ USER root
 RUN apt-get update --yes \
     && dpkg -r --force-depends libpdfbox-java \
     && rm -rf /var/lib/apt/lists/*
+
+# Forcibly upgrade packages to patch vulnerabilities
+# See https://github.com/StatCan/daaas-private/issues/58#issuecomment-1471863092 for more details.
+RUN pip3 --no-cache-dir install --quiet \
+      'wheel==0.40.0' \
+      'setuptools==67.6.0' \
+      'pyjwt==2.6.0' \
+      'oauthlib==3.2.2' \
+      'mpmath==1.3.0' \
+      'lxml==4.9.2' \
+      && fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+
 USER $NB_USER
 
 ###############################
@@ -221,7 +260,8 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
@@ -229,7 +269,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system
+    conda config --remove channels conda-forge --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]

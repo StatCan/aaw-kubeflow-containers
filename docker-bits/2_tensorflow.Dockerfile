@@ -1,8 +1,8 @@
 # Install Tensorflow
 RUN pip install --quiet \
-        'tensorflow-gpu' \
+        'tensorflow' \
         'keras' \
-        'ipykernel==5.3.4' \
+        'ipykernel==6.21.3' \
     && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
