@@ -15,11 +15,7 @@ fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
-# Configure R
-echo "NB_USER <- \"$NB_USER\"" > /tmp/NB_USER.txt
-cat /tmp/NB_USER.txt /tmp/.Rprofile > /tmp/.Rprofile && rm /tmp/NB_USER.txt
-cat /tmp/.Rprofile > /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
-Rscript /home/$NB_USER/.Rprofile
+cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
 
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
