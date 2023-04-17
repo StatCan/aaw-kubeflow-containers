@@ -229,6 +229,16 @@ RUN fix-permissions /home/$NB_USER
 
 would add two layers, each about 1GB (2GB total).
 
+### Pulling ACR Docker Images proxied through Artifactory
+
+Since devs/users do not have permissions to access AAW's ACR, they can instead pull images needed for development/testing purposes through the proxied remote repository via (artifactory)[https://jfrog.aaw.cloud.statcan.ca/artifactory/k8scc01covidacr.azurecr.io/]. To do this, we pull from the artifactory instance:
+```
+docker pull jfrog.aaw.cloud.statcan.ca/k8scc01covidacr.azurecr.io/<image-name>:<image-tag>
+```
+This requires read permissions to be added to the user/group.
+
+
+
 ## Structure
 
 
