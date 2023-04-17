@@ -596,6 +596,8 @@ USER $NB_USER
 ###  docker-bits/8_platform.Dockerfile
 ###############################
 
+USER root
+
 # Install AMD AOCL
 ARG AOCL_VERSION=4.0
 ENV AOCL_PATH=/opt/amd/aocl/${AOCL_VERSION}

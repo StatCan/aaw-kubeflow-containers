@@ -1,3 +1,5 @@
+USER root
+
 # Install AMD AOCL
 ARG AOCL_VERSION=4.0
 ENV AOCL_PATH=/opt/amd/aocl/${AOCL_VERSION}
