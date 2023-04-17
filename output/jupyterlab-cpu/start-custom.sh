@@ -15,7 +15,9 @@ fi
 
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
-cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
+if [ ! -e /home/$NB_USER/.Rprofile ] ; then
+    cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
+fi
 
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
