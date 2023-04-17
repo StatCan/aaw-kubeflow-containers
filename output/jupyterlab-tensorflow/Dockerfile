@@ -487,8 +487,7 @@ RUN cd ${RESOURCES_PATH} && \
     cd ./aocl-linux-aocc-${AOCL_VERSION} && \
     /bin/bash ./install.sh -t /opt/amd/aocl && \
     cp setenv_aocl.sh ${AOCL_PATH} &&\
-    rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
-    clean-layer.sh
+    rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
