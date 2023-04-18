@@ -4,15 +4,14 @@ then
     # Use protb trino instance
     if [ -d "/etc/protb" ]
     then
-        SERVER=https://trino-protb.aaw-dev.cloud.statcan.ca
-    else
+        SERVER=http://trino-protb.trino-protb-system.svc.cluster.local
         SERVER=https://trino.aaw-dev.cloud.statcan.ca
     fi
 # Prod cluster
 else
     if [ -d "/etc/protb" ]
     then
-        SERVER=https://trino-protb.aaw.cloud.statcan.ca
+        SERVER=http://trino-protb.aaw.cloud.statcan.ca
     else
         SERVER=https://trino.aaw.cloud.statcan.ca
     fi
