@@ -138,5 +138,12 @@ echo "novnc has been configured, launching novnc"
 NB_PREFIX=${NB_PREFIX:-/vnc}
 sed -i "s~\${NB_PREFIX}~$NB_PREFIX~g" /etc/nginx/nginx.conf
 
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if [ lscpu | grep -q AuthenticAMD ] && [ -d "${AOCL_PATH}" ] ; then
+  echo "AuthenticAMD platform detected"
+  bash ${AOCL_PATH}/setenv_aocl.sh lp64
+  exoport LD_LIBRARY_PATH = ${AOCL_PATH}/lib
+fi
+
 nginx
 wait
