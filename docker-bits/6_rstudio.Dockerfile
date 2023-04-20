@@ -35,6 +35,7 @@ RUN conda install --quiet --yes \
       'r-odbc==1.3.4' \
       'r-sf==1.0_7' \
       'r-e1071==1.7_13' \
+      'r-markdown' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
