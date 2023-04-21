@@ -337,6 +337,9 @@ RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
 COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
+# Add .Rprofile to /tmp so we can install it in start-custom.sh
+COPY .Rprofile /tmp/.Rprofile
+
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory-ha.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system && \
