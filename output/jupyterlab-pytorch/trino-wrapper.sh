@@ -5,17 +5,21 @@ then
     if [ -d "/etc/protb" ]
     then
         SERVER=http://trino-protb.trino-protb-system.svc.cluster.local
+        trino-original --server $SERVER --debug  "$@"
     else
         SERVER=https://trino.aaw-dev.cloud.statcan.ca
+        trino-original --server $SERVER --debug --external-authentication "$@"
     fi
+
 # Prod cluster
 else
     if [ -d "/etc/protb" ]
     then
         SERVER=http://trino-protb.aaw.cloud.statcan.ca
+        trino-original --server $SERVER --debug  "$@"
     else
         SERVER=https://trino.aaw.cloud.statcan.ca
+        trino-original --server $SERVER --debug --external-authentication "$@"
     fi
 fi
-# Trino client pass in server, user, access token and additional options the user can configures
-trino-original --server $SERVER --debug --external-authentication "$@"
+
