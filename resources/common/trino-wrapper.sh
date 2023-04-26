@@ -5,6 +5,7 @@ then
     if [ -d "/etc/protb" ]
     then
         SERVER=http://trino-protb.trino-protb-system.svc.cluster.local
+    else
         SERVER=https://trino.aaw-dev.cloud.statcan.ca
     fi
 # Prod cluster
