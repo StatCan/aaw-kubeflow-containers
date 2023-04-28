@@ -142,6 +142,7 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/5_DB-Drivers.Dockerfile \
 			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/7_remove_vulnerabilities.Dockerfile \
+			$(SRC)/8_platform.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
 	done
@@ -160,6 +161,7 @@ remote-desktop:
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/6_remote-desktop.Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 

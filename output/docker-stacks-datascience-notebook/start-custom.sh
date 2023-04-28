@@ -133,7 +133,7 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
 VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
 VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
-if [-f "$VS_CODE_PRESISTED" ]; then
+if [ -f "$VS_CODE_PRESISTED" ]; then
   cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
 else
   cp vscode-overrides.json "$VS_CODE_SETTINGS"
@@ -156,3 +156,10 @@ echo "--------------------shutting down, persisting VS_CODE settings------------
 # persist vscode server remote settings (Machine dir)
 VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
 cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
+
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
+  echo "AuthenticAMD platform detected"
+  bash ${AOCL_PATH}/setenv_aocl.sh lp64
+  exoport LD_LIBRARY_PATH = ${AOCL_PATH}/lib
+fi
