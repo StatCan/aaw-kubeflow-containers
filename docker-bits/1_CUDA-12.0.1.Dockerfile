@@ -34,7 +34,7 @@ RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
 
 ENV CUDA_DIR "/usr/local/cuda"
 ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$CUDA_DIR
+ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$CUDA_DIR/lib64
 ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
 
 # nvidia-container-runtime
