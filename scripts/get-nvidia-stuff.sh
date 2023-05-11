@@ -10,7 +10,8 @@ if ! echo "$VERSION" | grep -q '^[0-9.]*$'; then
     exit 1
 fi
 
-REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/master/dist
+# Using older commit that still has support for 18.04
+REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist
 CUDNN=cudnn8
 OS=ubuntu1804
 
@@ -22,7 +23,7 @@ cat <<EOF | grep -v '^\(FROM\|COPY\|ENTRYPOINT\|ARG IMAGE_NAME\|LABEL maintainer
 ###########################
 ### Base
 ###########################
-# $REPO/$VERSION/$OS/base/Dockerfile
+# echo $REPO/$VERSION/$OS/base/Dockerfile
 
 $(curl -s $REPO/$VERSION/$OS/base/Dockerfile)
 
