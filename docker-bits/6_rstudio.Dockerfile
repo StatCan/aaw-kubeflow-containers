@@ -1,8 +1,8 @@
 # install rstudio-server
-ARG RSTUDIO_VERSION=2022.07.2-576
-ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
+ARG RSTUDIO_VERSION=2023.06.0-421
+ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
 RUN apt-get update && \
-    apt install -y --no-install-recommends software-properties-common dirmngr && \
+    apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
     add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" && \
     apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
@@ -12,7 +12,7 @@ RUN apt-get update && \
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
     sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 
-RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
+RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
@@ -26,15 +26,16 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN conda install --quiet --yes \
-      'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
-      'r-arrow==10.0.1' \
-      'r-aws.s3==0.3.22' \
-      'r-catools==1.18.2' \
-      'r-hdf5r==1.3.8' \
-      'r-odbc==1.3.4' \
-      'r-sf==1.0_7' \
-      'r-e1071==1.7_13' \
+      'r-rodbc' \
+      'r-tidymodels' \
+      'r-tidyverse' \
+      'r-arrow' \
+      'r-aws.s3' \
+      'r-catools' \
+      'r-hdf5r' \
+      'r-odbc' \
+      'r-sf' \
+      'r-e1071' \
       'r-markdown' \
     && \
     conda clean --all -f -y && \
@@ -42,8 +43,8 @@ RUN conda install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.1.0' \
-      'jupyter-shiny-proxy==1.1' && \
+      'jupyter-rsession-proxy' \
+      'jupyter-shiny-proxy' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
