@@ -167,6 +167,7 @@ const UI = {
         UI.initSetting('port', port);
         UI.initSetting('encrypt', (window.location.protocol === "https:"));
         UI.initSetting('view_clip', false);
+        // AAW CHANGE, default resize to remote
         UI.initSetting('resize', 'remote');
         UI.initSetting('quality', 6);
         UI.initSetting('compression', 2);
@@ -175,6 +176,7 @@ const UI = {
         UI.initSetting('show_dot', false);
         UI.initSetting('path', 'websockify');
         UI.initSetting('repeaterID', '');
+        // AAW CHANGE, default reconnect to true and delay to 0
         UI.initSetting('reconnect', true);
         UI.initSetting('reconnect_delay', 0);
 
@@ -992,6 +994,7 @@ const UI = {
 
         const host = UI.getSetting('host');
         const port = UI.getSetting('port');
+        // AAW CHANGE
         const path = readQueryVariable('path', window.location.pathname.replace(/[^/]*$/, '').substring(1) + 'websockify');
 
         if (typeof password === 'undefined') {
@@ -1713,6 +1716,7 @@ if (l10n.language === "en" || l10n.dictionary !== undefined) {
         .then(UI.prime);
 }
 
+// AAW function addition
 function readQueryVariable(name, defaultValue) {
     // A URL with a query parameter can look like this:
     // https://www.example.com?myqueryparam=myvalue
