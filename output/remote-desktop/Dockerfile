@@ -532,7 +532,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
-
+COPY /novnc $RESOURCES_PATH/novnc
 ARG NO_VNC_VERSION=1.3.0
 ARG NO_VNC_SHA=ee8f91514c9ce9f4054d132f5f97167ee87d9faa6630379267e569d789290336
 RUN pip3 install --force websockify==0.9.0 \
@@ -541,10 +541,9 @@ RUN pip3 install --force websockify==0.9.0 \
     && tar -xf /tmp/novnc.tar.gz -C /tmp/ \
     && mv /tmp/noVNC-${NO_VNC_VERSION} /opt/novnc \
     && rm /tmp/novnc.tar.gz \
-    && chown -R $NB_UID:$NB_GID /opt/novnc \
-    && cd /opt/novnc/ \
-    && wget https://gist.githubusercontent.com/sylus/cb01e59056780a2161186139b25818fb/raw/99ebd62a304c661d5612ad72ebc318f70d02741c/feat-notebook-Patch-noVNC-for-notebooks.patch \
-    && patch -p1 < feat-notebook-Patch-noVNC-for-notebooks.patch
+    && mv ${RESOURCES_PATH}/novnc/ui.js /opt/novnc/app/ui.js \
+    && mv ${RESOURCES_PATH}/novnc/vnc_lite.html /opt/novnc/vnc_lite.html \
+    && chown -R $NB_UID:$NB_GID /opt/novnc
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
