@@ -80,8 +80,6 @@ EXCLUDED_PACKAGES = [
     "bzip2",
     "openssl",
     "ca-certificates",
-    # R Packages
-    "r-tidymodels"
 ]
 
 
