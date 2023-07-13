@@ -81,7 +81,7 @@ EXCLUDED_PACKAGES = [
     "openssl",
     "ca-certificates",
     # R Packages
-    "tidymodels"
+    "r-tidymodels"
 ]
 
 
