@@ -198,7 +198,7 @@ RUN conda install --quiet --yes \
       'r-rodbc' \
       'r-tidymodels' \
       'r-tidyverse' \
-      'r-arrow' \
+      'r-arrow==12.0.0' \
       'r-aws.s3' \
       'r-catools' \
       'r-hdf5r' \
