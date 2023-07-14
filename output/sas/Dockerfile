@@ -291,10 +291,10 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2022.07.2-576
-ARG SHA256=6dc6a71c7a4805e347ab88d9d9574f8898191dfd0bc3191940ee3096ff47fbcd
+ARG RSTUDIO_VERSION=2023.06.0-421
+ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
 RUN apt-get update && \
-    apt install -y --no-install-recommends software-properties-common dirmngr && \
+    apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
     add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" && \
     apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
@@ -304,7 +304,7 @@ RUN apt-get update && \
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
     sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 
-RUN curl --silent -L  --fail "https://download2.rstudio.org/server/bionic/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
+RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
@@ -320,21 +320,22 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidymodels==1.0.0' \
-      'r-arrow==10.0.1' \
+      'r-tidyverse==1.3.2' \
+      'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \
       'r-catools==1.18.2' \
       'r-hdf5r==1.3.8' \
       'r-odbc==1.3.4' \
-      'r-sf==1.0_7' \
+      'r-sf==1.0_12' \
       'r-e1071==1.7_13' \
-      'r-markdown' \
+      'r-markdown==1.7' \
     && \
     conda clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.1.0' \
+      'jupyter-rsession-proxy==2.2.0' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
@@ -350,9 +351,9 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
 # SAS
 
 # Install Quarto
-ARG QUARTO_VERSION=1.2.247
-ARG QUARTO_SHA=00012da73de3ac6e98715bff127679b12c567b9a56f906163c8997a9e9d7610b
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v1.2.247/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+ARG QUARTO_VERSION=1.4.176
+ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \

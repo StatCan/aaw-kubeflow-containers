@@ -1,9 +1,9 @@
 # SAS
 
 # Install Quarto
-ARG QUARTO_VERSION=1.2.247
-ARG QUARTO_SHA=00012da73de3ac6e98715bff127679b12c567b9a56f906163c8997a9e9d7610b
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v1.2.247/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+ARG QUARTO_VERSION=1.4.176
+ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
