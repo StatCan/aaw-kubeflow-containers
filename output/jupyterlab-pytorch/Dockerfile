@@ -215,6 +215,7 @@ RUN apt-get update && \
       'zsh' \
       'wget' \
       'curl' \
+      'dos2unix' \
   && \
     rm -rf /var/lib/apt/lists/*
 
