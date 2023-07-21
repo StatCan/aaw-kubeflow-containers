@@ -72,7 +72,7 @@ if [ -n "${KF_LANG}" ]; then
             echo     '   "locale": "'${LANG}'"'
             echo     '}'
           ) > $lang_file
-          vscode_language="${XDG_DATA_HOME}/code-server/User/argv.json"
+          vscode_language="${CS_DATA_HOME}/User/argv.json"
           echo "{\"locale\":\"fr\"}" >> $vscode_language
         fi
     fi

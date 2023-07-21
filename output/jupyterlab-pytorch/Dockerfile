@@ -329,19 +329,19 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 
 RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.81.0 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.89.0 && \
     code-server --install-extension databricks.databricks@1.1.0 && \
     code-server --install-extension dvirtz.parquet-viewer@2.2.2 && \
-    code-server --install-extension redhat/vscode-yaml@1.14.0 && \
-    code-server --install-extension ms-vscode/azurecli@0.5.0 && \
-    code-server --install-extension mblode/pretty-formatter@0.2.1 && \
+    code-server --install-extension redhat.vscode-yaml@1.14.0 && \
+    code-server --install-extension ms-vscode.azurecli@0.5.0 && \
+    code-server --install-extension mblode.pretty-formatter@0.2.1 && \
     fix-permissions $CS_DATA_HOME
 
-COPY vscode-overrides.json $CS_DATA_HOME/code-server/Machine/settings.json
+COPY vscode-overrides.json $CS_DATA_HOME/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
-COPY languagepacks.json $CS_DATA_HOME/code-server/
+COPY languagepacks.json $CS_DATA_HOME/
 
 # Default environment
 RUN pip install --quiet \
