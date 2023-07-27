@@ -198,9 +198,9 @@ build/%: ## build the latest image
 	docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
-	echo full_image_name=$$IMAGE_NAME >> $GITHUB_OUTPUT && \
-	echo image_tag=$(TAG) && \
-	echo image_repo=$${REPO}
+	echo "::set-output name=full_image_name::$$IMAGE_NAME" && \
+	echo "::set-output name=image_tag::$(TAG)" && \
+	echo "::set-output name=image_repo::$${REPO}"
 
 post-build/%: export REPO?=$(DEFAULT_REPO)
 post-build/%: export TAG?=$(DEFAULT_TAG)
