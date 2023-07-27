@@ -110,7 +110,7 @@ jobs:
       id: notebook-name
       shell: bash
       run: |
-        echo "${{ NOTEBOOK_NAME }}=${{ matrix.notebook }}" >> $GITHUB_OUTPUT
+        echo ${{ steps.notebook-name.outputs.NOTEBOOK_NAME }}=${{ matrix.notebook }} >> $GITHUB_OUTPUT
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
