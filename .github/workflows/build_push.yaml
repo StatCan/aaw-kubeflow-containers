@@ -147,9 +147,9 @@ jobs:
     # Image testing
 
     - name: Set Up Python for Test Suite
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
-        python-version: 3.8
+        python-version: '3.10' 
 
     - name: Set up venv for Test Suite
       run: |
