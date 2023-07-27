@@ -322,6 +322,10 @@ COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 # Done at runtime
 # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
+#Removal area
+#Prevent screen from locking
+RUN apt-get remove -y -q light-locker
+
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
