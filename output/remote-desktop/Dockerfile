@@ -5,7 +5,7 @@
 
 # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
 # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
+FROM rocker/geospatial:dev-osgeo@sha256:17a7181bdfa3cdb291340d4f47469715e5e2c30ba31f35419e8b0676cacd72cd
 
 # For compatibility with docker stacks
 ARG NB_USER="jovyan"
@@ -226,7 +226,7 @@ RUN \
     # Install nautilus and support for sftp mounting
     apt-get install -y --no-install-recommends nautilus gvfs-backends && \
     # Install gigolo - Access remote systems
-    apt-get install -y --no-install-recommends gigolo gvfs-bin && \
+    apt-get install -y --no-install-recommends gigolo gvfs && \
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
@@ -329,7 +329,8 @@ RUN \
         bzip2 \
         lzop \
         libarchive-tools \
-        zlibc \
+        zlib1g \
+        zlib1g-dev \
         # unpack (almost) everything with one command
         unp \
         libbz2-dev \
@@ -480,22 +481,13 @@ COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 # Done at runtime
 # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
-#Removal area
-#Extra Icons
-RUN rm /usr/share/applications/exo-mail-reader.desktop
-#Prevent screen from locking
-RUN apt-get remove -y -q light-locker
-
-
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
 
 ENV NB_USER=$NB_USER
 ENV NB_NAMESPACE=$NB_NAMESPACE
-# https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
-    && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
 # Install AMD AOCC
