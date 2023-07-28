@@ -72,7 +72,7 @@ if [ -n "${KF_LANG}" ]; then
             echo     '   "locale": "'${LANG}'"'
             echo     '}'
           ) > $lang_file
-          vscode_language="${CS_DATA_HOME}/User/argv.json"
+          vscode_language="${CS_DEFAULT_HOME}/User/argv.json"
           echo "{\"locale\":\"fr\"}" >> $vscode_language
         fi
     fi
@@ -130,6 +130,28 @@ fi
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
+# Copy default config and extensions on first start up
+if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
+  echo "Creating code-server default settings and extentions"
+  mkdir -p "$CS_DEFAULT_HOME"
+  cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
+fi
+
+# Copy default ompp models on first start up
+export OMS_MODELS_DIR="/home/jovyan/models"
+if [ ! -d "$OMS_MODELS_DIR" ]; then
+  echo "Creating ompp default model directory"
+  mkdir -p "$OMS_MODELS_DIR"
+  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
+fi
+
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
+  echo "AuthenticAMD platform detected"
+  bash ${AOCL_PATH}/setenv_aocl.sh lp64
+  export LD_LIBRARY_PATH="${AOCL_PATH}/lib"
+fi
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
@@ -143,14 +165,4 @@ echo "--------------------starting jupyter--------------------"
                  --ServerApp.base_url=${NB_PREFIX} \
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
-echo "--------------------shutting down, persisting VS_CODE settings--------------------"
-# persist vscode server remote settings (Machine dir)
-VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
-cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
-
-# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
-if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
-  echo "AuthenticAMD platform detected"
-  bash ${AOCL_PATH}/setenv_aocl.sh lp64
-  exoport LD_LIBRARY_PATH = ${AOCL_PATH}/lib
-fi
+echo "--------------------shutting down--------------------"

@@ -183,7 +183,8 @@ ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV CS_DATA_HOME=$HOME/.local/share/code-server
+ENV CS_TEMP_HOME=/etc/share/code-server
+ENV CS_DEFAULT_HOME=$HOME/.local/share/code-server
 ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -192,7 +193,8 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && apt-get install -y nginx \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
-    && rm -f /etc/apt/sources.list.d/vscode.list 
+    && rm -f /etc/apt/sources.list.d/vscode.list \
+    && mkdir -p $CS_TEMP_HOME/Machine
 
 RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
@@ -203,12 +205,39 @@ RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
-    fix-permissions $CS_DATA_HOME
+    mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
+    fix-permissions $CS_TEMP_HOME
 
-COPY vscode-overrides.json $CS_DATA_HOME/Machine/settings.json
+COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
-COPY languagepacks.json $CS_DATA_HOME/
+COPY languagepacks.json $CS_TEMP_HOME/
+
+# Install OpenM++ MPI
+ARG OMPP_VERSION="1.15.3"
+# IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
+ARG OMPP_PKG_DATE="20230614"
+ARG SHA256ompp=fbee3c372d6f6cc5f4bed4e66a3e27ff11582a965a6c723031aeee1ed8ef976e
+# OpenM++ environment settings
+ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
+
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3 \
+    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
+    && mkdir -p ${OMPP_INSTALL_DIR} \
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
+    
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && rm -r ${OMPP_INSTALL_DIR}/html \
+    && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
+    && fix-permissions ${OMPP_INSTALL_DIR}
+
+COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+RUN pip install /opt/jupyter-ompp-proxy/
 
 # Default environment
 RUN pip install --quiet \
@@ -217,36 +246,24 @@ RUN pip install --quiet \
       'jupyterlab_execute_time==2.3.1' \
       'markupsafe==2.1.2' \
       'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
       'jupyterlab-git==0.41.0' \
       'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
+      'jupyterlab-language-pack-fr-FR' 
+
+RUN jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
       'jupyterlab-plotly@4.14.3' \
-      'nbdime-jupyterlab' \
-    && \
-    jupyter lab build && \
-    jupyter lab clean && \
-  npm cache clean --force && \
-  rm -rf /home/$NB_USER/.cache/yarn && \
+      'nbdime-jupyterlab' 
+
+RUN jupyter lab build && \
+    jupyter lab clean 
+
+RUN npm cache clean --force
+
+RUN rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
@@ -261,26 +278,17 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-
 # Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
-    && \
-    conda install -c conda-forge \
-      'r-languageserver' \
-      'python-lsp-server' \
-    && \
-    npm i -g \
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")'
+
+RUN  npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
+    'yaml-language-server@0.18.0'
+
+RUN fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
@@ -461,8 +469,10 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
+COPY start-oms.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
+RUN chmod +x /usr/local/bin/start-oms.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
