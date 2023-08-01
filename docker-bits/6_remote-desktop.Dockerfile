@@ -266,11 +266,12 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \ 
     clean-layer.sh
 
-#Install PSPP
-RUN apt-get install -y pspp \
+# Install PSPP
+RUN apt-get update -y \
+    && apt-get install -y pspp \
     && clean-layer.sh
 
-#Install Minio
+# Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 
