@@ -170,14 +170,14 @@ RUN chmod +x /usr/bin/clean-layer.sh
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
- && apt-get install -y dbus-x11 \
+    && apt-get install -y dbus-x11 \
     xfce4 \
     xfce4-panel \
     xfce4-session \
     xfce4-settings \
     xorg \
     xubuntu-icon-theme \
- && clean-layer.sh
+    && clean-layer.sh
 
 ENV RESOURCES_PATH="/resources"
 RUN mkdir $RESOURCES_PATH
@@ -242,100 +242,100 @@ RUN \
     apt-get install -y sudo apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
-        # This is necessary for apt to access HTTPS sources:
-        apt-transport-https \
-        gnupg-agent \
-        gpg-agent \
-        gnupg2 \
-        ca-certificates \
-        build-essential \
-        pkg-config \
-        software-properties-common \
-        lsof \
-        net-tools \
-        libcurl4 \
-        curl \
-        wget \
-        cron \
-        openssl \
-        iproute2 \
-        psmisc \
-        tmux \
-        dpkg-sig \
-        uuid-dev \
-        csh \
-        xclip \
-        clinfo \
-        libgdbm-dev \
-        libncurses5-dev \
-        gawk \
-        # Simplified Wrapper and Interface Generator (5.8MB) - required by lots of py-libs
-        swig \
-        # Graphviz (graph visualization software) (4MB)
-        graphviz libgraphviz-dev \
-        # Terminal multiplexer
-        screen \
-        # Editor
-        nano \
-        # Find files, already have catfish remove?
-        locate \
-        # XML Utils
-        xmlstarlet \
-        #  R*-tree implementation - Required for earthpy, geoviews (3MB)
-        libspatialindex-dev \
-        # Search text and binary files
-        yara \
-        # Minimalistic C client for Redis
-        libhiredis-dev \
-        libleptonica-dev \
-        # GEOS library (3MB)
-        libgeos-dev \
-        # style sheet preprocessor
-        less \
-        # Print dir tree
-        tree \
-        # Bash autocompletion functionality
-        bash-completion \
-        # ping support
-        iputils-ping \
-        # Json Processor
-        jq \
-        rsync \
-        # VCS:
-        subversion \
-        jed \
-        git \
-        git-gui \
-        # odbc drivers
-        unixodbc unixodbc-dev \
-        # Image support
-        libtiff-dev \
-        libjpeg-dev \
-        libpng-dev \
-        # protobuffer support
-        protobuf-compiler \
-        libprotobuf-dev \
-        libprotoc-dev \
-        autoconf \
-        automake \
-        libtool \
-        cmake  \
-        fonts-liberation \
-        google-perftools \
-        # Compression Libs
-        zip \
-        gzip \
-        unzip \
-        bzip2 \
-        lzop \
-        libarchive-tools \
-        zlib1g \
-        zlib1g-dev \
-        # unpack (almost) everything with one command
-        unp \
-        libbz2-dev \
-        liblzma-dev \
-        zlib1g-dev && \
+    # This is necessary for apt to access HTTPS sources:
+    apt-transport-https \
+    gnupg-agent \
+    gpg-agent \
+    gnupg2 \
+    ca-certificates \
+    build-essential \
+    pkg-config \
+    software-properties-common \
+    lsof \
+    net-tools \
+    libcurl4 \
+    curl \
+    wget \
+    cron \
+    openssl \
+    iproute2 \
+    psmisc \
+    tmux \
+    dpkg-sig \
+    uuid-dev \
+    csh \
+    xclip \
+    clinfo \
+    libgdbm-dev \
+    libncurses5-dev \
+    gawk \
+    # Simplified Wrapper and Interface Generator (5.8MB) - required by lots of py-libs
+    swig \
+    # Graphviz (graph visualization software) (4MB)
+    graphviz libgraphviz-dev \
+    # Terminal multiplexer
+    screen \
+    # Editor
+    nano \
+    # Find files, already have catfish remove?
+    locate \
+    # XML Utils
+    xmlstarlet \
+    #  R*-tree implementation - Required for earthpy, geoviews (3MB)
+    libspatialindex-dev \
+    # Search text and binary files
+    yara \
+    # Minimalistic C client for Redis
+    libhiredis-dev \
+    libleptonica-dev \
+    # GEOS library (3MB)
+    libgeos-dev \
+    # style sheet preprocessor
+    less \
+    # Print dir tree
+    tree \
+    # Bash autocompletion functionality
+    bash-completion \
+    # ping support
+    iputils-ping \
+    # Json Processor
+    jq \
+    rsync \
+    # VCS:
+    subversion \
+    jed \
+    git \
+    git-gui \
+    # odbc drivers
+    unixodbc unixodbc-dev \
+    # Image support
+    libtiff-dev \
+    libjpeg-dev \
+    libpng-dev \
+    # protobuffer support
+    protobuf-compiler \
+    libprotobuf-dev \
+    libprotoc-dev \
+    autoconf \
+    automake \
+    libtool \
+    cmake  \
+    fonts-liberation \
+    google-perftools \
+    # Compression Libs
+    zip \
+    gzip \
+    unzip \
+    bzip2 \
+    lzop \
+    libarchive-tools \
+    zlib1g \
+    zlib1g-dev \
+    # unpack (almost) everything with one command
+    unp \
+    libbz2-dev \
+    liblzma-dev \
+    zlib1g-dev && \
     # configure dynamic linker run-time bindings
     ldconfig && \
     # Fix permissions
@@ -415,8 +415,8 @@ RUN /bin/bash $RESOURCES_PATH/qgis.sh \
 
 #R-Studio
 RUN /bin/bash $RESOURCES_PATH/r-studio-desktop.sh && \
-     apt-get clean && \
-     rm -rf /var/lib/apt/lists
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists
 
 #Libre office
 RUN add-apt-repository ppa:libreoffice/ppa && \
@@ -499,34 +499,13 @@ RUN apt-get update && apt-get install --yes websockify \
 ARG AOCC_VERSION=4.0.0
 ARG AOCC_SHA256=2729ec524cbc927618e479994330eeb72df5947e90cfcc49434009eee29bf7d4
 RUN cd ${RESOURCES_PATH} && \
-   wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
-   echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
-   tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
-   cd ./aocc-compiler-${AOCC_VERSION} && \
-   /bin/bash ./install.sh && \
-   rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
-   clean-layer.sh
-
-#Install Miniconda
-#Has to be appended, else messes with qgis
-ENV PATH $PATH:/opt/conda/bin
-
-ARG CONDA_VERSION=py38_4.10.3
-ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
-    echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
-    if ! md5sum --status -c miniconda.md5; then exit 1; fi && \
-    mkdir -p /opt && \
-    sh miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh miniconda.md5 && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy && \
-    chown -R $NB_UID:$NB_GID /opt/conda
+    wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+    echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
+    tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
+    cd ./aocc-compiler-${AOCC_VERSION} && \
+    /bin/bash ./install.sh && \
+    rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+    clean-layer.sh
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
