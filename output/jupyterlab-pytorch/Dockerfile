@@ -332,9 +332,9 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
 RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
-    code-server --install-extension quarto.quarto@1.89.0 && \
+    code-server --install-extension quarto.quarto@1.90.1 && \
     code-server --install-extension databricks.databricks@1.1.0 && \
-    code-server --install-extension dvirtz.parquet-viewer@2.2.2 && \
+    code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
@@ -345,32 +345,6 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
-
-# Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.3"
-# IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230614"
-ARG SHA256ompp=fbee3c372d6f6cc5f4bed4e66a3e27ff11582a965a6c723031aeee1ed8ef976e
-# OpenM++ environment settings
-ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
-
-# OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
-    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
-    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
-    && mkdir -p ${OMPP_INSTALL_DIR} \
-    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
-    
-# Customize and rebuild omp-ui for jupyter-ompp-proxy install
-RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
-    && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
-    && rm -r ${OMPP_INSTALL_DIR}/html \
-    && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
-    && fix-permissions ${OMPP_INSTALL_DIR}
-
-COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
-RUN pip install /opt/jupyter-ompp-proxy/
 
 # Default environment
 RUN pip install --quiet \
@@ -412,7 +386,8 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions /home/$NB_USER
 
 # Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")'
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
+    /opt/conda/bin/R --silent --slave --no-save --no-restore -e install.packages('languageserver', repos='https://cran.r-project.org/')
 
 RUN  npm i -g \
     'bash-language-server'  \
