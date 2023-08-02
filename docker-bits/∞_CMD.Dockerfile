@@ -12,10 +12,6 @@ COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
-# Point R to Artifactory repository
-COPY Rprofile.site /tmp/Rprofile.site
-RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
-
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
 COPY .Rprofile /tmp/.Rprofile
 
@@ -40,22 +36,19 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
 
-# Point conda to Artifactory repository
-COPY .condarc /tmp/.condarc
-RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
-
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
 #Has to install as user $NB_USER for the remote desktop image
 USER $NB_USER
-RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
+RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==41.0.2
+
+# Point R to Artifactory repository
+COPY Rprofile.site /tmp/Rprofile.site
+RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Point conda to Artifactory repository
-USER root
-RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system && \
-    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
-    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
+COPY .condarc /tmp/.condarc
+RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
