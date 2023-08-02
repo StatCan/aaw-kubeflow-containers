@@ -508,6 +508,10 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
 
+# Point conda to Artifactory repository
+COPY .condarc /tmp/.condarc
+RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
+
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
 #Has to install as user $NB_USER for the remote desktop image
