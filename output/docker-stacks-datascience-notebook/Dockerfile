@@ -42,12 +42,6 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
     /opt/conda/bin/conda clean -afy && \
     chown -R $NB_UID:$NB_GID /opt/conda
 
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
-#Has to install as user $NB_USER for the remote desktop image
-USER $NB_USER
-RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
-
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
 RUN mkdir -p /opt/conda/lib/R/etc/ && \
