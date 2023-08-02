@@ -381,11 +381,12 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}
 #TODO: Evaluate if this is still necessary when updating the base image
 #Has to install as user $NB_USER for the remote desktop image
 USER $NB_USER
-RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==41.0.2
+RUN conda install --yes --quiet --force-reinstall -c conda-forge cryptography==39.0.1
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
-RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
+RUN mkdir -p /opt/conda/lib/R/etc/ && \
+    cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Point conda to Artifactory repository
 COPY .condarc /tmp/.condarc
