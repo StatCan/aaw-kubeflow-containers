@@ -15,10 +15,6 @@ COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
-# Point conda to Artifactory repository
-COPY .condarc /tmp/.condarc
-RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
-
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /usr/local/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
