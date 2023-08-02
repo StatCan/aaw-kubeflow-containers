@@ -16,6 +16,7 @@ RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
 # Install Miniconda
+RUN rm -rf /opt/conda && mkdir -p /opt/conda
 # Has to be appended, else messes with qgis
 ENV PATH $PATH:/opt/conda/bin
 
