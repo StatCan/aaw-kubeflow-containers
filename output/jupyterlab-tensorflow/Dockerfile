@@ -384,7 +384,7 @@ RUN pip3 --no-cache-dir install --quiet \
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    /opt/conda/bin/R --silent --slave --no-save --no-restore -e install.packages('languageserver', repos='https://cran.r-project.org/')
+    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")'
 
 RUN  npm i -g \
     'bash-language-server'  \
@@ -464,8 +464,7 @@ RUN chmod +x /usr/local/bin/start-oms.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
-    && pip config set global.timeout 300
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf 
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site

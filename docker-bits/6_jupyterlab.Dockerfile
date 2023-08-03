@@ -87,7 +87,7 @@ RUN pip3 --no-cache-dir install --quiet \
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    /opt/conda/bin/R --silent --slave --no-save --no-restore -e install.packages('languageserver', repos='https://cran.r-project.org/')
+    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")'
 
 RUN  npm i -g \
     'bash-language-server'  \
