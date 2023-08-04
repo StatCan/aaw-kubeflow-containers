@@ -106,6 +106,19 @@ jobs:
     - name: Echo disk usage before build start
       run: ./.github/scripts/echo_usage.sh
 
+    - name: Cache build artifacts
+      id: cache-build
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-build-modules
+      with:
+        path: |
+          ~/.npm
+          ~/.conda/pkgs
+          ~/.cache
+          ~/.local/share/code-server/extensions
+        key: ${{ runner.os }}-build-${{ github.ref_name }}
+
     - name: Get current notebook name
       id: notebook-name
       shell: bash

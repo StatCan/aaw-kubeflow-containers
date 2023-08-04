@@ -19,7 +19,7 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* 
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
@@ -221,14 +221,14 @@ RUN pip install --quiet \
       'markupsafe==2.1.2' \
       'git+https://github.com/betatim/vscode-binder' \
     && \
-    conda install --quiet --yes \
+    mamba install --quiet --yes \
     -c conda-forge \
       'ipywidgets==8.0.4' \
       'ipympl==0.9.3' \
       'jupyter_contrib_nbextensions==0.7.0' \
       'nb_conda_kernels==2.3.1' \
     && \
-    conda install --quiet --yes \
+    mamba install --quiet --yes \
       -c plotly \
       'jupyter-dash==0.4.2' \
     && \
@@ -237,7 +237,7 @@ RUN pip install --quiet \
       'jupyterlab-lsp==3.10.2' \
       'jupyterlab-language-pack-fr-FR' \
     && \
-    conda clean --all -f -y && \
+    mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
@@ -268,7 +268,7 @@ RUN pip3 --no-cache-dir install --quiet \
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    conda install -c conda-forge \
+    mamba install -c conda-forge \
       'r-languageserver' \
       'python-lsp-server' \
     && \
@@ -278,13 +278,9 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER  
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
