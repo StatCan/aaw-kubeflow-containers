@@ -220,24 +220,37 @@ RUN pip install --quiet \
       'jupyterlab_execute_time==2.3.1' \
       'markupsafe==2.1.2' \
       'git+https://github.com/betatim/vscode-binder' \
+    && \
+    conda install --quiet --yes \
+    -c conda-forge \
+      'ipywidgets==8.0.4' \
+      'ipympl==0.9.3' \
+      'jupyter_contrib_nbextensions==0.7.0' \
+      'nb_conda_kernels==2.3.1' \
+    && \
+    conda install --quiet --yes \
+      -c plotly \
+      'jupyter-dash==0.4.2' \
+    && \
+    pip install \
       'jupyterlab-git==0.41.0' \
       'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' 
-
-RUN jupyter serverextension enable --py jupyter_server_proxy && \
+      'jupyterlab-language-pack-fr-FR' \
+    && \
+    conda clean --all -f -y && \
+    jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@jupyterlab/translation-extension@3.0.4' \
       '@jupyterlab/server-proxy@2.1.2' \
       'jupyterlab-plotly@4.14.3' \
-      'nbdime-jupyterlab' 
-
-RUN jupyter lab build && \
-    jupyter lab clean 
-
-RUN npm cache clean --force
-
-RUN rm -rf /home/$NB_USER/.cache/yarn && \
+      'nbdime-jupyterlab' \
+    && \
+    jupyter lab build && \
+    jupyter lab clean && \
+  npm cache clean --force && \
+  rm -rf /home/$NB_USER/.cache/yarn && \
+  rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
@@ -254,16 +267,23 @@ RUN pip3 --no-cache-dir install --quiet \
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")'
-
-RUN  npm i -g \
+    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
+    conda install -c conda-forge \
+      'r-languageserver' \
+      'python-lsp-server' \
+    && \
+    npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'
-
-RUN fix-permissions $CONDA_DIR && \
+    'yaml-language-server@0.18.0'  && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER  \
+    && \
+    conda clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # Solarized Theme and Cell Execution Time
@@ -444,10 +464,8 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
-COPY start-oms.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
-RUN chmod +x /usr/local/bin/start-oms.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
