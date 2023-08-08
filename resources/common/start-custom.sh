@@ -138,14 +138,6 @@ if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
   cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
 fi
 
-# Copy default ompp models on first start up
-export OMS_MODELS_DIR="/home/jovyan/models"
-if [ ! -d "$OMS_MODELS_DIR" ]; then
-  echo "Creating ompp default model directory"
-  mkdir -p "$OMS_MODELS_DIR"
-  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
-fi
-
 # LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
 if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
   echo "AuthenticAMD platform detected"
