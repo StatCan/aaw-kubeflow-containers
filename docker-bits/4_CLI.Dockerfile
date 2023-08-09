@@ -17,9 +17,8 @@ RUN apt-get update && \
       'zsh' \
       'wget' \
       'curl' \
-      'dos2unix' \
-  && \
-    rm -rf /var/lib/apt/lists/*
+      'dos2unix' && \
+  rm -rf /var/lib/apt/lists/*
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
@@ -49,7 +48,6 @@ RUN apt-get update && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
 
 RUN \ 
     # kubectl

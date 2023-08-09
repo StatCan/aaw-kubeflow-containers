@@ -87,10 +87,14 @@ pytorch tensorflow: .output
 		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
+		$(SRC)/9_Anaconda.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
 cpu: .output
-	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
+	$(CAT) \
+		$(SRC)/0_$@.Dockerfile \
+		$(SRC)/9_Anaconda.Dockerfile \
+	> $(TMP)/$@.Dockerfile
 
 ################################
 ###    R-Studio & Jupyter    ###
@@ -108,6 +112,7 @@ rstudio: cpu
 		$(SRC)/5_DB-Drivers.Dockerfile \
 		$(SRC)/6_$(@).Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/9_Anaconda.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
@@ -162,6 +167,7 @@ remote-desktop:
 		$(SRC)/6_remote-desktop.Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/9_Anaconda.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 

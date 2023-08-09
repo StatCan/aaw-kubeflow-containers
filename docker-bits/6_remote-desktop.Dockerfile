@@ -319,14 +319,6 @@ COPY /desktop-files $RESOURCES_PATH/desktop-files
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
-
-#Removal area
-#Prevent screen from locking
-RUN apt-get remove -y -q light-locker
-
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
@@ -348,7 +340,7 @@ RUN cd ${RESOURCES_PATH} && \
     rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
     clean-layer.sh
 
-#Set Defaults
+# Set Defaults
 ENV HOME=/home/$NB_USER
 COPY /novnc $RESOURCES_PATH/novnc
 ARG NO_VNC_VERSION=1.3.0
@@ -375,4 +367,3 @@ RUN apt-get update --yes \
 RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
-

@@ -16,7 +16,7 @@ ENV NB_GID="100"
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
-#Fix-permissions
+# Fix Permissions
 COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
 RUN chmod u+x /usr/bin/fix-permissions
 
@@ -86,9 +86,8 @@ RUN apt-get update && \
       'zsh' \
       'wget' \
       'curl' \
-      'dos2unix' \
-  && \
-    rm -rf /var/lib/apt/lists/*
+      'dos2unix' && \
+  rm -rf /var/lib/apt/lists/*
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
@@ -118,7 +117,6 @@ RUN apt-get update && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
 
 RUN \ 
     # kubectl
@@ -478,14 +476,6 @@ COPY /desktop-files $RESOURCES_PATH/desktop-files
 #Copy over French Language files
 COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 
-#Configure the panel
-# Done at runtime
-# COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
-
-#Removal area
-#Prevent screen from locking
-RUN apt-get remove -y -q light-locker
-
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
@@ -507,7 +497,7 @@ RUN cd ${RESOURCES_PATH} && \
     rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
     clean-layer.sh
 
-#Set Defaults
+# Set Defaults
 ENV HOME=/home/$NB_USER
 COPY /novnc $RESOURCES_PATH/novnc
 ARG NO_VNC_VERSION=1.3.0
@@ -534,7 +524,6 @@ RUN apt-get update --yes \
 RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
-
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
@@ -582,28 +571,11 @@ RUN cd ${RESOURCES_PATH} && \
     rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar
 
 ###############################
-###  docker-bits/∞_CMD_remote-desktop.Dockerfile
+###  docker-bits/9_Anaconda.Dockerfile
 ###############################
 
-# Configure container startup
-
-USER root
-
-WORKDIR /home/$NB_USER
-EXPOSE 8888
-COPY start-remote-desktop.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
-COPY trino-wrapper.sh /usr/local/bin/trino
-RUN chmod +x /usr/local/bin/trino
-RUN chsh -s /bin/bash $NB_USER
-
-# Add --user to all pip install calls and point pip to Artifactory repository
-COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
-    && pip config set global.timeout 300
-
 # Install Miniconda
-RUN rm -rf /opt/conda && mkdir -p /opt/conda
+RUN rm -rf /opt/conda && mkdir -p /opt/conda/bin
 # Has to be appended, else messes with qgis
 ENV PATH $PATH:/opt/conda/bin
 
@@ -632,6 +604,27 @@ RUN mkdir -p /opt/conda/lib/R/etc/ && \
 # Point conda to Artifactory repository
 COPY .condarc /tmp/.condarc
 RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
+
+###############################
+###  docker-bits/∞_CMD_remote-desktop.Dockerfile
+###############################
+
+# Configure container startup
+
+USER root
+
+WORKDIR /home/$NB_USER
+EXPOSE 8888
+COPY start-remote-desktop.sh /usr/local/bin/
+COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+COPY trino-wrapper.sh /usr/local/bin/trino
+RUN chmod +x /usr/local/bin/trino
+RUN chsh -s /bin/bash $NB_USER
+
+# Add --user to all pip install calls and point pip to Artifactory repository
+COPY pip.conf /tmp/pip.conf
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
+    && pip config set global.timeout 300
 
 # Removal area
 # Prevent screen from locking

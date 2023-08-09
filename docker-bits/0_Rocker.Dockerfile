@@ -11,7 +11,7 @@ ENV NB_GID="100"
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
-#Fix-permissions
+# Fix Permissions
 COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
 RUN chmod u+x /usr/bin/fix-permissions
 

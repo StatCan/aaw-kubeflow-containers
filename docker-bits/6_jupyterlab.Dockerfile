@@ -92,7 +92,6 @@ RUN pip3 --no-cache-dir install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
