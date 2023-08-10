@@ -11,7 +11,7 @@
 # https://github.com/jupyter/docker-stacks/blob/master/Makefile
 
 # The docker-stacks tag
-DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
+DOCKER-STACKS-UPSTREAM-TAG := 2023-08-07
 
 tensorflow-CUDA := 11.8.0
 pytorch-CUDA    := 11.8.0
@@ -131,6 +131,7 @@ sas:
 		$(SRC)/6_rstudio.Dockerfile\
 		$(SRC)/6_$(@).Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/9_Anaconda.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 
@@ -148,6 +149,7 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/7_remove_vulnerabilities.Dockerfile \
 			$(SRC)/8_platform.Dockerfile \
+			$(SRC)/9_Anaconda.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
 	done
