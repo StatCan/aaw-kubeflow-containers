@@ -87,13 +87,11 @@ pytorch tensorflow: .output
 		$(SRC)/0_cpu.Dockerfile \
 		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
-		$(SRC)/9_Anaconda.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
 cpu: .output
 	$(CAT) \
 		$(SRC)/0_$@.Dockerfile \
-		$(SRC)/9_Anaconda.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
 ################################

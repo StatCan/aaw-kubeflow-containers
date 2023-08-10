@@ -451,7 +451,7 @@ USER $NB_USER
 ###############################
 
 # Install Miniconda
-RUN rm -rf /opt/conda && mkdir -p /opt/conda/bin
+# RUN rm -rf /opt/conda && mkdir -p /opt/conda/bin
 # Has to be appended, else messes with qgis
 ENV PATH $PATH:/opt/conda/bin
 
@@ -478,6 +478,10 @@ RUN mkdir -p /opt/conda/lib/R/etc/ && \
     cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Point conda to Artifactory repository
+RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
+    conda config --remove channels conda-forge --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
+    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 COPY .condarc /tmp/.condarc
 RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
 
