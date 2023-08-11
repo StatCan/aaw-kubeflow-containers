@@ -109,8 +109,10 @@ jobs:
     - name: Get current notebook name
       id: notebook-name
       shell: bash
+      # testing without the -> echo NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
       run: |
-        echo NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
+        echo ::set-output name=NOTEBOOK_NAME::${{ matrix.notebook }}
+        
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
@@ -177,8 +179,8 @@ jobs:
       uses: goodwithtech/dockle-action@main
       with:
         # This seems to not work as expected, it seems to take from Makefile 201 but idk why it fails here
-        # image: ${{ steps.build-image.outputs.full_image_name }}
-        image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+        image: ${{ steps.build-image.outputs.full_image_name }}
+        #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
         format: 'list'
         exit-code: '0'
         # Must determine what we want to do action-wise (fail? let it continue?)
@@ -195,7 +197,8 @@ jobs:
           github.event_name == 'pull_request' &&
           contains( github.event.pull_request.labels.*.name, 'auto-deploy')
         )
-      run: echo 'boolean=true' >> $GITHUB_OUTPUT
+      run: echo "::set-output name=boolean::true"
+      #testing without -> echo 'boolean=true' >> $GITHUB_OUTPUT
 
     # Pull the local image back, then "build" it (will just tag the pulled image)
     - name: Pull image back from local repo
