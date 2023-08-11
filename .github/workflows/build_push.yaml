@@ -176,7 +176,9 @@ jobs:
     - name: Run dockle
       uses: goodwithtech/dockle-action@main
       with:
-        image: ${{ steps.build-image.outputs.full_image_name }}
+        # This seems to not work as expected, it seems to take from Makefile 201 but idk why it fails here
+        # image: ${{ steps.build-image.outputs.full_image_name }}
+        image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
         format: 'list'
         exit-code: '0'
         # Must determine what we want to do action-wise (fail? let it continue?)
