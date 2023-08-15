@@ -95,7 +95,7 @@ export JWT="$(echo /var/run/secrets/kubernetes.io/serviceaccount/token)"
 #  echo "adding include-system-site-packages"
 #fi
 
-echo "Checking for .condarc file in hom directory"
+echo "Checking for .condarc file in home directory"
 if [[ -f "$HOME/.condarc" ]]; then
   echo ".condarc file exists, not going to do anything"
 else

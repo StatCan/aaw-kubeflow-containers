@@ -35,7 +35,7 @@ RUN \
     locale-gen && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     apt-get install -y language-pack-fr-base && \
-    #Needed for right click functions
+    # Needed for right click functions
     apt-get install -y language-pack-gnome-fr && \
     clean-layer.sh
 
