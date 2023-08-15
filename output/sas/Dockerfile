@@ -21,8 +21,8 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
+# Updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
+# TODO: Evaluate if this is still necessary when updating the base image
 RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
@@ -288,7 +288,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-noteboo
 ###  docker-bits/6_rstudio.Dockerfile
 ###############################
 
-# install rstudio-server
+# Install rstudio-server
 ARG RSTUDIO_VERSION=2023.06.0-421
 ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
 RUN apt-get update && \
@@ -298,7 +298,7 @@ RUN apt-get update && \
     apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
     apt-get update && apt-get -y dist-upgrade
 
-#install libssl1.1 dependency for rstudio-server on ubuntu 22.04
+# Install libssl1.1 dependency for rstudio-server on ubuntu 22.04
 RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
     sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
 
