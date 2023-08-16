@@ -200,7 +200,7 @@ build/%: ## build the latest image
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
 	echo "image_tag=$(TAG)" >> $(GITHUB_OUTPUT) && \
-	echo "image_repo=${REPO}" >> $(GITHUB_OUTPUT)
+	echo "image_repo=$${REPO}" >> $(GITHUB_OUTPUT)
 
 post-build/%: export REPO?=$(DEFAULT_REPO)
 post-build/%: export TAG?=$(DEFAULT_TAG)
