@@ -31,423 +31,43 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
-USER root
 
-# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'PyYAML==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==7.1.13' \
-      'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.5.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-COPY aaw-suspend-server.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
 ###############################
 
-USER root
 
-# Dependencies
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
-      'jq' \
-      'less' \
-      'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
-      'zip' \
-      'zsh' \
-      'wget' \
-      'curl' \
-      'dos2unix' \
-  && \
-    rm -rf /var/lib/apt/lists/*
-
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
-
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
-
-ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
-
-ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
-ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
-
-ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
-ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
-
-ARG ARGO_CLI_VERSION=v3.4.5
-ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
-ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
-
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
-
-# Install OpenJDK-8
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jre && \
-    apt-get clean && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-
-RUN \ 
-    # kubectl
-    curl -LO "${KUBECTL_URL}" \
-    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
-    && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
-  && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
-    && bash InstallAzureCLIDeb \
-    && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" \
-  && \
-    # zsh
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok" \
-  && \
-    # trino cli
-    wget -q "${TRINO_URL}" -O /tmp/trino-original \
-    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
-    && echo "trinocli: ok" \
-    && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
-  && \
-    # argo cli
-    curl -sLO  ${ARGO_CLI_URL}\
-    && echo "${ARGO_CLI_SHA}  argo-linux-amd64.gz"  | sha256sum -c - \
-    && gunzip argo-linux-amd64.gz \
-    && chmod +x argo-linux-amd64 \
-    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
-    && argo version
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
 ###############################
 
-# ODBC drivers
-RUN apt-get update && \
-    apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
-    rm -rf /var/lib/apt/lists/* && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+
 
 ###############################
 ###  docker-bits/6_jupyterlab.Dockerfile
 ###############################
 
-# installs vscode server, python & conda packages and jupyter lab extensions.
 
-# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support
-# this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
-    # jupyterlab-kale
-    # jupyterlab-variableinspector
-    # jupyterlab-archive
-    # jupyterlab-spellchecker
-    # jupyterlab-spreadsheet
-
-# Install vscode
-ARG VSCODE_VERSION=4.10.0
-ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
-ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
-USER root
-
-ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV XDG_DATA_HOME=/etc/share
-ENV SERVICE_URL=https://extensions.coder.com/api
-
-RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
-    && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
-    && apt-get update \
-    && apt-get install -y nginx \
-    && dpkg -i ./vscode.deb \
-    && rm ./vscode.deb \
-    && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $HOME/.local/share \
-    && mkdir -p $XDG_DATA_HOME/code-server/extensions
-
-COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
-# Fix for VSCode extensions and CORS
-# Languagepacks.json needs to exist for code-server to recognize the languagepack
-COPY languagepacks.json $XDG_DATA_HOME/code-server/
-ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
-
-RUN code-server --install-extension ms-python.python@2022.16.1 && \
-    code-server --install-extension REditorSupport.r@2.7.0 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
-    code-server --install-extension quarto.quarto@1.53.1 && \
-    fix-permissions $XDG_DATA_HOME
-
-# Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.41.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
-    jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
-      '@jupyterlab/server-proxy@2.1.2' \
-      'jupyterlab-plotly@4.14.3' \
-      'nbdime-jupyterlab' \
-    && \
-    jupyter lab build && \
-    jupyter lab clean && \
-  npm cache clean --force && \
-  rm -rf /home/$NB_USER/.cache/yarn && \
-  rm -rf /home/$NB_USER/.node-gyp && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
-
-# Update and pin packages
-# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-
-# Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
-    && \
-    conda install -c conda-forge \
-      'r-languageserver' \
-      'python-lsp-server' \
-    && \
-    npm i -g \
-    'bash-language-server'  \
-    'dockerfile-language-server-nodejs' \
-    'javascript-typescript-langserver' \
-    'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# Solarized Theme and Cell Execution Time
-COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
-
-ENV DEFAULT_JUPYTER_URL=/lab
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
 
 ###############################
 ###  docker-bits/6_rstudio.Dockerfile
 ###############################
 
-# install rstudio-server
-ARG RSTUDIO_VERSION=2023.06.0-421
-ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
-RUN apt-get update && \
-    apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
-    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
-    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" && \
-    apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
-    apt-get update && apt-get -y dist-upgrade
 
-#install libssl1.1 dependency for rstudio-server on ubuntu 22.04
-RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb && \
-    sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-
-RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
-    echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
-    apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
-    rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    #Harden rstudio-server
-    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
-    echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
-    echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
-    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
-ENV PATH=$PATH:/usr/lib/rstudio-server/bin
-
-# Install some default R packages
-RUN conda install --quiet --yes \
-      'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
-      'r-tidyverse==1.3.2' \
-      'r-arrow==12.0.0' \
-      'r-aws.s3==0.3.22' \
-      'r-catools==1.18.2' \
-      'r-hdf5r==1.3.8' \
-      'r-odbc==1.3.4' \
-      'r-sf==1.0_12' \
-      'r-e1071==1.7_13' \
-      'r-markdown==1.7' \
-    && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-shiny-proxy==1.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-# If using the docker bit in other Dockerfiles, this must get written over in a later layer
-ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/6_sas.Dockerfile
 ###############################
 
-# SAS
 
-# Install Quarto
-ARG QUARTO_VERSION=1.4.176
-ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
-
-RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
-    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
-    tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
-    chmod +x /tmp/quarto-${QUARTO_VERSION} && \
-    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
-
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
-
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
-
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmagic1 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    usermod -a -G sasstaff jovyan && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
-
-WORKDIR /home/sas
-
-ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
-
-ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
-
-RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
-
-ENV SAS_HADOOP_JAR_PATH=/opt/hadoop
-
-EXPOSE 8561 8591 38080
-
-# SASPY
-
-ENV SASPY_VERSION="4.1.0"
-
-RUN pip install sas_kernel
-
-COPY sascfg.py /opt/conda/lib/python3.9/site-packages/saspy/sascfg.py
-
-RUN jupyter nbextension install --py sas_kernel.showSASLog && \
-    jupyter nbextension enable sas_kernel.showSASLog --py && \
-    jupyter nbextension install --py sas_kernel.theme && \
-    jupyter nbextension enable sas_kernel.theme --py && \
-    jupyter nbextension list
-
-# Jupyter SASStudio Proxy
-
-COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
-RUN pip install /opt/jupyter-sasstudio-proxy/
-
-# Must be set in deepest image
-ENV DEFAULT_JUPYTER_URL=/lab 
-
-# SAS GConfid
-
-COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
-COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
-
-# Enable X command on SAS Studio
-COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
-# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
-# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
-# This line of code should be removed once a solution or better alternative is found.
-USER root
-RUN apt-get update --yes \
-    && dpkg -r --force-depends libpdfbox-java \
-    && rm -rf /var/lib/apt/lists/*
 
-# Forcibly upgrade packages to patch vulnerabilities
-# See https://github.com/StatCan/aaw-private/issues/58#issuecomment-1471863092 for more details.
-RUN pip3 --no-cache-dir install --quiet \
-      'wheel==0.40.0' \
-      'setuptools==67.6.0' \
-      'pyjwt==2.6.0' \
-      'oauthlib==3.2.2' \
-      'mpmath==1.3.0' \
-      'lxml==4.9.2' \
-      && fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-USER $NB_USER
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
