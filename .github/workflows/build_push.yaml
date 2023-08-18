@@ -40,13 +40,14 @@ env:
 jobs:
   # Any checks that run pre-build
   pre-build-checks:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
 
     - name: Assert committed ./output folder matches `make generate-dockerfiles` output
       run: |
         sudo apt-get install --yes make
+        sudo swapon --show
         make clean
         make generate-dockerfiles
         if ! git diff --quiet output/; then
