@@ -252,7 +252,7 @@ RUN \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" 
+    && echo "azcli: ok" \
   && \
     # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
