@@ -47,13 +47,21 @@ jobs:
     - name: Assert committed ./output folder matches `make generate-dockerfiles` output
       run: |
         sudo apt-get install --yes make
-        sudo swapon --show
         make clean
         make generate-dockerfiles
         if ! git diff --quiet output/; then
             echo 'output folder and docker-bits/resources out of sync!'
             exit 1
         fi
+    # idk try anything at this point
+    - name: Increase swapfile
+      run: |
+        sudo swapoff -a
+        sudo fallocate -l 15G /swapfile
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+        sudo swapon --show
         
   build-push:
     env:
