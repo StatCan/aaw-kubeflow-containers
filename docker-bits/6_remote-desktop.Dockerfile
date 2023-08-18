@@ -66,8 +66,6 @@ RUN \
     apt-get install -y --no-install-recommends sqlitebrowser && \
     # Install nautilus and support for sftp mounting
     apt-get install -y --no-install-recommends nautilus gvfs-backends && \
-    # Install gigolo - Access remote systems
-    apt-get install -y --no-install-recommends gigolo gvfs-bin && \
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...

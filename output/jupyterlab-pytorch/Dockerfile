@@ -201,18 +201,10 @@ USER root
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
       'jq' \
       'less' \
       'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
       'zip' \
-      'zsh' \
       'wget' \
       'curl' \
       'dos2unix' \
@@ -260,12 +252,7 @@ RUN \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" \
-  && \
-    # zsh
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok" \
+    && echo "azcli: ok" 
   && \
     # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \

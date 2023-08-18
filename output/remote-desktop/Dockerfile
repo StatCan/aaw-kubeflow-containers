@@ -72,18 +72,10 @@ USER root
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-      'byobu' \
-      'htop' \
       'jq' \
       'less' \
       'openssl' \
-      'ranger' \
-      'tig' \
-      'tmux' \
-      'tree' \
-      'vim' \
       'zip' \
-      'zsh' \
       'wget' \
       'curl' \
       'dos2unix' \
@@ -131,12 +123,7 @@ RUN \
     curl -sLO https://aka.ms/InstallAzureCLIDeb \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
-    && echo "azcli: ok" \
-  && \
-    # zsh
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
-    && echo "oh-my-zsh: ok" \
+    && echo "azcli: ok" 
   && \
     # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
@@ -225,8 +212,6 @@ RUN \
     apt-get install -y --no-install-recommends sqlitebrowser && \
     # Install nautilus and support for sftp mounting
     apt-get install -y --no-install-recommends nautilus gvfs-backends && \
-    # Install gigolo - Access remote systems
-    apt-get install -y --no-install-recommends gigolo gvfs-bin && \
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
