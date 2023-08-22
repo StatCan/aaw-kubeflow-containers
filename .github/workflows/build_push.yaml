@@ -115,9 +115,11 @@ jobs:
         path: |
           ~/.npm
           ~/.conda/pkgs
-          ~/.cache
+          ~/.cache/pip
+          ~/.cache/go-build
+          ~/go/pkg/mod
           ~/.local/share/code-server/extensions
-        key: ${{ runner.os }}-build-${{ github.ref_name }}
+        key: ${{ matrix.notebook }}-${{ runner.os }}-cache-${{ github.ref_name }}
 
     - name: Get current notebook name
       id: notebook-name
