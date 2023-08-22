@@ -53,15 +53,6 @@ jobs:
             echo 'output folder and docker-bits/resources out of sync!'
             exit 1
         fi
-    # idk try anything at this point
-    - name: Increase swapfile
-      run: |
-        sudo swapoff -a
-        sudo fallocate -l 15G /swapfile
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
-        sudo swapon --show
         
   build-push:
     env:
@@ -77,12 +68,12 @@ jobs:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           # - docker-stacks-datascience-notebook # Debugging
-          #- rstudio
-          #- sas
-          #- jupyterlab-cpu
-          #- jupyterlab-pytorch
+          - rstudio
+          - sas
+          - jupyterlab-cpu
+          - jupyterlab-pytorch
           - jupyterlab-tensorflow
-          #- remote-desktop
+          - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
@@ -118,9 +109,8 @@ jobs:
     - name: Get current notebook name
       id: notebook-name
       shell: bash
-      # testing without the -> echo NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
       run: |
-        echo ::set-output name=NOTEBOOK_NAME::${{ matrix.notebook }}
+        cho NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
         
 
     # Connect to Azure Container registry (ACR)
@@ -187,13 +177,11 @@ jobs:
     - name: Run dockle
       uses: goodwithtech/dockle-action@main
       with:
-        # This seems to not work as expected, it seems to take from Makefile 201 but idk why it fails here
         image: ${{ steps.build-image.outputs.full_image_name }}
         #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
         format: 'list'
         exit-code: '0'
-        # Must determine what we want to do action-wise (fail? let it continue?)
-        # exit-level: 'fatal'
+        exit-level: 'fatal'
         ignore: 'DKL-DI-0006'   
 
     # Push image to ACR
@@ -206,8 +194,7 @@ jobs:
           github.event_name == 'pull_request' &&
           contains( github.event.pull_request.labels.*.name, 'auto-deploy')
         )
-      run: echo "::set-output name=boolean::true"
-      #testing without -> echo 'boolean=true' >> $GITHUB_OUTPUT
+      run: echo 'boolean=true' >> $GITHUB_OUTPUT
 
     # Pull the local image back, then "build" it (will just tag the pulled image)
     - name: Pull image back from local repo
