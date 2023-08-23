@@ -154,6 +154,7 @@ jobs:
         curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${{ env.DOCKLE_VERSION }}/dockle_${{ env.DOCKLE_VERSION }}_Linux-64bit.deb && sudo dpkg -i dockle.deb && rm dockle.deb
         echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
         echo ${{ steps.build-image.outputs.full_image_name }}
+        echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
         dockle --exit-code 0 --timeout 9000s --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
     #  uses: goodwithtech/dockle-action@main
     #  with:
