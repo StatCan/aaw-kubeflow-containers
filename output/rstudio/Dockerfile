@@ -169,7 +169,8 @@ RUN apt-get update && \
 ###############################
 
 # Harden rstudio-server
-RUN echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
+RUN mkdir -p /etc/rstudio && \
+    echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
