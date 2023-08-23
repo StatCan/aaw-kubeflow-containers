@@ -25,7 +25,7 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/r
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
-RUN conda install --quiet --yes \
+RUN mamba install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidymodels==1.0.0' \
       'r-tidyverse==1.3.2' \
@@ -38,7 +38,7 @@ RUN conda install --quiet --yes \
       'r-e1071==1.7_13' \
       'r-markdown==1.7' \
     && \
-    conda clean --all -f -y && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 

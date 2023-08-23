@@ -107,7 +107,7 @@ jobs:
       run: ./.github/scripts/echo_usage.sh
 
     - name: Cache build artifacts
-      id: cache-build
+      id: cache-build-artifacts
       uses: actions/cache@v3
       env:
         cache-name: cache-build-modules
@@ -118,8 +118,16 @@ jobs:
           ~/.cache/pip
           ~/.cache/go-build
           ~/go/pkg/mod
-          ~/.local/share/code-server/extensions
         key: ${{ matrix.notebook }}-${{ runner.os }}-cache-${{ github.ref_name }}
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        # Key is named differently to avoid collision
+        key: ${{ runner.os }}-multi-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-multi-buildx
 
     - name: Get current notebook name
       id: notebook-name
@@ -141,6 +149,10 @@ jobs:
         username: ${{ secrets.DEV_REGISTRY_USERNAME }}
         password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     
+    # Setup build envrionment
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     # Image building/storing locally
     - name: Make Dockerfiles
       run: make generate-dockerfiles

@@ -6,7 +6,7 @@
 ARG BASE_VERSION=ed2908bbb62e
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM jupyter/datascience-notebook:$BASE_VERSION
+FROM jupyter/datascience-notebook:$BASE_VERSION 
 
 USER root
 
