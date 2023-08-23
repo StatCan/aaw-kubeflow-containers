@@ -63,6 +63,7 @@ jobs:
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
       DOCKLE_VERSION: "0.4.13"
+      DOCKLE_HOST: "unix:///var/run/docker.sock"
     strategy:
       fail-fast: false
       matrix:
