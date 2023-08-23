@@ -62,6 +62,7 @@ jobs:
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
+      DOCKLE_VERSION: "0.4.13"
     strategy:
       fail-fast: false
       matrix:
@@ -145,6 +146,23 @@ jobs:
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
+    # Run Dockle
+    - name: Run dockle
+      run : |
+        echo "DKL-DI-0006" > .dockleignore
+        curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${{ env.DOCKLE_VERSION }}/dockle_${{ env.DOCKLE_VERSION }}_Linux-64bit.deb && sudo dpkg -i dockle.deb && rm dockle.deb
+        echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+        echo ${{ steps.build-image.outputs.full_image_name }}
+        dockle --exit-code 0 --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+    #  uses: goodwithtech/dockle-action@main
+    #  with:
+    #    image: ${{ steps.build-image.outputs.full_image_name }}
+    #    #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+    #    format: 'list'
+    #    exit-code: '0'
+    #   exit-level: 'fatal'
+    #    ignore: 'DKL-DI-0006'  
+    
     # Image testing
 
     - name: Set Up Python for Test Suite
@@ -160,8 +178,6 @@ jobs:
     - name: Test image
       run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
-    # Image scanning
-
     # Free up space from build process (containerscan action will run out of space if we don't)
     - run: ./.github/scripts/cleanup_runner.sh
 
@@ -171,19 +187,8 @@ jobs:
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-
-    # Run Dockle
-    - name: Run dockle
-      uses: goodwithtech/dockle-action@main
-      with:
-        image: ${{ steps.build-image.outputs.full_image_name }}
-        #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-        format: 'list'
-        exit-code: '0'
-        exit-level: 'fatal'
-        ignore: 'DKL-DI-0006'   
-
+        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL 
+    
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
     - name: Test if we should push to ACR
@@ -200,7 +205,7 @@ jobs:
     - name: Pull image back from local repo
       if: steps.should-i-push.outputs.boolean == 'true'
       run: docker pull ${{ steps.build-image.outputs.full_image_name }}
-
+    
     # Rename the localhost:5000/imagename:tag built above to use the real repo
     # (get above's name from build-image's output)
     - name: Tag images with real repository
