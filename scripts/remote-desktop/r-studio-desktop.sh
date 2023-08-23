@@ -3,9 +3,9 @@
 # Stops script execution if a command has an error
 set -e
 
-VERSION=2023.06.1-524
+VERSION=2023.06.0-421
 RELEASE=jammy
-SHA256=c030ec8338f1c76b3ae27997ec4411a0af43b2367dedb3d48e95c319b5425698
+SHA256=ae9dc07471a8a83f3f8b5c95b6ae77fdc456163a43915768f312e626dac3a6fc
 
 if ! hash rstudio 2>/dev/null; then
     echo "Installing RStudio Desktop. Please wait..."
