@@ -119,7 +119,7 @@ jobs:
           ~/.cache/pip
           ~/.cache/go-build
           ~/go/pkg/mod
-        key: ${{ matrix.notebook }}-${{ runner.os }}-cache
+        key: ${{ runner.os }}-cache-${{ github.ref_name }}
 
     - name: Cache Docker layers
       id: cache-docker-layers
