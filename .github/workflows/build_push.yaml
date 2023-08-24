@@ -114,11 +114,12 @@ jobs:
       with:
         path: |
           ~/.npm
+          ~/.yarn
           ~/.conda/pkgs
           ~/.cache/pip
           ~/.cache/go-build
           ~/go/pkg/mod
-        key: ${{ matrix.notebook }}-${{ runner.os }}-cache-${{ github.ref_name }}
+        key: ${{ matrix.notebook }}-${{ runner.os }}-cache
 
     - name: Cache Docker layers
       uses: actions/cache@v3
