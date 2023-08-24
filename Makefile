@@ -199,10 +199,11 @@ build/%: ## build the latest image
 	docker buildx build $(DARGS) --rm --force-rm \
 	--cache-from=type=local,src=/tmp/.buildx-cache \
 	--cache-to=type=local,mode=max,dest=/tmp/.buildx-cache-new \
-	-o type=docker,dest=local --tag=$(TAG) \
+	-o type=docker,dest=${REPO} --tag=$(TAG) \
 	-t $$IMAGE_NAME ./output/$(notdir $@) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
+	echo docker images >> $(GITHUB_OUTPUT) && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
 	echo "image_tag=$(TAG)" >> $(GITHUB_OUTPUT) && \
 	echo "image_repo=$${REPO}" >> $(GITHUB_OUTPUT)
