@@ -107,7 +107,7 @@ jobs:
       run: ./.github/scripts/echo_usage.sh
 
     - name: Cache build artifacts
-      id: cache-build-artifacts
+      id: cache-build-modules
       uses: actions/cache@v3
       env:
         cache-name: cache-build-modules
@@ -122,7 +122,10 @@ jobs:
         key: ${{ matrix.notebook }}-${{ runner.os }}-cache
 
     - name: Cache Docker layers
+      id: cache-docker-layers
       uses: actions/cache@v3
+      env:
+        cache-name: cache-docker-layers
       with:
         path: /tmp/.buildx-cache
         # Key is named differently to avoid collision
