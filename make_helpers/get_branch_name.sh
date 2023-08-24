@@ -21,7 +21,6 @@ if [[ $GITHUB_ACTIONS == "true" ]] ; then
 		BRANCH_NAME=""
 	fi
 
-	# echo "::set-output name=branch_name::$BRANCH_NAME"
 else
 	BRANCH_NAME=`git rev-parse --abbrev-ref HEAD`
 fi

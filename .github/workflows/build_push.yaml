@@ -137,7 +137,7 @@ jobs:
       id: notebook-name
       shell: bash
       run: |
-        echo ::set-output name=NOTEBOOK_NAME::${{ matrix.notebook }}
+        echo NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
@@ -214,7 +214,7 @@ jobs:
           github.event_name == 'pull_request' &&
           contains( github.event.pull_request.labels.*.name, 'auto-deploy')
         )
-      run: echo "::set-output name=boolean::true"
+      run: echo 'boolean=true' >> $GITHUB_OUTPUT
 
     # Pull the local image back, then "build" it (will just tag the pulled image)
     - name: Pull image back from local repo
