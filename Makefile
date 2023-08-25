@@ -39,6 +39,7 @@ GIT_SHA := $(shell git rev-parse HEAD)
 # so don't rely on it when on the GH runners!
 DEFAULT_TAG := $(shell ./make_helpers/get_branch_name.sh)
 BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
+GITHUB_OUTPUT := /tmp/github_output.log
 
 # Other
 DEFAULT_PORT := 8888
@@ -195,15 +196,14 @@ build/%: ## build the latest image
 	# End repo with exactly one trailing slash, unless it is empty
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
-	docker buildx create --use && \
+	docker buildx create --name aaw-builder --use --bootstrap --append --node aaw-builder0 && \
 	docker buildx build $(DARGS) --rm --force-rm \
 	--cache-from=type=local,src=/tmp/.buildx-cache \
-	--cache-to=type=local,mode=max,dest=/tmp/.buildx-cache-new \
-	-o type=docker,dest=${REPO} --tag=$(TAG) \
+	--cache-to=type=local,mode=max,dest=/tmp/.buildx-cache \
+	-o type=docker --tag=$(TAG) \
 	-t $$IMAGE_NAME ./output/$(notdir $@) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
-	echo docker images >> $(GITHUB_OUTPUT) && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
 	echo "image_tag=$(TAG)" >> $(GITHUB_OUTPUT) && \
 	echo "image_repo=$${REPO}" >> $(GITHUB_OUTPUT)
