@@ -39,7 +39,11 @@ GIT_SHA := $(shell git rev-parse HEAD)
 # so don't rely on it when on the GH runners!
 DEFAULT_TAG := $(shell ./make_helpers/get_branch_name.sh)
 BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
-GITHUB_OUTPUT := /tmp/github_output.log
+
+# Set github output variable for local builds
+ifndef GITHUB_OUTPUT
+	GITHUB_OUTPUT := /tmp/github_output.log
+endif
 
 # Other
 DEFAULT_PORT := 8888
