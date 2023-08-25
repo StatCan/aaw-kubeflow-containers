@@ -9,7 +9,6 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \
