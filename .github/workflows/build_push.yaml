@@ -84,12 +84,14 @@ jobs:
         ports:
           - 5000:5000
     steps:
+    
+    # Cant do this.
     #https://stackoverflow.com/questions/49674004/docker-repository-server-gave-http-response-to-https-client
-    - name: Testing, setting up dockle things clean up if workspace
-      run: | 
-        cat /etc/docker/daemon.json
-        sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
-        sudo systemctl docker reload
+    #- name: Testing, setting up dockle things clean up if workspace
+    #  run: | 
+    #    cat /etc/docker/daemon.json
+        #sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
+        #sudo systemctl docker reload
 
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
@@ -151,26 +153,31 @@ jobs:
     - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
       run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
+    - name: debug lmao
+      run : |
+        echo ${{ steps.build-image.outputs.full_image_name }}
+        echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+    - name: Run Dockle
+      uses: goodwithtech/dockle-action@main
+      with: 
+        #image: ${{ steps.build-image.outputs.full_image_name }}
+        image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+        format: 'list'
+        exit-code: '0'
+        exit-level: 'fatal'
+        ignore: 'DKL-DI-0006'
+
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Run Dockle
-    - name: Run dockle
-      run : |
-        echo "DKL-DI-0006" > .dockleignore
-        curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${{ env.DOCKLE_VERSION }}/dockle_${{ env.DOCKLE_VERSION }}_Linux-64bit.deb && sudo dpkg -i dockle.deb && rm dockle.deb
-        echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-        echo ${{ steps.build-image.outputs.full_image_name }}
-        dockle --exit-code 0 --timeout 90000s --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-    #  uses: goodwithtech/dockle-action@main
-    #  with: 
-    # sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json -> permission denied
-    #    image: ${{ steps.build-image.outputs.full_image_name }}
-    #    #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-    #    format: 'list'
-    #    exit-code: '0'
-    #   exit-level: 'fatal'
-    #    ignore: 'DKL-DI-0006'  
+    #- name: Run dockle
+    #  run : |
+    #    echo "DKL-DI-0006" > .dockleignore
+    #    curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${{ env.DOCKLE_VERSION }}/dockle_${{ env.DOCKLE_VERSION }}_Linux-64bit.deb && sudo dpkg -i dockle.deb && rm dockle.deb
+    #    echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+    #    echo ${{ steps.build-image.outputs.full_image_name }}
+    #    dockle --exit-code 0 --timeout 90000s --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
     
     # Image testing
 
