@@ -157,11 +157,13 @@ jobs:
       run : |
         echo ${{ steps.build-image.outputs.full_image_name }}
         echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+        docker tag localhost:5000/${{ matrix.notebook }}:${{ github.sha }} ${{ matrix.notebook }}:dockleme
     - name: Run Dockle
       uses: goodwithtech/dockle-action@main
       with: 
+      # try tagging image
         #image: ${{ steps.build-image.outputs.full_image_name }}
-        image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
+        image: ${{ matrix.notebook }}:dockleme
         format: 'list'
         exit-code: '0'
         exit-level: 'fatal'
