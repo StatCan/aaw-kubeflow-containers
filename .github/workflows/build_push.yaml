@@ -84,6 +84,13 @@ jobs:
         ports:
           - 5000:5000
     steps:
+    #https://stackoverflow.com/questions/49674004/docker-repository-server-gave-http-response-to-https-client
+    - name: Testing, setting up dockle things clean up if workspace
+      run: | 
+        cat /etc/docker/daemon.json
+        sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
+        sudo systemctl docker reload
+
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
       run: | 
@@ -157,7 +164,7 @@ jobs:
         dockle --exit-code 0 --timeout 90000s --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
     #  uses: goodwithtech/dockle-action@main
     #  with: 
-    # sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
+    # sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json -> permission denied
     #    image: ${{ steps.build-image.outputs.full_image_name }}
     #    #image: localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
     #    format: 'list'
@@ -189,8 +196,8 @@ jobs:
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL 
-    
+        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
+
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
     - name: Test if we should push to ACR
@@ -207,7 +214,7 @@ jobs:
     - name: Pull image back from local repo
       if: steps.should-i-push.outputs.boolean == 'true'
       run: docker pull ${{ steps.build-image.outputs.full_image_name }}
-    
+
     # Rename the localhost:5000/imagename:tag built above to use the real repo
     # (get above's name from build-image's output)
     - name: Tag images with real repository
