@@ -72,8 +72,8 @@ EXCLUDED_PACKAGES = [
     'python-lsp-server',
     'jupyterlab-translate',
     'jupyter-dash',
-    "jupyter-pluto-proxy",
-    "jupyterlab-git",
+    #"jupyter-pluto-proxy",
+    #"jupyterlab-git",
     # Other
     "conda-forge::blas[build=openblas]",
     "protobuf",
