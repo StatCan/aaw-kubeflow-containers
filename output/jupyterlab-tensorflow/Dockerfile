@@ -307,8 +307,8 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.10.0
-ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
+ARG VSCODE_VERSION=4.16.1
+ARG VSCODE_SHA=d468ce8e92a14effbf7e0297b95e70b644b505646ae9afb87cbce6f683e03891
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
@@ -340,30 +340,25 @@ RUN code-server --install-extension ms-python.python@2022.16.1 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
+RUN conda install --quiet --yes -c conda-forge \
+      'jupyter-lsp==2.2.0' \
+      'jupyter-server-proxy==4.0.0' \
+      'jupyterlab_execute_time==3.0.1' \
+      'markupsafe==2.1.3' \
+      'jupyterlab-git==0.42.0' \
+      'jupyterlab-lsp==4.2.0' \
+      'jupyterlab-language-pack-fr-FR==4.0.post0' \
+      'ipywidgets==8.1.0' \
       'ipympl==0.9.3' \
       'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.42.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
+      'nb_conda_kernels==2.3.1'
+
+RUN pip install 'git+https://github.com/betatim/vscode-binder'
+
+RUN conda install --quiet --yes -c plotly \
+      'jupyter-dash==0.4.2'
+
+RUN conda clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
