@@ -359,7 +359,7 @@ RUN pip install --quiet \
       'jupyter-dash==0.4.2' \
     && \
     pip install \
-      'jupyterlab-git==0.41.0' \
+      'jupyterlab-git==0.42.0' \
       'jupyterlab-lsp==3.10.2' \
       'jupyterlab-language-pack-fr-FR' \
     && \
