@@ -398,7 +398,7 @@ RUN mamba clean --all -f -y && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Install python, R, Julia and other useful language servers
+# Install Python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
     mamba install -c conda-forge \
