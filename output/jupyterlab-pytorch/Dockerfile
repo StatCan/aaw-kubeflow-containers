@@ -336,32 +336,52 @@ COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
 ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN code-server --install-extension ms-python.python@2022.16.1 && \
-    code-server --install-extension REditorSupport.r@2.7.0 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
-    code-server --install-extension quarto.quarto@1.53.1 && \
+RUN code-server --install-extension ms-python.python@2023.15.12411005 && \
+    code-server --install-extension REditorSupport.r@2.8.1 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.82.2023082309 && \
+    code-server --install-extension quarto.quarto@1.95.1 && \
     fix-permissions $XDG_DATA_HOME
 
 # Default environment
-RUN conda install --quiet --yes -c conda-forge \
-      'jupyter-lsp==2.2.0' \
-      'jupyter-server-proxy==4.0.0' \
-      'jupyterlab_execute_time==3.0.1' \
-      'markupsafe==2.1.3' \
-      'jupyterlab-git==0.42.0' \
-      'jupyterlab-lsp==4.2.0' \
-      'jupyterlab-language-pack-fr-FR==4.0.post0' \
-      'ipywidgets==8.1.0' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1'
+RUN pip3 --no-cache-dir install --quiet \
+    'pillow==10.0.0' \
+    'notebook==7.0.2' \
+    'pyyaml==6.0.1' \
+    'jupyter-lsp==2.2.0' \
+    'jupyter-server-proxy==4.0.0' \
+    'jupyter_contrib_nbextensions==0.7.0' && \
+  fix-permissions $CONDA_DIR && \
+  fix-permissions /home/$NB_USER
+
+RUN pip3 --no-cache-dir install --quiet \
+    'jupyterlab==4.0.5'
+
+RUN pip3 --no-cache-dir install --quiet \
+    'jupyterlab_execute_time==3.0.1'
+
+RUN pip3 --no-cache-dir install --quiet \
+    'jupyterlab-git==0.42.0'
+
+RUN pip3 --no-cache-dir install --quiet \
+    'jupyterlab-lsp==4.2.0'
+
+RUN pip3 --no-cache-dir install --quiet \
+    'jupyterlab-language-pack-fr-FR==4.0.post0'
+
+RUN pip3 --no-cache-dir install --quiet \
+    'markupsafe==2.1.3' \
+    'ipywidgets==8.1.0' \
+    'ipympl==0.9.3'
+
+RUN mamba install --quiet --yes -c conda-forge \
+    'nb_conda_kernels==2.3.1'
 
 RUN pip install 'git+https://github.com/betatim/vscode-binder'
 
-RUN conda install --quiet --yes -c plotly \
+RUN mamba install --quiet --yes -c plotly \
       'jupyter-dash==0.4.2'
 
-RUN conda clean --all -f -y && \
+RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
@@ -378,35 +398,20 @@ RUN conda clean --all -f -y && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-# Update and pin packages
-# See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
-    conda install -c conda-forge \
-      'r-languageserver' \
-      'python-lsp-server' \
+    mamba install -c conda-forge \
+      'r-languageserver==0.3.16' \
+      'python-lsp-server==1.7.4' \
     && \
     npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
+    'yaml-language-server@0.18.0' && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
