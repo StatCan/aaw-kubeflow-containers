@@ -62,8 +62,6 @@ jobs:
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
-      DOCKLE_VERSION: "0.4.13"
-      DOCKLE_HOST: "unix:///var/run/docker.sock"
       HADOLINT_VERSION: "2.12.0"
     strategy:
       fail-fast: false
@@ -85,15 +83,6 @@ jobs:
         ports:
           - 5000:5000
     steps:
-    
-    # Cant do this.
-    #https://stackoverflow.com/questions/49674004/docker-repository-server-gave-http-response-to-https-client
-    #- name: Testing, setting up dockle things clean up if workspace
-    #  run: | 
-    #    cat /etc/docker/daemon.json
-        #sudo echo '{ "insecure-registries":["localhost:5000"] }' > /etc/docker/daemon.json
-        #sudo systemctl docker reload
-
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
       run: | 
@@ -123,7 +112,6 @@ jobs:
       shell: bash
       run: |
         echo NOTEBOOK_NAME=${{ matrix.notebook }} >> $GITHUB_OUTPUT
-        
 
     # Connect to Azure Container registry (ACR)
     - uses: azure/docker-login@v1
@@ -143,13 +131,6 @@ jobs:
     - name: Make Dockerfiles
       run: make generate-dockerfiles
 
-    #./output/jupyterlab-cpu/Dockerfile
-    # The action tries to use the dockerfile looks like we install again.
-    #- name: Run Hadolint
-      #uses: hadolint/hadolint-action@v3.1.0
-      #with:
-      #  dockerfile: output/${{ matrix.notebook }}/
-      #  no-fail: true
     - name: Run Hadolint
       run:  |
         # this is literally a binary dont need
@@ -170,23 +151,6 @@ jobs:
     - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
       run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
-    #- name: debug lmao
-    #  run : |
-    #    echo ${{ steps.build-image.outputs.full_image_name }}
-    #    echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-    #    docker tag localhost:5000/${{ matrix.notebook }}:${{ github.sha }} ${{ matrix.notebook }}:dockleme
-
-    #- name: Run Dockle
-    #  uses: goodwithtech/dockle-action@main
-    #  with: 
-      # try tagging image
-        #image: ${{ steps.build-image.outputs.full_image_name }}
-    #    image: ${{ matrix.notebook }}:dockleme
-    #    format: 'list'
-    #    exit-code: '0'
-    #    exit-level: 'fatal'
-    #    ignore: 'DKL-DI-0006'
-
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
     # Image testing
@@ -206,20 +170,6 @@ jobs:
 
     # Free up space from build process (containerscan action will run out of space if we don't)
     - run: ./.github/scripts/cleanup_runner.sh
-
-    # Run Dockle
-    #- name: Run dockle
-    #  run : |
-    #    echo "DKL-DI-0006" > .dockleignore
-    #    curl -L -o dockle.deb https://github.com/goodwithtech/dockle/releases/download/v${{ env.DOCKLE_VERSION }}/dockle_${{ env.DOCKLE_VERSION }}_Linux-64bit.deb && sudo dpkg -i dockle.deb && rm dockle.deb
-    #    echo localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
-    #    echo ${{ steps.build-image.outputs.full_image_name }}
-    #   # docker tag localhost:5000/${{ matrix.notebook }}:${{ github.sha }} ${{ matrix.notebook }}:dockleme
-    #   #echo ${{ matrix.notebook }}:dockleme
-    #   docker save localhost:5000/${{ matrix.notebook }}:${{ github.sha }} -o dockle.tar
-    #    dockle --input dockle.tar --exit-code 0 --timeout 90000s --exit-level fatal
-        #dockle --exit-code 0 --timeout 90000s --exit-level fatal ${{ matrix.notebook }}:dockleme
-        # dockle --exit-code 0 --timeout 90000s --exit-level fatal localhost:5000/${{ matrix.notebook }}:${{ github.sha }}
 
     # Scan image for vulnerabilities
     - name: Aqua Security Trivy image scan
