@@ -62,6 +62,7 @@ jobs:
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
+      HADOLINT_VERSION: "2.12.0"
     strategy:
       fail-fast: false
       matrix:
@@ -130,6 +131,12 @@ jobs:
     - name: Make Dockerfiles
       run: make generate-dockerfiles
 
+    - name: Run Hadolint
+      run:  |
+        sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
+        sudo chmod +x hadolint
+        ./hadolint output/${{ matrix.notebook }}/Dockerfile --no-fail
+        
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
       id: build-image
@@ -143,7 +150,6 @@ jobs:
 
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
-
     # Image testing
 
     - name: Set Up Python for Test Suite
@@ -159,8 +165,6 @@ jobs:
     - name: Test image
       run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
-    # Image scanning
-
     # Free up space from build process (containerscan action will run out of space if we don't)
     - run: ./.github/scripts/cleanup_runner.sh
 
@@ -171,7 +175,6 @@ jobs:
       run: |
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
-      
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
