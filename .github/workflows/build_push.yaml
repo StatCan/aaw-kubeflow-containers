@@ -133,9 +133,6 @@ jobs:
 
     - name: Run Hadolint
       run:  |
-        # this is literally a binary dont need
-        #curl -L -o hado.deb https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 && sudo dpkg -i hado.deb && rm hado.deb
-        #sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output /usr/local/bin/hadolint
         sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
         sudo chmod +x hadolint
         ./hadolint output/${{ matrix.notebook }}/Dockerfile --no-fail
