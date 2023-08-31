@@ -169,8 +169,8 @@ RUN apt-get update && \
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2023.06.0-421
-ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
+ARG RSTUDIO_VERSION=2023.06.2-561
+ARG SHA256=f7ec39bc79b2f5ca8e653580ff15097b8275989fa1efe89f4f8ac17a926c94e3
 RUN apt-get update && \
     apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
