@@ -127,6 +127,10 @@ jobs:
         username: ${{ secrets.DEV_REGISTRY_USERNAME }}
         password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     
+    # Setup build envrionment
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
     # Image building/storing locally
     - name: Make Dockerfiles
       run: make generate-dockerfiles
