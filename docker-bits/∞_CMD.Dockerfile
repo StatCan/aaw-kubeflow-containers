@@ -9,8 +9,7 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
-    && pip config set global.timeout 300
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
