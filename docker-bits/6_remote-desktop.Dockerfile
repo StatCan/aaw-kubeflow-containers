@@ -67,7 +67,7 @@ RUN \
     # Install nautilus and support for sftp mounting
     apt-get install -y --no-install-recommends nautilus gvfs-backends && \
     # Install gigolo - Access remote systems
-    apt-get install -y --no-install-recommends gigolo gvfs && \
+    apt-get install -y --no-install-recommends gigolo gvfs-bin && \
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
@@ -170,8 +170,7 @@ RUN \
         bzip2 \
         lzop \
         libarchive-tools \
-        zlib1g \
-        zlib1g-dev \
+        zlibc \
         # unpack (almost) everything with one command
         unp \
         libbz2-dev \
@@ -266,12 +265,11 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     apt-get install -y libreoffice-help-fr libreoffice-l10n-fr && \ 
     clean-layer.sh
 
-# Install PSPP
-RUN apt-get update -y \
-    && apt-get install -y pspp \
+#Install PSPP
+RUN /bin/bash $RESOURCES_PATH/pspp.sh \
     && clean-layer.sh
 
-# Install Minio
+#Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 
@@ -324,8 +322,11 @@ COPY French/mo-files/ /usr/share/locale/fr/LC_MESSAGES
 # COPY ./desktop-files/.config/xfce4/xfce4-panel.xml /home/jovyan/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 #Removal area
+#Extra Icons
+RUN rm /usr/share/applications/exo-mail-reader.desktop
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
+
 
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
@@ -333,7 +334,9 @@ RUN usermod -l $NB_USER rstudio && \
 
 ENV NB_USER=$NB_USER
 ENV NB_NAMESPACE=$NB_NAMESPACE
+# https://github.com/novnc/websockify/issues/413#issuecomment-664026092
 RUN apt-get update && apt-get install --yes websockify \
+    && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
 # Install AMD AOCC
