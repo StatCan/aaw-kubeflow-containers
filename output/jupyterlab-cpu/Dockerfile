@@ -179,14 +179,15 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.10.0
-ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
+ARG VSCODE_VERSION=4.14.1
+ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
-ENV XDG_DATA_HOME=/etc/share
+ENV CS_TEMP_HOME=/etc/share/code-server
+ENV CS_DEFAULT_HOME=$HOME/.local/share/code-server
 ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
@@ -196,20 +197,24 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $HOME/.local/share \
-    && mkdir -p $XDG_DATA_HOME/code-server/extensions
+    && mkdir -p $CS_TEMP_HOME/Machine
 
-COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
+RUN code-server --install-extension ms-python.python@2023.12.0 && \
+    code-server --install-extension REditorSupport.r@2.8.1 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
+    code-server --install-extension quarto.quarto@1.90.1 && \
+    code-server --install-extension databricks.databricks@1.1.0 && \
+    code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
+    code-server --install-extension redhat.vscode-yaml@1.14.0 && \
+    code-server --install-extension ms-vscode.azurecli@0.5.0 && \
+    code-server --install-extension mblode.pretty-formatter@0.2.1 && \
+    mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
+    fix-permissions $CS_TEMP_HOME
+
+COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
-COPY languagepacks.json $XDG_DATA_HOME/code-server/
-ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
-
-RUN code-server --install-extension ms-python.python@2022.16.1 && \
-    code-server --install-extension REditorSupport.r@2.7.0 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
-    code-server --install-extension quarto.quarto@1.53.1 && \
-    fix-permissions $XDG_DATA_HOME
+COPY languagepacks.json $CS_TEMP_HOME/
 
 # Default environment
 RUN pip install --quiet \
@@ -264,8 +269,8 @@ RUN pip3 --no-cache-dir install --quiet \
 
 
 # Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
-    && \
+RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
+    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
     conda install -c conda-forge \
       'r-languageserver' \
       'python-lsp-server' \
@@ -350,8 +355,7 @@ COPY trino-wrapper.sh /usr/local/bin/trino
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
-RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
-    && pip config set global.timeout 300
+RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
 
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site

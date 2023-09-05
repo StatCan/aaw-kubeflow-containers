@@ -72,7 +72,7 @@ if [ -n "${KF_LANG}" ]; then
             echo     '   "locale": "'${LANG}'"'
             echo     '}'
           ) > $lang_file
-          vscode_language="${XDG_DATA_HOME}/code-server/User/argv.json"
+          vscode_language="${CS_DEFAULT_HOME}/User/argv.json"
           echo "{\"locale\":\"fr\"}" >> $vscode_language
         fi
     fi
@@ -108,6 +108,7 @@ echo "broken configuration settings removed"
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
+export CURRENT_CONTEXT=$(kubectl config current-context)
 
 # Revert forced virtualenv, was causing issues with users
 #export PIP_REQUIRE_VIRTUALENV=true
@@ -131,12 +132,27 @@ fi
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
-VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
-VS_CODE_PRESISTED=$HOME/.local/share/code-server/Machine/settings.json
-if [ -f "$VS_CODE_PRESISTED" ]; then
-  cp "$VS_CODE_PRESISTED" "$VS_CODE_SETTINGS"
-else
-  cp vscode-overrides.json "$VS_CODE_SETTINGS"
+# Copy default config and extensions on first start up
+if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
+  echo "Creating code-server default settings and extentions"
+  mkdir -p "$CS_DEFAULT_HOME"
+  cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
+fi
+
+# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
+if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
+  echo "AuthenticAMD platform detected"
+  bash ${AOCL_PATH}/setenv_aocl.sh lp64
+  export LD_LIBRARY_PATH="${AOCL_PATH}/lib"
+fi
+
+# aaw-dev override settings
+if [[ "$CURRENT_CONTEXT" == *"dev"* ]]; then
+  pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
+  conda config --remove channels defaults
+  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
+  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia
+  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote 
 fi
 
 echo "--------------------starting jupyter--------------------"
@@ -153,13 +169,3 @@ echo "--------------------starting jupyter--------------------"
                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
 echo "--------------------shutting down, persisting VS_CODE settings--------------------"
-# persist vscode server remote settings (Machine dir)
-VS_CODE_SETTINGS_PERSIST=$HOME/.local/share/code-server/Machine/settings.json
-cp $VS_CODE_SETTINGS $VS_CODE_SETTINGS_PERSIST
-
-# LP64 = 32bit, ILP64 = 64bit, most apps use 32bit
-if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
-  echo "AuthenticAMD platform detected"
-  bash ${AOCL_PATH}/setenv_aocl.sh lp64
-  exoport LD_LIBRARY_PATH = ${AOCL_PATH}/lib
-fi
