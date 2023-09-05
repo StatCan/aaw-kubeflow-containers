@@ -139,6 +139,14 @@ else
   cp vscode-overrides.json "$VS_CODE_SETTINGS"
 fi
 
+# Copy default ompp models on first start up
+export OMS_MODELS_DIR="/home/jovyan/models"
+if [ ! -d "$OMS_MODELS_DIR" ]; then
+  echo "Creating ompp default model directory"
+  mkdir -p "$OMS_MODELS_DIR"
+  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
+fi
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
