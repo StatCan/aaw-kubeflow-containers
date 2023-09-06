@@ -1,9 +1,9 @@
 # Install PyTorch
-RUN mamba install -c pytorch -c nvidia \
-        pytorch \
+RUN pip3 install \
+        torch \
         torchvision \
         torchaudio \
-        pytorch-cuda=11.8 \
+        --index-url https://download.pytorch.org/whl/cu118 \
         ipykernel \
     && \
     mamba clean --all -f -y && \
