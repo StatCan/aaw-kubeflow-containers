@@ -149,17 +149,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ###  docker-bits/2_pytorch.Dockerfile
 ###############################
 
-#Install PyTorch
-RUN conda create -n torch python=3.9 && \
-   conda install -n torch --quiet --yes -c pytorch \
-     'pytorch==1.13.1' \
-     'torchvision==0.14.1' \
-     'ipykernel==6.21.3' \
-     'torchtext==0.14.1' \
-   && \
-   conda clean --all -f -y && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER
+# Install PyTorch
+RUN mamba install -c pytorch -c nvidia \
+        pytorch \
+        torchvision \
+        torchaudio \
+        pytorch-cuda=11.8 \
+        ipykernel \
+    && \
+    mamba clean --all -f -y && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
