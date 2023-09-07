@@ -624,6 +624,7 @@ EXPOSE 8888
 COPY start-remote-desktop.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
+COPY start-oms.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/trino
 RUN chsh -s /bin/bash $NB_USER
 

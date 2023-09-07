@@ -128,7 +128,6 @@ else
   printf 'envs_dirs:\n  - $HOME/.conda/envs' > $HOME/.condarc
 fi
 
-
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
 VS_CODE_SETTINGS=/etc/share/code-server/Machine/settings.json
