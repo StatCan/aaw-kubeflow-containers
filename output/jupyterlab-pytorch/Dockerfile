@@ -37,6 +37,7 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 # Install PyTorch GPU Packages and enable PyTorch IPyKernel
 RUN mamba create -n torch python=3.11 && \
     mamba install -n torch --quiet --yes -c pytorch -c nvidia \
+        ipykernel \
         pytorch \
         torchvision \
         torchaudio \
