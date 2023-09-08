@@ -85,7 +85,6 @@ generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-
 pytorch tensorflow: .output
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
-		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
 		$(SRC)/2_$@.Dockerfile \
 	> $(TMP)/$@.Dockerfile
 
