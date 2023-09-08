@@ -1,10 +1,11 @@
 # Install PyTorch
-RUN pip3 install \
-        torch \
-        torchvision \
-        torchaudio \
-        --index-url https://download.pytorch.org/whl/cu118 \
-        ipykernel \
+RUN mamba install \
+    pytorch \
+    torchvision \
+    torchaudio \
+    pytorch-cuda=11.8 \
+    -c pytorch \
+    -c nvidia \
     && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
