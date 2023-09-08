@@ -151,10 +151,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install PyTorch
 RUN mamba install \
+    python \
     pytorch \
     torchvision \
     torchaudio \
-    pytorch-cuda=11.8 \
+    pytorch-cuda \
     -c pytorch \
     -c nvidia \
     && \
