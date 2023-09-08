@@ -8,6 +8,8 @@ COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
 COPY start-oms.sh /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/start-oms.sh
+
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
