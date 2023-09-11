@@ -1,6 +1,6 @@
 # Install PyTorch GPU Packages and enable PyTorch IPyKernel
-RUN mamba create -n torch python=3.11 && \
-    mamba install -n torch --quiet --yes -c pytorch -c nvidia \
+RUN mamba install -n torch --quiet --yes -c pytorch -c nvidia \
+        python=3.11 \
         ipykernel \
         pytorch \
         torchvision \
@@ -12,8 +12,5 @@ RUN mamba create -n torch python=3.11 && \
     && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER && \
-    source activate torch && \
-    python -m ipykernel install --user --name torch --display-name "PyTorch"
-
+    fix-permissions /home/$NB_USER
 
