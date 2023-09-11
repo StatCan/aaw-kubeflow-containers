@@ -46,7 +46,7 @@ RUN mamba create -n torch python=3.11 && \
         # pytorch-cuda are the nvidia cuda drivers
         pytorch-cuda=11.8 \
     && \
-    conda clean --all -f -y && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     source activate torch && \
