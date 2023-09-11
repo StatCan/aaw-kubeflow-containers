@@ -38,7 +38,6 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 RUN mamba create -n tensorflow python=3.11 && \
     mamba install -n tensorflow --quiet --yes -c anaconda -c conda-forge -c nvidia \
         tensorflow \
-        tensorflow-gpu \
         cudatoolkit=11.8 \
         cudnn \
         # gputil has nvidia-smi
