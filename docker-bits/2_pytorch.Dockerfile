@@ -5,6 +5,9 @@ RUN mamba create -n torch python=3.11 && \
         pytorch \
         torchvision \
         torchaudio \
+        # gputil has nvidia-smi
+        gputil \
+        # pytorch-cuda are the nvidia cuda drivers
         pytorch-cuda=11.8 \
     && \
     conda clean --all -f -y && \
