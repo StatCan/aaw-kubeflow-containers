@@ -116,22 +116,24 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.3"
+ARG OMPP_VERSION="1.15.4"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230614"
-ARG SHA256ompp=fbee3c372d6f6cc5f4bed4e66a3e27ff11582a965a6c723031aeee1ed8ef976e
+ARG OMPP_PKG_DATE="20230803"
+ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 RUN apt-get install --yes sqlite3 \
-    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
     && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
     
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
 RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
