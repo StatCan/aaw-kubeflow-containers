@@ -84,6 +84,8 @@ EXCLUDED_PACKAGES = [
     "ca-certificates",
     "r-tidymodels",
     "gputil",
+    "cudatoolkit",
+    "cudnn"
 ]
 
 
