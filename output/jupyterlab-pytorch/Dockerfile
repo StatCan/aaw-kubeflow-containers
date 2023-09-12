@@ -269,8 +269,7 @@ RUN mamba install --quiet --yes -c conda-forge \
 
 RUN pip install 'git+https://github.com/betatim/vscode-binder'
 
-RUN mamba install --quiet --yes -c plotly \
-      'jupyter-dash==0.4.2'
+RUN mamba install --quiet --yes -c plotly 'jupyter-dash'
 
 RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
