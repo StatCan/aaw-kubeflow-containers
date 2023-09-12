@@ -18,6 +18,10 @@ LOGGER = logging.getLogger(__name__)
             "Create tensor with random values",
             "import torch;x = torch.rand(5, 3);print(x)",   
         ),
+        (
+            "GPU",
+            "import torch;torch.cuda.is_available()"
+        ),
     ],
 )
 def test_pytorch(container, name, command):
