@@ -339,9 +339,9 @@ COPY vscode-overrides.json $XDG_DATA_HOME/code-server/Machine/settings.json
 COPY languagepacks.json $XDG_DATA_HOME/code-server/
 ARG SHA256py=10368d0175e34583a84935e691dba122d4ece2e23305700f226b6807508a30b1
 
-RUN code-server --install-extension ms-python.python@2023.15.12411005 && \
-    code-server --install-extension REditorSupport.r@2.8.1 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.82.2023082309 && \
+RUN code-server --install-extension ms-python.python@2022.16.1 && \
+    code-server --install-extension REditorSupport.r@2.7.0 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.75.0 && \
     code-server --install-extension quarto.quarto@1.95.1 && \
     fix-permissions $XDG_DATA_HOME
 
