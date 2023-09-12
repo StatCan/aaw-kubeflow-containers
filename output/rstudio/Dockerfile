@@ -204,7 +204,7 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidyverse==1.3.2' \
-      'r-tidymodels==1.0.0' \
+      'r-tidymodels' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \
       'r-catools==1.18.2' \
