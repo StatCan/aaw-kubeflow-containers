@@ -47,7 +47,6 @@ RUN mamba create -n tensorflow && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
-    source activate tensorflow && \
     python -m ipykernel install --user --name tensorflow --display-name "TensorFlow"
 
 ###############################

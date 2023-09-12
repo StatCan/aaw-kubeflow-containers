@@ -49,7 +49,6 @@ RUN mamba create -n torch && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
-    source activate torch && \
     python -m ipykernel install --user --name torch --display-name "PyTorch"
 
 
