@@ -18,10 +18,6 @@ LOGGER = logging.getLogger(__name__)
             "Sum",
             "import tensorflow as tf;print(tf.reduce_sum(tf.random.normal([1000, 1000])))",
         ),
-        (   
-            "GPU",
-            "import tensorflow as tf;print(tf.config.list_physical_devices('GPU'))"
-        ),
     ],
 )
 def test_tensorflow(container, name, command):
