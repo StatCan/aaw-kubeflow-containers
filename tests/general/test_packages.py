@@ -83,6 +83,7 @@ EXCLUDED_PACKAGES = [
     "openssl",
     "ca-certificates",
     "r-tidymodels",
+    "gputil",
 ]
 
 
