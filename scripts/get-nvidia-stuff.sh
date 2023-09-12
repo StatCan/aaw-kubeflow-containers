@@ -13,7 +13,7 @@ fi
 # Using older commit that still has support for 18.04
 REPO=https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist
 CUDNN=cudnn8
-OS=ubuntu1804
+OS=ubuntu2204
 
 cat <<EOF | grep -v '^\(FROM\|COPY\|ENTRYPOINT\|ARG IMAGE_NAME\|LABEL maintainer\)' # > 1_CUDA-$VERSION.Dockerfile
 # Cuda stuff for v$VERSION
