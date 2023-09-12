@@ -35,8 +35,10 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 ###############################
 
 # Install PyTorch GPU Packages and enable PyTorch IPyKernel
-RUN mamba install --quiet --yes -c pytorch -c nvidia \
+RUN mamba create -n torch && \
+    mamba install -n torch --quiet --yes -c pytorch -c nvidia \
         python=3.11 \
+        ipykernel \
         pytorch \
         torchvision \
         torchaudio \
@@ -46,7 +48,9 @@ RUN mamba install --quiet --yes -c pytorch -c nvidia \
         pytorch-cuda=11.8 && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER && \
+    source activate torch && \
+    python -m ipykernel install --user --name torch --display-name "PyTorch"
 
 
 ###############################

@@ -23,7 +23,7 @@ LOGGER = logging.getLogger(__name__)
 def test_tensorflow(container, name, command):
     """Basic tensorflow tests"""
     LOGGER.info(f"Testing tensorflow: {name} ...")
-    c = container.run(tty=True, command=["start.sh", "python", "-c", command])
+    c = container.run(tty=True, command=["start.sh", "conda", "run", "-n", "tensorflow", "python", "-c", command])
     rv = c.wait(timeout=30)
     assert rv == 0 or rv["StatusCode"] == 0, f"Command {command} failed"
     logs = c.logs(stdout=True).decode("utf-8")

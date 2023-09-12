@@ -35,16 +35,20 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 ###############################
 
 # Install Tensorflow
-RUN mamba install --quiet --yes -c anaconda -c conda-forge -c nvidia \
+RUN mamba create -n tensorflow && \
+    mamba install --quiet --yes -c anaconda -c conda-forge -c nvidia \
         python=3.11 \
         tensorflow \
         cudatoolkit=11.8 \
         cudnn \
         # gputil has nvidia-smi
-        gputil && \
+        gputil \
+        ipykernel && \
     mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER && \
+    source activate tensorflow && \
+    python -m ipykernel install --user --name tensorflow --display-name "TensorFlow"
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
