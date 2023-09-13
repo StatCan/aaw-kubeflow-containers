@@ -22,5 +22,4 @@ RUN cd ${RESOURCES_PATH} && \
    tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
    cd ./aocc-compiler-${AOCC_VERSION} && \
    /bin/bash ./install.sh && \
-   rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
-   clean-layer.sh
+   rm /tmp/aocc-compiler-${AOCC_VERSION}.tar
