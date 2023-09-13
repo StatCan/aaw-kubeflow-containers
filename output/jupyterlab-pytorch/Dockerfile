@@ -322,8 +322,9 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.17.5/cpptools-linux.vsix \
     && apt-get update \
-    && apt-get install -y nginx \
+    && apt-get install -y nginx build-essential \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
@@ -338,6 +339,7 @@ RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
+    code-server --install-extension cpptools-linux.vsix && \
     mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
     fix-permissions $CS_TEMP_HOME
 
@@ -469,6 +471,18 @@ RUN cd ${RESOURCES_PATH} && \
     /bin/bash ./install.sh -t /opt/amd/aocl && \
     cp setenv_aocl.sh ${AOCL_PATH} &&\
     rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar
+
+# Install AMD AOCC
+ARG AOCC_VERSION=4.0.0
+ARG AOCC_SHA256=2729ec524cbc927618e479994330eeb72df5947e90cfcc49434009eee29bf7d4
+RUN cd ${RESOURCES_PATH} && \
+   wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+   echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
+   tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
+   cd ./aocc-compiler-${AOCC_VERSION} && \
+   /bin/bash ./install.sh && \
+   rm /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
+   clean-layer.sh
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile

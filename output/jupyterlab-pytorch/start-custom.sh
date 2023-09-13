@@ -108,7 +108,6 @@ echo "broken configuration settings removed"
 
 export NB_NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
-export CURRENT_CONTEXT=$(kubectl config current-context)
 
 # Revert forced virtualenv, was causing issues with users
 #export PIP_REQUIRE_VIRTUALENV=true
@@ -147,7 +146,7 @@ if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
 fi
 
 # aaw-dev override settings
-if [[ "$CURRENT_CONTEXT" == *"dev"* ]]; then
+if [[ $KUBERNETES_SERVICE_HOST =~ ".131." ]];
   pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
   conda config --remove channels defaults
   conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote

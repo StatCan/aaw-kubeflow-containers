@@ -22,8 +22,9 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
+    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.17.5/cpptools-linux.vsix \
     && apt-get update \
-    && apt-get install -y nginx \
+    && apt-get install -y nginx build-essential \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
@@ -38,6 +39,7 @@ RUN code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
+    code-server --install-extension cpptools-linux.vsix && \
     mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
     fix-permissions $CS_TEMP_HOME
 
