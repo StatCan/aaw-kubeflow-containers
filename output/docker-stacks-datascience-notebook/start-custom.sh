@@ -126,8 +126,17 @@ if [[ -f "$HOME/.condarc" ]]; then
 else
   echo "Creating basic .condarc file"
   printf 'envs_dirs:\n  - $HOME/.conda/envs' > $HOME/.condarc
-fi
 
+  # aaw-dev override settings, only need to run on first setup
+  if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
+    echo "Updating jfrog package config for Dev envrionment"
+    pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
+    conda config --remove channels defaults
+    conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
+    conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia
+    conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote 
+  fi
+fi
 
 printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
