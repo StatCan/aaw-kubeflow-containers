@@ -13,10 +13,9 @@ cat <<EOF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MinIO
+Bucket
 =====
-
-MinIO configured. Hosts "standard" and "premium" added as mounted drives.
+Buckets have been automatically mounted to your workspace. For more information https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/
 
 Conda
 =====
