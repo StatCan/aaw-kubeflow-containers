@@ -146,7 +146,8 @@ if  lscpu | grep -q AuthenticAMD  && -d "${AOCL_PATH}" ; then
 fi
 
 # aaw-dev override settings
-if [[ $KUBERNETES_SERVICE_HOST =~ ".131." ]];
+if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]];
+  echo "Updating jfrog package config for Dev envrionment"
   pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
   conda config --remove channels defaults
   conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
