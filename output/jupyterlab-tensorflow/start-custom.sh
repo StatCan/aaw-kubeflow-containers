@@ -130,8 +130,12 @@ else
   # aaw-dev override settings, only need to run on first setup
   if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
     echo "Updating jfrog package config for Dev envrionment"
+    
     pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
-    conda config --remove channels defaults
+
+    # remove existing channels in conda system config file
+    rm /opt/conda/.condarc
+
     conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
     conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia
     conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote 
