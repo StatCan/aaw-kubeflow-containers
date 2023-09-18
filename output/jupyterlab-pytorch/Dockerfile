@@ -310,10 +310,9 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.16.1
-ARG VSCODE_SHA=d468ce8e92a14effbf7e0297b95e70b644b505646ae9afb87cbce6f683e03891
+ARG VSCODE_VERSION=4.10.0
+ARG VSCODE_SHA=e0746fe7f013d367193060ec40eb81627957d8a8d6b850778a30d56fc54db276
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
@@ -401,8 +400,8 @@ RUN mamba clean --all -f -y && \
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' \
     && \
     mamba install -c conda-forge \
-      'r-languageserver==0.3.16' \
-      'python-lsp-server==1.7.4' \
+      'r-languageserver' \
+      'python-lsp-server' \
     && \
     npm i -g \
     'bash-language-server'  \
