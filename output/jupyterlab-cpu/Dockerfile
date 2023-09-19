@@ -217,6 +217,7 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
+
 # Default environment
 RUN pip3 --no-cache-dir install --quiet \
     'pillow==10.0.0' \
