@@ -173,6 +173,7 @@ jobs:
     # see https://github.com/StatCan/aaw-private/issues/11 -- should be re-enabled
       if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
       run: |
+        printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
 
