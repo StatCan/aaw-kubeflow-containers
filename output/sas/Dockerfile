@@ -251,13 +251,15 @@ RUN mamba install --quiet --yes -c conda-forge \
 
 RUN pip install 'git+https://github.com/betatim/vscode-binder'
 
-RUN mamba install --quiet --yes -c plotly 'jupyter-dash'
+RUN mamba install --quiet --yes -c conda-forge -c plotly \
+    jupyter-dash && \
+    jupyter lab build
 
 RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
+    jupyter labextension install \
+      '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy@2.1.2' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
@@ -344,7 +346,6 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidyverse==1.3.2' \
-      'r-tidymodels' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \
       'r-catools==1.18.2' \
