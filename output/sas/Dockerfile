@@ -226,7 +226,7 @@ RUN pip3 --no-cache-dir install --quiet \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
 
-RUN pip3 --no-cache-dir install --quiet \
+RUN mamba install --quiet --yes -c conda-forge \
     'jupyterlab==4.0.5'
 
 RUN pip3 --no-cache-dir install --quiet \
