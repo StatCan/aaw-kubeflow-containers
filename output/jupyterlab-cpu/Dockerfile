@@ -217,42 +217,27 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
+RUN pip install \
+    'git+https://github.com/betatim/vscode-binder' \
+    # jupyter_contrib_nbextensions likes to be installed with pip
+    'jupyter_contrib_nbextensions' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 # Default environment
-RUN pip3 --no-cache-dir install --quiet \
-    'pillow==10.0.0' \
-    'notebook==7.0.2' \
-    'pyyaml==6.0.1' \
-    'jupyter-lsp==2.2.0' \
-    'jupyter-server-proxy==4.0.0' \
-    'jupyter_contrib_nbextensions==0.7.0' && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-    'jupyterlab_execute_time==3.0.1'
-
-RUN pip3 --no-cache-dir install --quiet \
-    'jupyterlab-git==0.42.0'
-
-RUN pip3 --no-cache-dir install --quiet \
-    'jupyterlab-lsp==4.2.0'
-
-RUN pip3 --no-cache-dir install --quiet \
-    'jupyterlab-language-pack-fr-FR==4.0.post0'
-
-RUN pip3 --no-cache-dir install --quiet \
-    'markupsafe==2.1.3' \
-    'ipywidgets==8.1.0' \
-    'ipympl==0.9.3'
-
-RUN mamba install --quiet --yes -c conda-forge \
-    'nb_conda_kernels==2.3.1'
-
-RUN pip install 'git+https://github.com/betatim/vscode-binder'
-
-RUN mamba install --quiet --yes -c conda-forge -c plotly \
-    jupyter-dash && \
-    jupyter lab build
+RUN mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter-dash' \
+    'pillow' \
+    'pyyaml' \
+    'ipywidgets' \
+    'markupsafe' \
+    'ipympl' \
+    'jupyter-server-proxy' \
+    'jupyterlab-language-pack-fr-fr' \
+    'jupyterlab_execute_time' \
+    'nb_conda_kernels' \
+    'jupyterlab-lsp'  && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
@@ -273,15 +258,6 @@ RUN mamba clean --all -f -y && \
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==4.0.5' && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER && \
-    jupyter lab build && \
-    jupyter lab clean && \
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
