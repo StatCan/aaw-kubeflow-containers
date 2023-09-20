@@ -47,7 +47,6 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-
 # Default environment
 RUN pip3 --no-cache-dir install --quiet \
     'pillow==10.0.0' \
@@ -58,9 +57,6 @@ RUN pip3 --no-cache-dir install --quiet \
     'jupyter_contrib_nbextensions==0.7.0' && \
   fix-permissions $CONDA_DIR && \
   fix-permissions /home/$NB_USER
-
-RUN mamba install --quiet --yes -c conda-forge \
-    'jupyterlab==4.0.5'
 
 RUN pip3 --no-cache-dir install --quiet \
     'jupyterlab_execute_time==3.0.1'
@@ -111,10 +107,11 @@ RUN pip3 --no-cache-dir install --quiet \
       'pillow==9.4.0' \
       'notebook==6.5.3' \
       'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
+      'jupyterlab==4.0.5' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER && \
+    jupyter lab build && \
+    jupyter lab clean && \
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
