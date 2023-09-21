@@ -1,5 +1,0 @@
-general:
-  vulnerabilities:
-    - CVE-2021-23334 # static-eval - was deemed not a vulnerability
-    - CVE-2020-1747 # see https://github.com/StatCan/aaw-kubeflow-containers/pull/296#issuecomment-939077876
-    - CVE-2022-34749 # see https://github.com/StatCan/aaw-kubeflow-containers/issues/374
