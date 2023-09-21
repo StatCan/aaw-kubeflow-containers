@@ -87,6 +87,9 @@ EXCLUDED_PACKAGES = [
     "openssl",
     "ca-certificates",
     "r-tidymodels",
+    "gputil",
+    "cudatoolkit",
+    "cudnn"
     # Python
     # import PIL, not import pillow
     "pillow",
