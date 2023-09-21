@@ -46,7 +46,17 @@ echo "OM_ROOT=$OM_ROOT"
 echo "OMS_PORT=$OMS_PORT"
 echo "OMS_URL=$OMS_URL"
 
-OM_ROOT=$OM_ROOT ./bin/oms -l localhost:${OMS_PORT} -oms.ModelDir /home/jovyan/models -oms.HomeDir /home/jovyan/ -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
+echo "OMS_MODEL_DIR=$OMS_MODEL_DIR"
+if [ ! -d $OMS_MODEL_DIR ]; then
+  mkdir -p $OMS_MODEL_DIR
+fi
+
+echo "OMS_HOME_DIR=$OMS_HOME_DIR"
+if [ ! -d $OMS_HOME_DIR ]; then
+  mkdir -p $OMS_HOME_DIR
+fi
+
+OM_ROOT=$OM_ROOT ./bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
 status=$?
 
 if [ $status -ne 0 ] ;
