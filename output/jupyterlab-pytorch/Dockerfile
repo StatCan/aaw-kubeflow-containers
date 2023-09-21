@@ -366,7 +366,8 @@ RUN mamba install --quiet --yes -c plotly -c conda-forge \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
-    'jupyterlab-lsp'  && \
+    'jupyterlab-lsp' \
+    'jupyter-lsp'  && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
