@@ -179,7 +179,7 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.14.1
+ARG VSCODE_VERSION=4.17.0
 ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 USER root
