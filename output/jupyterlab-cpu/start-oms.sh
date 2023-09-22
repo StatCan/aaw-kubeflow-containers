@@ -38,6 +38,21 @@ export OM_CFG_INI_ALLOW=true
 export OM_CFG_INI_ANY_KEY=true
 export OMS_URL=${JUPYTER_SERVER_URL}ompp
 
+# OpenM++ default configuraton
+if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
+  #DEV
+  export OMS_MODEL_DIR=/home/jovyan/models
+  export OMS_HOME_DIR=/home/jovyan/
+else
+  if [ -d "/etc/protb" ]; then
+    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
+    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/
+  else
+    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/models
+    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/
+  fi
+fi
+
 # start oms web-service
 #
 [ -z "$OMS_PORT" ] && OMS_PORT=4040

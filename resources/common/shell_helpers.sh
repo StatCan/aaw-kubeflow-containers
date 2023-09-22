@@ -37,21 +37,3 @@ EOF
 if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
   export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
 fi
-
-# OpenM++ default configuraton (modifiable before starting Openm++ UI)
-if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
-  #DEV
-  export OMS_MODEL_DIR=/home/jovyan/models
-  export OMS_HOME_DIR=/home/jovyan/
-else
-  if [ -d "/etc/protb" ]; then
-    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
-    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/
-  else
-    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/models
-    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/
-  fi
-fi
-
-# Change to switch between multuple installed versions
-#export OMPP_INSTALL_DIR=/opt/openmpp/1.15.4
