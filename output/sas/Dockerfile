@@ -274,6 +274,35 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# OpenM install
+# Install OpenM++ MPI
+ARG OMPP_VERSION="1.15.4"
+# IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
+ARG OMPP_PKG_DATE="20230803"
+ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
+# OpenM++ environment settings
+ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
+
+# OpenM++ expects sqlite to be installed (not just libsqlite)
+RUN apt-get install --yes sqlite3 \
+    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
+    && mkdir -p ${OMPP_INSTALL_DIR} \
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
+    
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
+RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && rm -r ${OMPP_INSTALL_DIR}/html \
+    && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
+    && fix-permissions ${OMPP_INSTALL_DIR}
+
+COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+RUN pip install /opt/jupyter-ompp-proxy/
+
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
@@ -459,6 +488,9 @@ EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
+COPY start-oms.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/start-oms.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
