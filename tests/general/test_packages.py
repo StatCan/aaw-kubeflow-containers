@@ -89,7 +89,7 @@ EXCLUDED_PACKAGES = [
     "r-tidymodels",
     "gputil",
     "cudatoolkit",
-    "cudnn"
+    "cudnn",
     # Python
     # import PIL, not import pillow
     "pillow",
