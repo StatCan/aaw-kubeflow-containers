@@ -130,25 +130,25 @@ ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
+COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+
 # OpenM++ expects sqlite to be installed (not just libsqlite)
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
 RUN apt-get install --yes sqlite3 \
     && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
-    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
-    
-# Customize and rebuild omp-ui for jupyter-ompp-proxy install
-# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1 \
+    && rm -f /tmp/ompp.tar.gz \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
-    && fix-permissions ${OMPP_INSTALL_DIR}
-
-COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
-RUN pip install /opt/jupyter-ompp-proxy/
+    && fix-permissions ${OMPP_INSTALL_DIR} \
+    && pip install /opt/jupyter-ompp-proxy/
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
