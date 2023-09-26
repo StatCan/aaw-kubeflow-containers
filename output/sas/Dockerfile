@@ -295,7 +295,7 @@ RUN apt-get install --yes sqlite3 \
 RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
-    && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && npm run build --openssl-legacy-provider --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
     && fix-permissions ${OMPP_INSTALL_DIR}
