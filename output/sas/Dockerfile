@@ -8,7 +8,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=ed2908bbb62e
+ARG BASE_VERSION=2023-08-07
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM jupyter/datascience-notebook:$BASE_VERSION
@@ -179,7 +179,6 @@ RUN apt-get update && \
 ARG VSCODE_VERSION=4.14.1
 ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
@@ -215,35 +214,34 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
+RUN pip install \
+    'git+https://github.com/betatim/vscode-binder' \
+    # jupyter_contrib_nbextensions likes to be installed with pip
+    'jupyter_contrib_nbextensions' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 # Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.41.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
+RUN mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter-dash' \
+    'pillow' \
+    'pyyaml' \
+    'ipywidgets' \
+    'markupsafe' \
+    'ipympl' \
+    'jupyter-server-proxy' \
+    'jupyterlab-language-pack-fr-fr' \
+    'jupyterlab_execute_time' \
+    'nb_conda_kernels' \
+    'jupyterlab-lsp' \
+    'jupyter-lsp'  && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
+    jupyter labextension install \
+      '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy@2.1.2' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
@@ -258,14 +256,6 @@ RUN pip install --quiet \
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
@@ -279,12 +269,8 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
+    'yaml-language-server@0.18.0' && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -306,6 +292,7 @@ RUN apt-get install --yes sqlite3 \
     
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
+ARG NODE_OPTIONS=--openssl-legacy-provider
 RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
@@ -324,12 +311,12 @@ ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
 
 ###############################
-###  docker-bits/6_rstudio.Dockerfile
+###  docker-bits/6_rstudio-server.Dockerfile
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2023.06.0-421
-ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
+ARG RSTUDIO_VERSION=2023.06.2-561
+ARG SHA256=f7ec39bc79b2f5ca8e653580ff15097b8275989fa1efe89f4f8ac17a926c94e3
 RUN apt-get update && \
     apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
@@ -345,8 +332,14 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/r
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    #Harden rstudio-server
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+###############################
+###  docker-bits/6_rstudio.Dockerfile
+###############################
+
+# Harden rstudio-server
+RUN mkdir -p /etc/rstudio && \
     echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
@@ -356,7 +349,6 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \

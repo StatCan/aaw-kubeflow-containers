@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=ed2908bbb62e
+ARG BASE_VERSION=2023-08-07
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -165,12 +165,12 @@ RUN apt-get update && \
     fix-permissions /home/$NB_USER
 
 ###############################
-###  docker-bits/6_rstudio.Dockerfile
+###  docker-bits/6_rstudio-server.Dockerfile
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2023.06.0-421
-ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
+ARG RSTUDIO_VERSION=2023.06.2-561
+ARG SHA256=f7ec39bc79b2f5ca8e653580ff15097b8275989fa1efe89f4f8ac17a926c94e3
 RUN apt-get update && \
     apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
@@ -186,8 +186,14 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/r
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    #Harden rstudio-server
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+###############################
+###  docker-bits/6_rstudio.Dockerfile
+###############################
+
+# Harden rstudio-server
+RUN mkdir -p /etc/rstudio && \
     echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
@@ -197,7 +203,6 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 # Install some default R packages
 RUN conda install --quiet --yes \
       'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \

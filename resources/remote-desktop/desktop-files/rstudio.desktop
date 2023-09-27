@@ -1,5 +1,5 @@
 [Desktop Entry]
-Exec=/usr/lib/rstudio/bin/rstudio %F
+Exec=/usr/bin/rstudio %F
 Icon=rstudio
 Type=Application
 Terminal=False

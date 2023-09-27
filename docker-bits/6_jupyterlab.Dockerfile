@@ -12,7 +12,6 @@
 ARG VSCODE_VERSION=4.14.1
 ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
@@ -48,35 +47,34 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
+RUN pip install \
+    'git+https://github.com/betatim/vscode-binder' \
+    # jupyter_contrib_nbextensions likes to be installed with pip
+    'jupyter_contrib_nbextensions' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 # Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.41.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
+RUN mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter-dash' \
+    'pillow' \
+    'pyyaml' \
+    'ipywidgets' \
+    'markupsafe' \
+    'ipympl' \
+    'jupyter-server-proxy' \
+    'jupyterlab-language-pack-fr-fr' \
+    'jupyterlab_execute_time' \
+    'nb_conda_kernels' \
+    'jupyterlab-lsp' \
+    'jupyter-lsp'  && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN mamba clean --all -f -y && \
     jupyter serverextension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
+    jupyter labextension install \
+      '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy@2.1.2' \
       'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
@@ -91,14 +89,6 @@ RUN pip install --quiet \
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
@@ -112,12 +102,8 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
+    'yaml-language-server@0.18.0' && \
+    mamba clean --all -f -y && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -139,6 +125,7 @@ RUN apt-get install --yes sqlite3 \
     
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
+ARG NODE_OPTIONS=--openssl-legacy-provider
 RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \

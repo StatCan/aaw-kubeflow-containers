@@ -5,6 +5,7 @@
 
 # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
 # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
+
 FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
 
 # For compatibility with docker stacks
@@ -639,6 +640,11 @@ RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
 # Point R to Artifactory repository
 COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /usr/local/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
+
+# Removal area
+# Prevent screen from locking
+RUN apt-get remove -y -q light-locker xfce4-screensaver \
+    && apt-get autoremove -y
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]

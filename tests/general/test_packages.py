@@ -72,6 +72,12 @@ EXCLUDED_PACKAGES = [
     'python-lsp-server',
     'jupyterlab-translate',
     'jupyter-dash',
+    "jupyter-pluto-proxy",
+    "jupyterlab-git",
+    "jupyter-server-proxy",
+    "jupyterlab-language-pack-fr-fr",
+    "jupyterlab-lsp",
+    "jupyter-lsp",
     # Other
     "conda-forge::blas[build=openblas]",
     "protobuf",
@@ -80,6 +86,15 @@ EXCLUDED_PACKAGES = [
     "bzip2",
     "openssl",
     "ca-certificates",
+    "r-tidymodels",
+    "gputil",
+    "cudatoolkit",
+    "cudnn",
+    # Python
+    # import PIL, not import pillow
+    "pillow",
+    # import yaml, not import pyyaml
+    "pyyaml",
 ]
 
 
