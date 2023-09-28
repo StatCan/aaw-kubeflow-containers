@@ -22,6 +22,7 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
+    && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/*
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
@@ -201,8 +202,8 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.14.1
-ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
+ARG VSCODE_VERSION=4.17.0
+ARG VSCODE_SHA=a256654aae171699f4dd869dd7f02588ff60411d6a88e95a3e8d997d72efe378
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 USER root
 
