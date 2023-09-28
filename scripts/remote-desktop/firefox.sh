@@ -3,7 +3,7 @@
 # Stops script execution if a command has an error
 set -e
 
-SHA256=c643dd519fe8b0b6d2d2241b5c241aa1b43ece397f49268865b4d1888c19173e
+SHA256=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 
 function disableUpdate() {
     ff_def="$1/browser/defaults/profile"
