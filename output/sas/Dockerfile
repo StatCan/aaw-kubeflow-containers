@@ -423,7 +423,7 @@ EXPOSE 8561 8591 38080
 
 # SASPY
 
-ENV SASPY_VERSION="4.1.0"
+ENV SASPY_VERSION="5.4.0"
 
 RUN pip install sas_kernel
 
