@@ -55,6 +55,7 @@ ARG PYTHON_VERSION=3.11
 #     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
 #     /opt/conda/bin/conda clean -afy && \
 #     chown -R $NB_UID:$NB_GID /opt/conda
+#
 # Download and install Micromamba, and initialize Conda prefix.
 #   <https://github.com/mamba-org/mamba#micromamba>
 #   Similar projects using Micromamba:
@@ -65,7 +66,6 @@ ARG PYTHON_VERSION=3.11
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
-COPY --chown="${NB_UID}:${NB_GID}" .condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
 RUN set -x && \
     arch=$(uname -m) && \
@@ -544,26 +544,6 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-#Install Miniconda
-#Has to be appended, else messes with qgis
-ENV PATH $PATH:/opt/conda/bin
-
-ARG CONDA_VERSION=py38_4.10.3
-ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
-    echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
-    if ! md5sum --status -c miniconda.md5; then exit 1; fi && \
-    mkdir -p /opt && \
-    sh miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh miniconda.md5 && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy && \
-    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
