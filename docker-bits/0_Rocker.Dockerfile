@@ -50,6 +50,7 @@ ARG PYTHON_VERSION=3.11
 #     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
 #     /opt/conda/bin/conda clean -afy && \
 #     chown -R $NB_UID:$NB_GID /opt/conda
+#
 # Download and install Micromamba, and initialize Conda prefix.
 #   <https://github.com/mamba-org/mamba#micromamba>
 #   Similar projects using Micromamba:
@@ -60,7 +61,6 @@ ARG PYTHON_VERSION=3.11
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
-COPY --chown="${NB_UID}:${NB_GID}" .condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
 RUN set -x && \
     arch=$(uname -m) && \
