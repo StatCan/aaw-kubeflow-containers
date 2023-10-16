@@ -67,6 +67,7 @@ ARG PYTHON_VERSION=3.11
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
+COPY initial-condarc "${CONDA_DIR}/.condarc"
 WORKDIR /tmp
 RUN set -x && \
     arch=$(uname -m) && \
@@ -88,7 +89,6 @@ RUN set -x && \
         "${PYTHON_SPECIFIER}" \
         'mamba' \
         'jupyter_core' \
-        -c conda-forge && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
