@@ -14,9 +14,3 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/*
-
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
-RUN pip install --force-reinstall cryptography==39.0.1 && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER

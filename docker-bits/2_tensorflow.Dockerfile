@@ -1,8 +1,8 @@
 # Install Tensorflow
-RUN pip install --quiet \
-        'tensorflow' \
-        'keras' \
-        'ipykernel==6.21.3' \
+RUN mamba install --quiet --yes \
+        tensorflow \
+        keras \
+        ipykernel \
     && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

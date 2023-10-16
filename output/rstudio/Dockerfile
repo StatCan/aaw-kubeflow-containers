@@ -25,43 +25,27 @@ RUN apt-get update --yes \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/*
 
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
-RUN pip install --force-reinstall cryptography==39.0.1 && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER
-
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
 USER root
+COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
+RUN mamba --no-cache-dir install --quiet \
       'Pillow==9.4.0' \
       'notebook==6.5.3' \
       'PyYAML==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
       'kubeflow-pytorchjob==0.1.3' \
       'kubeflow-tfjob==0.1.3' \
-      'minio==7.1.13' \
       'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
+      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
+      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' \ 
       'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-COPY aaw-suspend-server.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
+      fix-permissions /home/$NB_USER && \
+      chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
