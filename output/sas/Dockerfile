@@ -80,7 +80,6 @@ ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kub
 ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -106,8 +105,8 @@ RUN \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    # AzureCLI - installation script from Azure
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \

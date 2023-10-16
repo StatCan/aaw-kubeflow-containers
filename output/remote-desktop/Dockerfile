@@ -10,11 +10,17 @@ FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6
 
 # For compatibility with docker stacks
 ARG HOME=/home/$NB_USER
-ENV NB_UID="1000" \
-    NB_GID="100" \
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+ENV NB_USER="${NB_USER}" \
+    NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
     CONDA_DIR=/opt/conda \
     PATH=$PATH:/opt/conda/bin \
-    NB_USER="jovyan"
+    NB_USER="jovyan" \
+    HOME="/home/${NB_USER}"
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -86,7 +92,8 @@ RUN set -x && \
         --yes \
         "${PYTHON_SPECIFIER}" \
         'mamba' \
-        'jupyter_core' && \
+        'jupyter_core' \
+        -c conda-forge && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
@@ -147,7 +154,6 @@ ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kub
 ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -173,8 +179,8 @@ RUN \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    # AzureCLI - installation script from Azure
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \

@@ -5,11 +5,17 @@ FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6
 
 # For compatibility with docker stacks
 ARG HOME=/home/$NB_USER
-ENV NB_UID="1000" \
-    NB_GID="100" \
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+ENV NB_USER="${NB_USER}" \
+    NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
     CONDA_DIR=/opt/conda \
     PATH=$PATH:/opt/conda/bin \
-    NB_USER="jovyan"
+    NB_USER="jovyan" \
+    HOME="/home/${NB_USER}"
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -81,7 +87,8 @@ RUN set -x && \
         --yes \
         "${PYTHON_SPECIFIER}" \
         'mamba' \
-        'jupyter_core' && \
+        'jupyter_core' \
+        -c conda-forge && \
     rm micromamba && \
     # Pin major.minor version of python
     mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
