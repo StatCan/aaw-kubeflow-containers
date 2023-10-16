@@ -2,7 +2,7 @@ USER root
 COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN mamba --no-cache-dir install --quiet \
+RUN mamba install --quiet \
       'Pillow==9.4.0' \
       'notebook==6.5.3' \
       'PyYAML==6.0' \
