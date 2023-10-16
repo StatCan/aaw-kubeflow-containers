@@ -9,7 +9,6 @@ RUN apt-get update && \
       'byobu' \
       'htop' \
       'jq' \
-      'less' \
       'openssl' \
       'ranger' \
       'tig' \
@@ -18,8 +17,6 @@ RUN apt-get update && \
       'vim' \
       'zip' \
       'zsh' \
-      'wget' \
-      'curl' \
       'dos2unix' \
   && \
     rm -rf /var/lib/apt/lists/*
