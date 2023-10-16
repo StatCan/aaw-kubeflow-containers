@@ -7,7 +7,7 @@ RUN mamba install --quiet \
       'PyYAML==6.0.1' \
       'joblib==1.2.0' \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' \ 
+      's3fs' \ 
       'fire==0.5.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
