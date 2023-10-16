@@ -6,8 +6,6 @@ RUN mamba install --quiet \
       'Pillow==9.4.0' \
       'notebook==6.5.3' \
       'PyYAML==6.0' \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
       'joblib==1.2.0' \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
       'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' \ 
