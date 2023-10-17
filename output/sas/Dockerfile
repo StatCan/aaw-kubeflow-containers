@@ -218,7 +218,7 @@ RUN pip install \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install \
       '@jupyterlab/translation-extension' \
-      '@jupyterlab/server-proxy@2.1.2' \
+      '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
