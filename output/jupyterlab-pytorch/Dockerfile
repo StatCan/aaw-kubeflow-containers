@@ -56,8 +56,8 @@ COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN mamba install --quiet \
-      'Pillow==9.4.0' \
-      'PyYAML==6.0.1' \
+      'pillow' \
+      'pyyaml' \
       'joblib==1.2.0' \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
       's3fs' \ 
@@ -196,9 +196,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $CS_TEMP_HOME/Machine
-
-RUN code-server --install-extension ms-python.python@2023.12.0 && \
+    && mkdir -p $CS_TEMP_HOME/Machine \
+    && \ 
+    # Manage extensions
+    code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
@@ -217,16 +218,12 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 COPY languagepacks.json $CS_TEMP_HOME/
 
 RUN pip install \
-    'git+https://github.com/betatim/vscode-binder' \
+    'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    'jupyter_contrib_nbextensions' && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-# Default environment
-RUN mamba install --quiet --yes -c plotly -c conda-forge \
+    mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter_contrib_nbextensions' \ 
     'jupyter-dash' \
-    'pillow' \
-    'pyyaml' \
+    'plotly' \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
@@ -236,21 +233,16 @@ RUN mamba install --quiet --yes -c plotly -c conda-forge \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN mamba clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
+    mamba clean --all -f -y && \
+    jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy@2.1.2' \
-      'jupyterlab-plotly@4.14.3' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
-  npm cache clean --force && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -262,7 +254,7 @@ RUN mamba clean --all -f -y && \
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    conda install -c conda-forge \
+    mamba install -c conda-forge \
       'r-languageserver' \
       'python-lsp-server' \
     && \
@@ -273,6 +265,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'unified-language-server' \
     'yaml-language-server@0.18.0' && \
     mamba clean --all -f -y && \
+    npm cache clean --force && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
