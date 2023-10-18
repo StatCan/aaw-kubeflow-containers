@@ -23,11 +23,10 @@ rm -rf /tmp/* /var/tmp/* $HOME/.cache/* /var/cache/apt/*
 rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
 
 # Clean conda
-if [ -x "$(command -v conda)" ]; then
+if [ -x "$(command -v mamba)" ]; then
     # Full Conda Cleanup
-    conda clean --all -f -y
+    mamba clean --all -f -y
     # Remove source cache files
-    conda build purge-all
     if [ -d $CONDA_DIR ]; then
         # Cleanup python bytecode files - not needed: https://jcrist.github.io/conda-docker-tips.html
         find $CONDA_DIR -type f -name '*.pyc' -delete

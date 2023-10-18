@@ -6,9 +6,6 @@ ENV XDG_DATA_HOME=/etc/share
 ENV VSCODE_DIR=$XDG_DATA_HOME/code
 ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
-COPY clean-layer.sh /usr/bin/clean-layer.sh
-RUN chmod +x /usr/bin/clean-layer.sh
-
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
  && apt-get install -y dbus-x11 \

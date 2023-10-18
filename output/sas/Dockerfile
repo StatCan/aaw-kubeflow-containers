@@ -17,9 +17,12 @@ USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /usr/bin/clean-layer.sh
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
@@ -216,7 +219,7 @@ RUN pip install \
     mamba clean --all -f -y && \
     jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install \
+    jupyter labextension enable \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \

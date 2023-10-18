@@ -20,10 +20,13 @@ USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && apt-get upgrade --yes libwebp7 \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /usr/bin/clean-layer.sh
 
 ###############################
 ###  docker-bits/1_CUDA-11.8.0.Dockerfile
@@ -342,7 +345,7 @@ RUN pip install \
     mamba clean --all -f -y && \
     jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install \
+    jupyter labextension enable \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \

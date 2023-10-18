@@ -27,7 +27,11 @@ ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 #Fix-permissions
 COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
-RUN chmod u+x /usr/bin/fix-permissions
+#clean up
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
+RUN chmod u+x /usr/bin/fix-permissions \
+    && chmod +x /usr/bin/clean-layer.sh
 
 RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
@@ -39,7 +43,6 @@ RUN /rocker_scripts/install_shiny_server.sh \
 
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
-
 
 
 # ARG CONDA_VERSION=py38_4.10.3
@@ -216,9 +219,6 @@ ENV NB_GID=100
 ENV XDG_DATA_HOME=/etc/share
 ENV VSCODE_DIR=$XDG_DATA_HOME/code
 ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
-
-COPY clean-layer.sh /usr/bin/clean-layer.sh
-RUN chmod +x /usr/bin/clean-layer.sh
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
