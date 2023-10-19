@@ -281,7 +281,8 @@ ENV OMPP_GROUP=100
 ENV OMPP_UID=$NB_UID
 ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 \
     && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
