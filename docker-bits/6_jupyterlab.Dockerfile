@@ -64,7 +64,6 @@ RUN pip install \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
-    mamba clean --all -f -y && \
     jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension enable \
@@ -74,6 +73,7 @@ RUN pip install \
     && \
     jupyter lab build && \
     jupyter lab clean && \
+  clean-layer.sh && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -95,8 +95,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server@0.18.0' && \
-    mamba clean --all -f -y && \
-    npm cache clean --force && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 

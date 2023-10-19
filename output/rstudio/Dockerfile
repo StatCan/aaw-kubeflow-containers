@@ -44,6 +44,7 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' && \
       pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
@@ -181,7 +182,7 @@ RUN mkdir -p /etc/rstudio && \
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
-RUN conda install --quiet --yes \
+RUN mamba install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
@@ -193,7 +194,7 @@ RUN conda install --quiet --yes \
       'r-e1071==1.7_13' \
       'r-markdown==1.7' \
     && \
-    conda clean --all -f -y && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 

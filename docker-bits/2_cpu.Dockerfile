@@ -12,6 +12,6 @@ RUN mamba create -n pycpu --yes \
       gensim==4.3.0 nltk==3.8.1 spacy==3.5.0 \
       pytorch==1.13.1 torchaudio==0.13.1 torchvision==0.14.1 cpuonly==2.0 \
       -c pytorch -c conda-forge && \
-    mamba clean --all -f -y && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

@@ -46,6 +46,7 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' && \
       pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
@@ -216,7 +217,6 @@ RUN pip install \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
-    mamba clean --all -f -y && \
     jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension enable \
@@ -226,6 +226,7 @@ RUN pip install \
     && \
     jupyter lab build && \
     jupyter lab clean && \
+  clean-layer.sh && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -247,8 +248,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server@0.18.0' && \
-    mamba clean --all -f -y && \
-    npm cache clean --force && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -325,7 +325,7 @@ RUN mkdir -p /etc/rstudio && \
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
-RUN conda install --quiet --yes \
+RUN mamba install --quiet --yes \
       'r-rodbc==1.3_20' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
@@ -337,7 +337,7 @@ RUN conda install --quiet --yes \
       'r-e1071==1.7_13' \
       'r-markdown==1.7' \
     && \
-    conda clean --all -f -y && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 

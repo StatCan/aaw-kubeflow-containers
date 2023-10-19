@@ -10,6 +10,7 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' && \
       pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
