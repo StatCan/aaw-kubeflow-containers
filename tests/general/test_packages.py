@@ -95,6 +95,7 @@ EXCLUDED_PACKAGES = [
     "pillow",
     # import yaml, not import pyyaml
     "pyyaml",
+    "graphviz",
 ]
 
 
