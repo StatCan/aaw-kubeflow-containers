@@ -97,17 +97,16 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server' && \
-    npm uninstall -g @babel/traverse && \
     clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.4"
+ARG OMPP_VERSION="1.15.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230803"
-ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
+ARG OMPP_PKG_DATE="20231005"
+ARG SHA256ompp=7b88490371875567bdc95aba3a3fc8c66a17f4c8c86e9a95b4f924d1c7292eb4
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
