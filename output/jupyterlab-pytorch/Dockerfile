@@ -267,8 +267,9 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0' && \
-    clean-layer.sh && \
+    'yaml-language-server' && \
+    npm audit fix --force && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
