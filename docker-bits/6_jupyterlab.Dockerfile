@@ -95,7 +95,6 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server' && \
-    npm audit fix --force && \
     clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
