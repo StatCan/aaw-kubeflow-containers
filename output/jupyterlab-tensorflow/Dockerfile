@@ -171,7 +171,8 @@ RUN mamba install --quiet \
       'joblib==1.2.0' \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
       's3fs' \ 
-      'fire==0.5.0' && \
+      'fire==0.5.0' \
+      'graphviz' && \
       pip install 'kubeflow-training' && \
       clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
@@ -369,12 +370,15 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
       'r-languageserver' \
       'python-lsp-server' \
     && \
+# These should probably go in a package.json file
+# Copy the file over then use npm ci, much better flexibility for managing deps and CVEs
     npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
     'yaml-language-server' && \
+    npm uninstall -g @babel/traverse && \
     clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

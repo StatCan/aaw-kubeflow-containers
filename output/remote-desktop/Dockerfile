@@ -118,7 +118,8 @@ RUN mamba install --quiet \
       'joblib==1.2.0' \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
       's3fs' \ 
-      'fire==0.5.0' && \
+      'fire==0.5.0' \
+      'graphviz' && \
       pip install 'kubeflow-training' && \
       clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
