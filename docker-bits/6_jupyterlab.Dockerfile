@@ -27,9 +27,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $CS_TEMP_HOME/Machine
-
-RUN code-server --install-extension ms-python.python@2023.12.0 && \
+    && mkdir -p $CS_TEMP_HOME/Machine \
+    && \ 
+    # Manage extensions
+    code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
@@ -48,16 +49,12 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 COPY languagepacks.json $CS_TEMP_HOME/
 
 RUN pip install \
-    'git+https://github.com/betatim/vscode-binder' \
+    'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    'jupyter_contrib_nbextensions' && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-# Default environment
-RUN mamba install --quiet --yes -c plotly -c conda-forge \
+    mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter_contrib_nbextensions' \ 
     'jupyter-dash' \
-    'pillow' \
-    'pyyaml' \
+    'plotly' \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
@@ -67,21 +64,16 @@ RUN mamba install --quiet --yes -c plotly -c conda-forge \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-RUN mamba clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
+    jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install \
+    jupyter labextension enable \
       '@jupyterlab/translation-extension' \
-      '@jupyterlab/server-proxy@2.1.2' \
-      'jupyterlab-plotly@4.14.3' \
+      '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
-  npm cache clean --force && \
+  clean-layer.sh && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -93,31 +85,34 @@ RUN mamba clean --all -f -y && \
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    conda install -c conda-forge \
+    mamba install -c conda-forge \
       'r-languageserver' \
       'python-lsp-server' \
     && \
+# These should probably go in a package.json file
+# Copy the file over then use npm ci, much better flexibility for managing deps and CVEs
     npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0' && \
-    mamba clean --all -f -y && \
+    'yaml-language-server' && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.4"
+ARG OMPP_VERSION="1.15.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230803"
-ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
+ARG OMPP_PKG_DATE="20231005"
+ARG SHA256ompp=6d44076e1890c2e2ffb431182b9565cb4715830a027b01aafb9531e274bb8e84
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
 # OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 \
     && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
