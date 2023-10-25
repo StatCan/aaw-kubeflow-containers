@@ -96,6 +96,7 @@ EXCLUDED_PACKAGES = [
     # import yaml, not import pyyaml
     "pyyaml",
     "graphviz",
+    "caret"
 ]
 
 
