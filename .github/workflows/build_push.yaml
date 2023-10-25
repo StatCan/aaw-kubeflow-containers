@@ -72,18 +72,18 @@ jobs:
         ports:
           - 5000:5000
     steps:
-    # - name: Set ENV variables for a PR containing the auto-deploy tag
-    #   if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
-    #   run: | 
-    #     echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
-    #     echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
+    - name: Set ENV variables for a PR containing the auto-deploy tag
+      if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
+      run: | 
+        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
    
-    # - name: Set ENV variables for pushes to master
-    #   if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    #   run: | 
-    #     echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
-    #     echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
-    #     echo "IS_LATEST=true" >> "$GITHUB_ENV"
+    - name: Set ENV variables for pushes to master
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: | 
+        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
+        echo "IS_LATEST=true" >> "$GITHUB_ENV"
 
     - uses: actions/checkout@master
 
@@ -103,18 +103,18 @@ jobs:
         echo name=NOTEBOOK_NAME${{ matrix.notebook }} >> $GITHUB_OUTPUT
 
     # Connect to Azure Container registry (ACR)
-    # - uses: azure/docker-login@v1
-    #   with:
-    #     login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-    #     username: ${{ secrets.REGISTRY_USERNAME }}
-    #     password: ${{ secrets.REGISTRY_PASSWORD }}
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
     
     # # Connect to Azure DEV Container registry (ACR)
-    # - uses: azure/docker-login@v1
-    #   with:
-    #     login-server: ${{ env.DEV_REGISTRY_NAME }}.azurecr.io
-    #     username: ${{ secrets.DEV_REGISTRY_USERNAME }}
-    #     password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+    - uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.DEV_REGISTRY_NAME }}.azurecr.io
+        username: ${{ secrets.DEV_REGISTRY_USERNAME }}
+        password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     
     # Image building/storing locally
     - name: Make Dockerfiles
