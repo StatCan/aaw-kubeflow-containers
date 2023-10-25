@@ -238,7 +238,6 @@ RUN pip install \
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
     mamba install -c conda-forge \
-      'r-languageserver' \
       'python-lsp-server' \
     && \
 # These should probably go in a package.json file
