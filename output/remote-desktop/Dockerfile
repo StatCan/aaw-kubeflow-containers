@@ -9,17 +9,29 @@
 FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
 
 # For compatibility with docker stacks
-ARG NB_USER="jovyan"
 ARG HOME=/home/$NB_USER
-ENV NB_UID="1000"
-ENV NB_GID="100"
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+ENV NB_USER="${NB_USER}" \
+    NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
+    CONDA_DIR=/opt/conda \
+    PATH=$PATH:/opt/conda/bin \
+    NB_USER="jovyan" \
+    HOME="/home/${NB_USER}"
 
 USER root
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
 #Fix-permissions
 COPY remote-desktop/fix-permissions /usr/bin/fix-permissions
-RUN chmod u+x /usr/bin/fix-permissions
+#clean up
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
+RUN chmod u+x /usr/bin/fix-permissions \
+    && chmod +x /usr/bin/clean-layer.sh
 
 RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
@@ -32,37 +44,87 @@ RUN /rocker_scripts/install_shiny_server.sh \
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 
+
+# ARG CONDA_VERSION=py38_4.10.3
+# ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
+ARG PYTHON_VERSION=3.11
+
+# #Install Miniconda
+# #Has to be appended, else messes with qgis
+# RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
+#     echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
+#     if ! md5sum --status -c miniconda.md5; then exit 1; fi && \
+#     mkdir -p /opt && \
+#     sh miniconda.sh -b -p /opt/conda && \
+#     rm miniconda.sh miniconda.md5 && \
+#     ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+#     echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+#     echo "conda activate base" >> ~/.bashrc && \
+#     find /opt/conda/ -follow -type f -name '*.a' -delete && \
+#     find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
+#     /opt/conda/bin/conda clean -afy && \
+#     chown -R $NB_UID:$NB_GID /opt/conda
+#
+# Download and install Micromamba, and initialize Conda prefix.
+#   <https://github.com/mamba-org/mamba#micromamba>
+#   Similar projects using Micromamba:
+#     - Micromamba-Docker: <https://github.com/mamba-org/micromamba-docker>
+#     - repo2docker: <https://github.com/jupyterhub/repo2docker>
+# Install Python, Mamba and jupyter_core
+# Cleanup temporary files and remove Micromamba
+# Correct permissions
+# Do all this in a single RUN command to avoid duplicating all of the
+# files across image layers when the permissions change
+COPY initial-condarc "${CONDA_DIR}/.condarc"
+WORKDIR /tmp
+RUN set -x && \
+    arch=$(uname -m) && \
+    if [ "${arch}" = "x86_64" ]; then \
+        # Should be simpler, see <https://github.com/mamba-org/mamba/issues/1437>
+        arch="64"; \
+    fi && \
+    wget --progress=dot:giga -O /tmp/micromamba.tar.bz2 \
+        "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
+    tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
+    rm /tmp/micromamba.tar.bz2 && \
+    PYTHON_SPECIFIER="python=${PYTHON_VERSION}" && \
+    if [[ "${PYTHON_VERSION}" == "default" ]]; then PYTHON_SPECIFIER="python"; fi && \
+    # Install the packages
+    ./micromamba install \
+        --root-prefix="${CONDA_DIR}" \
+        --prefix="${CONDA_DIR}" \
+        --yes \
+        "${PYTHON_SPECIFIER}" \
+        'mamba' \
+        'jupyter_core' && \
+    rm micromamba && \
+    # Pin major.minor version of python
+    mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
+    clean-layer.sh && \
+    fix-permissions "${CONDA_DIR}" && \
+    fix-permissions "/home/${NB_USER}"
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
 USER root
+COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'PyYAML==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==7.1.13' \
+RUN mamba install --quiet \
+      'pillow' \
+      'pyyaml' \
       'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
+      's3fs' \ 
+      'fire==0.5.0' \
+      'graphviz' && \
+      pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.5.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-COPY aaw-suspend-server.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
+      fix-permissions /home/$NB_USER && \
+      chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -70,13 +132,15 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 USER root
 
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
       'byobu' \
       'htop' \
       'jq' \
-      'less' \
       'openssl' \
       'ranger' \
       'tig' \
@@ -85,20 +149,16 @@ RUN apt-get update && \
       'vim' \
       'zip' \
       'zsh' \
-      'wget' \
-      'curl' \
       'dos2unix' \
   && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -110,26 +170,22 @@ ARG ARGO_CLI_VERSION=v3.4.5
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
 
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
-
-# Install OpenJDK-8
-RUN apt-get update && \
+RUN \
+  # OpenJDK-8
+    apt-get update && \
     apt-get install -y openjdk-8-jre && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-
-RUN \ 
+    fix-permissions /home/$NB_USER \
+  && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    # AzureCLI - installation script from Azure
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
@@ -165,9 +221,6 @@ ENV NB_GID=100
 ENV XDG_DATA_HOME=/etc/share
 ENV VSCODE_DIR=$XDG_DATA_HOME/code
 ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
-
-COPY clean-layer.sh /usr/bin/clean-layer.sh
-RUN chmod +x /usr/bin/clean-layer.sh
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
@@ -444,7 +497,8 @@ ENV OMPP_GROUP=100
 ENV OMPP_UID=$NB_UID
 ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 \
     && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
@@ -499,26 +553,6 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-#Install Miniconda
-#Has to be appended, else messes with qgis
-ENV PATH $PATH:/opt/conda/bin
-
-ARG CONDA_VERSION=py38_4.10.3
-ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
-    echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
-    if ! md5sum --status -c miniconda.md5; then exit 1; fi && \
-    mkdir -p /opt && \
-    sh miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh miniconda.md5 && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy && \
-    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
 ENV HOME=/home/$NB_USER

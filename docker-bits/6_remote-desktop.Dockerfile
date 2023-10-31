@@ -6,9 +6,6 @@ ENV XDG_DATA_HOME=/etc/share
 ENV VSCODE_DIR=$XDG_DATA_HOME/code
 ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
-COPY clean-layer.sh /usr/bin/clean-layer.sh
-RUN chmod +x /usr/bin/clean-layer.sh
-
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
  && apt-get install -y dbus-x11 \
@@ -284,7 +281,8 @@ ENV OMPP_GROUP=100
 ENV OMPP_UID=$NB_UID
 ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
-RUN apt-get install --yes sqlite3 \
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 \
     && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
@@ -339,26 +337,6 @@ RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
 
-#Install Miniconda
-#Has to be appended, else messes with qgis
-ENV PATH $PATH:/opt/conda/bin
-
-ARG CONDA_VERSION=py38_4.10.3
-ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
-
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-${CONDA_VERSION}-Linux-x86_64.sh -O miniconda.sh && \
-    echo "${CONDA_MD5}  miniconda.sh" > miniconda.md5 && \
-    if ! md5sum --status -c miniconda.md5; then exit 1; fi && \
-    mkdir -p /opt && \
-    sh miniconda.sh -b -p /opt/conda && \
-    rm miniconda.sh miniconda.md5 && \
-    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
-    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
-    echo "conda activate base" >> ~/.bashrc && \
-    find /opt/conda/ -follow -type f -name '*.a' -delete && \
-    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
-    /opt/conda/bin/conda clean -afy && \
-    chown -R $NB_UID:$NB_GID /opt/conda
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
