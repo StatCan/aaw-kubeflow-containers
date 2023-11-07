@@ -234,8 +234,8 @@ RUN pip install \
     'ipympl' \
     'jupyter-server-proxy' \
     'jupyterlab-language-pack-fr-fr' \
-    # pinned version to fix dependency issues with jupyterlab v4
-    # remove pin when extensions are caught up to v4
+    # pinned version of package to fix dependency issues with jupyterlab v4
+    # remove pin when jupyterlab extensions are caught up to v4
     'jupyterlab_execute_time==2.3.1' \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
