@@ -16,6 +16,8 @@ DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
 tensorflow-CUDA := 11.8.0
 pytorch-CUDA    := 11.8.0
 
+SPARK := main
+
 # https://stackoverflow.com/questions/5917413/concatenate-multiple-files-but-include-filename-as-section-headers
 CAT := awk '(FNR==1){print "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n\#\#\#  " FILENAME "\n\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\n"}1'
 
@@ -64,7 +66,7 @@ generate-CUDA:
 	bash scripts/get-nvidia-stuff.sh    $(pytorch-CUDA) > $(SRC)/1_CUDA-$(pytorch-CUDA).Dockerfile
 
 generate-Spark:
-	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
+	bash scripts/get-spark-stuff.sh --commit $(SPARK)  > $(SRC)/2_Spark.Dockerfile
 
 ###################################
 ###### Dockerfile Management ######
@@ -148,6 +150,7 @@ jupyterlab: pytorch tensorflow cpu
 		cp -r resources/common/. $(OUT)/$@-$${type}/; \
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
+			$(SRC)/2_Spark.Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
 			$(SRC)/4_CLI.Dockerfile \
 			$(SRC)/5_DB-Drivers.Dockerfile \
