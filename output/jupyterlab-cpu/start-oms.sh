@@ -53,6 +53,13 @@ else
   fi
 fi
 
+# Copy default ompp models on first start up
+if [ ! -d "$OMS_MODELS_DIR" ]; then
+  echo "Creating ompp default model directory"
+  mkdir -p "$OMS_MODELS_DIR"
+  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
+fi
+
 # start oms web-service
 #
 [ -z "$OMS_PORT" ] && OMS_PORT=4040
