@@ -42,26 +42,57 @@ export OMS_URL=${JUPYTER_SERVER_URL}ompp
 if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
   #DEV
   export OMS_MODEL_DIR=/home/jovyan/models
+  export OMS_LOG_DIR=/home/jovyan/logs
   export OMS_HOME_DIR=/home/jovyan/
 else
   if [ -d "/etc/protb" ]; then
     export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
+    export OMS_LOG_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/logs
     export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/
   else
     export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/models
+    export OMS_LOG_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/logs
     export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/
   fi
 fi
 
-# Copy default ompp models on first start up
-if [ ! -d "$OMS_MODELS_DIR" ]; then
-  echo "Creating ompp default model directory"
-  mkdir -p "$OMS_MODELS_DIR"
-  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
+# Create oms home directory if it doesn't exist:
+if [ ! -d $OMS_HOME_DIR ]; then
+  mkdir -p $OMS_HOME_DIR
 fi
 
-# start oms web-service
-#
+# Create models directory if it doesn't exist:
+if [ ! -d "$OMS_MODEL_DIR" ]; then
+  mkdir -p "$OMS_MODEL_DIR"
+fi
+
+# Create model log directory if it doesn't exist:
+if [ ! -d "$OMS_LOG_DIR" ]; then
+  mkdir -p "$OMS_LOG_DIR"
+fi
+
+# Copy sample models from openmpp installation archive into models directory:
+cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODEL_DIR"
+
+
+# Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
+cd "$OMS_HOME_DIR"
+git clone https://github.com/StatCan/openmpp.git
+cd openmpp
+git checkout openmpp-13
+cd  mpi-job-files
+
+# Copy scripts and templates into openmpp installation bin and etc folders:
+cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
+cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
+# I may need to run chown and chmod on those files...
+
+# Remove repo as it's not needed anymore:
+cd "$OMS_HOME_DIR"
+rm -r openmpp
+
+
+# Output various oms settings to console:
 [ -z "$OMS_PORT" ] && OMS_PORT=4040
 
 echo "OM_ROOT=$OM_ROOT"
@@ -69,18 +100,14 @@ echo "OMS_PORT=$OMS_PORT"
 echo "OMS_URL=$OMS_URL"
 
 echo "OMS_MODEL_DIR=$OMS_MODEL_DIR"
-if [ ! -d $OMS_MODEL_DIR ]; then
-  mkdir -p $OMS_MODEL_DIR
-fi
-
 echo "OMS_HOME_DIR=$OMS_HOME_DIR"
-if [ ! -d $OMS_HOME_DIR ]; then
-  mkdir -p $OMS_HOME_DIR
-fi
+echo "OMS_LOG_DIR=$OMS_LOG_DIR"
 
-OM_ROOT=$OM_ROOT ./bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
+
+# start oms web-service:
+OM_ROOT=$OM_ROOT ./bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.ModelLogDir ${OMS_LOG_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
+
 status=$?
-
 if [ $status -ne 0 ] ;
 then
   [ $status -eq 130 ] && echo " oms web-service terminated by Ctrl+C"
