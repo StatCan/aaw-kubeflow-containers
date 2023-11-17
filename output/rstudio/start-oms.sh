@@ -56,11 +56,6 @@ else
   fi
 fi
 
-# Create oms home directory if it doesn't exist:
-if [ ! -d $OMS_HOME_DIR ]; then
-  mkdir -p $OMS_HOME_DIR
-fi
-
 # Create models directory if it doesn't exist:
 if [ ! -d "$OMS_MODEL_DIR" ]; then
   mkdir -p "$OMS_MODEL_DIR"
@@ -82,7 +77,6 @@ echo "$OMS_LOG_DIR" > /etc/openmpp/oms_log_dir
 
 
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
-cd "$OMS_HOME_DIR"
 git clone https://github.com/StatCan/openmpp.git
 cd openmpp
 git checkout openmpp-13
@@ -91,7 +85,9 @@ cd  mpi-job-files
 # Copy scripts and templates into openmpp installation bin and etc folders:
 cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
 cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
-# I may need to run chown and chmod on those files...
+
+# Making sure these can execute:
+chmod +x dispatchMPIJob.sh parseCommand.py
 
 # Remove repo as it's not needed anymore:
 cd "$OMS_HOME_DIR"
