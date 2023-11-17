@@ -74,6 +74,12 @@ fi
 # Copy sample models from openmpp installation archive into models directory:
 cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODEL_DIR"
 
+# These three environment variables don't persist so let's try using a file:
+mkdir -p /etc/openmpp
+echo "$OMS_HOME_DIR" > /etc/openmpp/oms_home_dir 
+echo "$OMS_MODEL_DIR" > /etc/openmpp/oms_model_dir 
+echo "$OMS_LOG_DIR" > /etc/openmpp/oms_log_dir
+
 
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
 cd "$OMS_HOME_DIR"
