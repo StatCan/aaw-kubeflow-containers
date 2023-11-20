@@ -33,7 +33,6 @@ OM_ROOT="$OMPP_INSTALL_DIR"
 [ "$OM_ROOT" != "$PWD" ] && pushd $OM_ROOT
 
 # allow to use $MODEL_NAME.ini file in UI for model run
-#
 export OM_CFG_INI_ALLOW=true
 export OM_CFG_INI_ANY_KEY=true
 export OMS_URL=${JUPYTER_SERVER_URL}ompp
@@ -70,17 +69,24 @@ fi
 cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODEL_DIR"
 
 # These three environment variables don't persist so let's try using a file:
-mkdir -p /etc/openmpp
-echo "$OMS_HOME_DIR" > /etc/openmpp/oms_home_dir 
-echo "$OMS_MODEL_DIR" > /etc/openmpp/oms_model_dir 
-echo "$OMS_LOG_DIR" > /etc/openmpp/oms_log_dir
+echo "$OMS_HOME_DIR" > $OM_ROOT/etc/oms_home_dir 
+echo "$OMS_MODEL_DIR" > $OM_ROOT/etc/oms_model_dir 
+echo "$OMS_LOG_DIR" > $OM_ROOT/etc/oms_log_dir
 
 
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
-git clone https://github.com/StatCan/openmpp.git
+if [ ! -d "openmpp"]; then
+  git clone https://github.com/StatCan/openmpp.git
+fi
 cd openmpp
-git checkout openmpp-13
-cd  mpi-job-files
+# checkout openmpp-13 if we're not already on it, always pull
+branch="openmpp-13"
+state=git symbolic-ref --short HEAD
+if [ $state != $branch ]
+  git checkout $branch
+fi 
+git pull $branch
+cd mpi-job-files
 
 # Copy scripts and templates into openmpp installation bin and etc folders:
 cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
@@ -90,9 +96,7 @@ cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
 chmod +x dispatchMPIJob.sh parseCommand.py
 
 # Remove repo as it's not needed anymore:
-cd "$OMS_HOME_DIR"
-rm -r openmpp
-
+cd "$OM_ROOT" && rm -r openmpp
 
 # Output various oms settings to console:
 [ -z "$OMS_PORT" ] && OMS_PORT=4040
@@ -107,7 +111,7 @@ echo "OMS_LOG_DIR=$OMS_LOG_DIR"
 
 
 # start oms web-service:
-OM_ROOT=$OM_ROOT ./bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.ModelLogDir ${OMS_LOG_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
+OM_ROOT=$OM_ROOT ${OM_ROOT}/bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.ModelLogDir ${OMS_LOG_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
 
 status=$?
 if [ $status -ne 0 ] ;
