@@ -16,7 +16,7 @@ fi
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
 if [ ! -e /home/$NB_USER/.Rprofile ]; then
-    cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
+    cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm -rf /tmp/.Rprofile
 fi
 
 # Configure the shell! If not already configured.
