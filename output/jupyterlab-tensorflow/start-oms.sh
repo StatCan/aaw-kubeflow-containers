@@ -38,8 +38,8 @@ export OM_CFG_INI_ANY_KEY=true
 export OMS_URL=${JUPYTER_SERVER_URL}ompp
 
 # OpenM++ default configuraton
-if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
-  #DEV
+if [ "$KUBERNETES_SERVICE_HOST" =~ ".131." ] || [ -z $KUBERNETES_SERVICE_HOST ]; then
+  #DEV or Localhost
   export OMS_MODEL_DIR=/home/jovyan/models
   export OMS_LOG_DIR=/home/jovyan/logs
   export OMS_HOME_DIR=/home/jovyan/
@@ -75,17 +75,19 @@ echo "$OMS_LOG_DIR" > $OM_ROOT/etc/oms_log_dir
 
 
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
-if [ ! -d "openmpp"]; then
+if [ ! -d /openmpp ]
+ then
   git clone https://github.com/StatCan/openmpp.git
 fi
 cd openmpp
 # checkout openmpp-13 if we're not already on it, always pull
 branch="openmpp-13"
-state=git symbolic-ref --short HEAD
+state=$(git symbolic-ref --short HEAD 2>&1)
 if [ $state != $branch ]
+ then
   git checkout $branch
 fi 
-git pull $branch
+git pull
 cd mpi-job-files
 
 # Copy scripts and templates into openmpp installation bin and etc folders:
@@ -96,7 +98,7 @@ cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
 chmod +x dispatchMPIJob.sh parseCommand.py
 
 # Remove repo as it's not needed anymore:
-cd "$OM_ROOT" && rm -r openmpp
+cd "$OM_ROOT" && rm -rf openmpp
 
 # Output various oms settings to console:
 [ -z "$OMS_PORT" ] && OMS_PORT=4040
