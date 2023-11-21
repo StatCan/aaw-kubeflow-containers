@@ -94,6 +94,9 @@ cd mpi-job-files
 cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
 cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
 
+# Copy the mpi enabled model binary to the model binaries directory:
+cp RiskPaths_mpi "$OMS_MODEL_DIR/bin"
+
 # Making sure these can execute:
 chmod +x dispatchMPIJob.sh parseCommand.py
 
