@@ -116,7 +116,7 @@ echo "OMS_LOG_DIR=$OMS_LOG_DIR"
 
 
 # start oms web-service:
-OM_ROOT=$OM_ROOT ${OM_ROOT}/bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.ModelLogDir ${OMS_LOG_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest
+OM_ROOT=$OM_ROOT ${OM_ROOT}/bin/oms -l localhost:${OMS_PORT} -oms.ModelDir ${OMS_MODEL_DIR} -oms.HomeDir ${OMS_HOME_DIR} -oms.ModelLogDir ${OMS_LOG_DIR} -oms.AllowDownload -oms.AllowUpload -oms.AllowMicrodata -oms.LogRequest -OpenM.LogToFile -OpenM.LogUseDailyStamp -OpenM.LogFilePath ${OM_ROOT}/log/oms.log
 
 status=$?
 if [ $status -ne 0 ] ;
