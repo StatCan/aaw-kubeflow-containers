@@ -80,8 +80,7 @@ if [ ! -d /openmpp ]
   git clone https://github.com/StatCan/openmpp.git
 fi
 cd openmpp
-# checkout openmpp-13 if we're not already on it, always pull
-branch="openmpp-13"
+branch="main"
 state=$(git symbolic-ref --short HEAD 2>&1)
 if [ $state != $branch ]
  then
