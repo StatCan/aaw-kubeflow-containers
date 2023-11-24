@@ -93,6 +93,9 @@ cd mpi-job-files
 cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
 cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
 
+# Delete the default mpi golang template that does not work in our context:
+rm -f "$OM_ROOT/etc/mpi.ModelRun.template.txt"
+
 # Copy the mpi enabled model binary to the model binaries directory:
 cp RiskPaths_mpi "$OMS_MODEL_DIR/bin"
 
