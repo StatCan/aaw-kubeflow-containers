@@ -16,7 +16,7 @@ fi
 test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS"
 
 if [ ! -e /home/$NB_USER/.Rprofile ]; then
-    cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm /tmp/.Rprofile
+    cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm -rf /tmp/.Rprofile
 fi
 
 # Configure the shell! If not already configured.
@@ -149,14 +149,6 @@ if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
   conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
   conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia
   conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote 
-fi
-
-# Copy default ompp models on first start up
-export OMS_MODELS_DIR="/home/jovyan/models"
-if [ ! -d "$OMS_MODELS_DIR" ]; then
-  echo "Creating ompp default model directory"
-  mkdir -p "$OMS_MODELS_DIR"
-  cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODELS_DIR"
 fi
 
 echo "--------------------starting jupyter--------------------"
