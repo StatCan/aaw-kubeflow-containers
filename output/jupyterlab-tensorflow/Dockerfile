@@ -442,6 +442,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'mpmath==1.3.0' \
       'lxml==4.9.2' \
       'pyarrow==14.0.1' \
+      'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
