@@ -73,19 +73,21 @@ echo "$OMS_HOME_DIR" > $OM_ROOT/etc/oms_home_dir
 echo "$OMS_MODEL_DIR" > $OM_ROOT/etc/oms_model_dir 
 echo "$OMS_LOG_DIR" > $OM_ROOT/etc/oms_log_dir
 
-
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
 if [ ! -d /openmpp ]
  then
   git clone https://github.com/StatCan/openmpp.git
 fi
+
 cd openmpp
-branch="main"
+branch="openmpp-14"
 state=$(git symbolic-ref --short HEAD 2>&1)
+
 if [ $state != $branch ]
  then
   git checkout $branch
 fi 
+
 git pull
 cd mpi-job-files
 
