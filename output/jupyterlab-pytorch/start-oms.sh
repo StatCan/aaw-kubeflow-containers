@@ -73,6 +73,8 @@ echo "$OMS_HOME_DIR" > $OM_ROOT/etc/oms_home_dir
 echo "$OMS_MODEL_DIR" > $OM_ROOT/etc/oms_model_dir 
 echo "$OMS_LOG_DIR" > $OM_ROOT/etc/oms_log_dir
 
+# Content-less commit to get auto-deploy tag to trigger on pull request.
+
 # Import openmpp repo to get scripts and templates needed to run mpi jobs via kubeflow:
 if [ ! -d /openmpp ]
  then
