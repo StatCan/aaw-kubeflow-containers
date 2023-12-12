@@ -3,12 +3,12 @@
 USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
-COPY start-custom.sh /usr/local/bin/
+COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
-COPY start-oms.sh /usr/local/bin/
 
-RUN chmod +x /usr/local/bin/start-oms.sh
+RUN chmod +x /usr/local/bin/start-oms.sh && \
+    chmod +x /usr/local/bin/restart-oms.sh
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf

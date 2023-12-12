@@ -11,7 +11,7 @@ def setup_ompp():
     return [
       "bash",
       "-c",
-      "/usr/local/bin/start-oms.sh"
+      "/usr/local/bin/start-oms.sh >> /tmp/oms_logfile.log"
     ]
 
   def _rewrite_response(response):

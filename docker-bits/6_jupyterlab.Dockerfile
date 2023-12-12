@@ -111,27 +111,29 @@ ARG SHA256ompp=6d44076e1890c2e2ffb431182b9565cb4715830a027b01aafb9531e274bb8e84
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
+COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+
 # OpenM++ expects sqlite to be installed (not just libsqlite)
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
+ARG NODE_OPTIONS=--openssl-legacy-provider
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 openmpi-bin libopenmpi-dev\
     && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
-    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1
-    
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1\
+    && rm -f /tmp/ompp.tar.gz \
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-ARG NODE_OPTIONS=--openssl-legacy-provider
-RUN sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
-    && fix-permissions ${OMPP_INSTALL_DIR}
-
-COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
-RUN pip install /opt/jupyter-ompp-proxy/
+    && fix-permissions ${OMPP_INSTALL_DIR} \
+    && pip install /opt/jupyter-ompp-proxy/
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
