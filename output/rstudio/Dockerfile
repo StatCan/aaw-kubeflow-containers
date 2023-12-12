@@ -13,54 +13,42 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=ed2908bbb62e
+ARG BASE_VERSION=2023-08-07
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
-    && rm -rf /var/lib/apt/lists/*
-
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
-RUN pip install --force-reinstall cryptography==39.0.1 && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER
+    && apt-get upgrade --yes libwebp7 \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /usr/bin/clean-layer.sh
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
 USER root
+COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'PyYAML==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==7.1.13' \
+RUN mamba install --quiet \
+      'pillow' \
+      'pyyaml' \
       'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
+      's3fs' \ 
+      'fire==0.5.0' \
+      'graphviz' && \
+      pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.5.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-COPY aaw-suspend-server.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
+      fix-permissions /home/$NB_USER && \
+      chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -68,13 +56,15 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 USER root
 
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
       'byobu' \
       'htop' \
       'jq' \
-      'less' \
       'openssl' \
       'ranger' \
       'tig' \
@@ -83,20 +73,16 @@ RUN apt-get update && \
       'vim' \
       'zip' \
       'zsh' \
-      'wget' \
-      'curl' \
       'dos2unix' \
   && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -108,26 +94,22 @@ ARG ARGO_CLI_VERSION=v3.4.5
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
 
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
-
-# Install OpenJDK-8
-RUN apt-get update && \
+RUN \
+  # OpenJDK-8
+    apt-get update && \
     apt-get install -y openjdk-8-jre && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-
-RUN \ 
+    fix-permissions /home/$NB_USER \
+  && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    # AzureCLI - installation script from Azure
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
@@ -158,19 +140,19 @@ RUN \
 
 # ODBC drivers
 RUN apt-get update && \
-    apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
+    apt-get install -y unixodbc-dev && \
+    pip install --no-cache-dir --quiet pyodbc && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 ###############################
-###  docker-bits/6_rstudio.Dockerfile
+###  docker-bits/6_rstudio-server.Dockerfile
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2023.06.0-421
-ARG SHA256=5931f9dbd5a2238efdc20ce7d17713fbb3d5c6e5918657cd60d46e361c0db107
+ARG RSTUDIO_VERSION=2023.06.2-561
+ARG SHA256=f7ec39bc79b2f5ca8e653580ff15097b8275989fa1efe89f4f8ac17a926c94e3
 RUN apt-get update && \
     apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
@@ -186,8 +168,14 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/r
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
     rm /tmp/rstudio.deb && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    #Harden rstudio-server
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+###############################
+###  docker-bits/6_rstudio.Dockerfile
+###############################
+
+# Harden rstudio-server
+RUN mkdir -p /etc/rstudio && \
     echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
@@ -195,9 +183,8 @@ RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/r
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
-RUN conda install --quiet --yes \
+RUN mamba install --quiet --yes \
       'r-rodbc==1.3_20' \
-      'r-tidymodels==1.0.0' \
       'r-tidyverse==1.3.2' \
       'r-arrow==12.0.0' \
       'r-aws.s3==0.3.22' \
@@ -208,7 +195,7 @@ RUN conda install --quiet --yes \
       'r-e1071==1.7_13' \
       'r-markdown==1.7' \
     && \
-    conda clean --all -f -y && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -243,6 +230,8 @@ RUN pip3 --no-cache-dir install --quiet \
       'oauthlib==3.2.2' \
       'mpmath==1.3.0' \
       'lxml==4.9.2' \
+      'pyarrow==14.0.1' \
+      'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 

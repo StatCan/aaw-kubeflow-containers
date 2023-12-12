@@ -3,7 +3,7 @@
 # Stops script execution if a command has an error
 set -e
 
-SHA256=c643dd519fe8b0b6d2d2241b5c241aa1b43ece397f49268865b4d1888c19173e
+SHA256=e70b282ed0b8ce42981675ca2bc9a69fbad23f31f71fbd700b52dcf79e57761c
 
 function disableUpdate() {
     ff_def="$1/browser/defaults/profile"
@@ -49,7 +49,7 @@ function instFF() {
 
 if ! hash firefox 2>/dev/null; then
     echo "Installing Firefox. Please wait..."
-    instFF '86.0'  '/usr/lib/firefox'
+    instFF '117.0.1'  '/usr/lib/firefox'
 else
     echo "Firefox is already installed"
 fi

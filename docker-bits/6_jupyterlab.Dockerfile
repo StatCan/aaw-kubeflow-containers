@@ -9,10 +9,9 @@
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.14.1
-ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
+ARG VSCODE_VERSION=4.17.0
+ARG VSCODE_SHA=a256654aae171699f4dd869dd7f02588ff60411d6a88e95a3e8d997d72efe378
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
@@ -28,9 +27,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $CS_TEMP_HOME/Machine
-
-RUN code-server --install-extension ms-python.python@2023.12.0 && \
+    && mkdir -p $CS_TEMP_HOME/Machine \
+    && \ 
+    # Manage extensions
+    code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
@@ -48,42 +48,34 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-# Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.41.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
+RUN pip install \
+    'git+https://github.com/betatim/vscode-binder' && \
+    # jupyter_contrib_nbextensions likes to be installed with pip
+    mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter_contrib_nbextensions' \ 
+    'jupyter-dash' \
+    'plotly' \
+    'ipywidgets' \
+    'markupsafe' \
+    'ipympl' \
+    'jupyter-server-proxy' \
+    'jupyterlab-language-pack-fr-fr' \
+    # pinned version of package to fix dependency issues with jupyterlab v4
+    # remove pin when jupyterlab extensions are caught up to v4
+    'jupyterlab_execute_time==2.3.1' \
+    'nb_conda_kernels' \
+    'jupyterlab-lsp' \
+    'jupyter-lsp'  && \
+    jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
-      '@jupyterlab/server-proxy@2.1.2' \
-      'jupyterlab-plotly@4.14.3' \
+    jupyter labextension enable \
+      '@jupyterlab/translation-extension' \
+      '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
-  npm cache clean --force && \
+  clean-layer.sh && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -91,42 +83,31 @@ RUN pip install --quiet \
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    conda install -c conda-forge \
-      'r-languageserver' \
+    mamba install -c conda-forge \
       'python-lsp-server' \
     && \
+# These should probably go in a package.json file
+# Copy the file over then use npm ci, much better flexibility for managing deps and CVEs
     npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
+    'yaml-language-server' && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.4"
+ARG OMPP_VERSION="1.15.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230803"
-ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
+ARG OMPP_PKG_DATE="20231005"
+ARG SHA256ompp=6d44076e1890c2e2ffb431182b9565cb4715830a027b01aafb9531e274bb8e84
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -135,15 +116,19 @@ COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-RUN apt-get install --yes sqlite3 \
+ARG NODE_OPTIONS=--openssl-legacy-provider
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 openmpi-bin libopenmpi-dev\
     && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
-    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1 \
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1\
     && rm -f /tmp/ompp.tar.gz \
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
     && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \

@@ -13,184 +13,64 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=ed2908bbb62e
+ARG BASE_VERSION=2023-08-07
 FROM jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
 
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
-    && rm -rf /var/lib/apt/lists/*
-
-#updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
-#TODO: Evaluate if this is still necessary when updating the base image
-RUN pip install --force-reinstall cryptography==39.0.1 && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER
-
-###############################
-###  docker-bits/1_CUDA-11.8.0.Dockerfile
-###############################
-
-# Cuda stuff for v11.8.0
-
-## https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist/11.8.0/ubuntu1804/base/Dockerfile
-
-###########################
-### Base
-###########################
-
-ENV NVARCH x86_64
-
-ENV NVIDIA_REQUIRE_CUDA "cuda>=11.8 brand=tesla,driver>=450,driver<451 brand=tesla,driver>=470,driver<471 brand=unknown,driver>=470,driver<471 brand=nvidia,driver>=470,driver<471 brand=nvidiartx,driver>=470,driver<471 brand=geforce,driver>=470,driver<471 brand=geforcertx,driver>=470,driver<471 brand=quadro,driver>=470,driver<471 brand=quadrortx,driver>=470,driver<471 brand=titan,driver>=470,driver<471 brand=titanrtx,driver>=470,driver<471 brand=tesla,driver>=510,driver<511 brand=unknown,driver>=510,driver<511 brand=nvidia,driver>=510,driver<511 brand=nvidiartx,driver>=510,driver<511 brand=geforce,driver>=510,driver<511 brand=geforcertx,driver>=510,driver<511 brand=quadro,driver>=510,driver<511 brand=quadrortx,driver>=510,driver<511 brand=titan,driver>=510,driver<511 brand=titanrtx,driver>=510,driver<511 brand=tesla,driver>=515,driver<516 brand=unknown,driver>=515,driver<516 brand=nvidia,driver>=515,driver<516 brand=nvidiartx,driver>=515,driver<516 brand=geforce,driver>=515,driver<516 brand=geforcertx,driver>=515,driver<516 brand=quadro,driver>=515,driver<516 brand=quadrortx,driver>=515,driver<516 brand=titan,driver>=515,driver<516 brand=titanrtx,driver>=515,driver<516"
-ENV NV_CUDA_CUDART_VERSION 11.8.89-1
-ENV NV_CUDA_COMPAT_PACKAGE cuda-compat-11-8
-
-ARG TARGETARCH
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gnupg2 curl ca-certificates && \
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/${NVARCH}/3bf863cc.pub | apt-key add - && \
-    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/${NVARCH} /" > /etc/apt/sources.list.d/cuda.list && \
-    apt-get purge --autoremove -y curl \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV CUDA_VERSION 11.8.0
-
-# For libraries in the cuda-compat-* package: https://docs.nvidia.com/cuda/eula/index.html#attachment-a
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-cudart-11-8=${NV_CUDA_CUDART_VERSION} \
-    ${NV_CUDA_COMPAT_PACKAGE} \
-    && rm -rf /var/lib/apt/lists/*
-
-# Required for nvidia-docker v1
-RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf \
-    && echo "/usr/local/nvidia/lib64" >> /etc/ld.so.conf.d/nvidia.conf
-
-ENV CUDA_DIR "/usr/local/cuda"
-ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
-ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:$CUDA_DIR/lib64
-ENV XLA_FLAGS "--xla_gpu_cuda_data_dir=$CUDA_DIR"
-
-# nvidia-container-runtime
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-
-# ###########################
-# ### Devel
-# ###########################
-# # https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist/11.8.0/ubuntu1804/devel/Dockerfile
-#
-# $(curl -s https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist/11.8.0/ubuntu1804/devel/Dockerfile)
-
-###########################
-### Runtime
-###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist/11.8.0/ubuntu1804/runtime/Dockerfile
-
-ENV NV_CUDA_LIB_VERSION 11.8.0-1
-
-ENV NV_NVTX_VERSION 11.8.86-1
-ENV NV_LIBNPP_VERSION 11.8.0.86-1
-ENV NV_LIBNPP_PACKAGE libnpp-11-8=${NV_LIBNPP_VERSION}
-ENV NV_LIBCUSPARSE_VERSION 11.7.5.86-1
-
-ENV NV_LIBCUBLAS_PACKAGE_NAME libcublas-11-8
-ENV NV_LIBCUBLAS_VERSION 11.11.3.6-1
-ENV NV_LIBCUBLAS_PACKAGE ${NV_LIBCUBLAS_PACKAGE_NAME}=${NV_LIBCUBLAS_VERSION}
-
-ENV NV_LIBNCCL_PACKAGE_NAME libnccl2
-ENV NV_LIBNCCL_PACKAGE_VERSION 2.15.5-1
-ENV NCCL_VERSION 2.15.5-1
-ENV NV_LIBNCCL_PACKAGE ${NV_LIBNCCL_PACKAGE_NAME}=${NV_LIBNCCL_PACKAGE_VERSION}+cuda11.8
-
-ARG TARGETARCH
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-libraries-11-8=${NV_CUDA_LIB_VERSION} \
-    cuda-toolkit-11-8 \
-    ${NV_LIBNPP_PACKAGE} \
-    cuda-nvtx-11-8=${NV_NVTX_VERSION} \
-    libcusparse-11-8=${NV_LIBCUSPARSE_VERSION} \
-    ${NV_LIBCUBLAS_PACKAGE} \
-    ${NV_LIBNCCL_PACKAGE} \
-    && rm -rf /var/lib/apt/lists/*
-
-# Keep apt from auto upgrading the cublas and nccl packages. See https://gitlab.com/nvidia/container-images/cuda/-/issues/88
-RUN apt-mark hold ${NV_LIBCUBLAS_PACKAGE_NAME} ${NV_LIBNCCL_PACKAGE_NAME}
-
-# Add entrypoint items
-ENV NVIDIA_PRODUCT_NAME="CUDA"
-
-###########################
-### CudNN
-###########################
-# https://gitlab.com/nvidia/container-images/cuda/-/raw/ee72a6fef178d135e8366e5c88e15df39ff83c21/dist/11.8.0/ubuntu1804/runtime/cudnn8/Dockerfile
-
-ENV NV_CUDNN_VERSION 8.6.0.163
-ENV NV_CUDNN_PACKAGE_NAME "libcudnn8"
-
-ENV NV_CUDNN_PACKAGE "libcudnn8=$NV_CUDNN_VERSION-1+cuda11.8"
-
-ARG TARGETARCH
-
-LABEL com.nvidia.cudnn.version="${NV_CUDNN_VERSION}"
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ${NV_CUDNN_PACKAGE} \
-    && apt-mark hold ${NV_CUDNN_PACKAGE_NAME} \
-    && rm -rf /var/lib/apt/lists/*
-    
+    && apt-get upgrade --yes libwebp7 \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod +x /usr/bin/clean-layer.sh
 
 ###############################
 ###  docker-bits/2_pytorch.Dockerfile
 ###############################
 
-#Install PyTorch
-RUN conda create -n torch python=3.9 && \
-   conda install -n torch --quiet --yes -c pytorch \
-     'pytorch==1.13.1' \
-     'torchvision==0.14.1' \
-     'ipykernel==6.21.3' \
-     'torchtext==0.14.1' \
-   && \
-   conda clean --all -f -y && \
-   fix-permissions $CONDA_DIR && \
-   fix-permissions /home/$NB_USER
+# Install PyTorch GPU Packages and enable PyTorch IPyKernel
+RUN mamba create -n torch && \
+    mamba install -n torch --quiet --yes -c pytorch -c nvidia \
+        python=3.11 \
+        ipykernel \
+        pytorch \
+        torchvision \
+        torchaudio \
+        # gputil has nvidia-smi
+        gputil \
+        # pytorch-cuda are the nvidia cuda drivers
+        pytorch-cuda=11.8 && \
+    clean-layer.sh && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER && \
+    python -m ipykernel install --user --name torch --display-name "PyTorch"
+
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
 
 USER root
+COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'Pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'PyYAML==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'kubeflow-pytorchjob==0.1.3' \
-      'kubeflow-tfjob==0.1.3' \
-      'minio==7.1.13' \
+RUN mamba install --quiet \
+      'pillow' \
+      'pyyaml' \
       'joblib==1.2.0' \
-      'git+https://github.com/zachomedia/s3fs@8aa929f78666ff9e323cde7d9be9262db5a17985' && \
+      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
+      's3fs' \ 
+      'fire==0.5.0' \
+      'graphviz' && \
+      pip install 'kubeflow-training' && \
+      clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-RUN pip3 --no-cache-dir install --quiet \
-      'fire==0.5.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
-COPY aaw-suspend-server.sh /usr/local/bin
-RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
+      fix-permissions /home/$NB_USER && \
+      chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
@@ -198,13 +78,15 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 USER root
 
+# Add helpers for shell initialization
+COPY shell_helpers.sh /tmp/shell_helpers.sh
+
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
       'byobu' \
       'htop' \
       'jq' \
-      'less' \
       'openssl' \
       'ranger' \
       'tig' \
@@ -213,20 +95,16 @@ RUN apt-get update && \
       'vim' \
       'zip' \
       'zsh' \
-      'wget' \
-      'curl' \
       'dos2unix' \
   && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
-ARG KUBECTL_VERSION=v1.15.10
-ARG KUBECTL_URL=https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
-# ARG AZCLI_SHA=53184ff0e5f73a153dddc2cc7a13897022e7d700153f075724b108a04dcec078
 
 ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/loket/oh-my-zsh/feature/batch-mode/tools/install.sh
 ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b03
@@ -238,26 +116,22 @@ ARG ARGO_CLI_VERSION=v3.4.5
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
 
-# Add helpers for shell initialization
-COPY shell_helpers.sh /tmp/shell_helpers.sh
-
-# Install OpenJDK-8
-RUN apt-get update && \
+RUN \
+  # OpenJDK-8
+    apt-get update && \
     apt-get install -y openjdk-8-jre && \
     apt-get clean && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-
-RUN \ 
+    fix-permissions /home/$NB_USER \
+  && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
     && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
-    # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    # AzureCLI - installation script from Azure
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
@@ -288,8 +162,8 @@ RUN \
 
 # ODBC drivers
 RUN apt-get update && \
-    apt-get install -y alien unixodbc unixodbc-dev && \
-    pip install --no-cache-dir --quiet 'pyodbc==4.0.35' && \
+    apt-get install -y unixodbc-dev && \
+    pip install --no-cache-dir --quiet pyodbc && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -309,10 +183,9 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.14.1
-ARG VSCODE_SHA=ee3871c0d441a21da9b199820c105425739892572a6ddd1b9a83bdd44cac8ebb
+ARG VSCODE_VERSION=4.17.0
+ARG VSCODE_SHA=a256654aae171699f4dd869dd7f02588ff60411d6a88e95a3e8d997d72efe378
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
-
 USER root
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
@@ -328,9 +201,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && dpkg -i ./vscode.deb \
     && rm ./vscode.deb \
     && rm -f /etc/apt/sources.list.d/vscode.list \
-    && mkdir -p $CS_TEMP_HOME/Machine
-
-RUN code-server --install-extension ms-python.python@2023.12.0 && \
+    && mkdir -p $CS_TEMP_HOME/Machine \
+    && \ 
+    # Manage extensions
+    code-server --install-extension ms-python.python@2023.12.0 && \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
@@ -348,42 +222,34 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-# Default environment
-RUN pip install --quiet \
-      'jupyter-lsp==1.5.1' \
-      'jupyter-server-proxy==3.2.2' \
-      'jupyterlab_execute_time==2.3.1' \
-      'markupsafe==2.1.2' \
-      'git+https://github.com/betatim/vscode-binder' \
-    && \
-    conda install --quiet --yes \
-    -c conda-forge \
-      'ipywidgets==8.0.4' \
-      'ipympl==0.9.3' \
-      'jupyter_contrib_nbextensions==0.7.0' \
-      'nb_conda_kernels==2.3.1' \
-    && \
-    conda install --quiet --yes \
-      -c plotly \
-      'jupyter-dash==0.4.2' \
-    && \
-    pip install \
-      'jupyterlab-git==0.41.0' \
-      'jupyterlab-lsp==3.10.2' \
-      'jupyterlab-language-pack-fr-FR' \
-    && \
-    conda clean --all -f -y && \
-    jupyter serverextension enable --py jupyter_server_proxy && \
+RUN pip install \
+    'git+https://github.com/betatim/vscode-binder' && \
+    # jupyter_contrib_nbextensions likes to be installed with pip
+    mamba install --quiet --yes -c plotly -c conda-forge \
+    'jupyter_contrib_nbextensions' \ 
+    'jupyter-dash' \
+    'plotly' \
+    'ipywidgets' \
+    'markupsafe' \
+    'ipympl' \
+    'jupyter-server-proxy' \
+    'jupyterlab-language-pack-fr-fr' \
+    # pinned version of package to fix dependency issues with jupyterlab v4
+    # remove pin when jupyterlab extensions are caught up to v4
+    'jupyterlab_execute_time==2.3.1' \
+    'nb_conda_kernels' \
+    'jupyterlab-lsp' \
+    'jupyter-lsp'  && \
+    jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
-      '@jupyterlab/translation-extension@3.0.4' \
-      '@jupyterlab/server-proxy@2.1.2' \
-      'jupyterlab-plotly@4.14.3' \
+    jupyter labextension enable \
+      '@jupyterlab/translation-extension' \
+      '@jupyterlab/server-proxy' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
     jupyter lab clean && \
-  npm cache clean --force && \
+  clean-layer.sh && \
   rm -rf /home/$NB_USER/.cache/yarn && \
   rm -rf /home/$NB_USER/.node-gyp && \
   fix-permissions $CONDA_DIR && \
@@ -391,42 +257,31 @@ RUN pip install --quiet \
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN pip3 --no-cache-dir install --quiet \
-      'pillow==9.4.0' \
-      'notebook==6.5.3' \
-      'pyyaml==6.0' \
-      'jupyterlab==3.6.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
-
 
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    conda install -c conda-forge \
-      'r-languageserver' \
+    mamba install -c conda-forge \
       'python-lsp-server' \
     && \
+# These should probably go in a package.json file
+# Copy the file over then use npm ci, much better flexibility for managing deps and CVEs
     npm i -g \
     'bash-language-server'  \
     'dockerfile-language-server-nodejs' \
     'javascript-typescript-langserver' \
     'unified-language-server' \
-    'yaml-language-server@0.18.0'  && \
-    conda clean --all -f -y && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER  \
-    && \
-    conda clean --all -f -y && \
+    'yaml-language-server' && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.4"
+ARG OMPP_VERSION="1.15.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20230803"
-ARG SHA256ompp=5da79984ef67ad16b3b7d429896b8a553930ca46a16079aaef24b3c9dc867956
+ARG OMPP_PKG_DATE="20231005"
+ARG SHA256ompp=6d44076e1890c2e2ffb431182b9565cb4715830a027b01aafb9531e274bb8e84
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -435,15 +290,19 @@ COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-RUN apt-get install --yes sqlite3 \
+ARG NODE_OPTIONS=--openssl-legacy-provider
+RUN apt-get update --yes \
+    && apt-get install --yes sqlite3 openmpi-bin libopenmpi-dev\
     && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
-    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1 \
+    && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1\
     && rm -f /tmp/ompp.tar.gz \
+# Customize and rebuild omp-ui for jupyter-ompp-proxy install
+# issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
     && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
     && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
+    && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
@@ -477,6 +336,8 @@ RUN pip3 --no-cache-dir install --quiet \
       'oauthlib==3.2.2' \
       'mpmath==1.3.0' \
       'lxml==4.9.2' \
+      'pyarrow==14.0.1' \
+      'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 

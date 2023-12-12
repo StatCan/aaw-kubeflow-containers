@@ -24,6 +24,11 @@ RUN cat /tmp/.condarc > /opt/conda/.condarc && rm /tmp/.condarc
 COPY Rprofile.site /tmp/Rprofile.site
 RUN cat /tmp/Rprofile.site >> /usr/local/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
+# Removal area
+# Prevent screen from locking
+RUN apt-get remove -y -q light-locker xfce4-screensaver \
+    && apt-get autoremove -y
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-remote-desktop.sh"]
