@@ -57,7 +57,7 @@ jobs:
   build-push:
     env:
       REGISTRY_NAME: k8scc01covidacr
-      DEV_REGISTRY_NAME: k8scc01covidacrdev
+      DEV_REGISTRY_NAME: k8scc01covidacr
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
@@ -86,14 +86,14 @@ jobs:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
       run: | 
-        echo "REGISTRY=k8scc01covidacrdev.azurecr.io" >> "$GITHUB_ENV"
-        echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
+        echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=72cda589" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       run: | 
         echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
-        echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=72cda589" >> "$GITHUB_ENV"
         echo "IS_LATEST=true" >> "$GITHUB_ENV"
 
     - uses: actions/checkout@master
