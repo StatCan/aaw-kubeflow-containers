@@ -80,7 +80,7 @@ if [ ! -d /openmpp ]
   git clone https://github.com/StatCan/openmpp.git
 fi
 cd openmpp
-branch="main"
+branch="openmpp-24"
 state=$(git symbolic-ref --short HEAD 2>&1)
 if [ $state != $branch ]
  then
@@ -89,9 +89,14 @@ fi
 git pull
 cd mpi-job-files
 
+
+
 # Copy scripts and templates into openmpp installation bin and etc folders:
 cp dispatchMPIJob.sh parseCommand.py "$OM_ROOT/bin/"
 cp mpi.kubeflow.template.txt MPIJobTemplate.yaml "$OM_ROOT/etc/"
+
+# Copy golang source files into etc for experimentation for now:
+cp -r mpiJobHook "$OM_ROOT/etc/"
 
 # Delete the default mpi golang template that does not work in our context:
 rm -f "$OM_ROOT/etc/mpi.ModelRun.template.txt"
