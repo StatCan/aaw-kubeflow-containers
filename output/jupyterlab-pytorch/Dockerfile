@@ -235,7 +235,7 @@ RUN pip install \
     'ipympl' \
     'jupyter-server-proxy' \
     'jupyterlab-language-pack-fr-fr' \
-    'jupyterlab_execute_time==2.3.1' \
+    'jupyterlab_execute_time' \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
