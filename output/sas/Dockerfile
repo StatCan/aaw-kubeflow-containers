@@ -205,10 +205,9 @@ COPY languagepacks.json $CS_TEMP_HOME/
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    mamba install --quiet --yes -c plotly -c conda-forge \
+    mamba install --quiet --yes -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
-    # I'm pinning version 2.14.2 (latest as of now) because when I don't specify the version, we get dash version 0.39.0!
-    'dash==2.14.2' \
+    'dash' \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
