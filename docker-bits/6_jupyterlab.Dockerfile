@@ -104,7 +104,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Need golang development kit to build hook and controller for mpijob execution.
-RUN apt-get install -y golang-go
+RUN apt-get install -y golang
 
 # Install OpenM++ MPI
 ARG OMPP_VERSION="1.15.5"
