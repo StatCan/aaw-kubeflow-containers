@@ -335,6 +335,7 @@ RUN pip install \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c plotly -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
+    'dash' \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
