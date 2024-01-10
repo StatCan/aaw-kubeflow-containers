@@ -206,7 +206,8 @@ RUN pip install \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c plotly -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
-    'dash' \
+    # I'm pinning version 2.14.2 (latest as of now) because when I don't specify the version, we get dash version 0.39.0!
+    'dash==2.14.2' \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
