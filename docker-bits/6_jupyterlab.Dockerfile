@@ -51,18 +51,16 @@ COPY languagepacks.json $CS_TEMP_HOME/
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    mamba install --quiet --yes -c plotly -c conda-forge \
+    mamba install --quiet --yes -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
-    'jupyter-dash' \
+    'dash' \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
     'jupyter-server-proxy' \
     'jupyterlab-language-pack-fr-fr' \
-    # pinned version of package to fix dependency issues with jupyterlab v4
-    # remove pin when jupyterlab extensions are caught up to v4
-    'jupyterlab_execute_time==2.3.1' \
+    'jupyterlab_execute_time' \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \

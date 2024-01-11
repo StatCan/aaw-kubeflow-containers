@@ -8,10 +8,10 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2023-08-07
+ARG BASE_VERSION=2023-12-25
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM jupyter/datascience-notebook:$BASE_VERSION
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
 
@@ -205,18 +205,16 @@ COPY languagepacks.json $CS_TEMP_HOME/
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    mamba install --quiet --yes -c plotly -c conda-forge \
+    mamba install --quiet --yes -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
-    'jupyter-dash' \
+    'dash' \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
     'jupyter-server-proxy' \
     'jupyterlab-language-pack-fr-fr' \
-    # pinned version of package to fix dependency issues with jupyterlab v4
-    # remove pin when jupyterlab extensions are caught up to v4
-    'jupyterlab_execute_time==2.3.1' \
+    'jupyterlab_execute_time' \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
@@ -333,16 +331,16 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
 RUN mamba install --quiet --yes \
-      'r-rodbc==1.3_20' \
-      'r-tidyverse==1.3.2' \
-      'r-arrow==12.0.0' \
-      'r-aws.s3==0.3.22' \
-      'r-catools==1.18.2' \
-      'r-hdf5r==1.3.8' \
-      'r-odbc==1.3.4' \
-      'r-sf==1.0_12' \
-      'r-e1071==1.7_13' \
-      'r-markdown==1.7' \
+      'r-rodbc' \
+      'r-tidyverse' \
+      'r-arrow' \
+      'r-aws.s3' \
+      'r-catools' \
+      'r-hdf5r' \
+      'r-odbc' \
+      'r-sf' \
+      'r-e1071' \
+      'r-markdown' \
     && \
     clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
