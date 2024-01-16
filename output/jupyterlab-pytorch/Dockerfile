@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2023-12-25
+ARG BASE_VERSION=2023-10-20
 
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
