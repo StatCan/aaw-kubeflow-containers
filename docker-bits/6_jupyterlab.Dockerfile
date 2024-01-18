@@ -102,10 +102,10 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.5"
+ARG OMPP_VERSION="1.15.6"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20231005"
-ARG SHA256ompp=6d44076e1890c2e2ffb431182b9565cb4715830a027b01aafb9531e274bb8e84
+ARG OMPP_PKG_DATE="20231115"
+ARG SHA256ompp=ad8027e2097ed46205fe0e89c1008680e92c5de36af2613d0af8070e5c78b903
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -117,7 +117,7 @@ COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
 ARG NODE_OPTIONS=--openssl-legacy-provider
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 openmpi-bin libopenmpi-dev\
-    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
     && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1\
