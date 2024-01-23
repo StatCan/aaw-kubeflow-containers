@@ -66,7 +66,7 @@ if [ ! -d "$OMS_LOG_DIR" ]; then
 fi
 
 # Copy sample models from openmpp installation archive into models directory:
-cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODEL_DIR"
+# cp -r "$OMPP_INSTALL_DIR/models/." "$OMS_MODEL_DIR"
 
 # These three environment variables don't persist so let's try using a file:
 echo "$OMS_HOME_DIR" > $OM_ROOT/etc/oms_home_dir 
