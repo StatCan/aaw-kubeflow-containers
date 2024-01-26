@@ -211,6 +211,7 @@ RUN pip install \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
+    'pexpect==4.9.0' \
     'jupyter-server-proxy' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
