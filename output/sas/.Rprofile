@@ -12,3 +12,7 @@ rm(package_dir)
 #-----------------------------
 #options(stringsAsFactors = FALSE)
 #options(prompt = "AAW> ")
+
+# using wget because https://github.com/StatCan/aaw-kubeflow-containers/issues/569
+# https://stackoverflow.com/questions/70559397/r-internet-routines-cannot-be-loaded-when-starting-from-rstudio
+options(download.file.method="wget")
