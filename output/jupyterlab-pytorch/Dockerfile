@@ -311,10 +311,10 @@ RUN apt-get update --yes \
 
 # Install golang development tools:
 ARG GO_VERSION="go1.21.6.linux-amd64"
-RUN wget "https://go.dev/dl/${GO_VERSION}.tar.gz" -O /opt/godevtools.tar.gz \
-    && tar -xf /opt/godevtools.tar.gz \
-    && rm /opt/godevtools.tar.gz \
-    && PATH="$PATH:/opt/go/bin/"
+RUN wget "https://go.dev/dl/${GO_VERSION}.tar.gz" -O /opt/godevtools.tar.gz
+RUN tar -xf /opt/godevtools.tar.gz
+RUN rm /opt/godevtools.tar.gz \
+RUN PATH="$PATH:/opt/go/bin/"
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
