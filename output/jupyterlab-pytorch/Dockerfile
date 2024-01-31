@@ -313,7 +313,7 @@ RUN apt-get update --yes \
 ARG GO_VERSION="go1.21.6.linux-amd64"
 RUN wget "https://go.dev/dl/${GO_VERSION}.tar.gz" -O /opt/godevtools.tar.gz
 RUN tar -xf /opt/godevtools.tar.gz
-RUN rm /opt/godevtools.tar.gz \
+RUN rm /opt/godevtools.tar.gz 
 RUN PATH="$PATH:/opt/go/bin/"
 
 # Solarized Theme and Cell Execution Time
