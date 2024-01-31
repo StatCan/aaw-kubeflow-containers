@@ -9,8 +9,7 @@ RUN apt-get update && \
     apt-get update && apt-get -y dist-upgrade
 
 # https://discourse.jupyter.org/t/openssl-mismatch-between-rstudio-and-conda-environments/14123
-RUN mv /lib/x86_64-linux-gnu/libssl.so.3 /lib/x86_64-linux-gnu/libssl.so.3.backup && \
-    ln -s /opt/conda/lib/libssl.so.3 /usr/lib/x86_64-linux-gnu/libssl.so.3
+RUN conda install cctbx202211::openssl
 
 RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
