@@ -213,4 +213,3 @@ jobs:
       with: 
         status: failure
         message: Build failed. https://github.com/StatCan/aaw-kubeflow-containers/actions/runs/${{github.run_id}}
-        
