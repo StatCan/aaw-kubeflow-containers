@@ -161,9 +161,6 @@ RUN apt-get update && \
     apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
     apt-get update && apt-get -y dist-upgrade
 
-# https://github.com/rstudio/rstudio/issues/14060
-RUN echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
-
 RUN curl --silent -L  --fail "https://download2.rstudio.org/server/jammy/amd64/rstudio-server-${RSTUDIO_VERSION}-amd64.deb" > /tmp/rstudio.deb && \
     echo "${SHA256} /tmp/rstudio.deb" | sha256sum -c - && \
     apt-get install --no-install-recommends -y /tmp/rstudio.deb && \
@@ -179,7 +176,10 @@ RUN mkdir -p /etc/rstudio && \
     echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
-    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
+    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf && \
+    # https://github.com/rstudio/rstudio/issues/14060
+    echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
+
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
