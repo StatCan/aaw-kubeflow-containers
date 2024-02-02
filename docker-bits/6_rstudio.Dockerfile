@@ -3,7 +3,10 @@ RUN mkdir -p /etc/rstudio && \
     echo "www-frame-origin=none" >> /etc/rstudio/rserver.conf && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
-    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf
+    echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf && \
+    # https://github.com/rstudio/rstudio/issues/14060
+    echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
+
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
