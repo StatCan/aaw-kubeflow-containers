@@ -487,10 +487,10 @@ COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 
 # Install OpenM++
-ENV OMPP_VERSION="1.9.9"
+ENV OMPP_VERSION="1.15.6"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ENV OMPP_PKG_DATE="20220505"
-ARG SHA256ompp=479a9a79356a4dd331bcc6cf00110d40feecd6c37f004156f9b4739db2e8ae90
+ENV OMPP_PKG_DATE="20231115"
+ARG SHA256ompp=28cb8265ad0f9818390cd10193e6905173040c29d45e710285d50c868c569854
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
@@ -499,7 +499,7 @@ ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 \
-    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian-11_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mkdir /opt/openmpp \
