@@ -490,7 +490,7 @@ COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 ENV OMPP_VERSION="1.15.6"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ENV OMPP_PKG_DATE="20231115"
-ARG SHA256ompp=28cb8265ad0f9818390cd10193e6905173040c29d45e710285d50c868c569854
+ARG SHA256ompp=75372202c66f31c0b8d7c87967bdf7c75c300858841d10dad0b4230887de6856
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
@@ -503,7 +503,7 @@ RUN apt-get update --yes \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mkdir /opt/openmpp \
-    && mv /tmp/openmpp_ubuntu_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
+    && mv /tmp/openmpp_debian-11_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
     && chown -R $NB_UID:$NB_GID /opt/openmpp
 # Copy the desktop icon into place for the web UI
 COPY openmpp.png $RESOURCES_PATH/openmpp.png
