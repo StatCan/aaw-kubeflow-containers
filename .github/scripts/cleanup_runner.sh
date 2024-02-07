@@ -98,6 +98,14 @@ AFTER=$(getAvailableSpace)
 SAVED=$((AFTER-BEFORE))
 printSavedSpace $SAVED "Haskell runtime"
 
+# -------------------------- Remove hostedtoolcache folder -------------------------- # 
+# https://github.com/orgs/community/discussions/25678#discussioncomment-5242449
+BEFORE=$(getAvailableSpace)
+sudo rm -rf /opt/hostedtoolcache
+
+AFTER=$(getAvailableSpace)
+SAVED=$((AFTER-BEFORE))
+printSavedSpace $SAVED "hostedtoolcache folder"
 
 # -------------------------- docker cleanup -------------------------- # 
 # Removes dangling images, NOT all unused images.  So this will not remove any prereqs we downloaded
