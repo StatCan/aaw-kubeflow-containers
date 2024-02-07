@@ -400,8 +400,9 @@ COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
 ARG NODE_OPTIONS=--openssl-legacy-provider
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 openmpi-bin libopenmpi-dev\
-    && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
-    && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
+    # && wget -q https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_ubuntu_mpi_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget -q https://github.com/openmpp/main/releases/download/v1.15.6/openmpp_debian-11_20231115.tar.gz -O /tmp/ompp.tar.gz \
+    # && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && mkdir -p ${OMPP_INSTALL_DIR} \
     && tar -xf /tmp/ompp.tar.gz -C ${OMPP_INSTALL_DIR} --strip-components=1\
     && rm -f /tmp/ompp.tar.gz \
