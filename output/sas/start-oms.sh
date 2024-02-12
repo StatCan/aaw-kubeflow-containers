@@ -55,9 +55,10 @@ export OMS_URL=${JUPYTER_SERVER_URL}ompp
 #   fi
 # fi
 
+
 export OMS_MODEL_DIR=/home/jovyan/mpi-test
-export OMS_LOG_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/logs
-export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim
+export OMS_LOG_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/logs
+export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim
 
 
 # Create models directory if it doesn't exist:
