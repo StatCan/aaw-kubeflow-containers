@@ -80,7 +80,7 @@ if [ ! -d /openmpp ]
   git clone https://github.com/StatCan/openmpp.git
 fi
 cd openmpp
-branch="main"
+branch="47-job-run-name-and-set-name-cannot-contain-spaces"
 state=$(git symbolic-ref --short HEAD 2>&1)
 if [ $state != $branch ]
  then
