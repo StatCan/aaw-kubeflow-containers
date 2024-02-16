@@ -274,7 +274,7 @@ COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 ENV OMPP_VERSION="1.16.0"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ENV OMPP_PKG_DATE="20240213"
-ARG SHA256ompp=75372202c66f31c0b8d7c87967bdf7c75c300858841d10dad0b4230887de6856
+ARG SHA256ompp=d1c9f809c9d08de9a8c3411e593017873941a88b9ad4af74a04cb8e2f2982d72
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
