@@ -271,10 +271,10 @@ COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 
 # Install OpenM++
-ENV OMPP_VERSION="1.16.0"
+ENV OMPP_VERSION="1.16.1"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ENV OMPP_PKG_DATE="20240213"
-ARG SHA256ompp=d1c9f809c9d08de9a8c3411e593017873941a88b9ad4af74a04cb8e2f2982d72
+ENV OMPP_PKG_DATE="20240216"
+ARG SHA256ompp=8304f3fcb9e17dec5fad381673a8ecd1371d8827e2e8ce35431c4ec9acff4321
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
