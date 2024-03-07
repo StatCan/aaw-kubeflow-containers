@@ -28,7 +28,7 @@ on:
     - cron:  '0 21 * * *'
   push:
     branches:
-      - 'master'
+      - 'master-2.0'
   pull_request:
     types:
       - 'opened'
@@ -90,7 +90,7 @@ jobs:
         echo "IMAGE_VERSION=dev" >> "$GITHUB_ENV"
    
     - name: Set ENV variables for pushes to master
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master-2.0'
       run: | 
         echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
         echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
