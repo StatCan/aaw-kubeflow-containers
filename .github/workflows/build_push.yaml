@@ -93,7 +93,7 @@ jobs:
       if: github.event_name == 'push' && github.ref == 'refs/heads/master-2.0'
       run: | 
         echo "REGISTRY=k8scc01covidacr.azurecr.io" >> "$GITHUB_ENV"
-        echo "IMAGE_VERSION=v1" >> "$GITHUB_ENV"
+        echo "IMAGE_VERSION=v2" >> "$GITHUB_ENV"
         echo "IS_LATEST=true" >> "$GITHUB_ENV"
 
     - uses: actions/checkout@master
