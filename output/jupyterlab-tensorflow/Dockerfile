@@ -173,6 +173,7 @@ RUN mamba install --quiet \
       # s3 file system tool forked by Zach, ~4 years old, to be upgraded
       's3fs' \ 
       'fire==0.5.0' \
+      'boto3' \
       'graphviz' && \
       pip install 'kubeflow-training' && \
       clean-layer.sh && \
