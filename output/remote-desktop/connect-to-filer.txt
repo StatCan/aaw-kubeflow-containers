@@ -1,0 +1,17 @@
+Welcome! These are instructions to connect to your filer.
+To connect to the filer we make use of the minio client as seen here https://min.io/docs/minio/linux/reference/minio-mc.html
+
+To connect to your filer, you will need the following, the URL, the ACCESS KEY, and the SECRET KEY. All of these can be found in a secret in your namespace.
+
+You will have a secret for each filer you have access to. You can view this by executing `kubectl get secrets -ns ${YOUR_NAMESPACE}`
+To find out what your namespace is, look in the address bar
+If you are in a notebook it should be the value after `notebook` and before the name of your notebook.
+Example: notebook/namespace-here/jose-notebook/lab
+
+This will produce a list of secrets. Your filer related secrets should look something like;
+`fld9filer-conn-secret`
+
+Now that you know which secret you want, you can get the values needed by executing
+`kubectl get secret fld9filer-conn-secret -n ${YOUR_NAMESPACE} -o jsonpath='{.data.S3_URL} | base64 --decode`
+`kubectl get secret fld9filer-conn-secret -n ${YOUR_NAMESPACE} -o jsonpath='{.data.S3_ACCESS} | base64 --decode`
+`kubectl get secret fld9filer-conn-secret -n ${YOUR_NAMESPACE} -o jsonpath='{.data.S3_SECRET} | base64 --decode`
