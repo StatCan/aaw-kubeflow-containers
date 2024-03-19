@@ -499,7 +499,7 @@ ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 # Point conda to Artifactory repository
 RUN conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
     conda config --remove channels conda-forge --system && \
-    conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia --system && \
+    conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote --system && \
     conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote --system
 
 USER $NB_USER
