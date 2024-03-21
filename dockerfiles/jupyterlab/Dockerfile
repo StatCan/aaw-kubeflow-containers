@@ -1,8 +1,19 @@
 ARG BASE_VERSION=2023-12-25
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
-# Must be set in deepest image
 ENV DEFAULT_JUPYTER_URL=/lab 
+
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
+
+ENV NB_USER="${NB_USER}" \
+    NB_UID=${NB_UID} \
+    NB_GID=${NB_GID} \
+    CONDA_DIR=/opt/conda \
+    PATH=$PATH:/opt/conda/bin \
+    NB_USER="jovyan" \
+    HOME="/home/${NB_USER}"
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-jupyter-notebooks
@@ -50,6 +61,9 @@ ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 # ---
 
 USER root
+COPY clean-layer.sh /usr/bin/clean-layer.sh && \
+    chmod +x /usr/bin/clean-layer.sh \
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # alien is for installing RPM packages, not sure if we need this
     alien \
@@ -85,7 +99,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim \
     wget \
     zip && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    /usr/bin/clean_layer.sh
 
 RUN pip3 --no-cache-dir install --quiet \
       cryptography==41.0.6 \
@@ -106,6 +121,7 @@ RUN pip3 --no-cache-dir install --quiet \
       # kubeflow-mpi \
       kubeflow-pytorchjob \
       kubeflow-tfjob \
+      kubeflow-training \
       lxml \
       markupsafe \
       # maybe we can remove minio?
@@ -134,7 +150,7 @@ RUN mamba install --quiet --yes \
       'r-languageserver' \
       'nb_conda_kernels' \
       'python-lsp-server' && \
-    mamba clean --all -f -y && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -158,7 +174,7 @@ RUN \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
     # AzureCLI
-    curl -sLO https://aka.ms/InstallAzureCLIDeb \
+    curl -sLO "${AZCLI_URL}" \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
@@ -213,10 +229,9 @@ COPY languagepacks.json $CS_TEMP_HOME/
 RUN jupyter server extension enable --py jupyter_server_proxy && \
     # commenting out since we are using jupyter notebook 7 which is incompatible with nbextension
     #jupyter nbextension enable codefolding/main --sys-prefix && \
-    jupyter labextension install --no-build \
+    jupyter labextension enable \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy' \
-      'jupyterlab-plotly' \
       'nbdime-jupyterlab' \
     && \
     jupyter lab build && \
@@ -325,7 +340,7 @@ COPY .Rprofile /tmp/.Rprofile
 # Copy over Instructions to Home directory
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
-# Point conda to Artifactory repository
+# Point mamba to Artifactory repository
 RUN mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
     mamba config --remove channels conda-forge --system && \
     mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \

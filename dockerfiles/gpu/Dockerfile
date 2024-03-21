@@ -11,7 +11,7 @@ RUN mamba create -n torch && \
         gputil \
         # pytorch-cuda are the nvidia cuda drivers
         pytorch-cuda=11.8 && \
-    mamba clean --all -f -y && \
+    clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     python -m ipykernel install --user --name torch --display-name "PyTorch"
@@ -25,7 +25,7 @@ RUN mamba create -n tensorflow && \
         # gputil has nvidia-smi
         gputil \
         ipykernel && \
-    mamba clean --all -f -y && \
+    clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER && \
     python -m ipykernel install --user --name tensorflow --display-name "TensorFlow"
