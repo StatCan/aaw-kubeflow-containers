@@ -1,4 +1,4 @@
-ARG BASE_VERSION=2024-03-19
+ARG BASE_VERSION=2024-02-26
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 # Must be set in deepest image
@@ -66,6 +66,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libarchive-tools \
     libmagic1 \
     libpng-dev \
+    libwebp7 \
     libxmu6 \
     nginx \
     numactl \
@@ -109,6 +110,7 @@ RUN pip3 --no-cache-dir install --quiet \
       mpmath \
       oauthlib \
       pillow \
+      pyarrow \
       pyjwt \
       pyodbc \
       pyyaml \
@@ -204,7 +206,8 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 COPY languagepacks.json $CS_TEMP_HOME/
 
 RUN jupyter server extension enable --py jupyter_server_proxy && \
-    jupyter nbextension enable codefolding/main --sys-prefix && \
+    # commenting out since we are using jupyter notebook 7 which is incompatible with nbextension
+    #jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension install --no-build \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy' \

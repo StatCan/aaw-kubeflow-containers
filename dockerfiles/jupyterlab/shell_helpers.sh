@@ -4,19 +4,17 @@
 NAMESPACE=$(echo $NB_PREFIX | awk -F '/' '{print $3}')
 
 cat <<EOF
-                     ___   ___  _    _ _
- _   _              / _ \ / _ \| |  | | |
-| |_| |__   ___    / /_\ \ /_\ \ |  | | |
-| __| '_ \ / _ \   |  _  |  _  | |/\| | |
-| |_| | | |  __/   | | | | | | \  /\  /_|
- \__|_| |_|\___|   \_| |_\_| |_/\/  \/(_)
+ _____ _            _____                
+|_   _| |__   ___  |__  /___  _ __   ___ 
+  | | | '_ \ / _ \   / // _ \| '_ \ / _ \
+  | | | | | |  __/  / /| (_) | | | |  __/
+  |_| |_| |_|\___| /____\___/|_| |_|\___|                                          
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MinIO
+Bucket
 =====
-
-MinIO configured. Hosts "standard" and "premium" added as mounted drives.
+Buckets have been automatically mounted to your workspace. For more information https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/
 
 Conda
 =====
@@ -38,6 +36,3 @@ EOF
 if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
   export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
 fi
-
-# Activate the base python venv by default revert for now, is causing issues
-# source $HOME/base-python-venv/bin/activate
