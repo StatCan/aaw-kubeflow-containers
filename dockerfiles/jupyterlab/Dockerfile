@@ -5,7 +5,7 @@ FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 ENV DEFAULT_JUPYTER_URL=/lab 
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-jupyter-notebooks
 
 ENV CS_DISABLE_FILE_DOWNLOADS=1
 ENV CS_TEMP_HOME=/etc/share/code-server
@@ -138,7 +138,8 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 # --- CLI Stuff
 
 # maybe we can remove this minio stuff?
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+# MinIO Client install
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
 
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
@@ -311,6 +312,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
 COPY .Rprofile /tmp/.Rprofile
+
+# Copy over Instructions to Home directory
+ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point conda to Artifactory repository
 RUN mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \

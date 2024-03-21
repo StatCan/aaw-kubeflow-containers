@@ -13,10 +13,10 @@ cat <<EOF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MinIO
+Filer Access
 =====
-
-MinIO configured. Hosts "standard" and "premium" added as mounted drives.
+For access to filers, we make use of the minio client `mc`.
+Please refer to the `connect-to-filer.md` file on detailed instructions.
 
 Conda
 =====
@@ -38,6 +38,3 @@ EOF
 if [[ $(findmnt -n -o FSTYPE -T /home/jovyan) = 'fuse' ]]; then
   export _JAVA_OPTIONS=-Djna.tmpdir=/tmp
 fi
-
-# Activate the base python venv by default revert for now, is causing issues
-# source $HOME/base-python-venv/bin/activate
