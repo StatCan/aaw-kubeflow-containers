@@ -1,4 +1,4 @@
-ARG BASE_VERSION=2024-02-26
+ARG BASE_VERSION=2023-12-25
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 # Must be set in deepest image
