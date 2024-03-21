@@ -26,9 +26,6 @@ RUN groupadd -g 1337 supergroup && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-# maybe we can remove this?
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
-
 RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
     usermod -a -G sasstaff jovyan && \
     chmod -R 0775 /usr/local/SASHome/studioconfig
