@@ -234,7 +234,7 @@ RUN pip install \
     'markupsafe' \
     'ipympl' \
     'pexpect==4.9.0' \
-    'jupyter-server-proxy' \
+    'jupyter-server-proxy==4.1.2' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
