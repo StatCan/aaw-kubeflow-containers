@@ -139,13 +139,13 @@ fi
 
 # Retrieve service account details
 ### TODO DETERMINE WAY TO RETRIEVE THE SECRET
-serviceaccountname=`kubectl get secret -n $NB_NAMESPACE --template={{.data.name}}`
-serviceaccounttoken=`kubectl get secret -n $NB_NAMESPACE --template={{.data.password}}`
-conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
-conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
-conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
+serviceaccountname=`kubectl get secret -n $NB_NAMESPACE --template={{.data.Username}}`
+serviceaccounttoken=`kubectl get secret -n $NB_NAMESPACE --template={{.data.Token}}`
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
 
-pip config set global.index-url $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/pypi-remote/
+pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/
 
 # if rprofile doesnt exist
 if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
@@ -153,7 +153,7 @@ if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
   cat > Rprofile.site<< EOF
 options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
 local({
-  r <- list("cran-remote" = "$serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/cran-remote/")
+  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/cran-remote/")
   options(repos = r)
 })
 EOF
