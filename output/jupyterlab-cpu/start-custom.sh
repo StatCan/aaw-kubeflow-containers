@@ -137,18 +137,26 @@ if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
   cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
 fi
 
-# aaw-dev override settings
-if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
-  echo "Updating cloud artifactory package config for Dev envrionment"
-  
-  pip config --user set global.index-url https://artifactory.cloud.statcan.ca/artifactory/pypi-remote/
+# Retrieve service account details
+### TODO DETERMINE WAY TO RETRIEVE THE SECRET
+serviceaccountname=`kubectl get secret -n $NB_NAMESPACE --template={{.data.name}}`
+serviceaccounttoken=`kubectl get secret -n $NB_NAMESPACE --template={{.data.password}}`
+conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
+conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
+conda config --add channels $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
 
-  # remove existing channels in conda system config file
-  rm /opt/conda/.condarc
+pip config set global.index-url $serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/pypi-remote/
 
-  conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
-  conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
-  conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
+# if rprofile doesnt exist
+if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
+  echo "Creating rprofile"
+  cat > test.txt<< EOF
+options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
+local({
+  r <- list("cran-remote" = "$serviceaccountname:$serviceaccounttoken@https://artifactory.cloud.statcan.ca/artifactory/cran-remote/")
+  options(repos = r)
+})
+EOF
 fi
 
 echo "--------------------starting jupyter--------------------"
