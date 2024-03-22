@@ -61,8 +61,8 @@ ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 # ---
 
 USER root
-COPY clean-layer.sh /usr/bin/clean-layer.sh && \
-    chmod +x /usr/bin/clean-layer.sh \
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+RUN chmod +x /usr/bin/clean-layer.sh
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # alien is for installing RPM packages, not sure if we need this
