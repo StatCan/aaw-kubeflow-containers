@@ -62,7 +62,6 @@ ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
 USER root
 COPY clean-layer.sh /usr/bin/clean-layer.sh
-RUN chmod +x /usr/bin/clean-layer.sh
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # alien is for installing RPM packages, not sure if we need this
@@ -100,7 +99,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     zip && \
     rm -rf /var/lib/apt/lists/* && \
-    /usr/bin/clean_layer.sh
+    chmod +x /usr/bin/clean-layer.sh
 
 RUN pip3 --no-cache-dir install --quiet \
       cryptography==41.0.6 \
