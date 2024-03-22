@@ -138,9 +138,8 @@ if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
 fi
 
 # Retrieve service account details
-### TODO DETERMINE WAY TO RETRIEVE THE SECRET
-serviceaccountname=`kubectl get secret -n $NB_NAMESPACE --template={{.data.Username}}`
-serviceaccounttoken=`kubectl get secret -n $NB_NAMESPACE --template={{.data.Token}}`
+serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
+serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`
 conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
 conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
 conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
