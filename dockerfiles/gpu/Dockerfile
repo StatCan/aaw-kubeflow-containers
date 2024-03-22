@@ -1,4 +1,4 @@
-FROM aaw-jupyterlab AS aaw-jupyterlab-gpu
+FROM zone-jupyterlab AS zone-jupyterlab-gpu
 
 RUN mamba create -n torch && \
     mamba install -n torch --quiet --yes -c pytorch -c nvidia \

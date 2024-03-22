@@ -1,4 +1,4 @@
-FROM aaw-jupyterlab as aaw-jupyterlab-sas
+FROM zone-jupyterlab as zone-jupyterlab-sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin

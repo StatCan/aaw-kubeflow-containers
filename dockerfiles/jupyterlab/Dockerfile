@@ -50,6 +50,7 @@ ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUA
 ARG RSTUDIO_VERSION=2023.12.0-369
 ARG RSTUDIO_SHA256=452804d61bfee2996d98d1c406b31d93e03e58df2a34996b821925ce0c04ffe8
 
+# OpenM install
 # Install OpenM++ MPI
 ARG OMPP_VERSION="1.15.6"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
@@ -61,8 +62,8 @@ ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 # ---
 
 USER root
-COPY clean-layer.sh /usr/bin/clean-layer.sh && \
-    chmod +x /usr/bin/clean-layer.sh \
+COPY clean-layer.sh /usr/bin/clean-layer.sh
+RUN chmod +x /usr/bin/clean-layer.sh
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # alien is for installing RPM packages, not sure if we need this
@@ -100,7 +101,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     zip && \
     rm -rf /var/lib/apt/lists/* && \
-    /usr/bin/clean_layer.sh
+    clean-layer.sh
 
 RUN pip3 --no-cache-dir install --quiet \
       cryptography==41.0.6 \
@@ -257,6 +258,10 @@ RUN npm i -g \
 # OpenM install
 
 COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/start-oms.sh && \
+    chmod +x /usr/local/bin/restart-oms.sh
 
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
