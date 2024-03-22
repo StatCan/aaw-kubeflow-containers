@@ -39,20 +39,20 @@ env:
   
 jobs:
   # Any checks that run pre-build
-  pre-build-checks:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
+  # pre-build-checks:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@master
 
-    - name: Assert committed ./output folder matches `make generate-dockerfiles` output
-      run: |
-        sudo apt-get install --yes make
-        make clean
-        make generate-dockerfiles
-        if ! git diff --quiet output/; then
-            echo 'output folder and docker-bits/resources out of sync!'
-            exit 1
-        fi
+  #   - name: Assert committed ./output folder matches `make generate-dockerfiles` output
+  #     run: |
+  #       sudo apt-get install --yes make
+  #       make clean
+  #       make generate-dockerfiles
+  #       if ! git diff --quiet output/; then
+  #           echo 'output folder and docker-bits/resources out of sync!'
+  #           exit 1
+  #       fi
         
   build-push:
     env:
@@ -71,11 +71,9 @@ jobs:
           # - docker-stacks-datascience-notebook # Debugging
           - rstudio
           - sas
-          - jupyterlab-cpu
-          - jupyterlab-pytorch
-          - jupyterlab-tensorflow
-          - remote-desktop
-    needs: pre-build-checks
+          - jupyterlab
+          - gpu
+    # needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
       registry:
@@ -128,14 +126,14 @@ jobs:
         password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     
     # Image building/storing locally
-    - name: Make Dockerfiles
-      run: make generate-dockerfiles
+    # - name: Make Dockerfiles
+    #   run: make generate-dockerfiles
 
     - name: Run Hadolint
       run:  |
         sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
         sudo chmod +x hadolint
-        ./hadolint output/${{ matrix.notebook }}/Dockerfile --no-fail
+        ./hadolint dockerfiles/${{ matrix.notebook }}/Dockerfile --no-fail
         
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
