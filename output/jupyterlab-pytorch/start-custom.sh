@@ -149,7 +149,7 @@ pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken
 # if rprofile doesnt exist
 if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
   echo "Creating rprofile"
-  cat > Rprofile.site<< EOF
+  cat > /opt/conda/lib/R/etc/Rprofile.site<< EOF
 options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
 local({
   r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/cran-remote/")
