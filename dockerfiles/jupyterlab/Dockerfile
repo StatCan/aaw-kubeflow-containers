@@ -112,7 +112,7 @@ RUN pip3 --no-cache-dir install --quiet \
       dash \
       jupyter-lsp \
       jupyter-rsession-proxy==2.2.0 \
-      jupyter-server-proxy \
+      jupyter-server-proxy==4.1.2 \
       jupyter-shiny-proxy \
       jupyterlab_execute_time \
       jupyterlab-language-pack-fr-FR \
