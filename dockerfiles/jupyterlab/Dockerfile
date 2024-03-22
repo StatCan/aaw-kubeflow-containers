@@ -1,5 +1,5 @@
 ARG BASE_VERSION=2023-12-25
-FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION as aaw-jupyterlab
 
 ENV DEFAULT_JUPYTER_URL=/lab 
 
@@ -114,7 +114,7 @@ RUN pip3 --no-cache-dir install --quiet \
       dash \
       jupyter-lsp \
       jupyter-rsession-proxy==2.2.0 \
-      jupyter-server-proxy \
+      jupyter-server-proxy==4.1.2 \
       jupyter-shiny-proxy \
       jupyterlab_execute_time \
       jupyterlab-language-pack-fr-FR \
