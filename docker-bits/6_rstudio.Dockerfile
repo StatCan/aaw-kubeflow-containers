@@ -28,10 +28,11 @@ RUN mamba install --quiet --yes \
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
+      'jupyter-server-proxy==4.1.2' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-r-notebooks.git

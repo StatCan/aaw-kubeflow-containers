@@ -59,7 +59,7 @@ RUN pip install \
     'markupsafe' \
     'ipympl' \
     'pexpect==4.9.0' \
-    'jupyter-server-proxy' \
+    'jupyter-server-proxy==4.1.2' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
@@ -134,8 +134,11 @@ RUN apt-get update --yes \
     && fix-permissions ${OMPP_INSTALL_DIR} \
     && pip install /opt/jupyter-ompp-proxy/
 
+# MinIO Client install
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
+
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
 ENV DEFAULT_JUPYTER_URL=/lab
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-jupyter-notebooks

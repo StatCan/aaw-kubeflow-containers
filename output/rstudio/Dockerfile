@@ -201,13 +201,14 @@ RUN mamba install --quiet --yes \
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
+      'jupyter-server-proxy==4.1.2' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
@@ -263,6 +264,9 @@ RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rpro
 
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
 COPY .Rprofile /tmp/.Rprofile
+
+# Copy over Instructions to Home directory
+ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point conda to Artifactory repository
 RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \

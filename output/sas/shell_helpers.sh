@@ -12,9 +12,10 @@ cat <<EOF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Bucket
+Filer Access
 =====
-Buckets have been automatically mounted to your workspace. For more information https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/
+For access to filers, we make use of the minio client `mc`.
+Please refer to the `connect-to-filer.md` file on detailed instructions.
 
 Conda
 =====
