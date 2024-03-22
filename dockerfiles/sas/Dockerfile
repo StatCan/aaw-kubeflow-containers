@@ -1,3 +1,4 @@
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM aaw-jupyterlab as aaw-jupyterlab-sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
