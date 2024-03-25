@@ -1,5 +1,5 @@
 ARG BASE_VERSION=2023-12-25
-FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION as aaw-jupyterlab
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION as zone-jupyterlab
 
 ENV DEFAULT_JUPYTER_URL=/lab 
 
