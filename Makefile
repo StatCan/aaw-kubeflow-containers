@@ -1,15 +1,3 @@
-# Dockerfile Builder
-# ==================
-#
-# All the content is in `docker-bits`; this Makefile
-# just builds target dockerfiles by combining the dockerbits.
-#
-# Management of build, pull/push, and testing is modified from
-# https://github.com/jupyter/docker-stacks
-#
-# Tests/some elements of makefile strongly inspired by
-# https://github.com/jupyter/docker-stacks/blob/master/Makefile
-
 # Misc Directories
 TESTS_DIR := ./tests
 MAKE_HELPERS := ./make_helpers/
