@@ -164,6 +164,9 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 # MinIO Client install
 COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
 
+#debug run true
+RUN true
+
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
 
@@ -223,6 +226,10 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     fix-permissions $CS_TEMP_HOME
 
 COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
+
+#debug run true
+RUN true
+
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
@@ -258,6 +265,10 @@ RUN npm i -g \
 # OpenM install
 
 COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+
+#debug run true
+RUN true
+
 COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
 
 RUN chmod +x /usr/local/bin/start-oms.sh && \
@@ -326,9 +337,20 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh /usr/local/bin/
+
+#debug run true
+RUN true
+
 # we may want to remove this mc (minio)
 COPY mc-tenant-wrapper.sh /usr/local/bin/mc
+
+#debug run true
+RUN true
+
 COPY trino-wrapper.sh /usr/local/bin/trino
+
+#debug run true
+RUN true
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
