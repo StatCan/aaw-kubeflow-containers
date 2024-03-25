@@ -138,7 +138,7 @@ jobs:
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
       id: build-image
-      run: make build-all
+      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     - name: Echo disk usage after build completion
       run: ./.github/scripts/echo_usage.sh
