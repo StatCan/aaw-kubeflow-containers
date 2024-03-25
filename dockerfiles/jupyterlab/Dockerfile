@@ -335,10 +335,6 @@ COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
-# Point R to Artifactory repository
-COPY Rprofile.site /tmp/Rprofile.site
-RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
-
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
 COPY .Rprofile /tmp/.Rprofile
 
@@ -346,10 +342,10 @@ COPY .Rprofile /tmp/.Rprofile
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point mamba to Artifactory repository
-RUN mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
+RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
     mamba config --remove channels conda-forge --system && \
-    mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
-    mamba config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
+    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote --system && \
+    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote --system
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
