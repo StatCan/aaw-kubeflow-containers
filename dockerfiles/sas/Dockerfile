@@ -15,6 +15,7 @@ ENV ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
 ARG AZURE_ACCOUNT_KEY
 ENV ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
 
+USER root
 RUN groupadd -g 1337 supergroup && \
     useradd -m sas && \
     usermod -a -G supergroup sas && \
@@ -28,11 +29,6 @@ COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
 # Enable X command on SAS Studio
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
-
-RUN useradd -m sas && \
-    groupadd -g 1001 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo -e "sas" | /usr/bin/passwd --stdin sas
 
 # BlobPorter
 RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
@@ -55,8 +51,7 @@ RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && 
 WORKDIR /home/sas
 RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
 
-RUN pip3 --no-cache-dir install --quiet \
-    sas_kernel
+RUN pip3 --no-cache-dir install --quiet sas_kernel
 
 # SASPY
 
