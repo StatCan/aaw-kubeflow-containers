@@ -137,18 +137,25 @@ if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
   cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
 fi
 
-# aaw-dev override settings
-if [[ "$KUBERNETES_SERVICE_HOST" =~ ".131." ]]; then
-  echo "Updating jfrog package config for Dev envrionment"
-  
-  pip config --user set global.index-url https://jfrog.aaw.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
+# Retrieve service account details
+serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
+serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
 
-  # remove existing channels in conda system config file
-  rm /opt/conda/.condarc
+pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/
 
-  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote
-  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-forge-nvidia
-  conda config --add channels https://jfrog.aaw.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote 
+# if rprofile doesnt exist
+if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
+  echo "Creating rprofile"
+  cat > /opt/conda/lib/R/etc/Rprofile.site<< EOF
+options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
+local({
+  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/cran-remote/")
+  options(repos = r)
+})
+EOF
 fi
 
 echo "--------------------starting jupyter--------------------"
