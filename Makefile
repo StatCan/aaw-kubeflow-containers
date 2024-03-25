@@ -6,7 +6,7 @@ SAS_DOCKERFILE := dockerfiles/sas/Dockerfile
 JUPYTERLAB_CONTEXT := dockerfiles/jupyterlab
 
 # Default target
-all: build-jupyterlab build-jupyterlab-sas
+build-all: build-jupyterlab build-jupyterlab-sas
 
 # Build jupyterlab image
 build-jupyterlab:
