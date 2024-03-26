@@ -197,7 +197,7 @@ jobs:
 
     ## SAS BUILD
     - name: Get current notebook name
-      id: notebook-name
+      id: notebook-name2
       shell: bash
       run: |
         echo NOTEBOOK_NAME=sas >> $GITHUB_OUTPUT
@@ -209,7 +209,7 @@ jobs:
         ./hadolint dockerfiles/sas/Dockerfile --no-fail
 
     - name: Build image
-      id: build-image
+      id: build-image2
       run: make build/sas REPO=${{ env.LOCAL_REPO }}
 
     - name: Echo disk usage after build completion
@@ -241,16 +241,16 @@ jobs:
     # Scan image for vulnerabilities
     - name: Aqua Security Trivy image scan
     # see https://github.com/StatCan/aaw-private/issues/11 -- should be re-enabled
-      if: steps.notebook-name.outputs.NOTEBOOK_NAME != 'sas'
+      if: steps.notebook-name2.outputs.NOTEBOOK_NAME != 'sas'
       run: |
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
+        trivy image ${{ steps.build-image2.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
     - name: Test if we should push to ACR
-      id: should-i-push
+      id: should-i-push2
       if: |
         github.event_name == 'push' ||
         (
@@ -261,19 +261,19 @@ jobs:
 
     # Pull the local image back, then "build" it (will just tag the pulled image)
     - name: Pull image back from local repo
-      if: steps.should-i-push.outputs.boolean == 'true'
-      run: docker pull ${{ steps.build-image.outputs.full_image_name }}
+      if: steps.should-i-push2.outputs.boolean == 'true'
+      run: docker pull ${{ steps.build-image2.outputs.full_image_name }}
 
     # Rename the localhost:5000/imagename:tag built above to use the real repo
     # (get above's name from build-image's output)
     - name: Tag images with real repository
-      if: steps.should-i-push.outputs.boolean == 'true'
+      if: steps.should-i-push2.outputs.boolean == 'true'
       run: > 
         make post-build/sas DEFAULT_REPO=$REGISTRY IS_LATEST=$IS_LATEST
-        IMAGE_VERSION=$IMAGE_VERSION SOURCE_FULL_IMAGE_NAME=${{ steps.build-image.outputs.full_image_name }}
+        IMAGE_VERSION=$IMAGE_VERSION SOURCE_FULL_IMAGE_NAME=${{ steps.build-image2.outputs.full_image_name }}
 
     - name: Push image to registry
-      if: steps.should-i-push.outputs.boolean == 'true'
+      if: steps.should-i-push2.outputs.boolean == 'true'
       run: |
         make push/sas DEFAULT_REPO=$REGISTRY
         
