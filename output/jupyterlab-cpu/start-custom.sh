@@ -152,7 +152,7 @@ if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
   cat > /opt/conda/lib/R/etc/Rprofile.site<< EOF
 options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
 local({
-  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/cran-remote/")
+  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/rpug-cran/")
   options(repos = r)
 })
 EOF

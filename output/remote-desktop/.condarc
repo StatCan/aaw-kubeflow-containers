@@ -1,7 +1,5 @@
 channels:
-  - https://artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
-  - https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
-  - https://artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
+  - https://artifactory.cloud.statcan.ca/artifactory/rpug-conda/
 
 auto_update_conda: false
 show_channel_urls: true
