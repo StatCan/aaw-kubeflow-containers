@@ -205,8 +205,8 @@ jobs:
         sudo chmod +x hadolint
         ./hadolint dockerfiles/sas/Dockerfile --no-fail
 
-    -name: get images
-    run: docker images -a
+    - name: get images
+      run: docker images -a
 
     - name: Build image
       id: build-image2
