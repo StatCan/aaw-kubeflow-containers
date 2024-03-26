@@ -363,12 +363,10 @@ COPY .Rprofile /tmp/.Rprofile
 # Copy over Instructions to Home directory
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
-# Point mamba to Artifactory repository
-RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
-    mamba config --remove channels conda-forge --system && \
-    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote --system && \
-    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote --system
-
+# Point conda to Artifactory repository
+RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/rpug-conda/ --system && \
+    mamba config --remove channels conda-forge --system
+    
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
