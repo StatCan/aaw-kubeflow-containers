@@ -76,7 +76,7 @@ jobs:
         ports:
           - 5000:5000
     outputs:
-      jupyter-image-name: ${{ steps.build-image.outputs.full_image_name }}
+      jupyter-image-name: ${{ steps.build-image.outputs.image_tag }}
     steps:
     - name: Set ENV variables for a PR containing the auto-deploy tag
       if: github.event_name == 'pull_request' && contains( github.event.pull_request.labels.*.name, 'auto-deploy')
@@ -281,7 +281,7 @@ jobs:
     - name: Pull built base jupyterlab image
       run: |
         docker images
-        docker pull $REGISTRY/jupyterlab:$CI_COMMIT_REF_NAME
+        docker pull ${{ env.REGISTRY }}/jupyterlab:${{ needs.build-jupyter.outputs.jupyter-image-name }}
         docker tag ${{ needs.build-jupyter.outputs.jupyter-image-name }} zone-jupyterlab
         
     # make build emits full_image_name, image_tag, and image_repo outputs

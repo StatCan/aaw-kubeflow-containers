@@ -153,9 +153,6 @@ jobs:
     - name: Test image
       run: make test/jupyterlab REPO=${{ env.LOCAL_REPO }}
 
-    # Free up space from build process (containerscan action will run out of space if we don't)
-    - run: ./.github/scripts/cleanup_runner.sh
-
     # Scan image for vulnerabilities
     - name: Aqua Security Trivy image scan
     # see https://github.com/StatCan/aaw-private/issues/11 -- should be re-enabled
@@ -208,9 +205,14 @@ jobs:
         sudo chmod +x hadolint
         ./hadolint dockerfiles/sas/Dockerfile --no-fail
 
+    -name: get images
+    run: docker images -a
+
     - name: Build image
       id: build-image2
-      run: make build/sas REPO=${{ env.LOCAL_REPO }}
+      run: |
+        docker pull ${{ steps.build-image.outputs.full_image_name }}
+        make build/sas REPO=${{ env.LOCAL_REPO }}
 
     - name: Echo disk usage after build completion
       run: ./.github/scripts/echo_usage.sh
