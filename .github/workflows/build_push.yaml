@@ -157,7 +157,7 @@ jobs:
       run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Free up space from build process (containerscan action will run out of space if we don't)
-    - run: ./.github/scripts/cleanup_runner.sh
+    #- run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
     - name: Aqua Security Trivy image scan
@@ -245,8 +245,8 @@ jobs:
     - name: Echo disk usage before clean up
       run: ./.github/scripts/echo_usage.sh
 
-    - name: Free up all available disk space before building
-      run: ./.github/scripts/cleanup_runner.sh
+    # - name: Free up all available disk space before building
+    #   run: ./.github/scripts/cleanup_runner.sh
 
     - name: Echo disk usage before build start
       run: ./.github/scripts/echo_usage.sh
