@@ -499,7 +499,7 @@ ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point conda to Artifactory repository
 RUN conda config --add channels https://artifactory.cloud.statcan.ca/artifactory/rpug-conda/ --system && \
-    conda config --remove channels conda-forge --system && \
+    conda config --remove channels conda-forge --system
     
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
