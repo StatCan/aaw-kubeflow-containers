@@ -1,4 +1,0 @@
-local({
-    r <- list("dev-cran-remote" = "https://artifactory.cloud.statcan.ca/artifactory/cran-remote/")
-    options(repos = r)
-})
