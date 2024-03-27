@@ -212,7 +212,7 @@ jobs:
       id: build-image2
       run: |
         docker pull ${{ steps.build-image.outputs.full_image_name }}
-        make build/sas REPO=${{ env.LOCAL_REPO }}
+        make build/sas REPO=${{ env.LOCAL_REPO }} DARGS="--build-arg AZURE_ACCOUNT_NAME=aawdevcc00sasas --build-arg ACCOUNT_KEY=${{ secrets.SAS_ACCOUNT_KEY }}"
 
     - name: Echo disk usage after build completion
       run: ./.github/scripts/echo_usage.sh

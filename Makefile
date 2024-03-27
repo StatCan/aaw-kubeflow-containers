@@ -35,6 +35,7 @@ build/%: ## build the latest image
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
 	echo "image_tag=$(TAG)" >> $(GITHUB_OUTPUT) && \
+	echo "image_sha=$(GIT_SHA)" >> $(GITHUB_OUTPUT) && \
 	echo "image_repo=$${REPO}" >> $(GITHUB_OUTPUT)
 
 post-build/%: export REPO?=$(DEFAULT_REPO)

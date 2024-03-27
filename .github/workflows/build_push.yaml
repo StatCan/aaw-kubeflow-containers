@@ -281,8 +281,10 @@ jobs:
     - name: Pull built base jupyterlab image
       run: |
         docker images
-        docker pull ${{ env.REGISTRY }}/jupyterlab:${{ needs.build-jupyter.outputs.jupyter-image-name }}
+        docker pull ${{ env.REGISTRY }}/jupyterlab:${{ needs.build-jupyter.outputs.image_sha }}
+        docker pull ${{ steps.build-image.outputs.full_image_name }}
         docker tag ${{ needs.build-jupyter.outputs.jupyter-image-name }} zone-jupyterlab
+        docker images
         
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
