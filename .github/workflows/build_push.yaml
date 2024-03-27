@@ -280,15 +280,13 @@ jobs:
     # Pull in base jupyterlab image previously build
     - name: Pull built base jupyterlab image
       run: |
-        docker images
         docker pull ${{ env.REGISTRY }}/jupyterlab:${{ needs.build-jupyter.outputs.jupyter-image-name }}
         docker tag ${{ env.REGISTRY }}/jupyterlab:${{ needs.build-jupyter.outputs.jupyter-image-name }} zone-jupyterlab
-        docker images
         
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
       id: build-image
-      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }} DARGS="--build-arg AZURE_ACCOUNT_NAME=aawdevcc00sasas --build-arg ACCOUNT_KEY=${{ secrets.SAS_ACCOUNT_KEY }}"
 
     - name: Echo disk usage after build completion
       run: ./.github/scripts/echo_usage.sh
