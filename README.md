@@ -12,7 +12,6 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
 | jupyterlab-cpu        | The base experience. A jupyterlab notebook with various installations.                                                                           | VsCode, R, Julia     |
 | jupyterlab-pytorch    | For users looking to leverage a GPU machine. Comes installed with pytorch                                                                        | pytorch, torchvision |
 | jupyterlab-tensorflow | For users looking to leverage a GPU machine. Comes installed with tensorflow                                                                     | tensorflow-gpu       |
-| remote-desktop        | For users looking to have a desktop-like experience.                                                                                             | Open M++, QGIS       |
 | rstudio               | For users looking to have a rstudio tuned experience.                                                                                            |                      |
 | sas                   | Similar to our jupyterlab-cpu image, except with SAS. This is only available  to Statistics Canada employees as that is what our license allows. |                      |
 
@@ -248,9 +247,7 @@ would add two layers, each about 1GB (2GB total).
 │   ├── 6_JupyterLab.Dockerfile
 │   ├── 6_RStudio.Dockerfile
 │   ├── 6_JupyterLab-OL-compliant.Dockerfile
-│   ├── 6_RemoteDesktop.Dockerfile
 │   ├── ∞_CMD.Dockerfile
-│   └── ∞_CMD_RemoteDesktop.Dockerfile
 │
 ├── resources                               # the Docker context (files for COPY)
 ├── ├── common                              # files required by all images
@@ -261,20 +258,9 @@ would add two layers, each about 1GB (2GB total).
 │      ├── nginx
 │      ├── README.md
 │      └── start-custom.sh
-├── ├── remote-desktop                      # directory containing files only for the remote desktop
-|      ├── desktop-files                    # desktop configuration 
-|      ├── French                           # files to support i18n of remote desktop
-|      ├── qgis-2022.gpg.key                # expires annually aug ~8 
-|      └── start-remote-desktop.sh
 |      
 │
 ├── scripts                                 # Helper Scripts (NOT automated.)
-├── ├── remote-desktop                      # Scripts installing applications on remote desktop
-|      ├── firefox.sh
-|      ├── fix-permissions.sh
-|      ├── qgis.sh
-|      ├── r-studio-desktop.sh
-|      └── vs-code-desktop.sh
 │   ├── CHECKSUMS
 │   ├── checksums.sh
 │   ├── get-nvidia-stuff.sh
@@ -286,7 +272,6 @@ would add two layers, each about 1GB (2GB total).
     ├── JupyterLab-PyTorch/
     ├── JupyterLab-Tensorflow/
     |── RStudio/
-    |── RemoteDesktop/
     ├── JupyterLab-CPU-OL-compliant/        # These images use JupyterLab 3.0 and contain only OL-compliant extensions
     ├── JupyterLab-PyTorch-OL-compliant/
     └── JupyterLab-Tensorflow-OL-compliant/
