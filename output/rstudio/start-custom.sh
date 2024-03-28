@@ -140,7 +140,7 @@ fi
 # Retrieve service account details
 serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
 serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`
-conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/https://artifactory.cloud.statcan.ca/artifactory/rpug-conda/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/rpug-conda/
 
 pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/
 
