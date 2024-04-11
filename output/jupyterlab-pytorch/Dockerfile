@@ -276,6 +276,19 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+ # SASPY
+
+RUN pip install sas_kernel saspy
+
+# TODO: make Python version ENV var.
+COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
+
+RUN jupyter nbextension install --py sas_kernel.showSASLog && \
+    jupyter nbextension enable sas_kernel.showSASLog --py && \
+    jupyter nbextension install --py sas_kernel.theme && \
+    jupyter nbextension enable sas_kernel.theme --py && \
+    jupyter nbextension list
+
 # OpenM install
 # Install OpenM++ MPI
 ARG OMPP_VERSION="1.15.6"
