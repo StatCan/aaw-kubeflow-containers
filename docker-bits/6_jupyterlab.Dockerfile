@@ -108,17 +108,7 @@ COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
 
 RUN pip install sas_kernel saspy
 
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
-
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
-
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
