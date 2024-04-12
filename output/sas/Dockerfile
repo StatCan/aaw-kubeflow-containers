@@ -257,10 +257,10 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
  # SASPY
 
-RUN pip install sas_kernel saspy
-
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
+
+RUN pip install sas_kernel saspy
 
 RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension enable sas_kernel.showSASLog --py && \
