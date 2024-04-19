@@ -97,6 +97,10 @@ RUN apt-get update && \
       'zip' \
       'zsh' \
       'dos2unix' \
+      'libfreetype6-dev' \
+      'libpng-dev' \
+      'libtiff5-dev' \
+      'libjpeg-dev' \
   && \
     rm -rf /var/lib/apt/lists/*
 
