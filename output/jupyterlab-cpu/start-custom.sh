@@ -143,7 +143,7 @@ serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --tem
 conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/rpug-conda/
 conda config --remove channels 'defaults'
 
-pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/
+pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/simple
 
 # if rprofile doesnt exist
 if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
