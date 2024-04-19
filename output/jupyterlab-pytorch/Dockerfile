@@ -383,7 +383,6 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
 
 RUN chmod +x /usr/local/bin/start-oms.sh && \
