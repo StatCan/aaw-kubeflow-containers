@@ -20,7 +20,7 @@ RUN groupadd -g 1337 supergroup && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
