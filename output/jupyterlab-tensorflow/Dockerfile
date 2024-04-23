@@ -417,7 +417,7 @@ RUN apt-get update --yes \
     && pip install /opt/jupyter-ompp-proxy/
 
 # MinIO Client install
-COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
@@ -493,7 +493,6 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
 
 RUN chmod +x /usr/local/bin/start-oms.sh && \
