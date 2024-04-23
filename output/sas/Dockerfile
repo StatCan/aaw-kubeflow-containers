@@ -76,7 +76,12 @@ RUN apt-get update && \
       'zip' \
       'zsh' \
       'dos2unix' \
-  && \
+      # these are required by some r packages, adding these here so they get
+      # installed into all images.
+      'libfreetype6-dev' \
+      'libpng-dev' \
+      'libtiff5-dev' \
+      'libjpeg-dev' && \
     rm -rf /var/lib/apt/lists/*
 
 
