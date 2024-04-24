@@ -101,41 +101,6 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
- # SASPY
-
-# TODO: make Python version ENV var.
-COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
-
-RUN pip install sas_kernel saspy
-
-COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmagic1 \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    usermod -a -G sasstaff jovyan && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
-
-WORKDIR /home/sas
-
-ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
-
-ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
-
-RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
-
-ENV SAS_HADOOP_JAR_PATH=/opt/hadoop
-
-EXPOSE 8561 8591 38080
-
-RUN jupyter nbextension install --py sas_kernel.showSASLog && \
-    jupyter nbextension enable sas_kernel.showSASLog --py && \
-    jupyter nbextension install --py sas_kernel.theme && \
-    jupyter nbextension enable sas_kernel.theme --py && \
-    jupyter nbextension list
-
 # OpenM install
 # Install OpenM++ MPI
 ARG OMPP_VERSION="1.15.6"
