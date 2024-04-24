@@ -29,6 +29,13 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
+    usermod -a -G supergroup sas && \
+    groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff sas && \
+    echo "sas:sas" | chpasswd
+
 ###############################
 ###  docker-bits/2_pytorch.Dockerfile
 ###############################
@@ -277,13 +284,6 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     fix-permissions /home/$NB_USER
 
  # SASPY
-
- RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
 
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py

@@ -29,6 +29,13 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
+    usermod -a -G supergroup sas && \
+    groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff sas && \
+    echo "sas:sas" | chpasswd
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
