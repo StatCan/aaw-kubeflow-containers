@@ -385,7 +385,8 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
  # SASPY
 
- RUN useradd -m sas && \
+ RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
     usermod -a -G supergroup sas && \
     groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff sas && \
