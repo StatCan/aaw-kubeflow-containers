@@ -29,6 +29,32 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+###############################
+###  docker-bits/3_Kubeflow.Dockerfile
+###############################
+
+USER root
+COPY aaw-suspend-server.sh /usr/local/bin
+
+# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
+RUN mamba install --quiet \
+      'pillow' \
+      'pyyaml' \
+      'joblib==1.2.0' \
+      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
+      's3fs' \ 
+      'fire==0.5.0' \
+      'graphviz' && \
+      pip install 'kubeflow-training' && \
+      clean-layer.sh && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER && \
+      chmod +x /usr/local/bin/aaw-suspend-server.sh
+
+###############################
+###  docker-bits/3_sas-stuff.Dockerfile
+###############################
+
 RUN groupadd -g 1337 supergroup && \
     useradd -m sas && \
     usermod -a -G supergroup sas && \
@@ -70,28 +96,6 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension install --py sas_kernel.theme && \
     jupyter nbextension enable sas_kernel.theme --py && \
     jupyter nbextension list
-
-###############################
-###  docker-bits/3_Kubeflow.Dockerfile
-###############################
-
-USER root
-COPY aaw-suspend-server.sh /usr/local/bin
-
-# https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN mamba install --quiet \
-      'pillow' \
-      'pyyaml' \
-      'joblib==1.2.0' \
-      # s3 file system tool forked by Zach, ~4 years old, to be upgraded
-      's3fs' \ 
-      'fire==0.5.0' \
-      'graphviz' && \
-      pip install 'kubeflow-training' && \
-      clean-layer.sh && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER && \
-      chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile

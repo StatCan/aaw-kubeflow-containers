@@ -149,6 +149,7 @@ jupyterlab: pytorch tensorflow cpu
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
 			$(SRC)/3_Kubeflow.Dockerfile \
+			$(SRC)/3_sas-stuff.Dockerfile \
 			$(SRC)/4_CLI.Dockerfile \
 			$(SRC)/5_DB-Drivers.Dockerfile \
 			$(SRC)/6_$(@).Dockerfile \
