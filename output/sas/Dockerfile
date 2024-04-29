@@ -288,11 +288,14 @@ RUN apt-get update --yes \
     && fix-permissions ${OMPP_INSTALL_DIR} \
     && pip install /opt/jupyter-ompp-proxy/
 
+# MinIO Client install
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
+
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
 
 ENV DEFAULT_JUPYTER_URL=/lab
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-jupyter-notebooks
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
@@ -355,7 +358,7 @@ RUN python3 -m pip install \
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
-ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-r-notebooks.git
+ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-r-notebooks.git
 
 ###############################
 ###  docker-bits/6_sas.Dockerfile
@@ -481,18 +484,18 @@ COPY pip.conf /tmp/pip.conf
 RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf
 
 # Point R to Artifactory repository
-COPY Rprofile.site /tmp/Rprofile.site
-RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
+#COPY Rprofile.site /tmp/Rprofile.site
+#RUN cat /tmp/Rprofile.site >> /opt/conda/lib/R/etc/Rprofile.site && rm /tmp/Rprofile.site
 
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
 COPY .Rprofile /tmp/.Rprofile
 
-# Point conda to Artifactory repository
-RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-remote --system && \
-    conda config --remove channels conda-forge --system && \
-    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
-    conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
+# Copy over Instructions to Home directory
+ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
+# Point conda to Artifactory repository
+RUN conda config --remove channels conda-forge --system
+    
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
