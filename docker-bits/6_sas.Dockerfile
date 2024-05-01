@@ -18,7 +18,7 @@ RUN groupadd -g 1337 supergroup && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
 
