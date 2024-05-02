@@ -96,6 +96,9 @@ EXCLUDED_PACKAGES = [
     # import yaml, not import pyyaml
     "pyyaml",
     "graphviz",
+    # tables and pytables added because causing issues, TODO: understand issue and resolve
+    "tables",
+    "pytables"
 ]
 
 
