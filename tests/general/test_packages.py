@@ -51,7 +51,7 @@ PACKAGE_MAPPING = {
     "scikit-learn": "sklearn",
     "scikit-image": "skimage",
     "spylon-kernel": "spylon_kernel",
-    "pytables": "tables",
+    #"pytables": "tables",
     # R
     "randomforest": "randomForest",
     "rsqlite": "DBI",
