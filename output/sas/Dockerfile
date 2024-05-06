@@ -75,7 +75,15 @@ RUN apt-get update && \
       'zip' \
       'zsh' \
       'dos2unix' \
-  && \
+      # these are required by some r packages, adding these here so they get
+      # installed into all images.
+      'libfreetype6-dev' \
+      'libpng-dev' \
+      'libtiff5-dev' \
+      'libjpeg-dev' \
+      'libtiff-dev' \
+      'libfreetype-dev' \
+      'libfreetype6' && \
     rm -rf /var/lib/apt/lists/*
 
 
@@ -187,7 +195,6 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
-    code-server --install-extension databricks.databricks@1.1.0 && \
     code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
@@ -288,7 +295,7 @@ RUN apt-get update --yes \
     && pip install /opt/jupyter-ompp-proxy/
 
 # MinIO Client install
-COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
@@ -376,26 +383,22 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
+RUN groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff jovyan && \
+    echo "jovyan:jovyan" | chpasswd
 
 COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    usermod -a -G sasstaff jovyan && \
     chmod -R 0775 /usr/local/SASHome/studioconfig
 
-WORKDIR /home/sas
+WORKDIR /home/jovyan
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
@@ -476,7 +479,6 @@ USER root
 WORKDIR /home/$NB_USER
 EXPOSE 8888
 COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
 COPY trino-wrapper.sh /usr/local/bin/trino
 
 RUN chmod +x /usr/local/bin/start-oms.sh && \
