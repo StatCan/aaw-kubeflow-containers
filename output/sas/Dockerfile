@@ -81,7 +81,10 @@ RUN apt-get update && \
       'libfreetype6-dev' \
       'libpng-dev' \
       'libtiff5-dev' \
-      'libjpeg-dev' && \
+      'libjpeg-dev' \
+      'libtiff-dev' \
+      'libfreetype-dev' \
+      'libfreetype6' && \
     rm -rf /var/lib/apt/lists/*
 
 
