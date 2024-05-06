@@ -438,10 +438,10 @@ RUN groupadd -g 1337 supergroup && \
 
 # SASPY
 
+RUN pip install sas_kernel saspy
+
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
-
-RUN pip install sas_kernel saspy
 
 COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 RUN rm -rf /usr/local/SASHOME/SASStudioBasic/ && \
