@@ -96,7 +96,8 @@ EXCLUDED_PACKAGES = [
     "graphviz",
     # pytables has been added because it is causing issues, TODO: understand issue and resolve
     # pytables is the package but we import tables
-    "tables"
+    "tables",
+    "pytables"
 ]
 
 
