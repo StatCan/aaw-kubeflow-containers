@@ -51,7 +51,9 @@ PACKAGE_MAPPING = {
     "scikit-learn": "sklearn",
     "scikit-image": "skimage",
     "spylon-kernel": "spylon_kernel",
+    "pillow": "PIL",
     "pytables": "tables",
+    "pyyaml": "yaml",
     # R
     "randomforest": "randomForest",
     "rsqlite": "DBI",
@@ -91,11 +93,11 @@ EXCLUDED_PACKAGES = [
     "cudatoolkit",
     "cudnn",
     # Python
-    # import PIL, not import pillow
-    "pillow",
-    # import yaml, not import pyyaml
-    "pyyaml",
     "graphviz",
+    # pytables has been added because it is causing issues, TODO: understand issue and resolve
+    # pytables is the package but we import tables
+    "tables",
+    "pytables"
 ]
 
 
