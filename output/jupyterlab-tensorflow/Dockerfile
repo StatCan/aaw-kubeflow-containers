@@ -341,6 +341,7 @@ RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
+    'jupyterlab' \
     'jupyter_contrib_nbextensions' \ 
     'dash' \
     'plotly' \
