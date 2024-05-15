@@ -204,7 +204,7 @@ ENV SERVICE_URL=https://extensions.coder.com/api
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
-    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.17.5/cpptools-linux.vsix \
+    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.20.5/cpptools-linux.vsix \
     && apt-get update \
     && apt-get install -y nginx build-essential gdb \
     && dpkg -i ./vscode.deb \
@@ -213,13 +213,13 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $CS_TEMP_HOME/Machine \
     && \ 
     # Manage extensions
-    code-server --install-extension ms-python.python@2023.12.0 && \
-    code-server --install-extension REditorSupport.r@2.8.1 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
-    code-server --install-extension quarto.quarto@1.90.1 && \
+    code-server --install-extension ms-python.python@2024.2.1 && \
+    code-server --install-extension REditorSupport.r@2.8.3 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.82.0 && \
+    code-server --install-extension quarto.quarto@1.111.0 && \
     code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
-    code-server --install-extension ms-vscode.azurecli@0.5.0 && \
+    code-server --install-extension ms-vscode.azurecli@0.6.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
     code-server --install-extension cpptools-linux.vsix && \
     mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
