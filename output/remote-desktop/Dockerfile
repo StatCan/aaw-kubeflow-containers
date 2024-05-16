@@ -139,6 +139,7 @@ COPY shell_helpers.sh /tmp/shell_helpers.sh
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
       'byobu' \
+      'pass' \
       'htop' \
       'jq' \
       'openssl' \
