@@ -255,6 +255,7 @@ check-test-prereqs: check-python-venv check-port-available
 install-python-dev-venv:
 	python3 -m venv $(PYTHON_VENV)
 	$(PYTHON) -m pip install -Ur requirements-dev.txt
+	$(PYTHON) -m pip list
 
 test/%: REPO?=$(DEFAULT_REPO)
 test/%: TAG?=$(DEFAULT_TAG)
