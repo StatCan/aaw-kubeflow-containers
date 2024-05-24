@@ -342,6 +342,9 @@ RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
+    # https://stackoverflow.com/questions/68824450/error-configuration-failed-for-package-ragg
+    # need to add mamba install pkg-config so R can find freetype related packages
+    'pkg-config' \
     'jupyterlab' \
     'jupyter_contrib_nbextensions' \ 
     'dash' \
