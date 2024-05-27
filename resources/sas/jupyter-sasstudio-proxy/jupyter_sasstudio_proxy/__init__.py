@@ -14,10 +14,10 @@ def setup_sasstudio():
 
   def _rewrite_response(response):
     if 'Location' in response.headers:
-      response.headers['Location'] = response.headers['Location'].replace('/SASStudio', os.environ.get('NB_PREFIX') + '/sasstudio/SASStudio')
+      response.headers['Location'] = response.headers['Location'].replace('/SASStudio', os.environ.get('NB_PREFIX') + '/sasstudio/SASStudio/main')
 
     if 'Set-Cookie' in response.headers:
-      response.headers['Set-Cookie'] = response.headers['Set-Cookie'].replace('/SASStudio', os.environ.get('NB_PREFIX') + '/sasstudio/SASStudio')
+      response.headers['Set-Cookie'] = response.headers['Set-Cookie'].replace('/SASStudio', os.environ.get('NB_PREFIX') + '/sasstudio/SASStudio/main')
 
   return {
     "command": _get_cmd,
