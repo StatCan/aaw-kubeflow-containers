@@ -429,7 +429,6 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension list
 
 # Jupyter SASStudio Proxy
-
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
