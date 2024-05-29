@@ -10,7 +10,6 @@
 
 ARG BASE_VERSION=2023-12-25
 
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -389,11 +388,34 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
-RUN groupadd -g 1002 sasstaff && \
+RUN groupadd -g 1337 supergroup && \
+    useradd -m sas && \
+    usermod -a -G supergroup sas && \
+    groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
-    echo "jovyan:jovyan" | chpasswd
+    usermod -a -G sasstaff sas && \
+    echo "sas:sas" | chpasswd
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+# BlobPorter
+
+ARG AZURE_ACCOUNT_NAME=${storage_account_name}
+ENV ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
+
+ARG AZURE_ACCOUNT_KEY=${storage_account_key}
+ENV ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
+
+RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
+    tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
+    mv /tmp/linux_amd64/blobporter /usr/local/bin/blobporter && \
+    rm -rf /tmp/* && \
+    chmod a+x /usr/local/bin/blobporter
+
+RUN cd /usr/local/ && \
+    blobporter -f https://bryantestsas.blob.core.windows.net/sasblobcontainer/SASHome.tar.gz -c sasblobcontainer -n SASHome.tar.gz -t blob-file && \
+    tar -xzpf SASHome.tar.gz && \
+    rm SASHome.tar.gz && \
+    chown -R sas:sasstaff /usr/local/SASHome && \
+    ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 
