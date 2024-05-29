@@ -15,20 +15,36 @@ RUN groupadd -g 1337 supergroup && \
     useradd -m sas && \
     usermod -a -G supergroup sas && \
     groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff jovyan && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+# BlobPorter
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+ARG AZURE_ACCOUNT_NAME=${storage_account_name}
+ENV ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
+
+ARG AZURE_ACCOUNT_KEY=${storage_account_key}
+ENV ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
+
+RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
+    tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
+    mv /tmp/linux_amd64/blobporter /usr/local/bin/blobporter && \
+    rm -rf /tmp/* && \
+    chmod a+x /usr/local/bin/blobporter
+
+RUN cd /usr/local/ && \
+    blobporter -f https://bryantestsas.blob.core.windows.net/sasblobcontainer/SASHome.tar.gz -c sasblobcontainer -n SASHome.tar.gz -t blob-file && \
+    tar -xzpf SASHome.tar.gz && \
+    rm SASHome.tar.gz && \
+    chown -R sas:sasstaff /usr/local/SASHome && \
+    ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
+
+COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
-
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    usermod -a -G sasstaff jovyan && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
 
 WORKDIR /home/sas
 
@@ -71,4 +87,5 @@ COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
 # Enable X command on SAS Studio
+
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
