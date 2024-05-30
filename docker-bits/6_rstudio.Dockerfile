@@ -8,6 +8,8 @@ RUN mkdir -p /etc/rstudio && \
     echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
+ENV NB_PREFIX=$NB_PREFIX
+ENV NB_NAMESPACE=$NB_NAMESPACE
 
 # Install some default R packages
 RUN mamba install --quiet --yes \
@@ -32,6 +34,9 @@ RUN python3 -m pip install \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+COPY my_file /usr/local/lib/R/etc/
+RUN cat /usr/local/lib/R/etc/my_file >> /opt/conda/lib/R/Renviron
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
