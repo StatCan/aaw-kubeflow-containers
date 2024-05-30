@@ -274,6 +274,10 @@ COPY start-custom.sh start-oms.sh restart-oms.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start-oms.sh && \
     chmod +x /usr/local/bin/restart-oms.sh
 
+# OpenM install
+
+COPY jupyter-ompp-proxy/ /opt/jupyter-ompp-proxy/
+
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
