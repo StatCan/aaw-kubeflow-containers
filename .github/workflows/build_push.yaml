@@ -153,9 +153,8 @@ jobs:
         python -m pip install --upgrade pip
         make install-python-dev-venv
 
-    # AAW: Commented out because it is causing issues
-    # - name: Test image
-    #   run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+    - name: Test image
+      run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Free up space from build process (containerscan action will run out of space if we don't)
     #- run: ./.github/scripts/cleanup_runner.sh
@@ -309,9 +308,8 @@ jobs:
         python -m pip install --upgrade pip
         make install-python-dev-venv
 
-    # AAW: Commented out because it is causing issues
-    # - name: Test image
-    #   run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+    - name: Test image
+      run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
     # Free up space from build process (containerscan action will run out of space if we don't)
     - run: ./.github/scripts/cleanup_runner.sh
