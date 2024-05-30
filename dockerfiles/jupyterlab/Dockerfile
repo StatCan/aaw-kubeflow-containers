@@ -55,7 +55,7 @@ ARG RSTUDIO_SHA256=452804d61bfee2996d98d1c406b31d93e03e58df2a34996b821925ce0c04f
 ARG OMPP_VERSION="1.16.1"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ARG OMPP_PKG_DATE="20240216"
-ARG SHA256ompp=8304f3fcb9e17dec5fad381673a8ecd1371d8827e2e8ce35431c4ec9acff4321
+ARG SHA256ompp=e9036a187054a8fbba75a6b10c4ed7a48543dce3ee5a1c4a4380822806bc17b4
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
