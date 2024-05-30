@@ -2,7 +2,7 @@ docker
 # pre-commit
 pytest
 recommonmark
-requests
+requests==2.31.0
 # sphinx>=1.6
 # sphinx-intl
 tabulate
