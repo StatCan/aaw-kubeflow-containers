@@ -125,7 +125,7 @@ RUN pip3 --no-cache-dir install --quiet \
       kubeflow-training \
       lxml \
       markupsafe \
-      # maybe we can remove minio?
+      pexpect==4.9.0 \
       minio \
       mpmath \
       oauthlib \
