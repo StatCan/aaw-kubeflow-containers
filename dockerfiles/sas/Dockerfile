@@ -23,8 +23,8 @@ RUN groupadd -g 1337 supergroup && \
 ARG AZURE_ACCOUNT_NAME=${storage_account_name}
 ENV ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
 
-ARG AZURE_ACCOUNT_KEY=${storage_account_key}
-ENV ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
+ARG ACCOUNT_KEY=${storage_account_key}
+ENV SRC_ACCOUNT_KEY=${ACCOUNT_KEY}
 
 RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
     tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
@@ -38,9 +38,6 @@ RUN cd /usr/local/ && \
     rm SASHome.tar.gz && \
     chown -R sas:sasstaff /usr/local/SASHome && \
     ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
-
-WORKDIR /home/sas
-RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
 
 RUN pip3 --no-cache-dir install --quiet sas_kernel
 
