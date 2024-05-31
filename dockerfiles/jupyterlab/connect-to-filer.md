@@ -22,6 +22,7 @@ Using the information from the previous step run the following in the terminal;
 In this case, the account will be created at the fld9filer level so my command looked like;
 `mc alias fld9filer $S3_URL $S3_ACCESS $S3_SECRET`
 
+
 ## Copying files to and from the filer
 Your command will look like a regular `cp` command where the first argument is SOURCE and the second is DESTINATION except with `mc` in front of it.
 For example

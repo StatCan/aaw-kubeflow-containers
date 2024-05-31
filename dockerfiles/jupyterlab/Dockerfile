@@ -83,11 +83,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpng-dev \
     libwebp7 \
     libxmu6 \
+    # these are required by some r packages, adding these here so they get
+    # installed into all images.
+    libfreetype6-dev\
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
+    libtiff-dev \
+    libfreetype-dev \
+    libfreetype6 \
     nginx \
     numactl \
     openjdk-8-jre \
     openssl \
     openmpi-bin \
+    pass \
     libopenmpi-dev \
     ranger \
     software-properties-common \
@@ -141,16 +151,17 @@ RUN pip3 --no-cache-dir install --quiet \
 
 # Install some packages from Anaconda using Mamba
 RUN mamba install --quiet --yes \
-      'r-arrow' \
-      'r-aws.s3' \
-      'r-catools' \
-      'r-hdf5r' \
-      'r-odbc' \
-      'r-sf' \
-      'r-markdown' \
-      'r-languageserver' \
-      'nb_conda_kernels' \
-      'python-lsp-server' && \
+      r-arrow \
+      r-aws.s3 \
+      r-catools \
+      r-hdf5r \
+      r-odbc \
+      r-sf \
+      r-markdown \
+      r-languageserver \
+      nb_conda_kernels \
+      pkg-config \
+      python-lsp-server && \
     clean-layer.sh && \ 
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -160,9 +171,8 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 # --- CLI Stuff
 
-# maybe we can remove this minio stuff?
 # MinIO Client install
-COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
 
 #debug run true
 RUN true
@@ -203,7 +213,7 @@ RUN \
 USER root
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
-    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.17.5/cpptools-linux.vsix \
+    && wget -q https://github.com/microsoft/vscode-cpptools/releases/download/v1.20.5/cpptools-linux.vsix \
     && apt-get update \
     && apt-get install -y nginx build-essential gdb \
     && dpkg -i ./vscode.deb \
@@ -212,14 +222,13 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $CS_TEMP_HOME/Machine \
     && \ 
     # Manage extensions
-    code-server --install-extension ms-python.python@2023.12.0 && \
-    code-server --install-extension REditorSupport.r@2.8.1 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
-    code-server --install-extension quarto.quarto@1.90.1 && \
-    code-server --install-extension databricks.databricks@1.1.0 && \
-    code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
+    code-server --install-extension ms-python.python@2024.2.1 && \
+    code-server --install-extension REditorSupport.r@2.8.3 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.82.0 && \
+    code-server --install-extension quarto.quarto@1.111.0 && \
+    code-server --install-extension dvirtz.parquet-viewer@2.8.0 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
-    code-server --install-extension ms-vscode.azurecli@0.5.0 && \
+    code-server --install-extension ms-vscode.azurecli@0.6.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
     code-server --install-extension cpptools-linux.vsix && \
     mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
@@ -345,16 +354,7 @@ COPY start-custom.sh /usr/local/bin/
 #debug run true
 RUN true
 
-# we may want to remove this mc (minio)
-COPY mc-tenant-wrapper.sh /usr/local/bin/mc
-
-#debug run true
-RUN true
-
 COPY trino-wrapper.sh /usr/local/bin/trino
-
-#debug run true
-RUN true
 
 # Add --user to all pip install calls and point pip to Artifactory repository
 COPY pip.conf /tmp/pip.conf
@@ -362,15 +362,17 @@ RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
-COPY .Rprofile /tmp/.Rprofile
+# COPY .Rprofile /tmp/.Rprofile
 
 # Copy over Instructions to Home directory
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point conda to Artifactory repository
-RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/rpug-conda/ --system && \
-    mamba config --remove channels conda-forge --system
-    
+RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-forge-remote --system && \
+    mamba config --remove channels conda-forge --system && \
+    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote --system && \
+    mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote --system    
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]

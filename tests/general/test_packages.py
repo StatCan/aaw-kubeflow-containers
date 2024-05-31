@@ -96,7 +96,9 @@ EXCLUDED_PACKAGES = [
     # import yaml, not import pyyaml
     "pyyaml",
     "graphviz",
+    "tables",
     "pytables",
+    "pkg-config"
 ]
 
 

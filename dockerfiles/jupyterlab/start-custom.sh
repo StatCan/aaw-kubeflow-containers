@@ -140,10 +140,11 @@ fi
 # Retrieve service account details
 serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
 serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`
-conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/rpug-conda/
-conda config --remove channels 'defaults'
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-forge-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote/
+conda config --add channels https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/conda-pytorch-remote/
 
-pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/pypi-remote/
+pip config set global.index-url https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/api/pypi/pypi-remote/simple
 
 # if rprofile doesnt exist
 if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
@@ -151,7 +152,7 @@ if [ ! -d "/opt/conda/lib/R/etc/Rprofile.site" ]; then
   cat > /opt/conda/lib/R/etc/Rprofile.site<< EOF
 options(jupyter.plot_mimetypes = c('text/plain', 'image/png', 'image/jpeg', 'image/svg+xml', 'application/pdf'))
 local({
-  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/rpug-cran/")
+  r <- list("cran-remote" = "https://$serviceaccountname:$serviceaccounttoken@artifactory.cloud.statcan.ca/artifactory/cran-remote/")
   options(repos = r)
 })
 EOF
