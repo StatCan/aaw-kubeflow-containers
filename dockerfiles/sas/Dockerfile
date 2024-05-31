@@ -51,14 +51,7 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension enable sas_kernel.showSASLog --py && \
     jupyter nbextension install --py sas_kernel.theme && \
     jupyter nbextension enable sas_kernel.theme --py && \
-    jupyter nbextension list
-
-# Jupyter SASStudio Proxy
-
-COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
-RUN pip3 install /opt/jupyter-sasstudio-proxy/
-
-ADD scripts/* /
+    jupyter nbextension lis
 
 WORKDIR /home/sas
 
