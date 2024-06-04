@@ -398,10 +398,10 @@ RUN groupadd -g 1337 supergroup && \
 
 # BlobPorter
 
-ARG AZURE_ACCOUNT_NAME=${storage_account_name}
+ARG AZURE_ACCOUNT_NAME=${BRYAN_SA_NAME}
 ENV ACCOUNT_NAME=${AZURE_ACCOUNT_NAME}
 
-ARG AZURE_ACCOUNT_KEY=${storage_account_key}
+ARG AZURE_ACCOUNT_KEY=${BRYAN_SA_KEY}
 ENV ACCOUNT_KEY=${AZURE_ACCOUNT_KEY}
 
 RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
