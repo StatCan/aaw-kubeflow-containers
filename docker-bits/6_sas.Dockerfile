@@ -21,6 +21,9 @@ RUN groupadd -g 1337 supergroup && \
 
 # BlobPorter
 
+ARG ACCOUNT_NAME=${ACCOUNT_NAME}
+ARG SRC_ACCOUNT_KEY=${SRC_ACCOUNT_KEY}
+
 RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
     tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
     mv /tmp/linux_amd64/blobporter /usr/local/bin/blobporter && \
@@ -40,10 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
-
-WORKDIR /home/jovyan
+WORKDIR /home/sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
@@ -84,4 +84,5 @@ COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
 # Enable X command on SAS Studio
+
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
