@@ -373,6 +373,8 @@ RUN mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory
     mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/conda-nvidia-remote --system && \
     mamba config --add channels https://artifactory.cloud.statcan.ca/artifactory/api/conda/conda-pytorch-remote --system    
 
+RUN fix-permissions /home/$NB_USER/
+
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
