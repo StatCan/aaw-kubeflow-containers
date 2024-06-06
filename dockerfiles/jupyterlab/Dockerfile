@@ -174,11 +174,11 @@ RUN chmod +x /usr/local/bin/aaw-suspend-server.sh
 # MinIO Client install
 COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
 
-#debug run true
-RUN true
-
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
+
+RUN cat /tmp/shell_helpers.sh >> /home/$NB_USER/.bashrc && \
+    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc
 
 RUN \ 
     # kubectl
@@ -362,7 +362,7 @@ RUN cat /tmp/pip.conf >> /etc/pip.conf && rm /tmp/pip.conf \
     && pip config set global.timeout 300
 
 # Add .Rprofile to /tmp so we can install it in start-custom.sh
-# COPY .Rprofile /tmp/.Rprofile
+COPY .Rprofile /tmp/.Rprofile
 
 # Copy over Instructions to Home directory
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md

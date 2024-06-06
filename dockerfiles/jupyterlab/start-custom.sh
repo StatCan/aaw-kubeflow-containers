@@ -29,8 +29,6 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
       conda init bash
       conda init zsh
     fi
-    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.bashrc
-    cat /tmp/shell_helpers.sh >> /home/$NB_USER/.zshrc
     touch /home/$NB_USER/.zsh-installed
     touch /home/$NB_USER/.hushlogin
 fi
@@ -120,7 +118,7 @@ export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 #  echo "adding include-system-site-packages"
 #fi
 
-echo "Checking for .condarc file in hom directory"
+echo "Checking for .condarc file in home directory"
 if [[ -f "$HOME/.condarc" ]]; then
   echo ".condarc file exists, not going to do anything"
 else
@@ -132,7 +130,7 @@ printenv | grep KUBERNETES >> /opt/conda/lib/R/etc/Renviron
 
 # Copy default config and extensions on first start up
 if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
-  echo "Creating code-server default settings and extentions"
+  echo "Creating code-server default settings and extensions"
   mkdir -p "$CS_DEFAULT_HOME"
   cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
 fi
@@ -158,17 +156,17 @@ local({
 EOF
 fi
 
-echo "--------------------starting jupyter--------------------"
+# echo "--------------------starting jupyter--------------------"
 
-/opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
-                 --ip=0.0.0.0 \
-                 --no-browser \
-                 --port=8888 \
-                 --ServerApp.token='' \
-                 --ServerApp.password='' \
-                 --ServerApp.allow_origin='*' \
-                 --ServerApp.authenticate_prometheus=False \
-                 --ServerApp.base_url=${NB_PREFIX} \
-                 --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
+# /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
+#                  --ip=0.0.0.0 \
+#                  --no-browser \
+#                  --port=8888 \
+#                  --ServerApp.token='' \
+#                  --ServerApp.password='' \
+#                  --ServerApp.allow_origin='*' \
+#                  --ServerApp.authenticate_prometheus=False \
+#                  --ServerApp.base_url=${NB_PREFIX} \
+#                  --ServerApp.default_url=${DEFAULT_JUPYTER_URL:-/tree}
 
-echo "--------------------shutting down, persisting VS_CODE settings--------------------"
+# echo "--------------------shutting down, persisting VS_CODE settings--------------------"
