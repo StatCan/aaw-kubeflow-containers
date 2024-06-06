@@ -1,4 +1,4 @@
-FROM new-jupyter-with-shell_helpers-workaround as zone-jupyterlab-sas
+FROM zone-jupyterlab as zone-jupyterlab-sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
@@ -7,14 +7,9 @@ ENV SAS_HADOOP_JAR_PATH=/opt/hadoop
 
 ENV PYTHON_VERSION="3.11"
 
-USER root
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
+RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
+    echo "jovyan:jovyan" | chpasswd
 
 # BlobPorter
 
