@@ -203,9 +203,9 @@ build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)
 build/%: ## build the latest image
 	# End repo with exactly one trailing slash, unless it is empty
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') && \
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
-	DOCKER_BUILDKIT=0 docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
+	DOCKER_BUILDKIT=0 docker build $(DARGS) --build-arg SRC_ACCOUNT_KEY=$$(SRC_ACCOUNT_KEY) --build-arg ACCOUNT_NAME=$$(ACCOUNT_NAME) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
