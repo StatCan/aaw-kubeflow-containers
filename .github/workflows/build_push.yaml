@@ -63,8 +63,6 @@ jobs:
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
       HADOLINT_VERSION: "2.12.0"
-      ACCOUNT_NAME: ${{ secrets.BRYAN_SA_NAME }}
-      SRC_ACCOUNT_KEY: ${{ secrets.BRYAN_SA_KEY }}
     strategy:
       fail-fast: false
       matrix:
@@ -142,7 +140,7 @@ jobs:
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
       id: build-image
-      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+      run: make build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }} ACCOUNT_NAME=${{ secrets.BRYAN_SA_NAME SRC_ACCOUNT_KEY=${{ secrets.BRYAN_SA_KEY }}
 
     - name: Echo disk usage after build completion
       run: ./.github/scripts/echo_usage.sh
