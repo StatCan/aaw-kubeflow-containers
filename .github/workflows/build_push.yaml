@@ -63,8 +63,6 @@ jobs:
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
       HADOLINT_VERSION: "2.12.0"
-      ACCOUNT_NAME: ${{ secrets.BRYAN_SA_NAME }}
-      SRC_ACCOUNT_KEY: ${{ secrets.BRYAN_SA_KEY }}
     strategy:
       fail-fast: false
       matrix:
