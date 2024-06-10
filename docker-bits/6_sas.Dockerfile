@@ -59,7 +59,7 @@ EXPOSE 8561 8591 38080
 
 ENV SASPY_VERSION="5.4.0"
 
-RUN pip install sas_kernel
+RUN pip install --no-cache-dir --quiet sas_kernel
 
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
