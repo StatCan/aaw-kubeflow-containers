@@ -209,7 +209,7 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-RUN pip install \
+RUN pip install --no-cache-dir --quiet \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
@@ -436,7 +436,7 @@ EXPOSE 8561 8591 38080
 
 ENV SASPY_VERSION="5.4.0"
 
-RUN pip install sas_kernel
+RUN pip install --no-cache-dir --quiet sas_kernel
 
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
