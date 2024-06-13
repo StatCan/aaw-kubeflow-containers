@@ -152,7 +152,7 @@ RUN apt-get update && \
 ###############################
 
 # install rstudio-server
-ARG RSTUDIO_VERSION=2023.12.0-369
+ARG RSTUDIO_VERSION=2024.04.2-764
 ARG SHA256=452804d61bfee2996d98d1c406b31d93e03e58df2a34996b821925ce0c04ffe8
 RUN apt-get update && \
     apt install -y --no-install-recommends software-properties-common dirmngr gdebi-core && \
