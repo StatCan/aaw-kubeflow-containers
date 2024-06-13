@@ -81,6 +81,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libarchive-tools \
     libmagic1 \
     libpng-dev \
+    libsqlite3-dev \
     libwebp7 \
     libxmu6 \
     nginx \
