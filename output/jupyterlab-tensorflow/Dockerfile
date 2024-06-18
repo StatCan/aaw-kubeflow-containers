@@ -29,6 +29,14 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+#Setup user's workspace
+USER $NB_USER
+RUN mkdir -p /home/jovyan/workspace \
+    && mkdir -p /home/jovyan/workspace/data \
+    && mkdir /home/jovyan/workspace/repositories
+
+USER root
+
 ###############################
 ###  docker-bits/1_CUDA-11.8.0.Dockerfile
 ###############################
@@ -337,6 +345,10 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Fix for VSCode extensions and CORS
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
+
+# Sets the default workspace for vscode
+COPY coder.json $CS_DEFAULT_HOME/
+RUN chown $NB_USER $CS_DEFAULT_HOME/coder.json
 
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
