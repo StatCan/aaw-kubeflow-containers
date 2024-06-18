@@ -8,7 +8,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2023-12-25
+ARG BASE_VERSION=2024-06-17
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
@@ -213,7 +213,7 @@ RUN pip install \
     'markupsafe' \
     'ipympl' \
     'pexpect==4.9.0' \
-    'jupyter-server-proxy==4.1.2' \
+    'jupyter-server-proxy==4.2.0' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
@@ -348,7 +348,7 @@ RUN mamba install --quiet --yes \
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-server-proxy==4.1.2' \
+      'jupyter-server-proxy==4.2.0' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER

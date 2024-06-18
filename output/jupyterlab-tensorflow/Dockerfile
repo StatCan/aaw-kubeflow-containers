@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2023-12-25
+ARG BASE_VERSION=2024-06-17
 
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
@@ -341,7 +341,7 @@ RUN pip install \
     'markupsafe' \
     'ipympl' \
     'pexpect==4.9.0' \
-    'jupyter-server-proxy==4.1.2' \
+    'jupyter-server-proxy==4.2.0' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
