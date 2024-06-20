@@ -1,4 +1,5 @@
 # Find the env variable, add it to the REnviron file
-ENV NB_PREFIX=${1}
-ENV NB_NAMESPACE=${2}
 
+echo "NB_PREFIX=${1}" >> /opt/conda/lib/R/etc/Renviron && \
+echo "NB_NAMESPACE=${2}" >> /opt/conda/lib/R/etc/Renviron && \
+echo "Meow=test" >> /opt/conda/lib/R/etc/Renviron
