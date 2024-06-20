@@ -219,8 +219,6 @@ RUN pip install \
     'pkg-config' \
     'jupyterlab' \
     'jupyter_contrib_nbextensions' \ 
-    'dash' \
-    'plotly' \
     'ipywidgets' \
     'markupsafe' \
     'ipympl' \
