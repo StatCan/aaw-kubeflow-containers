@@ -35,6 +35,7 @@ RUN python3 -m pip install \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
+COPY r_env_variable.sh /usr/local/bin/
 RUN r_env_variable.sh $NB_PREFIX $NB_NAMESPACE
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer

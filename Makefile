@@ -125,6 +125,7 @@ sas:
 	mkdir -p $(OUT)/$@
 	cp -r resources/common/. $(OUT)/$@
 	cp -r resources/sas/. $(OUT)/$@
+	cp -r resources/rstudio/. $(OUT)/$@
 
 	$(CAT) \
 		$(SRC)/0_cpu_sas.Dockerfile \
