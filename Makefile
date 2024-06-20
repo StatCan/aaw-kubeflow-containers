@@ -108,7 +108,7 @@ cpu: .output
 rstudio: cpu
 	mkdir -p $(OUT)/$@
 	cp -r resources/common/. $(OUT)/$@
-
+	cp -r resources/rstudio/. $(OUT)/$@
 	$(CAT) \
 		$(TMP)/$<.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
@@ -125,7 +125,6 @@ sas:
 	mkdir -p $(OUT)/$@
 	cp -r resources/common/. $(OUT)/$@
 	cp -r resources/sas/. $(OUT)/$@
-	cp -r resources/rstudio/. $(OUT)/$@
 
 	$(CAT) \
 		$(SRC)/0_cpu_sas.Dockerfile \
