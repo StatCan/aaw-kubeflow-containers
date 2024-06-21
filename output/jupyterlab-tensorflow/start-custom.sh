@@ -137,6 +137,14 @@ if [ ! -d "$CS_DEFAULT_HOME/Machine" ]; then
   cp -r "$CS_TEMP_HOME/." "$CS_DEFAULT_HOME"
 fi
 
+# Create default user directory
+if [ ! -d "$HOME/workspace" ]; then
+  echo "Creating default user directory"
+  mkdir -p "$HOME/workspace"
+  mkdir -p "$HOME/workspace/data"
+  mkdir -p "$HOME/workspace/repositories"
+fi
+
 # Retrieve service account details
 serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
 serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`

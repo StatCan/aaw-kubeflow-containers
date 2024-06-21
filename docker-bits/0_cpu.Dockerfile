@@ -18,11 +18,3 @@ RUN apt-get update --yes \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
-
-#Setup user's workspace
-USER $NB_USER
-RUN mkdir -p /home/jovyan/workspace \
-    && mkdir -p /home/jovyan/workspace/data \
-    && mkdir /home/jovyan/workspace/repositories
-
-USER root
