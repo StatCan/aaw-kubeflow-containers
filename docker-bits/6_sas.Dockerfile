@@ -26,7 +26,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
     chmod -R 0775 /usr/local/SASHome/studioconfig
 
-WORKDIR /home/jovyan
+#Setup user's workspace
+USER $NB_USER
+RUN mkdir -p /home/jovyan/workspace \
+    && mkdir -p /home/jovyan/workspace/data \
+    && mkdir /home/jovyan/workspace/repositories
+
+USER root
+
+WORKDIR /home/jovyan/workspace
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
