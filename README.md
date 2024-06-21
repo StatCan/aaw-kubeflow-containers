@@ -73,7 +73,7 @@ Where `tests/general` tests are applied to all images, and `tests/IMAGENAME` are
 ### 💻 Running AAW Locally (simple instructions)
 
 1. Clone the repository with `git clone https://github.com/StatCan/aaw-kubeflow-containers`.
-2. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`.
+2. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`. Alternatively, you can run `docker -t IMAGENAME build ./output/IMAGENAME/.`
 3. Run `make install-python-dev-venv` to build a development Python virtual environment.
 4. Test your image using automated tests through `make test/IMAGENAME`, e.g. run `make test/jupyterlab-tensorflow`.
 5. Find your images (required for the next step) with `docker images`. You should see a table printed in the console with your images. For example you may see:
