@@ -88,6 +88,7 @@ RUN apt-get update && \
       'byobu' \
       'htop' \
       'jq' \
+      'libsqlite3-dev' \
       'openssl' \
       'ranger' \
       'tig' \
