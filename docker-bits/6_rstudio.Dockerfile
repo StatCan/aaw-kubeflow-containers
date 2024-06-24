@@ -35,9 +35,6 @@ RUN python3 -m pip install \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-COPY r_env_variable.sh /usr/local/bin/
-RUN r_env_variable.sh $NB_PREFIX $NB_USER Woof
-
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-r-notebooks.git
