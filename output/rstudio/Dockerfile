@@ -13,7 +13,7 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2023-12-25
+ARG BASE_VERSION=2024-06-17
 
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
@@ -200,7 +200,7 @@ RUN mamba install --quiet --yes \
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-server-proxy==4.1.2' \
+      'jupyter-server-proxy==4.2.0' \
       'jupyter-shiny-proxy==1.1' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
