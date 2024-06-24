@@ -340,7 +340,6 @@ COPY languagepacks.json $CS_TEMP_HOME/
 
 # Sets the default workspace for vscode
 COPY coder.json $CS_TEMP_HOME/
-#RUN chown $NB_USER $CS_TEMP_HOME/coder.json
 
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
