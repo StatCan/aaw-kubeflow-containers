@@ -231,7 +231,6 @@ would add two layers, each about 1GB (2GB total).
 
 ## Structure
 
-
 ```
 .
 ├── Makefile                                # Cats the docker-bits together
