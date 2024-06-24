@@ -218,7 +218,7 @@ RUN python3 -m pip install \
       fix-permissions /home/$NB_USER
 
 COPY r_env_variable.sh /usr/local/bin/
-RUN r_env_variable.sh $NB_PREFIX $NB_NAMESPACE Woof
+RUN r_env_variable.sh $NB_PREFIX NB_NAMESPACE Woof $NB_USER
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
