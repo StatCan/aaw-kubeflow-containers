@@ -224,6 +224,7 @@ RUN pip install \
     'markupsafe' \
     'ipympl' \
     'pexpect==4.9.0' \
+    'jupyter-resource-usage' \
     'jupyter-server-proxy==4.2.0' \
     'jupyterlab-language-pack-fr-fr' \
     'jupyterlab_execute_time' \
