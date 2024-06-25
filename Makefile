@@ -150,9 +150,9 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/3_Kubeflow.Dockerfile \
 			$(SRC)/4_CLI.Dockerfile \
 			$(SRC)/5_DB-Drivers.Dockerfile \
-			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/6_rstudio-server.Dockerfile \
 			$(SRC)/6_rstudio.Dockerfile \
+			$(SRC)/6_$(@).Dockerfile \
 			$(SRC)/7_remove_vulnerabilities.Dockerfile \
 			$(SRC)/8_platform.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \
