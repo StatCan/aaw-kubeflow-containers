@@ -14,7 +14,14 @@ else
 fi
 
 # Clone example notebooks (with retries)
-test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone --progress "$GIT_EXAMPLE_NOTEBOOKS"
+RETRIES_NO=5
+RETRY_DELAY=3
+for i in $(seq 1 $RETRIES_NO); do
+  test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone --progress "$GIT_EXAMPLE_NOTEBOOKS" && break
+  sleep ${RETRY_DELAY}
+  [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone example notebooks after $RETRIES_NO retries" && exit 1
+done
+echo "Cloned example notebooks"
 
 if [ ! -e /home/$NB_USER/.Rprofile ]; then
     cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm -rf /tmp/.Rprofile
