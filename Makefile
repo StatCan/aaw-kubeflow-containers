@@ -144,6 +144,7 @@ jupyterlab: pytorch tensorflow cpu
 
 	for type in $^; do \
 		mkdir -p $(OUT)/$@-$${type}; \
+		cp -r resources/sas/. $(OUT)/$@ \
 		cp -r resources/common/. $(OUT)/$@-$${type}/; \
 		$(CAT) \
 			$(TMP)/$${type}.Dockerfile \
@@ -153,6 +154,7 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/6_rstudio-server.Dockerfile \
 			$(SRC)/6_rstudio.Dockerfile \
 			$(SRC)/6_$(@).Dockerfile \
+			$(SRC)/7_sas-stuff.Dockerfile \
 			$(SRC)/7_remove_vulnerabilities.Dockerfile \
 			$(SRC)/8_platform.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \

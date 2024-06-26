@@ -10,7 +10,6 @@
 
 ARG BASE_VERSION=2024-06-17
 
-FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -401,7 +400,7 @@ RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
     echo "jovyan:jovyan" | chpasswd
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 
