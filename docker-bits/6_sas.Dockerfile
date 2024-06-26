@@ -15,7 +15,23 @@ RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
     echo "jovyan:jovyan" | chpasswd
 
-COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
+# BlobPorter
+
+ARG ACCOUNT_NAME=${ACCOUNT_NAME}
+ARG SRC_ACCOUNT_KEY=${SRC_ACCOUNT_KEY}
+
+RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
+    tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
+    mv /tmp/linux_amd64/blobporter /usr/local/bin/blobporter && \
+    rm -rf /tmp/* && \
+    chmod a+x /usr/local/bin/blobporter
+
+RUN cd /usr/local/ && \
+    blobporter -f https://bryantestsas.blob.core.windows.net/sasblobcontainer/SASHome.tar.gz -c sasblobcontainer -n SASHome.tar.gz -t blob-file && \
+    tar -xzpf SASHome.tar.gz && \
+    rm SASHome.tar.gz && \
+    chown -R jovyan:sasstaff /usr/local/SASHome && \
+    ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 
@@ -23,14 +39,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
-
 WORKDIR /home/jovyan
 
-ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
-
-ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
+ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin \
+    PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
 
 RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
 
@@ -40,9 +52,7 @@ EXPOSE 8561 8591 38080
 
 # SASPY
 
-ENV SASPY_VERSION="5.4.0"
-
-RUN pip install sas_kernel
+RUN mamba install sas_kernel saspy
 
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
@@ -67,4 +77,5 @@ COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
 
 # Enable X command on SAS Studio
+
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
