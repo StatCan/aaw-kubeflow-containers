@@ -209,7 +209,7 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-RUN pip install --no-cache-dir --quiet \
+RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
@@ -388,13 +388,9 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
+RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
+    echo "jovyan:jovyan" | chpasswd
 
 # BlobPorter
 
@@ -419,8 +415,6 @@ COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /home/sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
