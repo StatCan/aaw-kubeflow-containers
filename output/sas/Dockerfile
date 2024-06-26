@@ -29,6 +29,7 @@ RUN apt-get update --yes \
 RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
+   
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
@@ -210,6 +211,9 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
+# Sets the default workspace for vscode
+COPY coder.json $CS_TEMP_HOME/
+
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
@@ -340,6 +344,9 @@ RUN mkdir -p /etc/rstudio && \
     echo "www-enable-origin-check=1" >> /etc/rstudio/rserver.conf && \
     echo "www-same-site=lax" >> /etc/rstudio/rserver.conf && \
     echo "restrict-directory-view=1" >> /etc/rstudio/rsession.conf && \
+    # Sets the default working dir
+    echo "session-default-working-dir=/home/jovyan/workspace" >> /etc/rstudio/rsession.conf && \
+    echo "session-default-new-project-dir=/home/jovyan/workspace" >> /etc/rstudio/rsession.conf && \
     # https://github.com/rstudio/rstudio/issues/14060
     echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
 
