@@ -407,7 +407,7 @@ RUN cd /usr/local/ && \
     blobporter -f https://bryantestsas.blob.core.windows.net/sasblobcontainer/SASHome.tar.gz -c sasblobcontainer -n SASHome.tar.gz -t blob-file && \
     tar -xzpf SASHome.tar.gz && \
     rm SASHome.tar.gz && \
-    chown -R sas:sasstaff /usr/local/SASHome && \
+    chown -R jovyan:sasstaff /usr/local/SASHome && \
     ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
