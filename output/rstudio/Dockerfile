@@ -190,8 +190,6 @@ RUN mkdir -p /etc/rstudio && \
     echo "rsession-ld-library-path=/opt/conda/lib" >> /etc/rstudio/rserver.conf 
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
-ENV NB_PREFIX=$NB_PREFIX
-ENV NB_NAMESPACE=$NB_NAMESPACE
 
 # Install some default R packages
 RUN mamba install --quiet --yes \
