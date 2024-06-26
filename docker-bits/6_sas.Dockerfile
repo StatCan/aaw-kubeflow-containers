@@ -11,13 +11,9 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
-RUN groupadd -g 1337 supergroup && \
-    useradd -m sas && \
-    usermod -a -G supergroup sas && \
-    groupadd -g 1002 sasstaff && \
+RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
-    usermod -a -G sasstaff sas && \
-    echo "sas:sas" | chpasswd
+    echo "jovyan:jovyan" | chpasswd
 
 # BlobPorter
 
