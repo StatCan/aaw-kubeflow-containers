@@ -39,9 +39,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
+WORKDIR /home/jovyan
 
-ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
+ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin \
+    PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
 
 RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
 
