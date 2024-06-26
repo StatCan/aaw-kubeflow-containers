@@ -56,7 +56,7 @@ RUN mamba create -n torch && \
 ###############################
 
 USER root
-COPY aaw-suspend-server.sh /usr/local/bin
+COPY suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN mamba install --quiet \
@@ -71,7 +71,7 @@ RUN mamba install --quiet \
       clean-layer.sh && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
-      chmod +x /usr/local/bin/aaw-suspend-server.sh
+      chmod +x /usr/local/bin/suspend-server.sh
 
 ###############################
 ###  docker-bits/4_CLI.Dockerfile
