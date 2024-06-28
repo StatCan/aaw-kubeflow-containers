@@ -271,7 +271,7 @@ RUN \
     # quarto
     curl -sLO  ${QUARTO_URL}\
     && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
-    && gunzip quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+    && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
     && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
