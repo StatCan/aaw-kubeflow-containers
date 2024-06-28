@@ -157,6 +157,17 @@ RUN \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version
 
+# Install Quarto
+ARG QUARTO_VERSION=1.5.52
+ARG QUARTO_SHA=d4d47989181d49ea48907f8aee32d7fc3823955885a9bab7b07afad2dccf4451
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+
+RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
+    chmod +x /tmp/quarto-${QUARTO_VERSION} && \
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
+
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
 ###############################
