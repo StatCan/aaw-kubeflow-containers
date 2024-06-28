@@ -228,7 +228,6 @@ RUN pip install \
     'jupyterlab_execute_time' \
     'nb_conda_kernels' \
     'jupyterlab-lsp' \
-    'jupyter-cache' \
     'jupyter-lsp'  && \
     jupyter server extension enable --py jupyter_server_proxy && \
     jupyter nbextension enable codefolding/main --sys-prefix && \
