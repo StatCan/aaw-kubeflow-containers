@@ -74,7 +74,6 @@ jobs:
           - jupyterlab-cpu
           - jupyterlab-pytorch
           - jupyterlab-tensorflow
-          - remote-desktop
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:

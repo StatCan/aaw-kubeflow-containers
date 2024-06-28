@@ -37,29 +37,18 @@ export OM_CFG_INI_ALLOW=true
 export OM_CFG_INI_ANY_KEY=true
 export OMS_URL=${JUPYTER_SERVER_URL}ompp
 
-# # OpenM++ default configuraton
-# if [ "$KUBERNETES_SERVICE_HOST" =~ ".131." ] || [ -z $KUBERNETES_SERVICE_HOST ]; then
-#   #DEV or Localhost
-#   export OMS_MODEL_DIR=/home/jovyan/models
-#   export OMS_LOG_DIR=/home/jovyan/logs
-#   export OMS_HOME_DIR=/home/jovyan/
-# else
-#   if [ -d "/etc/protb" ]; then
-#     export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
-#     export OMS_LOG_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/logs
-#     export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/
-#   else
-#     export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/models
-#     export OMS_LOG_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/logs
-#     export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/
-#   fi
-# fi
-
-
-export OMS_MODEL_DIR=/home/jovyan/mpi-test
-export OMS_LOG_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/logs
-export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim
-
+# OpenM++ default paths, only set if not already set
+if [ -z "${OMS_MODEL_DIR}" ]; then
+  if [ -d "/etc/protb" ]; then
+    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
+    export OMS_LOG_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/logs
+    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/
+  else
+    export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/models
+    export OMS_LOG_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/logs
+    export OMS_HOME_DIR=/home/jovyan/buckets/aaw-unclassified/microsim/
+  fi
+fi
 
 # Create models directory if it doesn't exist:
 if [ ! -d "$OMS_MODEL_DIR" ]; then
