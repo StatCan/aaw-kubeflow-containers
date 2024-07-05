@@ -415,7 +415,8 @@ RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && 
 WORKDIR /home/jovyan
 
 # Adds default workspace shortcut to sasstudio
-COPY SWE.folderShortcuts.key .sasstudio/preferences/SWE.folderShortcuts.key
+COPY SWE.folderShortcuts.key /home/jovyan/.sasstudio/preferences/SWE.folderShortcuts.key
+COPY SWE.folderShortcuts.key /home/jovyan/SWE.folderShortcuts.key
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
