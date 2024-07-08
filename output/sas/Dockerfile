@@ -391,6 +391,8 @@ ARG QUARTO_VERSION=1.4.176
 ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
+ENV SASSTUDIO_TEMP_HOME=/etc/sasstudio 
+
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
     tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
@@ -415,8 +417,7 @@ RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && 
 WORKDIR /home/jovyan
 
 # Adds default workspace shortcut to sasstudio
-COPY SWE.folderShortcuts.key /home/jovyan/.sasstudio/preferences/SWE.folderShortcuts.key
-COPY SWE.folderShortcuts.key /home/jovyan/SWE.folderShortcuts.key
+COPY SWE.folderShortcuts.key $SASSTUDIO_TEMP_HOME/preferences/SWE.folderShortcuts.key
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
