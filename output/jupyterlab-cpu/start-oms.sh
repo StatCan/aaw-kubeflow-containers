@@ -37,8 +37,12 @@ export OM_CFG_INI_ALLOW=true
 export OM_CFG_INI_ANY_KEY=true
 export OMS_URL=${JUPYTER_SERVER_URL}ompp
 
-# OpenM++ default paths, only set if not already set
-if [ -z "${OMS_MODEL_DIR}" ]; then
+# Set OpenM++ default paths, unless user has customized
+CUSTOM_PATH_EXPORT=/home/jovyan/microsim_exports.sh
+
+if [ -e "${CUSTOM_PATH_EXPORT}" ]; then
+ source "${CUSTOM_PATH_EXPORT}"
+else
   if [ -d "/etc/protb" ]; then
     export OMS_MODEL_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/models
     export OMS_LOG_DIR=/home/jovyan/buckets/aaw-protected-b/microsim/logs
