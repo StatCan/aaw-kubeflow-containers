@@ -280,10 +280,7 @@ COPY .Rprofile /tmp/.Rprofile
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
 # Point conda to Artifactory repository
-RUN conda config --remove channels conda-forge --system
-    
-# Install safe-rm
-COPY ./rm /usr/local/bin/rm
+RUN conda config --remove channels conda-forge --syste
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]

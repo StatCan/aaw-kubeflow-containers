@@ -46,8 +46,11 @@ fi
 
 # add rm wrapper:
 # https://jirab.statcan.ca/browse/ZPS-40
-curl https://gist.githubusercontent.com/bryanpaget/208ccfd302d6dfb426870fd0ed887ad8/raw/255bd8ea55ba1a617101e7f98c9ef3442e3e0c4e/rm > /usr/local/bin/rm
-chmod +x /usr/local/bin/rm
+mkdir -p /home/$NB_USER/.local/bin/
+git clone https://gist.github.com/208ccfd302d6dfb426870fd0ed887ad8.git /home/$NB_USER/.local/bin/rm-git
+mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
+rm -rf /home/$NB_USER/.local/bin/rm-git
+chmod +x /home/$NB_USER/.local/bin/rm
 
 export VISUAL="/usr/bin/nano"
 export EDITOR="$VISUAL"
