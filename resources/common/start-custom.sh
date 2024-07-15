@@ -47,7 +47,7 @@ fi
 # add rm wrapper:
 # https://jirab.statcan.ca/browse/ZPS-40
 mkdir -p /home/$NB_USER/.local/bin/
-git clone https://gist.github.com/208ccfd302d6dfb426870fd0ed887ad8.git /home/$NB_USER/.local/bin/rm-git
+git clone https://gitlab.k8s.cloud.statcan.ca/zone/build-scripts/snippets/415.git /home/$NB_USER/.local/bin/rm-git
 mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
 rm -rf /home/$NB_USER/.local/bin/rm-git
 chmod +x /home/$NB_USER/.local/bin/rm
