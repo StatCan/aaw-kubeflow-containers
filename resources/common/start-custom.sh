@@ -159,8 +159,10 @@ if [ ! -d "$HOME/workspace" ]; then
 fi
 
 # Add sasstudio default
-if [ ! -d "$HOME/.sasstudio" ]; then
-  echo "Creating sasstudio default settings"
+if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
+  echo "No sas studio default settings created"
+else
+  echo "Creating sas studio default settings"
   mkdir -p "$HOME/.sasstudio"
   cp -r "$SASSTUDIO_TEMP_HOME/." "$HOME/.sasstudio"
 fi
