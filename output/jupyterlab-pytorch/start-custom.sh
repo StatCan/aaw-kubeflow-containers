@@ -158,6 +158,15 @@ if [ ! -d "$HOME/workspace" ]; then
   mkdir -p "$HOME/workspace/repositories"
 fi
 
+# Add sasstudio default
+if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
+  echo "No sas studio default settings created"
+else
+  echo "Creating sas studio default settings"
+  mkdir -p "$HOME/.sasstudio"
+  cp -r "$SASSTUDIO_TEMP_HOME/." "$HOME/.sasstudio"
+fi
+
 # Retrieve service account details
 serviceaccountname=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Username}} | base64 --decode`
 serviceaccounttoken=`kubectl get secret artifactory-creds -n $NB_NAMESPACE --template={{.data.Token}} | base64 --decode`
