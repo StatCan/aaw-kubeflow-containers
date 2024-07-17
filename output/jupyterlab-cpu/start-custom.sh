@@ -44,6 +44,14 @@ if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     touch /home/$NB_USER/.hushlogin
 fi
 
+# add rm wrapper:
+# https://jirab.statcan.ca/browse/ZPS-40
+mkdir -p /home/$NB_USER/.local/bin/
+git clone https://gitlab.k8s.cloud.statcan.ca/zone/build-scripts/snippets/415.git /home/$NB_USER/.local/bin/rm-git
+mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
+rm -rf /home/$NB_USER/.local/bin/rm-git
+chmod +x /home/$NB_USER/.local/bin/rm
+
 export VISUAL="/usr/bin/nano"
 export EDITOR="$VISUAL"
 
