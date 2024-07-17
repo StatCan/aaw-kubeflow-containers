@@ -379,6 +379,24 @@ ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-jupyter-notebooks
 
 ###############################
+###  docker-bits/6_sas-kernel.Dockerfile
+###############################
+
+# SASPY
+ENV SASPY_VERSION="5.4.0"
+
+RUN pip install sas_kernel
+
+# TODO: make Python version ENV var.
+COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
+
+RUN jupyter nbextension install --py sas_kernel.showSASLog && \
+    jupyter nbextension enable sas_kernel.showSASLog --py && \
+    jupyter nbextension install --py sas_kernel.theme && \
+    jupyter nbextension enable sas_kernel.theme --py && \
+    jupyter nbextension list
+
+###############################
 ###  docker-bits/7_remove_vulnerabilities.Dockerfile
 ###############################
 
