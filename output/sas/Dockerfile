@@ -145,7 +145,7 @@ RUN \
     && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
     && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && sudo mv ./quarto-${QUARTO_VERSION}/bin/quarto /usr/local/bin/quarto
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
