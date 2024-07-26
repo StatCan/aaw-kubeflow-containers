@@ -144,10 +144,14 @@ RUN \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version
 
-ARG GIT_CRED_MANAGER_VERSION=v2.5.1
+ARG GIT_CRED_MANAGER_VERSION=2.5.1
 ARG GIT_CRED_MANAGER_URL=https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GIT_CRED_MANAGER_VERSION}/gcm-linux_amd64.${GIT_CRED_MANAGER_VERSION}.deb
-ARG GIT_CRED_MANAGER_SHA=7980a13961a21b9aeb303e02a455b4864f074b7f968f7d3e3b67e646eaa6ec67
+ARG GIT_CRED_MANAGER_SHA=03c7b174a6f90e1ae860980ba5fda4490f04e5b9aaa802e2d469e72ec5dae6a4
 
+RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
+  && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
+  && dpkg -i ./gcm.deb \
+  && rm ./gcm.deb
 # RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
 #   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
 #   && dpkg -i ./gcm.deb \
