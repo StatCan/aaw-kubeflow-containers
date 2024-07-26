@@ -281,13 +281,9 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
-# RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
-#   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
-#   && dpkg -i ./gcm.deb \
-#   && rm ./gcm.deb
-# RUN curl -L ${GIT_CRED_MANAGER_URL} | sh \
-#   && git-credential-manager configure
-# RUN git config --global credential.credentialStore gpg
+
+# Sets git credential manager to use gpg
+ENV GCM_CREDENTIAL_STORE=gpg
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
