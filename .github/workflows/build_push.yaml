@@ -73,7 +73,7 @@ jobs:
           - sas
           - jupyterlab-cpu
           - jupyterlab-pytorch
-          - jupyterlab-tensorflow
+          # - jupyterlab-tensorflow removed from build. https://jirab.statcan.ca/browse/BTIS-421
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
