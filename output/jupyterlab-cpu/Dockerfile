@@ -153,9 +153,6 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
 
-# Sets git credential manager to use gpg
-ENV GCM_CREDENTIAL_STORE=gpg
-
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
 ###############################

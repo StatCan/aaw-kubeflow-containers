@@ -95,6 +95,3 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
-
-# Sets git credential manager to use gpg
-ENV GCM_CREDENTIAL_STORE=gpg
