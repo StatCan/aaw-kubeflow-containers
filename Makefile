@@ -135,7 +135,6 @@ sas:
 		$(SRC)/6_rstudio-server.Dockerfile \
 		$(SRC)/6_rstudio.Dockerfile\
 		$(SRC)/6_$(@).Dockerfile \
-		$(SRC)/6_sas-kernel.Dockerfile\
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
@@ -154,7 +153,7 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/6_rstudio-server.Dockerfile \
 			$(SRC)/6_rstudio.Dockerfile \
 			$(SRC)/6_$(@).Dockerfile \
-			$(SRC)/6_sas-kernel.Dockerfile\
+			$(SRC)/6_sas-kernel.Dockerfile \
 			$(SRC)/7_remove_vulnerabilities.Dockerfile \
 			$(SRC)/8_platform.Dockerfile \
 			$(SRC)/∞_CMD.Dockerfile \

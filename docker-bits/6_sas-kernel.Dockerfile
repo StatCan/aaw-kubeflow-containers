@@ -1,3 +1,9 @@
+RUN groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff jovyan && \
+    echo "jovyan:jovyan" | chpasswd
+
+COPY --from=SASHome /usr/local/SASHome/SASFoundation/9.4/bin/ /usr/local/SASHome/SASFoundation/9.4/bin/
+
 # SASPY
 ENV SASPY_VERSION="5.4.0"
 

@@ -15,6 +15,7 @@
 
 ARG BASE_VERSION=2024-06-17
 
+FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
 
 USER root
@@ -403,6 +404,12 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
 ###############################
 ###  docker-bits/6_sas-kernel.Dockerfile
 ###############################
+
+RUN groupadd -g 1002 sasstaff && \
+    usermod -a -G sasstaff jovyan && \
+    echo "jovyan:jovyan" | chpasswd
+
+COPY --from=SASHome /usr/local/SASHome/SASFoundation/9.4/bin/ /usr/local/SASHome/SASFoundation/9.4/bin/
 
 # SASPY
 ENV SASPY_VERSION="5.4.0"
