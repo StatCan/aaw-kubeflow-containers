@@ -13,6 +13,11 @@ else
   sleep infinity
 fi
 
+# Step up Git Credential Manager
+git config --global credential.credentialStore gpg
+git config --global credential.helper manager
+echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
+
 # Clone example notebooks (with retries)
 RETRIES_NO=5
 RETRY_DELAY=3
