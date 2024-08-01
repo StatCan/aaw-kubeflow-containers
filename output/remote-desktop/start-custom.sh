@@ -201,6 +201,7 @@ EOF
 fi
 
 echo "--------------------starting jupyter--------------------"
+
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
