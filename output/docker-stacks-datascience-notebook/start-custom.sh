@@ -16,7 +16,7 @@ fi
 # Step up Git Credential Manager
 git config --global credential.credentialStore gpg
 git config --global credential.helper manager
-echo "export GPG_TTY=$(tty)" >> ~/.bashrc
+echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
 
 # Clone example notebooks (with retries)
 RETRIES_NO=5
@@ -201,8 +201,6 @@ EOF
 fi
 
 echo "--------------------starting jupyter--------------------"
-echo "$(tty)"
-echo $(tty)
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
                  --ip=0.0.0.0 \
                  --no-browser \
