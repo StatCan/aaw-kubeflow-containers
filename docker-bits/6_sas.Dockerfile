@@ -20,6 +20,9 @@ RUN groupadd -g 1002 sasstaff && \
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
+RUN rm -rf /usr/local/SASHOME/SASStudioBasic/ && \
+    rm -rf /usr/local/SASHOME/SASStudioMidTier/ && \
+    rm -rf /usr/local/SASHOME/studioconfig/
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
@@ -60,8 +63,8 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 
 # Jupyter SASStudio Proxy
 
-COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
-RUN pip install /opt/jupyter-sasstudio-proxy/
+# COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
+# RUN pip install /opt/jupyter-sasstudio-proxy/
 
 # Must be set in deepest image
 ENV DEFAULT_JUPYTER_URL=/lab 
