@@ -21,10 +21,10 @@ COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
 # To clear CVEs
-RUN rm -rf SASHome/SASHadoopConfigurationLibraries && \
-    rm -rf SASHome/SASDeploymentManager && \
-    rm -rf SASHome/SASVersionedJarRepository && \
-    rm -rf SASHome/SASGraph
+RUN rm -rf /usr/local/SASHome/SASHadoopConfigurationLibraries && \
+    rm -rf /usr/local/SASHome/SASDeploymentManager && \
+    rm -rf /usr/local/SASHome/SASVersionedJarRepository && \
+    rm -rf /usr/local/SASHome/SASGraph
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
