@@ -389,9 +389,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
 # Install Quarto
 ARG QUARTO_VERSION=1.4.176
 ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
-
-ENV SASSTUDIO_TEMP_HOME=/etc/sasstudio 
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
@@ -406,11 +404,6 @@ RUN groupadd -g 1002 sasstaff && \
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
 COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
-# To clear CVEs
-RUN rm -rf /usr/local/SASHome/SASHadoopConfigurationLibraries && \
-    rm -rf /usr/local/SASHome/SASDeploymentManager && \
-    rm -rf /usr/local/SASHome/SASVersionedJarRepository && \
-    rm -rf /usr/local/SASHome/SASGraph
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
@@ -463,7 +456,7 @@ COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
 RUN pip install /opt/jupyter-sasstudio-proxy/
 
 # Adds default workspace shortcut to sasstudio
-COPY SWE.folderShortcuts.key $SASSTUDIO_TEMP_HOME/preferences/SWE.folderShortcuts.key
+COPY SWE.folderShortcuts.key /etc/sasstudio/preferences/SWE.folderShortcuts.key
 
 # Enable X command on SAS Studio
 COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
