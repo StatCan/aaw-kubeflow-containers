@@ -32,8 +32,7 @@ RUN apt-get update --yes \
     && apt-get install --yes python3-pip tini language-pack-fr \
     && rm -rf /var/lib/apt/lists/*
 
-RUN /rocker_scripts/install_shiny_server.sh \
-    && pip3 install jupyter \
+RUN pip3 install jupyter \
     && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory

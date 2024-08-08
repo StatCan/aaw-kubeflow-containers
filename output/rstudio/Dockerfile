@@ -222,8 +222,7 @@ RUN mamba install --quiet --yes \
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-server-proxy==4.2.0' \
-      'jupyter-shiny-proxy==1.1' && \
+      'jupyter-server-proxy==4.2.0' && \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
