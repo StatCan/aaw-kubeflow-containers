@@ -135,6 +135,17 @@ export JWT="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)"
 echo "NB_PREFIX=${NB_PREFIX}" >> /opt/conda/lib/R/etc/Renviron
 echo "NB_NAMESPACE=$NB_NAMESPACE" >> /opt/conda/lib/R/etc/Renviron
 
+# change python location for vscode
+pythonInterpreterPath='{"python.pythonPath": "/opt/conda/bin/python"}'
+
+
+if [ ! -f /home/$NB_USER/.vscode/settings.json ]; then
+  #Not found
+  echo "$pythonInterpreterPath" > /home/$NB_USER/.vscode/
+else
+  echo "$pythonInterpreterPath" > /home/$NB_USER/.vscode/
+fi
+
 # Revert forced virtualenv, was causing issues with users
 #export PIP_REQUIRE_VIRTUALENV=true
 #echo "Checking if Python venv exists"
