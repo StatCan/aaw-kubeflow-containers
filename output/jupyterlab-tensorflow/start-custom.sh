@@ -136,14 +136,14 @@ echo "NB_PREFIX=${NB_PREFIX}" >> /opt/conda/lib/R/etc/Renviron
 echo "NB_NAMESPACE=$NB_NAMESPACE" >> /opt/conda/lib/R/etc/Renviron
 
 # change python location for vscode
-pythonInterpreterPath='{"python.pythonPath": "/opt/conda/bin/python"}'
+pythonInterpreterPath='{"python.defaultInterpreterPath": "/opt/conda/bin/python"}'
 
 
-if [ ! -f /home/$NB_USER/.vscode/settings.json ]; then
+if [ ! -f /home/$NB_USER/.local/share/code-server/User/settings.json ]; then
   #Not found
-  echo "$pythonInterpreterPath" > /home/$NB_USER/.vscode/
+  echo "$pythonInterpreterPath" > /home/$NB_USER/.local/share/code-server/User/settings.json
 else
-  echo "$pythonInterpreterPath" > /home/$NB_USER/.vscode/
+  echo "$pythonInterpreterPath" > /home/$NB_USER/.local/share/code-server/User/settings.json
 fi
 
 # Revert forced virtualenv, was causing issues with users
