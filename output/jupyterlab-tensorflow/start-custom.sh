@@ -142,8 +142,10 @@ pythonInterpreterPath='{"python.defaultInterpreterPath": "/opt/conda/bin/python"
 if [ ! -f /home/jovyan/.local/share/code-server/User/settings.json ]; then
   #Not found
   echo "$pythonInterpreterPath" > /home/jovyan/.local/share/code-server/User/settings.json
+  echo "$pythonInterpreterPath" > /home/jovyan/workspace/.vscode/settings.json
 else
-  echo "$pythonInterpreterPath" > /home/jovyan/.local/share/code-server/User/settings.json
+  echo "$pythonInterpreterPath" >> /home/jovyan/.local/share/code-server/User/settings.json
+  echo "$pythonInterpreterPath" > /home/jovyan/workspace/.vscode/settings.json
 fi
 
 # Revert forced virtualenv, was causing issues with users
