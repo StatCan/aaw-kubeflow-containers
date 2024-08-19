@@ -138,13 +138,14 @@ echo "NB_NAMESPACE=$NB_NAMESPACE" >> /opt/conda/lib/R/etc/Renviron
 # change python location for vscode
 pythonInterpreterPath='{"python.defaultInterpreterPath": "/opt/conda/bin/python"}'
 
+if [ ! -d /home/jovyan/workspace/.vscode ]; then
+  mkdir -p /home/jovyan/workspace/.vscode;
+fi
 
-if [ ! -f /home/jovyan/.local/share/code-server/User/settings.json ]; then
+if [ ! -f /home/jovyan/workspace/.vscode/settings.json ]; then
   #Not found
-  echo "$pythonInterpreterPath" > /home/jovyan/.local/share/code-server/User/settings.json
-  echo "$pythonInterpreterPath" > /home/jovyan/workspace/.vscode/settings.json
+  echo "$pythonInterpreterPath" > /home/jovyan/workspace/.vscode/settings.json  
 else
-  echo "$pythonInterpreterPath" >> /home/jovyan/.local/share/code-server/User/settings.json
   echo "$pythonInterpreterPath" > /home/jovyan/workspace/.vscode/settings.json
 fi
 
