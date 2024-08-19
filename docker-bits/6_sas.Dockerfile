@@ -3,9 +3,7 @@
 # Install Quarto
 ARG QUARTO_VERSION=1.4.176
 ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
-
-ENV SASSTUDIO_TEMP_HOME=/etc/sasstudio 
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
@@ -29,9 +27,6 @@ RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && 
     chmod -R 0775 /usr/local/SASHome/studioconfig
 
 WORKDIR /home/jovyan
-
-# Adds default workspace shortcut to sasstudio
-COPY SWE.folderShortcuts.key $SASSTUDIO_TEMP_HOME/preferences/SWE.folderShortcuts.key
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
@@ -58,11 +53,6 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
     jupyter nbextension enable sas_kernel.theme --py && \
     jupyter nbextension list
 
-# Jupyter SASStudio Proxy
-
-COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
-RUN pip install /opt/jupyter-sasstudio-proxy/
-
 # Must be set in deepest image
 ENV DEFAULT_JUPYTER_URL=/lab 
 
@@ -70,6 +60,3 @@ ENV DEFAULT_JUPYTER_URL=/lab
 
 COPY G-CONFID107003ELNX6494M7/ /usr/local/SASHome/gensys/G-CONFID107003ELNX6494M7/
 COPY sasv9_local.cfg /usr/local/SASHome/SASFoundation/9.4/
-
-# Enable X command on SAS Studio
-COPY spawner_usermods.sh /usr/local/SASHome/studioconfig/spawner/
