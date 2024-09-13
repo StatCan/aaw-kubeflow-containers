@@ -21,6 +21,7 @@ COPY clean-layer.sh /usr/bin/clean-layer.sh
 
 RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
+    && apt-get install --yes msodbcsql18 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
@@ -29,12 +30,6 @@ RUN apt-get update --yes \
 RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
-
-# Update the package list
-RUN sudo apt-get update
-
-# Install unixODBC and psqlODBC
-RUN sudo apt-get install -y msodbcsql18
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
