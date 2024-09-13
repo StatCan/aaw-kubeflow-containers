@@ -34,7 +34,7 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
 RUN sudo apt-get update
 
 # Install unixODBC and psqlODBC
-RUN sudo apt-get install -y unixodbc unixodbc-dev psqlodbc
+RUN sudo apt-get install -y msodbcsql18
 
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile

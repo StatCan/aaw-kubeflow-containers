@@ -25,4 +25,4 @@ RUN apt-get update --yes \
 RUN sudo apt-get update
 
 # Install unixODBC and psqlODBC
-RUN sudo apt-get install -y unixodbc unixodbc-dev psqlodbc
+RUN sudo apt-get install -y msodbcsql18
