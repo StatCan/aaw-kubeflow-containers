@@ -19,3 +19,10 @@ RUN apt-get update --yes \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
+
+
+# Update the package list
+RUN sudo apt-get update
+
+# Install unixODBC and psqlODBC
+RUN sudo apt-get install -y unixodbc unixodbc-dev psqlodbc

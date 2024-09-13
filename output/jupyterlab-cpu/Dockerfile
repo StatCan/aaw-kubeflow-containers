@@ -30,6 +30,13 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+
+# Update the package list
+RUN sudo apt-get update
+
+# Install unixODBC and psqlODBC
+RUN sudo apt-get install -y unixodbc unixodbc-dev psqlodbc
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
