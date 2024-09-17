@@ -140,6 +140,7 @@ RUN \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version \
   && \
+    # Re-testing whether the build action throws a quarto related error...
     # quarto
     curl -sLO  ${QUARTO_URL}\
     && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
