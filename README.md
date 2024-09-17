@@ -129,6 +129,8 @@ This allows developers to opt-in to on-platform testing. For example, when you n
 
 Images pushed to the dev acr are only available to the DEV cluster, attempting to use them in prod will fail.
 
+NOTE: ACR has an image retention policy <Please add here>
+
 ### docker-bits, the Makefile and You
 The files in the `docker-bits` directory each make up a part of the final dockerfile and are combined depending on what type of dockerfile is being generated. You can see which "docker-bits" go into the dockerfile under their respective 'target'.
 
