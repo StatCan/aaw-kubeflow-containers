@@ -138,15 +138,27 @@ RUN \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
-    && argo version \
-  && \
-    # Re-testing whether the build action throws a quarto related error...
-    # quarto
-    curl -sLO  ${QUARTO_URL}\
-    && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
-    && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
-    && chmod +x quarto-${QUARTO_VERSION} \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && argo version 
+
+# Narrowing down which quarto related step throws an error:
+
+# Verify what shell variable resolved to:
+RUN echo ${QUARTO_URL}
+
+# Download quarto archive
+RUN curl -sLO  ${QUARTO_URL}
+
+# Verify checksum
+RUN echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - 
+
+# Extract archive
+RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+
+# Change file modes
+RUN chmod +x quarto-${QUARTO_VERSION} 
+
+# Move binaries to /usr 
+RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
