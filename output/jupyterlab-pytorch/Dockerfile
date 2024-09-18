@@ -163,7 +163,8 @@ RUN \
 
 # Narrowing down which quarto related step throws an error:
 
-# Verify what shell variable resolved to:
+# Verify what shell variables resolve to:
+RUN echo ${QUARTO_VERSION}
 RUN echo ${QUARTO_URL}
 
 # Download quarto archive
