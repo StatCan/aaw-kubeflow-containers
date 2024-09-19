@@ -158,6 +158,9 @@ RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 # Change file modes
 RUN chmod +x quarto-${QUARTO_VERSION} 
 
+RUN sudo ls /usr/local/bin
+RUN sudo file /usr/local/bin/quarto
+
 # Move binaries to /usr 
 RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
