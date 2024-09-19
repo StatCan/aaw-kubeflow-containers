@@ -174,7 +174,7 @@ RUN curl -sLO  ${QUARTO_URL}
 RUN echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - 
 
 # Extract archive
-RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
 
 # Change file modes
 RUN chmod +x quarto-${QUARTO_VERSION} 
