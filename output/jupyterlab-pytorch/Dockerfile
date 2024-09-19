@@ -183,7 +183,7 @@ RUN sudo ls /usr/local/bin
 RUN sudo file /usr/local/bin/quarto
 
 # Move binaries to /usr 
-RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+RUN sudo mv -f ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
