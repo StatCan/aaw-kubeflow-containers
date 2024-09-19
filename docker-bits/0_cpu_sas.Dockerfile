@@ -18,7 +18,16 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && apt-get install --yes msodbcsql18 \
     && rm -rf /var/lib/apt/lists/* \
-    && chmod +x /usr/bin/clean-layer.sh
+    && chmod +x /usr/bin/clean-layer.sh \
+    && apt-get install -y gnupg \
+    && apt-get -y install gnupg2
+
+RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
+RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+RUN apt-get install --yes msodbcsql18
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
