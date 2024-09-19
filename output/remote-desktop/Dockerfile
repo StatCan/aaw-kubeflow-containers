@@ -236,7 +236,8 @@ RUN sudo ls /usr/local/bin
 RUN sudo file /usr/local/bin/quarto
 
 # Move binaries to /usr 
-RUN sudo mv -f ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+RUN sudo rm -f /usr/local/bin/quarto
+RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile
