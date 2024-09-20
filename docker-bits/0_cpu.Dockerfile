@@ -18,9 +18,12 @@ RUN apt-get update --yes \
     && apt-get install --yes language-pack-fr \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/* \
-    && chmod +x /usr/bin/clean-layer.sh \
-    && apt-get install -y gnupg \
+    && chmod +x /usr/bin/clean-layer.sh 
+
+RUN apt-get update --yes \
+    && sudo apt-get -y install gnupg \
     && apt-get -y install gnupg2
+
 
 RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
 RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
