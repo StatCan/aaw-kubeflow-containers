@@ -217,31 +217,37 @@ RUN apt-get update --yes \
 # https://github.com/cdr/code-server/issues/171
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-RUN \
-    cd $RESOURCES_PATH \
-    && mkdir -p $HOME/.local/share \
-    && mkdir -p $VSCODE_DIR/extensions \
-    && VS_PYTHON_VERSION="2020.5.86806" \
-    && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
-    && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
-    && bsdtar -xf ms-python-release.vsix extension \
-    && rm ms-python-release.vsix \
-    && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION \
-    && VS_FRENCH_VERSION="1.68.3" \
-    && VS_LOCALE_REPO_VERSION="1.68.3" \
-    && git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
-    && cd vscode-loc \
-    && npm install -g --unsafe-perm vsce@1.103.1 \
-    && cd i18n/vscode-language-pack-fr \
-    && vsce package \
-    && bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension \
-    && mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
-    && cd ../../../ \
-    # -fr option is required. git clone protects the directory and cannot delete it without -fr
-    && rm -fr vscode-loc \
-    && npm uninstall -g vsce \
-    && fix-permissions $XDG_DATA_HOME \
-    && clean-layer.sh
+
+
+
+
+RUN cd $RESOURCES_PATH 
+RUN mkdir -p $HOME/.local/share 
+RUN mkdir -p $VSCODE_DIR/extensions 
+RUN VS_PYTHON_VERSION="2020.5.86806" 
+RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix 
+RUN echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - 
+RUN bsdtar -xf ms-python-release.vsix extension 
+RUN rm ms-python-release.vsix 
+RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
+RUN VS_FRENCH_VERSION="1.68.3" 
+RUN VS_LOCALE_REPO_VERSION="1.68.3" 
+RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
+RUN cd vscode-loc 
+RUN npm install -g --unsafe-perm vsce@1.103.1 
+RUN cd i18n/vscode-language-pack-fr 
+RUN vsce package 
+RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
+RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
+RUN cd ../../../ 
+# -fr option is required. git clone protects the directory and cannot delete it without -fr
+RUN rm -fr vscode-loc 
+RUN npm uninstall -g vsce 
+RUN fix-permissions $XDG_DATA_HOME 
+RUN clean-layer.sh
+
+
+
 
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
