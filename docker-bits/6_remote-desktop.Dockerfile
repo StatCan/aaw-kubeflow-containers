@@ -230,8 +230,8 @@ RUN echo "${SHA256py} ms-python-release.vsix" | sha256sum -c -
 RUN bsdtar -xf ms-python-release.vsix extension 
 RUN rm ms-python-release.vsix 
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
-RUN VS_FRENCH_VERSION="1.68.3" 
-RUN VS_LOCALE_REPO_VERSION="1.68.3" 
+ENV VS_FRENCH_VERSION="1.68.3" 
+ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 RUN cd vscode-loc 
 RUN npm install -g --unsafe-perm vsce@1.103.1 
