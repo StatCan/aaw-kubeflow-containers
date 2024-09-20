@@ -224,7 +224,7 @@ ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 RUN cd $RESOURCES_PATH 
 RUN mkdir -p $HOME/.local/share 
 RUN mkdir -p $VSCODE_DIR/extensions 
-RUN VS_PYTHON_VERSION="2020.5.86806" 
+ENV VS_PYTHON_VERSION="2020.5.86806" 
 RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix 
 RUN echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - 
 RUN bsdtar -xf ms-python-release.vsix extension 
