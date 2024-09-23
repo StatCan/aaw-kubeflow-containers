@@ -235,6 +235,10 @@ ENV VS_LOCALE_REPO_VERSION="1.68.3"
 RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 RUN cd vscode-loc 
 RUN npm install -g --unsafe-perm vsce@1.103.1 
+
+RUN ls .
+RUN ls ./i18n
+
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
