@@ -476,16 +476,19 @@ RUN bsdtar -xf ms-python-release.vsix extension
 RUN rm ms-python-release.vsix 
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
 
+RUN npm install -g --unsafe-perm vsce@1.103.1 
+
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 
 # The branch specified in the -b option might not be set correctly.
 RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
-RUN npm install -g --unsafe-perm vsce@1.103.1 
+RUN apt install --yes tree
+RUN tree -d
 
 RUN cd ./vscode-loc
-RUN ls -al
+RUN pwd
 
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
