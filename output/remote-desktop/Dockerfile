@@ -488,6 +488,10 @@ RUN pwd
 RUN ls -Rd ./vscode-loc
 RUN which vsce
 
+RUN cd ./vscode-loc
+RUN git status
+RUN ls 
+
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
