@@ -485,6 +485,7 @@ ENV VS_LOCALE_REPO_VERSION="1.68.3"
 RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
 RUN apt install --yes tree
+RUN pwd
 RUN tree -d
 
 RUN cd ./vscode-loc
