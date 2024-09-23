@@ -480,17 +480,12 @@ ENV VS_FRENCH_VERSION="1.68.3"
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 
 # The branch specified in the -b option might not be set correctly.
-RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
+RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
 RUN npm install -g --unsafe-perm vsce@1.103.1 
 
-RUN pwd
-RUN ls -Rd ./vscode-loc
-RUN which vsce
-
 RUN cd ./vscode-loc
-RUN git status
-RUN ls 
+RUN ls -al
 
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
