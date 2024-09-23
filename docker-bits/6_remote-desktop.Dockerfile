@@ -230,14 +230,18 @@ RUN echo "${SHA256py} ms-python-release.vsix" | sha256sum -c -
 RUN bsdtar -xf ms-python-release.vsix extension 
 RUN rm ms-python-release.vsix 
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
+
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
+
+# The branch specified in the -b option might not be set correctly.
 RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
-RUN cd vscode-loc 
+
 RUN npm install -g --unsafe-perm vsce@1.103.1 
 
-RUN ls -Rd .
-RUN ls -Rd . | grep "vscode-language-pack-fr"
+RUN pwd
+RUN ls -Rd ./vscode-loc
+RUN which vsce
 
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
