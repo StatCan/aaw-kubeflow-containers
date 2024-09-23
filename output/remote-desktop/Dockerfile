@@ -481,13 +481,15 @@ RUN git clone -b release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vs
 RUN cd vscode-loc 
 RUN npm install -g --unsafe-perm vsce@1.103.1 
 
-RUN ls -R .
+RUN ls -Rd .
+RUN ls -Rd . | grep "vscode-language-pack-fr"
 
 RUN cd i18n/vscode-language-pack-fr 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
 RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
 RUN cd ../../../ 
+
 # -fr option is required. git clone protects the directory and cannot delete it without -fr
 RUN rm -fr vscode-loc 
 RUN npm uninstall -g vsce 
