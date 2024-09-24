@@ -482,7 +482,8 @@ ENV VS_FRENCH_VERSION="1.68.3"
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 
 # The branch specified in the -b option might not be set correctly.
-RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
+# RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
+RUN git clone https://github.com/microsoft/vscode-loc.git
 
 RUN pwd
 RUN tree -d
@@ -490,6 +491,8 @@ RUN stat vscode-loc
 
 RUN sudo cd vscode-loc
 RUN pwd
+
+
 
 RUN sudo cd i18n/vscode-language-pack-fr 
 RUN vsce package 
