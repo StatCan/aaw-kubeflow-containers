@@ -241,11 +241,12 @@ RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/v
 
 RUN pwd
 RUN tree -d
+RUN stat vscode-loc
 
-RUN cd vscode-loc
+RUN sudo cd vscode-loc
 RUN pwd
 
-RUN cd i18n/vscode-language-pack-fr 
+RUN sudo cd i18n/vscode-language-pack-fr 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
 RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
