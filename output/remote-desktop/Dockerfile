@@ -481,9 +481,8 @@ RUN npm install -g --unsafe-perm vsce@1.103.1
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 
-# The branch specified in the -b option might not be set correctly.
-# RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
-RUN git clone https://github.com/microsoft/vscode-loc.git
+
+RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
 RUN pwd
 RUN tree -d
@@ -491,11 +490,10 @@ RUN tree -d
 RUN stat vscode-loc
 RUN whoami
 
-#RUN cd vscode-loc
-WORKDIR "/tmp/vscode-loc"
+WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
 RUN pwd
+RUN which vsce
 
-WORKDIR i18n/vscode-language-pack-fr 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
 RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
