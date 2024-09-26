@@ -477,8 +477,8 @@ RUN rm ms-python-release.vsix
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
 
 RUN npm install -g --unsafe-perm vsce@1.103.1 
-RUN npm list | grep "stream"
-RUN npm list -g | grep "stream" 
+RUN npm list #| grep "stream"
+#RUN npm list -g | grep "stream" 
 RUN npm install stream
 
 ENV VS_FRENCH_VERSION="1.68.3" 
