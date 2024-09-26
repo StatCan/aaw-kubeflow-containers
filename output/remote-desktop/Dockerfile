@@ -494,6 +494,8 @@ RUN whoami
 WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
 RUN pwd
 RUN which vsce
+RUN ls -al
+RUN cat package.json
 
 RUN vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
