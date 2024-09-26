@@ -30,6 +30,15 @@ RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
 RUN apt-get install --yes msodbcsql18
 
+RUN apt-get update --yes \
+    && sudo apt-get -y install alien \
+    && apt-get -y install libaio1
+
+RUN curl https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+RUN echo /usr/lib/oracle/19.12/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
+
+
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
 RUN pip install --force-reinstall cryptography==39.0.1 && \
