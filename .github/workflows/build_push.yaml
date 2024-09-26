@@ -63,6 +63,8 @@ jobs:
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.31.3"
       HADOLINT_VERSION: "2.12.0"
+      ACTIONS_RUNNER_DEBUG: true
+
     strategy:
       fail-fast: false
       matrix:
