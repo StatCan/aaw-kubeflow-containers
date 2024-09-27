@@ -40,12 +40,10 @@ RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt
 RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
-RUN apt-get update --yes \
-    && sudo apt-get -y install alien \
-    && apt-get -y install libaio1
+RUN apt-get update --yes 
 RUN mkdir /opt/oracle
-RUN curl https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
-RUN curl https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip
 
 RUN unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
 RUN unzip instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle
