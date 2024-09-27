@@ -481,25 +481,30 @@ RUN which npm \
     && which node \
     && node --version
 
-RUN npm install -g @vscode/vsce
-RUN npm install -g stream
-RUN npm list -g 
+RUN curl -o nodejs-archive https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-x64.tar.xz
+RUN bsdtar -xf nodejs-archive nodejs 
+WORKDIR "nodejs"
+
+RUN npm install @vscode/vsce
+RUN ls
+
+
+
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
-
 RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
-RUN pwd \
-    && tree -d \
-    && stat vscode-loc \
-    && whoami \
-
-WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
-RUN pwd \
-    && which vsce \
-    && ls -al \
-    && cat package.json \
+#RUN pwd \
+#    && tree -d \
+#    && stat vscode-loc \
+#    && whoami \
+#
+#WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
+#RUN pwd \
+#    && which vsce \
+#    && ls -al \
+#    && cat package.json \
 
 # RUN vsce package 
 # RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
