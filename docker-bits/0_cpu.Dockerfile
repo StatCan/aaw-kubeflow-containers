@@ -39,5 +39,5 @@ RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350
 RUN ls
 
 RUN unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
-RUN unzip instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle
+RUN unzip --no instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle
 
