@@ -476,40 +476,42 @@ RUN bsdtar -xf ms-python-release.vsix extension
 RUN rm ms-python-release.vsix 
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
 
-RUN npm install -g --unsafe-perm vsce@1.103.1 
-RUN npm list #| grep "stream"
-#RUN npm list -g | grep "stream" 
+RUN which npm \
+    && npm --version \
+    && which node \
+    && node --version
+
+RUN npm install -g @vscode/vsce
 RUN npm install -g stream
+RUN npm list -g 
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 
-
 RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
-RUN pwd
-RUN tree -d
-
-RUN stat vscode-loc
-RUN whoami
+RUN pwd \
+    && tree -d \
+    && stat vscode-loc \
+    && whoami \
 
 WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
-RUN pwd
-RUN which vsce
-RUN ls -al
-RUN cat package.json
+RUN pwd \
+    && which vsce \
+    && ls -al \
+    && cat package.json \
 
-RUN vsce package 
-RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
-RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
-#RUN cd ../../../ 
-WORKDIR "/tmp"
+# RUN vsce package 
+# RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
+# RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
+# #RUN cd ../../../ 
+# WORKDIR "/tmp"
 
 # -fr option is required. git clone protects the directory and cannot delete it without -fr
-RUN rm -fr vscode-loc 
-RUN npm uninstall -g vsce 
-RUN fix-permissions $XDG_DATA_HOME 
-RUN clean-layer.sh
+# RUN rm -fr vscode-loc 
+# RUN npm uninstall -g vsce 
+# RUN fix-permissions $XDG_DATA_HOME 
+# RUN clean-layer.sh
 
 
 
