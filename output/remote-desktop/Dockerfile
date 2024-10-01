@@ -314,7 +314,7 @@ RUN \
     apt-get install -y --no-install-recommends gigolo && \
 
     # See if we can install whatever version of gvfs-bin that is available
-    apt-get install -y -no-install-recommends gvfs-bin* && \
+    apt-get install -y --no-install-recommends gvfs-bin* && \
 
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
