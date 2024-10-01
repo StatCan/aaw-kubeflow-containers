@@ -418,7 +418,7 @@ RUN \
         bzip2 \
         lzop \
         libarchive-tools \
-        zlibc \
+        # zlibc \
         # unpack (almost) everything with one command
         unp \
         libbz2-dev \
@@ -430,6 +430,9 @@ RUN \
     fix-permissions && \
     # Cleanup
     clean-layer.sh
+
+# Again trying a wildcard to find any zlibc related package that might fit.
+RUN apt-get install -y --no-install-recommends zlibc*
 
 RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
