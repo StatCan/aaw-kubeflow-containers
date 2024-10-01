@@ -220,7 +220,6 @@ ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 
 
 
-
 RUN cd $RESOURCES_PATH 
 RUN mkdir -p $HOME/.local/share 
 RUN mkdir -p $VSCODE_DIR/extensions 
@@ -236,15 +235,12 @@ RUN which npm \
     && which node \
     && node --version
 
-RUN curl -o nodejs-archive https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-x64.tar.xz
-RUN bsdtar -xf nodejs-archive nodejs 
-WORKDIR "nodejs"
+# RUN curl -o nodejs-archive https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-x64.tar.xz
+# RUN bsdtar -xf nodejs-archive nodejs 
+# WORKDIR "nodejs"
 
-RUN npm install @vscode/vsce
-RUN ls
-
-
-
+RUN npm install -g @vscode/vsce
+# RUN ls
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
@@ -255,24 +251,23 @@ RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/v
 #    && stat vscode-loc \
 #    && whoami \
 #
-#WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
+WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
 #RUN pwd \
 #    && which vsce \
 #    && ls -al \
 #    && cat package.json \
 
-# RUN vsce package 
-# RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
-# RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
-# #RUN cd ../../../ 
-# WORKDIR "/tmp"
+RUN vsce package 
+RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
+RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
+#RUN cd ../../../ 
+WORKDIR "/tmp"
 
-# -fr option is required. git clone protects the directory and cannot delete it without -fr
-# RUN rm -fr vscode-loc 
-# RUN npm uninstall -g vsce 
-# RUN fix-permissions $XDG_DATA_HOME 
-# RUN clean-layer.sh
-
+-fr option is required. git clone protects the directory and cannot delete it without -fr
+RUN rm -fr vscode-loc 
+RUN npm uninstall -g vsce 
+RUN fix-permissions $XDG_DATA_HOME 
+RUN clean-layer.sh
 
 
 
