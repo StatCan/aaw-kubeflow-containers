@@ -510,7 +510,7 @@ RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FR
 #RUN cd ../../../ 
 WORKDIR "/tmp"
 
--fr option is required. git clone protects the directory and cannot delete it without -fr
+# -fr option is required. git clone protects the directory and cannot delete it without -fr
 RUN rm -fr vscode-loc 
 RUN npm uninstall -g vsce 
 RUN fix-permissions $XDG_DATA_HOME 
