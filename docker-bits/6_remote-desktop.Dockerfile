@@ -62,12 +62,12 @@ RUN \
     # DB Utils
     apt-get install -y --no-install-recommends sqlitebrowser && \
     # Install nautilus and support for sftp mounting
-    apt-get install -y --no-install-recommends nautilus gvfs-backends && \
+    apt-get install -y --no-install-recommends nautilus && \
     # Install gigolo - Access remote systems
     apt-get install -y --no-install-recommends gigolo && \
 
-    # See if we can install whatever version of gvfs-bin that is available
-    apt-get install -y --no-install-recommends gvfs-bin* && \
+    # Use a glob to grab all packages starting with gvfs, including gvfs-backends and any binaries
+    apt-get install -y --no-install-recommends gvfs* && \
 
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
