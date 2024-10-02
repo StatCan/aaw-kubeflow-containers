@@ -246,8 +246,10 @@ RUN which npm \
 # RUN bsdtar -xf nodejs-archive nodejs 
 # WORKDIR "nodejs"
 
-RUN npm install -g @vscode/vsce
-# RUN ls
+# RUN npm install -g @vscode/vsce
+
+# Going to try the original version again to see if it works with the updated base image.
+RUN npm install -g --unsafe-perm vsce@1.103.1
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
