@@ -225,8 +225,6 @@ RUN apt-get update --yes \
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 
-
-
 RUN cd $RESOURCES_PATH 
 RUN mkdir -p $HOME/.local/share 
 RUN mkdir -p $VSCODE_DIR/extensions 
@@ -237,44 +235,39 @@ RUN bsdtar -xf ms-python-release.vsix extension
 RUN rm ms-python-release.vsix 
 RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
 
-RUN which npm \
-    && npm --version \
-    && which node \
-    && node --version
 
-# RUN curl -o nodejs-archive https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-x64.tar.xz
-# RUN bsdtar -xf nodejs-archive nodejs 
-# WORKDIR "nodejs"
 
-# RUN npm install -g @vscode/vsce
-
-# Going to try the original version again to see if it works with the updated base image.
-RUN npm install -g --unsafe-perm vsce@1.103.1
+WORKDIR /tmp/vscode-lang-pack-install
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
 RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
 
-#RUN pwd \
-#    && tree -d \
-#    && stat vscode-loc \
-#    && whoami \
-#
-WORKDIR vscode-loc/i18n/vscode-language-pack-fr 
-#RUN pwd \
-#    && which vsce \
-#    && ls -al \
-#    && cat package.json \
+ENV NODE_VERSION="v20.17.0"
+ENV NODE_VERSION_ARCH="node-v20.17.0-linux-x64"
+RUN curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz
 
-RUN vsce package 
+RUN bsdtar -xfv $NODE_VERSION_ARCH.tar.xz
+WORKDIR $NODE_VERSION_ARCH/bin
+
+RUN ln -sf bin/node /usr/bin/node
+ && ln -sf bin/npm /usr/bin/npm
+ && ln -sf bin/npx /usr/bin/npx
+
+RUN npm install @vscode/vsce
+
+WORKDIR tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
+
+RUN npx tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/node_modules/@vscode/vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
 RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
-#RUN cd ../../../ 
-WORKDIR "/tmp"
 
-# -fr option is required. git clone protects the directory and cannot delete it without -fr
-RUN rm -fr vscode-loc 
+WORKDIR /tmp
+RUN rm -fr vscode-lang-pack-install
 RUN npm uninstall -g vsce 
+
+# Still need to restore old node, npm, npx files in /usr/bin if they existed.
+
 RUN fix-permissions $XDG_DATA_HOME 
 RUN clean-layer.sh
 
