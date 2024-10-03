@@ -494,7 +494,7 @@ ENV NODE_VERSION="v20.17.0"
 ENV NODE_VERSION_ARCH="node-v20.17.0-linux-x64"
 RUN curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz
 
-RUN bsdtar -xfv $NODE_VERSION_ARCH.tar.xz
+RUN bsdtar -xf $NODE_VERSION_ARCH.tar.xz
 WORKDIR $NODE_VERSION_ARCH/bin
 
 RUN ln -sf bin/node /usr/bin/node \
