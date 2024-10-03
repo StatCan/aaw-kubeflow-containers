@@ -250,8 +250,8 @@ RUN curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz
 RUN bsdtar -xfv $NODE_VERSION_ARCH.tar.xz
 WORKDIR $NODE_VERSION_ARCH/bin
 
-RUN ln -sf bin/node /usr/bin/node
- && ln -sf bin/npm /usr/bin/npm
+RUN ln -sf bin/node /usr/bin/node \
+ && ln -sf bin/npm /usr/bin/npm \
  && ln -sf bin/npx /usr/bin/npx
 
 RUN npm install @vscode/vsce
