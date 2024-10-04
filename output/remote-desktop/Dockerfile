@@ -499,11 +499,16 @@ WORKDIR $NODE_VERSION_ARCH
 
 RUN ls .
 
-RUN sudo ln -sf bin/node /usr/bin/node \
- && sudo ln -sf bin/npm /usr/bin/npm \
- && sudo ln -sf bin/npx /usr/bin/npx
+RUN sudo ln -sfv bin/node /usr/bin/node \
+ && sudo ln -sfv bin/npm /usr/bin/npm \
+ && sudo ln -sfv bin/npx /usr/bin/npx
 
-RUN which node && which npm && which npx
+RUN sudo ls /usr/bin
+RUN which node
+RUN which npm
+RUN which npx
+
+#RUN which node && which npm && which npx
 
 RUN npm install @vscode/vsce
 
