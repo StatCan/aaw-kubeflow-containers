@@ -256,12 +256,13 @@ RUN sudo ln -sfv bin/node /usr/bin/node \
  && sudo ln -sfv bin/npm /usr/bin/npm \
  && sudo ln -sfv bin/npx /usr/bin/npx
 
-RUN sudo ls /usr/bin
-RUN which node
-RUN which npm
-RUN which npx
+RUN sudo file /usr/bin/node \
+ && sudo file /usr/bin/npm \
+ && sudo file /usr/bin/npx
 
-#RUN which node && which npm && which npx
+RUN node --version \
+ && npm --version \
+ && npx --version
 
 RUN npm install @vscode/vsce
 
