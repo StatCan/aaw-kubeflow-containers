@@ -252,9 +252,9 @@ WORKDIR $NODE_VERSION_ARCH
 
 RUN ls .
 
-RUN sudo ln -sfv bin/node /usr/bin/node \
- && sudo ln -sfv bin/npm /usr/bin/npm \
- && sudo ln -sfv bin/npx /usr/bin/npx
+RUN sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node 
+RUN sudo ln -sfv ./bin/npm /usr/bin/npm 
+RUN sudo ln -sfv bin/npx /usr/bin/npx
 
 RUN sudo file /usr/bin/node \
  && sudo file /usr/bin/npm \
