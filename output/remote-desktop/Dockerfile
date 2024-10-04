@@ -513,9 +513,9 @@ RUN node --version \
 
 RUN npm install @vscode/vsce
 
-WORKDIR tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
+WORKDIR /tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
 
-RUN npx tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/node_modules/@vscode/vsce package 
+RUN npx /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/node_modules/@vscode/vsce package 
 RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
 RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
 
