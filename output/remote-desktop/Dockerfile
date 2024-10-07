@@ -494,21 +494,33 @@ RUN curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz
 RUN bsdtar -xf $NODE_VERSION_ARCH.tar.xz
 WORKDIR $NODE_VERSION_ARCH
 
-RUN sudo [ /usr/bin/node -f ] && mv /usr/bin/node /usr/bin/node.old 
-RUN sudo [ /usr/bin/npm -f ] && mv /usr/bin/npm /usr/bin/npm.old
-RUN sudo [ /usr/bin/npx -f ] && mv /usr/bin/npx /usr/bin/npx.old
+RUN if [ -f /usr/bin/node ]; then \
+    sudo mv -f /usr/bin/node /usr/bin/node.old \
+    fi
+
+RUN if [ -f /usr/bin/npm ]; then \
+    sudo mv -f /usr/bin/npm /usr/bin/npm.old \
+    fi
+
+RUN if [ -f /usr/bin/npx ]; then \
+    sudo mv -f /usr/bin/npx /usr/bin/npx.old \
+    fi
+
+# RUN sudo [ /usr/bin/node -f ] && mv /usr/bin/node /usr/bin/node.old 
+# RUN sudo [ /usr/bin/npm -f ] && mv /usr/bin/npm /usr/bin/npm.old
+# RUN sudo [ /usr/bin/npx -f ] && mv /usr/bin/npx /usr/bin/npx.old
 
 RUN sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
  && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
  && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx
 
-RUN sudo file /usr/bin/node \
- && sudo file /usr/bin/npm \
- && sudo file /usr/bin/npx
+# RUN sudo file /usr/bin/node \
+# && sudo file /usr/bin/npm \
+# && sudo file /usr/bin/npx
 
-RUN node --version \
- && npm --version \
- && npx --version
+# RUN node --version \
+# && npm --version \
+# && npx --version
 
 RUN npm install @vscode/vsce
 
@@ -528,9 +540,17 @@ RUN rm -fr vscode-lang-pack-install
 # RUN npm uninstall -g vsce 
 
 # Still need to restore old node, npm, npx files in /usr/bin if they existed.
-RUN sudo [ /usr/bin/node.old -f ] && mv -f /usr/bin/node.old /usr/bin/node
-RUN sudo [ /usr/bin/npm.old -f ] && mv -f /usr/bin/npm.old /usr/bin/npm
-RUN sudo [ /usr/bin/npx.old -f ] && mv -f /usr/bin/npx.old /usr/bin/npx
+RUN if [ -f /usr/bin/node.old ]; then \
+    sudo mv -f /usr/bin/node.old /usr/bin/node \
+    fi
+
+RUN if [ -f /usr/bin/npm.old ]; then \
+    sudo mv -f /usr/bin/npm.old /usr/bin/npm \
+    fi
+
+RUN if [ -f /usr/bin/npx.old ]; then \
+    sudo mv -f /usr/bin/npx.old /usr/bin/npx \
+    fi
 
 RUN fix-permissions $XDG_DATA_HOME 
 RUN clean-layer.sh
