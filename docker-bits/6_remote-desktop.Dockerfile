@@ -250,15 +250,15 @@ RUN bsdtar -xf $NODE_VERSION_ARCH.tar.xz
 WORKDIR $NODE_VERSION_ARCH
 
 RUN if [ -f /usr/bin/node ]; then \
-    sudo mv -f /usr/bin/node /usr/bin/node.old \
+    sudo mv -f /usr/bin/node /usr/bin/node.old; \
     fi
 
 RUN if [ -f /usr/bin/npm ]; then \
-    sudo mv -f /usr/bin/npm /usr/bin/npm.old \
+    sudo mv -f /usr/bin/npm /usr/bin/npm.old; \
     fi
 
 RUN if [ -f /usr/bin/npx ]; then \
-    sudo mv -f /usr/bin/npx /usr/bin/npx.old \
+    sudo mv -f /usr/bin/npx /usr/bin/npx.old; \
     fi
 
 # RUN sudo [ /usr/bin/node -f ] && mv /usr/bin/node /usr/bin/node.old 
@@ -296,15 +296,15 @@ RUN rm -fr vscode-lang-pack-install
 
 # Still need to restore old node, npm, npx files in /usr/bin if they existed.
 RUN if [ -f /usr/bin/node.old ]; then \
-    sudo mv -f /usr/bin/node.old /usr/bin/node \
+    sudo mv -f /usr/bin/node.old /usr/bin/node; \
     fi
 
 RUN if [ -f /usr/bin/npm.old ]; then \
-    sudo mv -f /usr/bin/npm.old /usr/bin/npm \
+    sudo mv -f /usr/bin/npm.old /usr/bin/npm; \
     fi
 
 RUN if [ -f /usr/bin/npx.old ]; then \
-    sudo mv -f /usr/bin/npx.old /usr/bin/npx \
+    sudo mv -f /usr/bin/npx.old /usr/bin/npx; \
     fi
 
 RUN fix-permissions $XDG_DATA_HOME 
