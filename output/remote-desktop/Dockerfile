@@ -214,12 +214,6 @@ RUN \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version 
 
-# Narrowing down which quarto related step throws an error:
-
-# Verify what shell variables resolve to:
-RUN echo ${QUARTO_VERSION}
-RUN echo ${QUARTO_URL}
-
 # Download quarto archive
 RUN curl -sLO  ${QUARTO_URL}
 
@@ -231,9 +225,6 @@ RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 # Change file modes
 RUN chmod +x quarto-${QUARTO_VERSION} 
-
-RUN sudo ls /usr/local/bin
-RUN sudo file /usr/local/bin/quarto
 
 # Move binaries to /usr 
 RUN sudo rm -f /usr/local/bin/quarto
@@ -506,21 +497,9 @@ RUN if [ -f /usr/bin/npx ]; then \
     sudo mv -f /usr/bin/npx /usr/bin/npx.old; \
     fi
 
-# RUN sudo [ /usr/bin/node -f ] && mv /usr/bin/node /usr/bin/node.old 
-# RUN sudo [ /usr/bin/npm -f ] && mv /usr/bin/npm /usr/bin/npm.old
-# RUN sudo [ /usr/bin/npx -f ] && mv /usr/bin/npx /usr/bin/npx.old
-
 RUN sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx
-
-# RUN sudo file /usr/bin/node \
-# && sudo file /usr/bin/npm \
-# && sudo file /usr/bin/npx
-
-# RUN node --version \
-# && npm --version \
-# && npx --version
+    && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
+    && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx
 
 RUN npm install @vscode/vsce
 
@@ -536,10 +515,7 @@ RUN ls $VSCODE_DIR/extensions
 WORKDIR /tmp
 RUN rm -fr vscode-lang-pack-install
 
-# We don't need to bother since we deleted the entire node_modules subdirectory.
-# RUN npm uninstall -g vsce 
-
-# Still need to restore old node, npm, npx files in /usr/bin if they existed.
+# Restore old node, npm, npx files in /usr/bin if they existed.
 RUN if [ -f /usr/bin/node.old ]; then \
     sudo mv -f /usr/bin/node.old /usr/bin/node; \
     fi

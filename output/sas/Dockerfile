@@ -140,12 +140,6 @@ RUN \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version 
 
-# Narrowing down which quarto related step throws an error:
-
-# Verify what shell variables resolve to:
-RUN echo ${QUARTO_VERSION}
-RUN echo ${QUARTO_URL}
-
 # Download quarto archive
 RUN curl -sLO  ${QUARTO_URL}
 
@@ -157,9 +151,6 @@ RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 # Change file modes
 RUN chmod +x quarto-${QUARTO_VERSION} 
-
-RUN sudo ls /usr/local/bin
-RUN sudo file /usr/local/bin/quarto
 
 # Move binaries to /usr 
 RUN sudo rm -f /usr/local/bin/quarto
