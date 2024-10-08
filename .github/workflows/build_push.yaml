@@ -71,12 +71,12 @@ jobs:
         notebook:
           # TODO: Pull this from a settings file or Makefile, that way Make can have the same list
           # - docker-stacks-datascience-notebook # Debugging
-          # - rstudio # commented out to speed up build.
-          # - sas     # commented out to speed up build.
+          - rstudio
+          - sas
           - jupyterlab-cpu
-          # - jupyterlab-pytorch # commented out to speed up build.
+          - jupyterlab-pytorch 
           # - jupyterlab-tensorflow removed from build. https://jirab.statcan.ca/browse/BTIS-421
-          - remote-desktop # added remote desktop built.
+          - remote-desktop 
     needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
