@@ -298,13 +298,9 @@ RUN \
     # DB Utils
     apt-get install -y --no-install-recommends sqlitebrowser && \
     # Install nautilus and support for sftp mounting
-    apt-get install -y --no-install-recommends nautilus && \
+    apt-get install -y --no-install-recommends nautilus gvfs-backends && \
     # Install gigolo - Access remote systems
-    apt-get install -y --no-install-recommends gigolo && \
-
-    # Use a glob to grab all packages starting with gvfs, including gvfs-backends and any binaries
-    apt-get install -y --no-install-recommends gvfs* && \
-
+    apt-get install -y --no-install-recommends gigolo gvfs-bin && \
     # xfce systemload panel plugin - needs to be activated
     apt-get install -y --no-install-recommends xfce4-systemload-plugin && \
     # Leightweight ftp client that supports sftp, http, ...
@@ -407,7 +403,7 @@ RUN \
         bzip2 \
         lzop \
         libarchive-tools \
-        # zlibc \
+        zlibc \
         # unpack (almost) everything with one command
         unp \
         libbz2-dev \
@@ -419,9 +415,6 @@ RUN \
     fix-permissions && \
     # Cleanup
     clean-layer.sh
-
-# Again trying a wildcard to find any zlibc related package that might fit.
-RUN apt-get install -y --no-install-recommends zlibc*
 
 RUN pip3 install --quiet 'selenium' && \
     fix-permissions $CONDA_DIR && \
