@@ -95,7 +95,7 @@ ARG ARGO_CLI_VERSION=v3.4.5
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
 
-ENV QUARTO_VERSION=1.5.52
+ARG QUARTO_VERSION=1.5.52
 ARG QUARTO_SHA=d4d47989181d49ea48907f8aee32d7fc3823955885a9bab7b07afad2dccf4451
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
@@ -137,23 +137,15 @@ RUN \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
-    && argo version 
-
-# Download quarto archive
-RUN curl -sLO  ${QUARTO_URL}
-
-# Verify checksum
-RUN echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - 
-
-# Extract archive
-RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
-
-# Change file modes
-RUN chmod +x quarto-${QUARTO_VERSION} 
-
-# Move binaries to /usr 
-RUN sudo rm -f /usr/local/bin/quarto
-RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && argo version \
+  && \
+    # quarto
+    curl -sLO  ${QUARTO_URL} \
+    && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
+    && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+    && chmod +x quarto-${QUARTO_VERSION} \
+    && sudo rm -f /usr/local/bin/quarto \
+    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto \
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
