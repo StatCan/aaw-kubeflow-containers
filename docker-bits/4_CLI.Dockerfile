@@ -80,20 +80,12 @@ RUN \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
-    && argo version 
-
-# Download quarto archive
-RUN curl -sLO  ${QUARTO_URL}
-
-# Verify checksum
-RUN echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - 
-
-# Extract archive
-RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
-
-# Change file modes
-RUN chmod +x quarto-${QUARTO_VERSION} 
-
-# Move binaries to /usr 
-RUN sudo rm -f /usr/local/bin/quarto
-RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && argo version \
+  && \
+    # quarto archive
+    && curl -sLO  ${QUARTO_URL} \
+    && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
+    && RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+    && chmod +x quarto-${QUARTO_VERSION} \
+    && sudo rm -f /usr/local/bin/quarto \
+    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto

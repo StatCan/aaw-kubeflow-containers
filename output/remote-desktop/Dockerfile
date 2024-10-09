@@ -212,23 +212,15 @@ RUN \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
-    && argo version 
-
-# Download quarto archive
-RUN curl -sLO  ${QUARTO_URL}
-
-# Verify checksum
-RUN echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - 
-
-# Extract archive
-RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
-
-# Change file modes
-RUN chmod +x quarto-${QUARTO_VERSION} 
-
-# Move binaries to /usr 
-RUN sudo rm -f /usr/local/bin/quarto
-RUN sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && argo version \
+  && \
+    # quarto archive
+    && curl -sLO  ${QUARTO_URL} \
+    && echo "${QUARTO_SHA}  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
+    && RUN tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+    && chmod +x quarto-${QUARTO_VERSION} \
+    && sudo rm -f /usr/local/bin/quarto \
+    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
 
 ###############################
 ###  docker-bits/6_remote-desktop.Dockerfile
@@ -454,76 +446,64 @@ RUN apt-get update --yes \
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 
-RUN cd $RESOURCES_PATH 
-RUN mkdir -p $HOME/.local/share 
-RUN mkdir -p $VSCODE_DIR/extensions 
+RUN cd $RESOURCES_PATH \
+ && mkdir -p $HOME/.local/share \
+ && mkdir -p $VSCODE_DIR/extensions 
 ENV VS_PYTHON_VERSION="2020.5.86806" 
-RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix 
-RUN echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - 
-RUN bsdtar -xf ms-python-release.vsix extension 
-RUN rm ms-python-release.vsix 
-RUN mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
-
+RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
+ && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
+ && bsdtar -xf ms-python-release.vsix extension \
+ && rm ms-python-release.vsix \
+ && mv extension $VSCODE_DIR/extensions/ms-python.python-$VS_PYTHON_VERSION 
 
 WORKDIR /tmp/vscode-lang-pack-install
 
 ENV VS_FRENCH_VERSION="1.68.3" 
 ENV VS_LOCALE_REPO_VERSION="1.68.3" 
-RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git 
-
 ENV NODE_VERSION="v20.17.0"
 ENV NODE_VERSION_ARCH="node-v20.17.0-linux-x64"
-RUN curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz
 
-RUN bsdtar -xf $NODE_VERSION_ARCH.tar.xz
+RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/vscode-loc.git \
+ && curl -O https://nodejs.org/dist/$NODE_VERSION/$NODE_VERSION_ARCH.tar.xz \
+ && bsdtar -xf $NODE_VERSION_ARCH.tar.xz
+
 WORKDIR $NODE_VERSION_ARCH
 
 RUN if [ -f /usr/bin/node ]; then \
     sudo mv -f /usr/bin/node /usr/bin/node.old; \
-    fi
-
-RUN if [ -f /usr/bin/npm ]; then \
+    fi \
+ && if [ -f /usr/bin/npm ]; then \
     sudo mv -f /usr/bin/npm /usr/bin/npm.old; \
-    fi
-
-RUN if [ -f /usr/bin/npx ]; then \
+    fi \
+ && if [ -f /usr/bin/npx ]; then \
     sudo mv -f /usr/bin/npx /usr/bin/npx.old; \
-    fi
-
-RUN sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
-    && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
-    && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx
-
-RUN npm install @vscode/vsce
+    fi \
+ && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
+ && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
+ && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx \
+ && npm install @vscode/vsce
 
 WORKDIR /tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
 
-RUN npx /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/node_modules/@vscode/vsce package 
-RUN bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension 
-RUN mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION 
-
-# Verify that the language pack was in fact moved into the extensions directory:
-RUN ls $VSCODE_DIR/extensions
+RUN npx /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/node_modules/@vscode/vsce package \
+ && bsdtar -xf vscode-language-pack-fr-$VS_FRENCH_VERSION.vsix extension \
+ && mv extension $VSCODE_DIR/extensions/ms-ceintl.vscode-language-pack-fr-$VS_FRENCH_VERSION \
+ && ls $VSCODE_DIR/extensions
 
 WORKDIR /tmp
-RUN rm -fr vscode-lang-pack-install
 
-# Restore old node, npm, npx files in /usr/bin if they existed.
-RUN if [ -f /usr/bin/node.old ]; then \
+RUN rm -fr vscode-lang-pack-install \
+ && if [ -f /usr/bin/node.old ]; then \
     sudo mv -f /usr/bin/node.old /usr/bin/node; \
-    fi
-
-RUN if [ -f /usr/bin/npm.old ]; then \
+    fi \
+ && if [ -f /usr/bin/npm.old ]; then \
     sudo mv -f /usr/bin/npm.old /usr/bin/npm; \
-    fi
-
-RUN if [ -f /usr/bin/npx.old ]; then \
+    fi \
+ && if [ -f /usr/bin/npx.old ]; then \
     sudo mv -f /usr/bin/npx.old /usr/bin/npx; \
-    fi
-
-RUN fix-permissions $XDG_DATA_HOME 
-RUN clean-layer.sh
-
+    fi \
+ && fix-permissions $XDG_DATA_HOME \
+ && clean-layer.sh
 
 #QGIS
 COPY qgis-2022.gpg.key $RESOURCES_PATH/qgis-2022.gpg.key
