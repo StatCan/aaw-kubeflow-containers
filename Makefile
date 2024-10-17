@@ -72,7 +72,7 @@ generate-Spark:
 all:
 	@echo 'Did you mean to generate all Dockerfiles?  That has been renamed to `make generate-dockerfiles`'
 
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
+generate-dockerfiles: clean jupyterlab rstudio sas docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
 ##############################
@@ -160,24 +160,6 @@ jupyterlab: pytorch tensorflow cpu
 			$(SRC)/∞_CMD.Dockerfile \
 		>   $(OUT)/$@-$${type}/Dockerfile; \
 	done
-
-# Remote Desktop
-remote-desktop:
-	mkdir -p $(OUT)/$@
-	echo "REMOTE DESKTOP"
-	cp -r scripts/remote-desktop $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-	cp -r resources/remote-desktop/. $(OUT)/$@
-
-	$(CAT) \
-		$(SRC)/0_Rocker.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
-		$(SRC)/4_CLI.Dockerfile \
-		$(SRC)/6_remote-desktop.Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
-		$(SRC)/8_platform.Dockerfile \
-		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
 
 # Debugging Dockerfile generator that essentially uses docker-stacks images
 # Used for when you need something to build quickly during debugging
