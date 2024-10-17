@@ -36,15 +36,16 @@ RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 RUN apt-get install --yes msodbcsql18
 
 RUN apt-get update --yes \
-    && apt-get install --yes unzip
+    && apt-get install --yes unzip \
+    && apt-get install alien --yes
 RUN mkdir /opt/oracle
 RUN chmod +x /opt/oracle
-RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
-RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip
-RUN ls
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
 
-RUN unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
-RUN unzip --no instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle
+
+RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+
+RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
 
 
 
