@@ -40,7 +40,10 @@ RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350
 
 RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
 
-RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
+
+RUN sh -c 'echo /usr/lib/oracle/23/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
+RUN ldconfig
+# RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
 
 
 
