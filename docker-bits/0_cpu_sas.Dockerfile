@@ -19,9 +19,36 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+RUN apt-get update --yes \
+    && sudo apt-get -y install gnupg \
+    && apt-get -y install gnupg2
+
+RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
+RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
+
+RUN apt-get install --yes msodbcsql18
+
+RUN apt-get update --yes \
+    && apt-get install --yes unzip \
+    && apt-get install alien --yes
+RUN mkdir /opt/oracle
+RUN chmod +x /opt/oracle
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+
+
+RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+
+
+RUN sh -c 'echo /usr/lib/oracle/23/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
+RUN ldconfig
+# RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
+
+
+
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
 RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
-   
