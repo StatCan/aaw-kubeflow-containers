@@ -91,6 +91,7 @@ RUN set -x && \
         --yes \
         "${PYTHON_SPECIFIER}" \
         'mamba' \
+        'conda' \
         'jupyter_core' && \
     rm micromamba && \
     # Pin major.minor version of python
