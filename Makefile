@@ -27,7 +27,6 @@ TMP := .tmp
 TESTS_DIR := ./tests
 MAKE_HELPERS := ./make_helpers/
 PYTHON_VENV := .venv
-GITHUB_OUTPUT := ./github_output.log
 
 # Executables
 PYTHON := $(PYTHON_VENV)/bin/python
