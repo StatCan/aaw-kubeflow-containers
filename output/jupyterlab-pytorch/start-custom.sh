@@ -14,20 +14,28 @@ else
 fi
 
 # Step up Git Credential Manager
-git config --global credential.credentialStore gpg
-git config --global credential.helper manager
-echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
+if [[ ! -z "${GPG_TTY}" ]]; then
+  git config --global credential.credentialStore gpg
+  git config --global credential.helper manager
+  echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
+fi
 
-# Clone example notebooks (with retries)
-RETRIES_NO=5
-RETRY_DELAY=3
-for i in $(seq 1 $RETRIES_NO); do
-  test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS" && break
-  echo "Failed to cloned the example notebooks. Attempt $i of $RETRIES_NO"
-  #if it ran all the retries, exit
-  [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone example notebooks after $RETRIES_NO retries"
-  sleep ${RETRY_DELAY}
-done
+# Clone example notebooks (with retries because it sometimes initially fails)
+if [[ ! -d  ~/aaw-contrib-jupyter-notebooks]]; then
+  echo "Cloning examples notebooks"
+
+  RETRIES_NO=5
+  RETRY_DELAY=3
+  for i in $(seq 1 $RETRIES_NO); do
+    test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS" && break
+    echo "Failed to cloned the example notebooks. Attempt $i of $RETRIES_NO"
+    #if it ran all the retries, exit
+    [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone example notebooks after $RETRIES_NO retries"
+    sleep ${RETRY_DELAY}
+  done
+else
+  echo "Example notebooks already cloned."
+fi
 
 if [ ! -e /home/$NB_USER/.Rprofile ]; then
     cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm -rf /tmp/.Rprofile
@@ -51,11 +59,15 @@ fi
 
 # add rm wrapper:
 # https://jirab.statcan.ca/browse/ZPS-40
-mkdir -p /home/$NB_USER/.local/bin/
-git clone https://gitlab.k8s.cloud.statcan.ca/zone/build-scripts/snippets/415.git /home/$NB_USER/.local/bin/rm-git
-mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
-rm -rf /home/$NB_USER/.local/bin/rm-git
-chmod +x /home/$NB_USER/.local/bin/rm
+if [ ! -f /home/$NB_USER/.local/bin/rm ]; then
+  echo "adding rm wrapper"
+  
+  mkdir -p /home/$NB_USER/.local/bin/
+  git clone https://gitlab.k8s.cloud.statcan.ca/zone/build-scripts/snippets/415.git /home/$NB_USER/.local/bin/rm-git
+  mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
+  rm -rf /home/$NB_USER/.local/bin/rm-git
+  chmod +x /home/$NB_USER/.local/bin/rm
+fi
 
 export VISUAL="/usr/bin/nano"
 export EDITOR="$VISUAL"
