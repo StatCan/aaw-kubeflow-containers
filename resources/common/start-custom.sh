@@ -21,7 +21,7 @@ if [[ ! -z "${GPG_TTY}" ]]; then
 fi
 
 # Clone example notebooks (with retries because it sometimes initially fails)
-if [[ ! -d  ~/aaw-contrib-jupyter-notebooks]]; then
+if [[ ! -d  ~/aaw-contrib-jupyter-notebooks ]]; then
   echo "Cloning examples notebooks"
 
   RETRIES_NO=5
