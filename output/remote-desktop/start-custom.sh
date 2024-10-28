@@ -14,7 +14,7 @@ else
 fi
 
 # Step up Git Credential Manager
-if [[ ! -z "${GPG_TTY}" ]]; then
+if [[ -z "${GPG_TTY}" ]]; then
   git config --global credential.credentialStore gpg
   git config --global credential.helper manager
   echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
@@ -67,6 +67,8 @@ if [ ! -f /home/$NB_USER/.local/bin/rm ]; then
   mv /home/$NB_USER/.local/bin/rm-git/rm /home/$NB_USER/.local/bin/rm
   rm -rf /home/$NB_USER/.local/bin/rm-git
   chmod +x /home/$NB_USER/.local/bin/rm
+else
+  echo "Not adding rm wrapper"
 fi
 
 export VISUAL="/usr/bin/nano"
