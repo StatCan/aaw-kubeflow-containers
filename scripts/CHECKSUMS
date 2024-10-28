@@ -1,6 +1,6 @@
 #Application  Version                          URL                                                                                         SHA256
 azcli         null                             https://aka.ms/InstallAzureCLIDeb                                                           c03302f47be07d02afe3edec63080c7806980c51709c016af2f27901d51417b4
-kubectl       v1.15.10                         https://storage.googleapis.com/kubernetes-release/release/v1.15.10/bin/linux/amd64/kubectl  38a0f73464f1c39ca383fd43196f84bdbe6e553fe3e677b6e7012ef7ad5eaf2b
+kubectl       v1.31.1                          https://storage.googleapis.com/kubernetes-release/release/v1.15.10/bin/linux/amd64/kubectl  57b514a7facce4ee62c93b8dc21fda8cf62ef3fed22e44ffc9d167eab843b2ae
 mc            mc.RELEASE.2020-06-20T00-18-43Z  https://dl.min.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2020-06-20T00-18-43Z     7198b0634f84c27e656bba527bf80ed048087e99afc7744e0fdd9e0790a726f5
 rstudio       1.1.463                          https://download2.rstudio.org/rstudio-server-1.1.463-amd64.deb                              62aafd46f79705ca5db9c629ce3b60bf708d81c06a6b86cc4b417fbaf30691c1
 oh-my-zsh     v1.1.1                           https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh           f7264b7570ea946d55ed72ed19f31423eda62a9b10ff7be0d5b13b12fe214998

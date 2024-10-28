@@ -22,9 +22,9 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.31.1
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
+ARG KUBECTL_SHA=57b514a7facce4ee62c93b8dc21fda8cf62ef3fed22e44ffc9d167eab843b2ae
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 
