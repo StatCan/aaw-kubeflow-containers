@@ -37,14 +37,14 @@ RUN apt-get install --yes msodbcsql18
 
 RUN apt-get update --yes \
     && apt-get install --yes unzip \
-    && apt-get install alien --yes
+    && apt-get install alien --yes \
+    && apt-get install libaio1
 RUN mkdir /opt/oracle
 RUN chmod +x /opt/oracle
 RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
 
 
 RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
-
 
 RUN sh -c 'echo /usr/lib/oracle/23/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
 RUN ldconfig
