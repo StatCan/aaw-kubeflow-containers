@@ -532,8 +532,7 @@ RUN conda config --remove channels conda-forge --system
 #
 
 RUN apt-get update --yes \
-    && sudo apt-get -y install gnupg \
-    && apt-get -y install gnupg2
+    && sudo apt-get -y install gnupg
 
 RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
 RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
@@ -573,13 +572,6 @@ RUN sh -c 'echo Driver = /opt/oracle/instantclient_23_5/libsqora.so.23.5 > /etc/
 
 RUN ln -s /opt/oracle/instantclient_23_5/libclntsh.so.23.1 /usr/lib/libclntsh.so
 RUN ldconfig
-# Ended up downloading the zip packages and installing in 
-# /opt/oracle/instantclient_23_4, 
-# and then then I added env ORACLE_HOME=/opt/oracle/instantclient_23_4, 
-# add same path to PATH, and made the files oracle.conf + oracle-instantclient.conf in /etc/ld.so.conf.d/, 
-# with /opt/oracle/instantclient_23_4/lib/ in the first one and /opt/oracle/instantclient_23_4/ in the second (followed by sudo ldconfig)
-
-
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
