@@ -14,7 +14,12 @@ else
 fi
 
 # Step up Git Credential Manager
-if [[ -z "${GPG_TTY}" ]]; then
+# only if it wasn't already setup
+if grep -q "export GPG_TTY" ~/.bashrc; then
+  echo "Git Credential Manager already setup"
+else
+  echo "Setting up Git Credential Manager"
+
   git config --global credential.credentialStore gpg
   git config --global credential.helper manager
   echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
