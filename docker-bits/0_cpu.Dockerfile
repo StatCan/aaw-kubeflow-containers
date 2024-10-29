@@ -19,25 +19,3 @@ RUN apt-get update --yes \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh 
-
-RUN apt-get update --yes \
-    && sudo apt-get -y install gnupg \
-    && apt-get -y install gnupg2
-
-
-RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
-RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
-RUN apt-get update
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-
-RUN apt-get update --yes \
-    && apt-get install --yes unzip
-RUN mkdir /opt/oracle
-RUN chmod +x /opt/oracle
-RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
-RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip
-RUN ls
-
-RUN unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
-RUN unzip --no instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle
-
