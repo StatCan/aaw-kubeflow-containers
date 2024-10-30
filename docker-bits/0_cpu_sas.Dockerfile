@@ -37,28 +37,30 @@ RUN apt-get update --yes \
 
 RUN mkdir /opt/oracle
 RUN chmod +x /opt/oracle
-RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
 
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
 RUN unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
 
-
-# RUN sh -c 'echo /usr/lib/oracle/23/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
-# RUN ldconfig
+RUN curl -s -O https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+RUN alien -i oracle-instantclient-basic-23.5.0.24.07-1.el9.x86_64.rpm
+RUN sh -c 'echo /usr/lib/oracle/23/client64/lib/ > /etc/ld.so.conf.d/oracle.conf'
+RUN ldconfig
 # RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
 
-ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_23_5:$LD_LIBRARY_PATH 
-ENV PATH=/opt/oracle/instantclient_23_5:$PATH
-ENV ORACLE_HOME=/opt/oracle/instantclient_23_5 
+ENV ORACLE_HOME="/opt/oracle/instantclient_23_5:${ORACLE_HOME}"
+RUN export PATH="$PATH:/opt/oracle/instantclient_23_5"
+RUN export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/oracle/instantclient_23_5"
 
 RUN sh -c 'echo /opt/oracle/instantclient_23_5/lib/ > /etc/ld.so.conf.d/oracle.conf'
 RUN sh -c 'echo /opt/oracle/instantclient_23_5/ > /etc/ld.so.conf.d/oracle-instantclient.conf'
 
+
+RUN sh -c 'echo [OracleODBC-23ai] > /etc/odbcinst.ini'
+RUN sh -c 'echo Description = Oracle ODBC Driver > /etc/odbcinst.ini'
+RUN sh -c 'echo Driver = /opt/oracle/instantclient_23_5/libsqora.so.23.5 > /etc/odbcinst.ini'
+
 RUN ln -s /opt/oracle/instantclient_23_5/libclntsh.so.23.1 /usr/lib/libclntsh.so
-# Ended up downloading the zip packages and installing in 
-# /opt/oracle/instantclient_23_4, 
-# and then then I added env ORACLE_HOME=/opt/oracle/instantclient_23_4, 
-# add same path to PATH, and made the files oracle.conf + oracle-instantclient.conf in /etc/ld.so.conf.d/, 
-# with /opt/oracle/instantclient_23_4/lib/ in the first one and /opt/oracle/instantclient_23_4/ in the second (followed by sudo ldconfig)
+RUN ldconfig
 
 #updates package to fix CVE-2023-0286 https://github.com/StatCan/aaw-private/issues/57
 #TODO: Evaluate if this is still necessary when updating the base image
