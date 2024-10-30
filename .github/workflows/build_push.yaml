@@ -146,8 +146,8 @@ jobs:
 
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+      
     # Image testing
-
     - name: Set Up Python for Test Suite
       uses: actions/setup-python@v4
       with:
