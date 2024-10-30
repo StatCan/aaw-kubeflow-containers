@@ -29,7 +29,8 @@ RUN apt-get update --yes \
 #
 
 RUN apt-get update --yes \
-    && sudo apt-get -y install gnupg
+    && sudo apt-get -y install gnupg \
+    && apt-get -y install gnupg2
 
 RUN curl -sS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |  tee /etc/apt/trusted.gpg.d/mssql.gpg
 RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
