@@ -73,7 +73,7 @@ if [ ! -f /home/$NB_USER/.local/bin/rm ]; then
   rm -rf /home/$NB_USER/.local/bin/rm-git
   chmod +x /home/$NB_USER/.local/bin/rm
 else
-  echo "Not adding rm wrapper"
+  echo "rm wrapper already exists"
 fi
 
 export VISUAL="/usr/bin/nano"
