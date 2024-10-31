@@ -19,12 +19,6 @@ def test_server_alive(container, http_client, url="http://localhost:8888"):
     resp.raise_for_status()
     LOGGER.debug(f"got text from url: {resp.text}")
 
-    # Not sure why but some flavors of JupyterLab images don't hit all of these.
-    # Trying to catch several different acceptable looks.
-    # Also accepting RStudio
-    # TODO: This general test accepts many different images.
-    #       Could refactor to have specific tests that are more pointed
-
     # Define various possible expected texts (this catches different expected outcomes like a JupyterLab interface,
     # RStudio, etc.).  If any of these pass, the test passes
     assertion_expected_texts = [

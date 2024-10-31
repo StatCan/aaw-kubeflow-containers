@@ -38,7 +38,6 @@ class CondaPackageHelper:
     """
 
     def __init__(self, container):
-        # if isinstance(container, TrackedContainer):
         self.running_container = CondaPackageHelper.start_container(container)
         self.specs = None
         self.installed = None
@@ -49,20 +48,9 @@ class CondaPackageHelper:
     def start_container(container):
         """Start the TrackedContainer and return an instance of a running container"""
         LOGGER.info(f"Starting container {container.image_name} ...")
-        # Original docker-stacks version explicitly set
-        # command=["start.sh", "bash", "-c", "sleep infinity"] for start below.  Why?
-        # Shouldn't these start's create servers which will stay alive?  Modified this
-        # to use the default start command (that way if we've changed the CMD, we can 
-        # still use this same code)
-        # If we wanted to add this back in, we should pull the actual CMD from the 
-        # image like:
-        # return container.run(
-        #     tty=True, command=container.get_cmd()
-        # )
 
         return container.run(
             tty=True, 
-            # command=["start.sh", "bash", "-c", "sleep infinity"]  # See note above
         )
 
     @staticmethod
@@ -99,7 +87,6 @@ class CondaPackageHelper:
     @staticmethod
     def _packages_from_json(env_export):
         """Extract packages and versions from the lines returned by the list of specifications"""
-        # dependencies = filter(lambda x:  isinstance(x, str), json.loads(env_export).get("dependencies"))
         dependencies = json.loads(env_export).get("dependencies")
         # Filtering packages installed through pip in this case it's a dict {'pip': ['toree==0.3.0']}
         # Since we only manage packages installed through conda here
@@ -126,7 +113,6 @@ class CondaPackageHelper:
             LOGGER.info(
                 "Grabing the list of available packages (can take a while) ..."
             )
-            # Keeping command line output since `conda search --outdated --json` is way too long ...
             self.available = CondaPackageHelper._extract_available(
                 self._execute_command(["conda", "search", "--outdated"])
             )
