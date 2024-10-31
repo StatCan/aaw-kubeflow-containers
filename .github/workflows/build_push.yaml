@@ -192,9 +192,13 @@ jobs:
             --exit-code 1 --timeout=20m --scanners vuln --severity CRITICAL
           EXIT_CODE=$?
 
+          echo "Scan completed with exit code $EXIT_CODE" 
+          echo "$OUTPUT" 
+
           # Check for TOOMANYREQUESTS error in the output
           if [[ $EXIT_CODE -eq 0 ]]; then
             echo "Trivy scan completed successfully."
+            echo "$OUTPUT"
             break
           elif echo "$OUTPUT" | grep -q "TOOMANYREQUESTS"; then
             if [[ $i -lt ${{ env.TRIVY_MAX_RETRIES }} ]]; then
