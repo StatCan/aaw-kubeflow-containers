@@ -28,8 +28,6 @@ RUN curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt
 RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
 
-RUN apt-get install --yes msodbcsql18
-
 RUN apt-get update --yes \
     && apt-get install --yes unzip \
     && apt-get install alien --yes \
@@ -48,16 +46,16 @@ RUN ldconfig
 # RUN ln -s i/opt/oracle$ cd instantclient_23_5 instantclient
 
 ENV ORACLE_HOME="/opt/oracle/instantclient_23_5:${ORACLE_HOME}"
-RUN export PATH="$PATH:/opt/oracle/instantclient_23_5"
-RUN export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/opt/oracle/instantclient_23_5"
+ENV PATH="/opt/oracle/instantclient_23_5:${PATH}"
+ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_23_5:${LD_LIBRARY_PATH}"
 
-RUN sh -c 'echo /opt/oracle/instantclient_23_5/lib/ > /etc/ld.so.conf.d/oracle.conf'
-RUN sh -c 'echo /opt/oracle/instantclient_23_5/ > /etc/ld.so.conf.d/oracle-instantclient.conf'
+RUN sh -c 'echo /opt/oracle/instantclient_23_5/lib/ >> /etc/ld.so.conf.d/oracle.conf'
+RUN sh -c 'echo /opt/oracle/instantclient_23_5/ >> /etc/ld.so.conf.d/oracle-instantclient.conf'
 
 
-RUN sh -c 'echo [OracleODBC-23ai] > /etc/odbcinst.ini'
-RUN sh -c 'echo Description = Oracle ODBC Driver > /etc/odbcinst.ini'
-RUN sh -c 'echo Driver = /opt/oracle/instantclient_23_5/libsqora.so.23.5 > /etc/odbcinst.ini'
+RUN sh -c 'echo [OracleODBC-23ai] >> /etc/odbcinst.ini'
+RUN sh -c 'echo Description = Oracle ODBC Driver >> /etc/odbcinst.ini'
+RUN sh -c 'echo Driver = /opt/oracle/instantclient_23_5/libsqora.so.23.5 >> /etc/odbcinst.ini'
 
 RUN ln -s /opt/oracle/instantclient_23_5/libclntsh.so.23.1 /usr/lib/libclntsh.so
 RUN ldconfig
