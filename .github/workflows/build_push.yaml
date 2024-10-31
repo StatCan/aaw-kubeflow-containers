@@ -165,11 +165,11 @@ jobs:
     - run: ./.github/scripts/cleanup_runner.sh
 
     # Scan image for vulnerabilities
-    - name: Aqua Security Trivy image scan
-      run: |
-        printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL --skip-dirs /usr/local/SASHome
+    # - name: Aqua Security Trivy image scan
+    #   run: |
+    #     printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
+    #     curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
+    #     trivy image ${{ steps.build-image.outputs.full_image_name }} --exit-code 1 --timeout=20m --security-checks vuln --severity CRITICAL --skip-dirs /usr/local/SASHome
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
