@@ -62,7 +62,7 @@ jobs:
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.56.2"
-      TRIVY_DATABASE: "public.ecr.aws/aquasecurity/trivy-db:2"
+      TRIVY_DATABASE: "ghcr.io/aquasecurity/trivy-db:2"
       HADOLINT_VERSION: "2.12.0"
       ACTIONS_RUNNER_DEBUG: true
 
