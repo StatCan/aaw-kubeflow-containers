@@ -237,7 +237,7 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
 
 # installs vscode server, python & conda packages and jupyter lab extensions.
 
-# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support
+# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install and don't support
 # this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
     # jupyterlab-kale
     # jupyterlab-variableinspector
