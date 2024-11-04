@@ -311,7 +311,7 @@ RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc && \
 # installing unixODBC
 # libaio1 needed for Oracle Instant Client
 RUN apt-get update && \
-    apt-get install -y unixodbc-dev && \
+    apt-get install -y unixodbc unixodbc-dev && \
     apt-get install -y libaio1 && \
     pip install --no-cache-dir --quiet pyodbc && \
     rm -rf /var/lib/apt/lists/* && \
@@ -322,10 +322,15 @@ RUN apt-get update && \
 RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip && \
     unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle/
 
-RUN sh -c "echo /opt/oracle/instantclient_23_5 > \
-    /etc/ld.so.conf.d/oracle-instantclient.conf"
+RUN echo /opt/oracle/instantclient_23_5 > /etc/ld.so.conf.d/oracle-instantclient.conf
 RUN ldconfig
-RUN sh -c "export PATH=/opt/oracle/instantclient_23_5:$PATH"
+ENV PATH /opt/oracle/instantclient_23_5:${PATH}
+
+# installing Oracle ODBC driver
+RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip && \
+    unzip -oj instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle/instantclient_23_5
+
+RUN /opt/oracle/instantclient_23_5/odbc_update_ini.sh /
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
