@@ -32,9 +32,9 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     # Manage extensions
     code-server --install-extension ms-python.python@2024.12.1 && \
     code-server --install-extension REditorSupport.r@2.8.4 && \
-    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.95.0 && \
-    code-server --install-extension quarto.quarto@1.116.0 && \
-    code-server --install-extension dvirtz.parquet-viewer@2.11.1 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.91.0 && \
+    code-server --install-extension quarto.quarto@1.113.0 && \
+    code-server --install-extension dvirtz.parquet-viewer@2.9.0 && \
     code-server --install-extension redhat.vscode-yaml@1.15.0 && \
     code-server --install-extension ms-vscode.azurecli@0.6.0 && \
     code-server --install-extension mblode.pretty-formatter@0.2.1 && \
