@@ -227,21 +227,21 @@ RUN mkdir -p /etc/rstudio && \
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
 # Install some default R packages
-# RUN mamba install --quiet --yes \
-#       'r-rodbc' \
-#       'r-tidyverse' \
-#       'r-arrow' \
-#       'r-aws.s3' \
-#       'r-catools' \
-#       'r-hdf5r' \
-#       'r-odbc' \
-#       'r-sf' \
-#       'r-e1071' \
-#       'r-markdown' \
-#     && \
-#     clean-layer.sh && \
-#     fix-permissions $CONDA_DIR && \
-#     fix-permissions /home/$NB_USER
+RUN mamba install --quiet --yes \
+      'r-rodbc' \
+      'r-tidyverse' \
+      'r-arrow' \
+      'r-aws.s3' \
+      'r-catools' \
+      'r-hdf5r' \
+      'r-odbc' \
+      'r-sf' \
+      'r-e1071' \
+      'r-markdown' \
+    && \
+#    clean-layer.sh && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
       'jupyter-rsession-proxy==2.2.0' \
