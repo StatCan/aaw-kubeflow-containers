@@ -203,7 +203,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $CS_TEMP_HOME/Machine \
     && \ 
     # Manage extensions
-    code-server --install-extension ms-python.python@2024.12.1 && \
+    code-server --install-extension ms-python.python@2024.8.1 && \
     code-server --install-extension REditorSupport.r@2.8.4 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.91.0 && \
     code-server --install-extension quarto.quarto@1.113.0 && \
