@@ -297,6 +297,8 @@ ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 # Point conda to Artifactory repository
 RUN conda config --remove channels conda-forge --system
 
+# Jose test
+RUN code-server --install-extension ms-python.debugpy@2024.8.0
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-custom.sh"]
