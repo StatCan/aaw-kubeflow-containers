@@ -298,7 +298,8 @@ ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 RUN conda config --remove channels conda-forge --system
 
 # Jose test
-RUN code-server --install-extension ms-python.debugpy@2024.8.0
+RUN code-server --install-extension ms-python.debugpy@2024.8.0 && \
+    fix-permissions $CS_TEMP_HOME
 
 ENV EXTENSIONS_GALLERY='{"serviceUrl":"https://code-marketplace.das-prod-cc-00.cloudnative.cloud.statcan.ca/api","itemUrl":"https://code-marketplace.das-prod-cc-00.cloudnative.cloud.statcan.ca/item","resourceUrlTemplate":"https://code-marketplace.das-prod-cc-00.cloudnative.cloud.statcan.ca/files/{publisher}/{name}/{version}/{path}"}'
 USER $NB_USER
