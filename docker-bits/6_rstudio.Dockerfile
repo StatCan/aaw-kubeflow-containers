@@ -9,6 +9,7 @@ RUN mkdir -p /etc/rstudio && \
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
+
 # Install some default R packages
 RUN mamba install --quiet --yes \
       'r-rodbc' \
