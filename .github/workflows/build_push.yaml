@@ -62,8 +62,8 @@ jobs:
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
       TRIVY_VERSION: "v0.56.2"
-      TRIVY_DATABASE: "public.ecr.aws/aquasecurity/trivy-db"
-      TRIVY_JAVA_DATABASE: "public.ecr.aws/aquasecurity/trivy-java-db"
+      TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
+      TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
       HADOLINT_VERSION: "2.12.0"
       ACTIONS_RUNNER_DEBUG: true
 
@@ -180,8 +180,8 @@ jobs:
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         trivy image \
-          --db-repository ${{ env.TRIVY_DATABASE }} \
-          --java-db-repository ${{ env.TRIVY_JAVA_DATABASE }} \
+          --db-repository ${{ env.TRIVY_DATABASES }} \
+          --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
           ${{ steps.build-image.outputs.full_image_name }} \
           --exit-code 1 --timeout=20m --scanners vuln --severity CRITICAL
 
