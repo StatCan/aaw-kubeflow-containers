@@ -189,29 +189,21 @@ jobs:
             --db-repository ${{ env.TRIVY_DATABASES }} \
             --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
             ${{ steps.build-image.outputs.full_image_name }} \
-            --exit-code 1 --timeout=20m --scanners vuln --severity CRITICAL
+            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
           EXIT_CODE=$?
 
-          echo "Scan completed with exit code $EXIT_CODE" 
-          echo "$OUTPUT" 
-
-          # Check for TOOMANYREQUESTS error in the output
           if [[ $EXIT_CODE -eq 0 ]]; then
             echo "Trivy scan completed successfully."
-            echo "$OUTPUT"
-            break
-          elif echo "$OUTPUT" | grep -q "TOOMANYREQUESTS"; then
-            if [[ $i -lt ${{ env.TRIVY_MAX_RETRIES }} ]]; then
-              echo "Encountered TOOMANYREQUESTS error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
-              sleep ${{ env.TRIVY_RETRY_DELAY }}
-            else
-              echo "TOOMANYREQUESTS error encountered after ${{ env.TRIVY_MAX_RETRIES }} attempts. Exiting."
-              exit 1
-            fi
+            exit 0
+          elif [[ $EXIT_CODE -eq 10 ]]; then
+            echo "Trivy scan completed successfully. Some vulnerabilities were found."
+            exit 10
+          elif [[ $i -lt ${{ env.TRIVY_MAX_RETRIES }} ]]; then
+            echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
+            sleep ${{ env.TRIVY_RETRY_DELAY }}
           else
-            echo "Trivy scan failed with a different error:"
-            echo "$OUTPUT"
-            exit $EXIT_CODE
+            echo "Unexpected error persists after ${{ env.TRIVY_MAX_RETRIES }} attempts. Exiting."
+            exit 1
           fi
         done
 
