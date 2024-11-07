@@ -19,6 +19,12 @@ RUN mamba install --quiet --yes \
       'r-arrow' \
       'r-aws.s3' \
       'r-catools' \
+    && \
+    clean-layer.sh && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+#Split from command directly above because of performance issues.
+RUN mamba install --quiet --yes \
       'r-hdf5r' \
       'r-odbc' \
       'r-sf' \
