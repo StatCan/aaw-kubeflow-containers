@@ -274,8 +274,8 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.95.1
-ARG VSCODE_SHA=dafa88431ff0b52ce9d92bceb30460edab95e7fa2c2a0e8cf9fb6cdb6c0752e7
+ARG VSCODE_VERSION=4.93.1
+ARG VSCODE_SHA=9307ad9dacf30a3de76a26d0d455150d17798cf0394ccf5a4f3705ff20c945d8
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 USER root
 
