@@ -61,7 +61,7 @@ jobs:
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
-      TRIVY_VERSION: "v0.56.2"
+      TRIVY_VERSION: "v0.57.0"
       TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
       TRIVY_MAX_RETRIES: 10
