@@ -22,9 +22,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.29.10
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 
@@ -52,7 +51,8 @@ RUN \
   && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
-    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+    && curl -LO "${KUBECTL_URL}.sha256" \
+    && echo "$(cat kubectl.sha256) kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
