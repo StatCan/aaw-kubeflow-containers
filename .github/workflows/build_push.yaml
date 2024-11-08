@@ -181,10 +181,10 @@ jobs:
       run: |
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
+        
         for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
           echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
-          
-          # Run Trivy and capture output
+
           trivy image \
             --db-repository ${{ env.TRIVY_DATABASES }} \
             --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
@@ -198,7 +198,7 @@ jobs:
           elif [[ $EXIT_CODE -eq 10 ]]; then
             echo "Trivy scan completed successfully. Some vulnerabilities were found."
             exit 10
-          elif [[ $i -lt ${{ env.TRIVY_MAX_RETRIES }} ]]; then
+          elif [[ $i -lt $(( env.TRIVY_MAX_RETRIES - 1 )) ]]; then
             echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
             sleep ${{ env.TRIVY_RETRY_DELAY }}
           else
