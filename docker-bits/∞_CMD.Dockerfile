@@ -27,6 +27,7 @@ RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8
     conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-forge-nvidia --system && \
     conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 
+
 # Confirm if ownership change of /home/jovyan will fix the byobu error.
 RUN chown $NB_USER:users /home/$NB_USER
 
