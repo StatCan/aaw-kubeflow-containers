@@ -330,7 +330,7 @@ ENV PATH /opt/oracle/instantclient_23_5:${PATH}
 RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip && \
     unzip -oj instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle/instantclient_23_5
 
-RUN /opt/oracle/instantclient_23_5/odbc_update_ini.sh /
+RUN /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
