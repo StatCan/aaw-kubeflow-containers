@@ -182,8 +182,8 @@ RUN apt-get update && \
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.17.0
-ARG VSCODE_SHA=a256654aae171699f4dd869dd7f02588ff60411d6a88e95a3e8d997d72efe378
+ARG VSCODE_VERSION=4.93.1
+ARG VSCODE_SHA=9307ad9dacf30a3de76a26d0d455150d17798cf0394ccf5a4f3705ff20c945d8
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 USER root
 
@@ -203,16 +203,16 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && mkdir -p $CS_TEMP_HOME/Machine \
     && \ 
     # Manage extensions
-    # code-server --install-extension ms-python.python@2024.8.1 && \
-    # code-server --install-extension ms-python.debugpy@2024.8.0 && \
-    # code-server --install-extension REditorSupport.r@2.8.4 && \
-    # code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.91.0 && \
-    # code-server --install-extension quarto.quarto@1.113.0 && \
-    # code-server --install-extension dvirtz.parquet-viewer@2.9.0 && \
-    # code-server --install-extension redhat.vscode-yaml@1.15.0 && \
-    # code-server --install-extension ms-vscode.azurecli@0.6.0 && \
-    # code-server --install-extension mblode.pretty-formatter@0.2.1 && \
-    # code-server --install-extension cpptools-linux.vsix && \
+    code-server --install-extension ms-python.python@2024.8.1 && \
+    code-server --install-extension ms-python.debugpy@2024.8.0 && \
+    code-server --install-extension REditorSupport.r@2.8.4 && \
+    code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.91.0 && \
+    code-server --install-extension quarto.quarto@1.113.0 && \
+    code-server --install-extension dvirtz.parquet-viewer@2.9.0 && \
+    code-server --install-extension redhat.vscode-yaml@1.15.0 && \
+    code-server --install-extension ms-vscode.azurecli@0.6.0 && \
+    code-server --install-extension mblode.pretty-formatter@0.2.1 && \
+    code-server --install-extension cpptools-linux.vsix && \
     mv $CS_DEFAULT_HOME/* $CS_TEMP_HOME && \
     fix-permissions $CS_TEMP_HOME
 
