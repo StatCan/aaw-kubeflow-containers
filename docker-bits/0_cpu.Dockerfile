@@ -18,3 +18,5 @@ RUN apt-get update --yes \
     && apt-get upgrade --yes libwebp7 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
+
+RUN conda install mamba=2.0.0
