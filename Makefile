@@ -198,6 +198,7 @@ pull/%:
 	echo "Pulling $${REPO}$(notdir $@)$${TAG}" &&\
 	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}"
 
+build/%: GITHUB_OUTPUT ?= .tmp/github_output.log
 build/%: DARGS?=
 build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)

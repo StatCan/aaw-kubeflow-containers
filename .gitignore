@@ -7,6 +7,5 @@ __pycache__
 .ipynb_checkpoints/
 .idea
 node_modules
-github_output.log
 package-lock.json
 package.json
