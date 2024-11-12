@@ -95,6 +95,7 @@ ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${
 
 ENV QUARTO_VERSION=1.5.57
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
 RUN \
   # OpenJDK-8
@@ -140,8 +141,8 @@ RUN \
   && \
     # quarto
     curl -sLO  ${QUARTO_URL} \
-    && curl -LO "${QUARTO_URL}.sha256" \
-    && echo "$(cat quarto-${QUARTO_VERSION}-linux-amd64.tar.gz.sha256)  quarto-${QUARTO_VERSION}-linux-amd64.tar.gz"  | sha256sum -c - \
+    && curl -LO ${QUARTO_CHECKSUM_URL} \
+    && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
     && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
     && sudo rm -f /usr/local/bin/quarto \
