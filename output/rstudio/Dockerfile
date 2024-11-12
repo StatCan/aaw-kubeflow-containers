@@ -29,6 +29,8 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /usr/bin/clean-layer.sh
 
+RUN conda install mamba=2.0.0
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
@@ -193,6 +195,7 @@ RUN mkdir -p /etc/rstudio && \
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
+# Install some default R packages
 RUN mamba install --quiet --yes \
       'r-rodbc' \
       'r-tidyverse' \
