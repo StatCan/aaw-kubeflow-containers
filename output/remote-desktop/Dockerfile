@@ -168,6 +168,7 @@ ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
 
 ARG ARGO_CLI_VERSION=v3.5.12
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
+ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
 ENV QUARTO_VERSION=1.5.57
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
@@ -208,8 +209,8 @@ RUN \
   && \
     # argo cli
     curl -sLO  ${ARGO_CLI_URL}\
-    && curl -LO "${ARGO_CLI_URL}.sha256" \
-    && echo "$(cat argo-linux-amd64.gz.sha256)  argo-linux-amd64.gz"  | sha256sum -c - \
+    && curl -LO ${ARGO_CLI_CHECKSUM_URL} \
+    && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
