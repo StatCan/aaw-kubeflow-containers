@@ -294,8 +294,8 @@ RUN apt-get update --yes \
     && rm -f /tmp/ompp.tar.gz \
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
