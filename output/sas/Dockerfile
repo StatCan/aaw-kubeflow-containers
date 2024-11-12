@@ -275,7 +275,7 @@ ENV OMPP_VERSION="1.17.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ENV OMPP_PKG_DATE="20241021"
 # Sha needs to be manually generated.
-ARG SHA256ompp=79084a009f3bad3c0d81cb12ccc844458d29b70d199352233aad3d94489427c9
+ARG SHA256ompp=79c4bf6e09c9c51f33986251f1f44279f29d4fe669b6e8f7d7597a406d24b5a9
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
