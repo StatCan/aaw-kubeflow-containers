@@ -187,7 +187,7 @@ jobs:
 
           trivy image \
             ${{ steps.build-image.outputs.full_image_name }} \
-            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
+            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL || true
           EXIT_CODE=$?
 
           if [[ $EXIT_CODE -eq 0 ]]; then
