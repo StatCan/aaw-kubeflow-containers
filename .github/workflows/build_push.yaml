@@ -61,9 +61,11 @@ jobs:
       CLUSTER_NAME: k8s-cancentral-01-covid-aks
       CLUSTER_RESOURCE_GROUP: k8s-cancentral-01-covid-aks
       LOCAL_REPO: localhost:5000
-      TRIVY_VERSION: "v0.56.2"
+      TRIVY_VERSION: "v0.57.0"
       TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
+      TRIVY_MAX_RETRIES: 5
+      TRIVY_RETRY_DELAY: 20
       HADOLINT_VERSION: "2.12.0"
       ACTIONS_RUNNER_DEBUG: true
 
@@ -179,11 +181,33 @@ jobs:
       run: |
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-        trivy image \
-          --db-repository ${{ env.TRIVY_DATABASES }} \
-          --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-          ${{ steps.build-image.outputs.full_image_name }} \
-          --exit-code 1 --timeout=20m --scanners vuln --severity CRITICAL
+        
+        set +e
+
+        for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
+          echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
+
+          trivy image \
+            --db-repository ${{ env.TRIVY_DATABASES }} \
+            --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
+            ${{ steps.build-image.outputs.full_image_name }} \
+            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
+          EXIT_CODE=$?
+
+          if [[ $EXIT_CODE -eq 0 ]]; then
+            echo "Trivy scan completed successfully."
+            exit 0
+          elif [[ $EXIT_CODE -eq 10 ]]; then
+            echo "Trivy scan completed successfully. Some vulnerabilities were found."
+            exit 10
+          elif [[ $i -lt $(( ${{ env.TRIVY_MAX_RETRIES }} - 1))  ]]; then
+            echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
+            sleep ${{ env.TRIVY_RETRY_DELAY }}
+          else
+            echo "Unexpected error persists after ${{ env.TRIVY_MAX_RETRIES }} attempts. Exiting."
+            exit 1
+          fi
+        done
 
     # Push image to ACR
     # Pushes if this is a push to master or an update to a PR that has auto-deploy label
