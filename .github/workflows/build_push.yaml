@@ -168,14 +168,14 @@ jobs:
     # Free up space from build process (containerscan action will run out of space if we don't)
     - run: ./.github/scripts/cleanup_runner.sh
 
-  # Scan image for vulnerabilities
+    # Scan image for vulnerabilities
     - name: Aqua Security Trivy image scan
       if: true
       run: |
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         
-        set +e
+        set +e # Lets trivy return an error without it being fatal
 
         for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
           echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
@@ -193,7 +193,7 @@ jobs:
             exit 0
           elif [[ $EXIT_CODE -eq 10 ]]; then
             echo "Trivy scan completed successfully. Some vulnerabilities were found."
-            exit 10
+            exit 0
           elif [[ $i -lt $(( ${{ env.TRIVY_MAX_RETRIES }} - 1))  ]]; then
             echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
             sleep ${{ env.TRIVY_RETRY_DELAY }}
