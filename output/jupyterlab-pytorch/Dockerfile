@@ -215,8 +215,9 @@ RUN apt-get update && \
 RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip && \
     unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle/
 
-RUN echo /opt/oracle/instantclient_23_5 > /etc/ld.so.conf.d/oracle-instantclient.conf
-RUN ldconfig
+RUN echo /opt/oracle/instantclient_23_5 > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
+
 ENV PATH /opt/oracle/instantclient_23_5:${PATH}
 
 # installing Oracle ODBC driver
