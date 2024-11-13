@@ -97,7 +97,6 @@ EXCLUDED_PACKAGES = [
     "pyyaml",
     "graphviz",
     "pytables",
-    "mamba",
 ]
 
 
