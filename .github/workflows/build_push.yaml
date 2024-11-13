@@ -198,7 +198,7 @@ jobs:
           elif [[ $EXIT_CODE -eq 10 ]]; then
             echo "Trivy scan completed successfully. Some vulnerabilities were found."
             exit 10
-          elif [[ $i -lt $(( env.TRIVY_MAX_RETRIES - 1 )) ]]; then
+          elif [[ $i -lt $(( ${{ env.TRIVY_MAX_RETRIES }} - 1))  ]]; then
             echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
             sleep ${{ env.TRIVY_RETRY_DELAY }}
           else
