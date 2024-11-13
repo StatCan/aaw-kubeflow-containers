@@ -9,8 +9,8 @@
     # jupyterlab-spreadsheet
 
 # Install vscode
-ARG VSCODE_VERSION=4.17.0
-ARG VSCODE_SHA=a256654aae171699f4dd869dd7f02588ff60411d6a88e95a3e8d997d72efe378
+ARG VSCODE_VERSION=4.95.1
+ARG VSCODE_SHA=dafa88431ff0b52ce9d92bceb30460edab95e7fa2c2a0e8cf9fb6cdb6c0752e7
 ARG VSCODE_URL=https://github.com/coder/code-server/releases/download/v${VSCODE_VERSION}/code-server_${VSCODE_VERSION}_amd64.deb
 USER root
 
@@ -34,7 +34,7 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
-    code-server --install-extension databricks.databricks@1.1.0 && \
+    code-server --install-extension databricks.databricks@1.4.0 && \
     code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \
@@ -103,10 +103,11 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.17.1"
+ENV OMPP_VERSION="1.17.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20240322"
-ARG SHA256ompp=04fc24ad2ed6d6ef1e29430885b77c766eba85e7c5e69ba4c11acb838d712609
+ENV OMPP_PKG_DATE="20241021"
+# Sha needs to be manually generated.
+ARG SHA256ompp=79c4bf6e09c9c51f33986251f1f44279f29d4fe669b6e8f7d7597a406d24b5a9
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -125,8 +126,8 @@ RUN apt-get update --yes \
     && rm -f /tmp/ompp.tar.gz \
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
