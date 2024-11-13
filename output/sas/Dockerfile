@@ -30,6 +30,8 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
 
+RUN conda install mamba=2.0.0
+
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
