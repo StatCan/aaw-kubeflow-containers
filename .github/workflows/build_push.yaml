@@ -188,6 +188,8 @@ jobs:
           echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
 
           trivy image \
+            --db-repository ${{ env.TRIVY_DATABASES }} \
+            --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
             ${{ steps.build-image.outputs.full_image_name }} \
             --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
           EXIT_CODE=$?
