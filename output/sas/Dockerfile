@@ -30,8 +30,6 @@ RUN pip install --force-reinstall cryptography==39.0.1 && \
    fix-permissions $CONDA_DIR && \
    fix-permissions /home/$NB_USER
 
-RUN conda install mamba=2.0.0
-
 ###############################
 ###  docker-bits/3_Kubeflow.Dockerfile
 ###############################
@@ -351,6 +349,13 @@ RUN mamba install --quiet --yes \
       'r-arrow' \
       'r-aws.s3' \
       'r-catools' \
+      && \
+      clean-layer.sh && \
+      fix-permissions $CONDA_DIR && \
+      fix-permissions /home/$NB_USER
+      
+# Install some default R packages
+RUN mamba install --quiet --yes \
       'r-hdf5r' \
       'r-odbc' \
       'r-sf' \
