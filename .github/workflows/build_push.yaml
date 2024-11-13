@@ -64,7 +64,7 @@ jobs:
       TRIVY_VERSION: "v0.57.0"
       TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
-      TRIVY_MAX_RETRIES: 10
+      TRIVY_MAX_RETRIES: 5
       TRIVY_RETRY_DELAY: 20
       HADOLINT_VERSION: "2.12.0"
       ACTIONS_RUNNER_DEBUG: true
