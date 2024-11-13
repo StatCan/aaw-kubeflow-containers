@@ -182,12 +182,14 @@ jobs:
         printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
         
+        set +e
+
         for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
           echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
 
           trivy image \
             ${{ steps.build-image.outputs.full_image_name }} \
-            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL || true
+            --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
           EXIT_CODE=$?
 
           if [[ $EXIT_CODE -eq 0 ]]; then
