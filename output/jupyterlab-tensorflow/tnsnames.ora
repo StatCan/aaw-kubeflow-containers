@@ -1,0 +1,9 @@
+ccbp_c,ccbprod_c,tax_ccbprod_c,ccbp_c.statcan.ca,ccbprod_c.statcan.ca,tax_ccbprod_c.statcan.ca =
+    (description=
+      (address=
+        (protocol=tcps)
+        (host=exa-db-prod1-3sduj-scan.scocip1client.scocivcn.oraclevcn.com)
+        (port=2485))
+      (connect_data=
+        (server=dedicated)
+        (service_name=ccbp_s.scocip1client.scocivcn.oraclevcn.com)))
