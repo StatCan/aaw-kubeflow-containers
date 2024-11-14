@@ -434,6 +434,10 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
 
+# Install LaTeX related things required by Quarto
+
+RUN quarto install tinytex
+
 RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
     echo "jovyan:jovyan" | chpasswd
