@@ -14,7 +14,7 @@ Container images to be used with kubeflow on the AAW platform for Data Science &
     - [Running and Connecting to Images Locally/Interactively](#running-and-connecting-to-images-locallyinteractively)
     - [Automated Testing](#automated-testing)
 - [General Development Workflow](#general-development-workflow)
-  - [💻 Running an AAW Container Locally](#-running-an-aaw-container-locally)
+  - [Running an AAW Container Locally](#running-an-aaw-container-locally)
   - [Testing Locally](#testing-locally)
   - [Testing On-Platform testing](#testing-on-platform-testing)
   - [Overview of docker-bits and Makefile](#overview-of-docker-bits-and-makefile)
@@ -23,9 +23,9 @@ Container images to be used with kubeflow on the AAW platform for Data Science &
   - [Modifying and Testing CI](#modifying-and-testing-ci)
 - [Other Development Notes](#other-development-notes)
   - [The `latest` and `v1` tags for the master branch](#the-latest-and-v1-tags-for-the-master-branch)
-  - [Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files](#set-user-file-permissions-after-every-pipconda-install-or-edit-of-users-home-files)
+  - [Set User File Permissions](#set-user-file-permissions)
+  - [Troubleshooting](#troubleshooting)
 - [Structure](#structure)
-- [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -40,13 +40,15 @@ Those images can be used via the `custom-image` feature in kubeflow and do not p
 Additionally, the AAW team is not responsible for maintaining those images.
 
 ## List of maintained images in this github repository
-| Image Name            | Notes                                                                                                                                            | Extra Installations  |
-|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|----------------------|
-| jupyterlab-cpu        | The base experience. A jupyterlab notebook with various installations.                                                                           | VsCode, R, Julia     |
-| jupyterlab-pytorch    | For users looking to leverage a GPU machine. Comes installed with pytorch                                                                        | pytorch, torchvision |
-| jupyterlab-tensorflow | For users looking to leverage a GPU machine. Comes installed with tensorflow                                                                     | tensorflow-gpu       |
-| remote-desktop        | For users looking to have a desktop-like experience.                                                                                             | Open M++, QGIS       |
-| rstudio               | For users looking to have a rstudio tuned experience.                                                                                            |                      |
+
+| Image Name            | Notes                                                                  | Extra Installations  |
+|-----------------------|------------------------------------------------------------------------|----------------------|
+| docker-stacks-datascience-notebook | Debugging Dockerfile that builds quicker than other images |                     |
+| jupyterlab-cpu        | The base experience. A jupyterlab notebook with various installations. | VsCode, R, Julia     |
+| jupyterlab-pytorch    | For users looking to leverage a GPU machine. Comes installed with pytorch | pytorch, torchvision |
+| jupyterlab-tensorflow | For users looking to leverage a GPU machine. Comes installed with tensorflow | tensorflow-gpu |
+| remote-desktop        | For users looking to have a desktop-like experience.  | Open M++, QGIS |
+| rstudio               | For users looking to have a rstudio tuned experience. |                |
 | sas                   | Similar to our jupyterlab-cpu image, except with SAS. This is only available  to Statistics Canada employees as that is what our license allows. |                      |
 
 ## Using
@@ -120,7 +122,7 @@ Tests are formatted using typical pytest formats (python files with `def test_SO
 
 ## General Development Workflow
 
-### 💻 Running an AAW Container Locally
+### Running an AAW Container Locally
 
 1. Clone the repository with `git clone https://github.com/StatCan/aaw-kubeflow-containers`.
 2. Generate Dockerfiles through `make generate-dockerfiles`
@@ -192,6 +194,7 @@ Images pushed to the dev acr are only available to the DEV cluster, attempting t
 NOTE: ACR has an image retention policy <Please add here>
 
 ### Overview of docker-bits and Makefile
+
 The files in the `docker-bits` directory each make up a part of the final dockerfile and are combined depending on what type of dockerfile is being generated.
 You can see which "docker-bits" go into the dockerfile under their respective 'target'.
 
@@ -288,7 +291,7 @@ but still want to support the features of that current image.
 A new `v2` tag will be created for adding these breaking changes.
 
 ---
-### Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files
+### Set User File Permissions
 
 The Dockerfiles in this repo are intended to construct compute environments for a non-root user **jovyan** to ensure the end user has the least privileges required for their task,
 but installation of some of the software needed by the user must be done as the **root** user.
@@ -322,6 +325,14 @@ RUN fix-permissions /home/$NB_USER
 
 would add two layers, each about 1GB (2GB total).
 
+### Troubleshooting
+
+If running using a VM and RStudio image was built successfully but is not opening correctly on localhost (error 5000 page),
+change your CPU allocation in your Linux VM settings to >= 3.
+You can also use your VM's system monitor to examine if all CPUs are 100% being used as your container is running.
+If so, increase CPU allocation.
+This was tested on Linux Ubuntu 20.04 virtual machine.
+
 ## Structure
 
 ```
@@ -344,55 +355,70 @@ would add two layers, each about 1GB (2GB total).
 │   ├── ∞_CMD.Dockerfile
 │   └── ∞_CMD_RemoteDesktop.Dockerfile
 │
+├── make_helpers                            # Scripts used by makefile
+│   ├── get_branch_name.sh
+│   └── post-build-hook.sh
+│
+├── output                                  # Staging area for a `docker build .`
+│   ├── docker-stacks-datascience-notebook/
+│   ├── jupyterlab-cpu/
+│   ├── jupyterlab-pytorch/
+│   ├── jupyterlab-tensorflow/
+│   ├── remote-desktop/
+│   ├── rstudio/
+│   └── sas/
+│
 ├── resources                               # the Docker context (files for COPY)
-├── ├── common                              # files required by all images
-│      ├── clean-layer.sh
-│      ├── helpers.zsh
-│      ├── jupyterlab-overrides.json
-│      ├── landing_page
-│      ├── nginx
-│      ├── README.md
-│      └── start-custom.sh
-├── ├── remote-desktop                      # directory containing files only for the remote desktop
-|      ├── desktop-files                    # desktop configuration
-|      ├── French                           # files to support i18n of remote desktop
-|      ├── qgis-2022.gpg.key                # expires annually aug ~8
-|      └── start-remote-desktop.sh
-|
+│   ├── common                              # files required by all images
+│   │  ├── jupyter-ompp-proxy/
+│   │  ├── aaw-suspend-server.sh
+│   │  ├── clean-layer.sh
+│   │  ├── jupyterlab-overrides.json
+│   │  ├── languagepacks.json
+│   │  ├── mc-tenant-wrapper.sh
+│   │  ├── pip.conf
+│   │  ├── README.md
+│   │  ├── restart-oms.sh
+│   │  ├── Rprofile.site
+│   │  ├── shell_helpers.sh
+│   │  ├── start-custom.sh
+│   │  ├── start-oms.sh
+│   │  ├── trino-wrapper.sh
+│   │  └── vscode-overrides.json
+│   ├── remote-desktop                      # directory containing files only for the remote desktop
+│   │  ├── desktop-files/                   # desktop configuration
+│   │  ├── French/                          # files to support i18n of remote desktop
+│   │  ├── novnc/
+│   │  ├── qgis-2022.gpg.key                # expires annually aug ~8
+│   │  ├── README.md
+│   │  └── start-remote-desktop.sh
+│   └── sas
+│      ├── G-CONFID107003ELNX6494M7/
+│      ├── jupyter-sasstudio-proxy/
+│      ├── sascfg.py
+│      ├── sasv9_local.cfg
+│      └── spawner_usermods.sh
 │
 ├── scripts                                 # Helper Scripts (NOT automated.)
-├── ├── remote-desktop                      # Scripts installing applications on remote desktop
-|      ├── firefox.sh
-|      ├── fix-permissions.sh
-|      ├── qgis.sh
-|      ├── r-studio-desktop.sh
-|      └── vs-code-desktop.sh
+│   ├── remote-desktop                      # Scripts installing applications on remote desktop
+│   │  ├── firefox.sh
+│   │  ├── fix-permissions
+│   │  ├── minio-launcher.py
+│   │  ├── pspp.sh
+│   │  ├── qgis.sh
+│   │  ├── r-studio-desktop.sh
+│   │  ├── README.md
+│   │  └── vs-code-desktop.sh
 │   ├── CHECKSUMS
 │   ├── checksums.sh
 │   ├── get-nvidia-stuff.sh
-│   ├── start-custom-OL-compliant.sh
+│   ├── get-spark-stuff.sh
 │   └── README.md
 │
-└── output                                  # Staging area for a `docker build .`
-    ├── JupyterLab-CPU/
-    ├── JupyterLab-PyTorch/
-    ├── JupyterLab-Tensorflow/
-    |── RStudio/
-    |── RemoteDesktop/
-    ├── JupyterLab-CPU-OL-compliant/        # These images use JupyterLab 3.0 and contain only OL-compliant extensions
-    ├── JupyterLab-PyTorch-OL-compliant/
-    └── JupyterLab-Tensorflow-OL-compliant/
 └── tests
-    ├── general                             # General tests applied to all images
-    ├── jupyterlab-cpu                      # Test applied to a specific image
-    └── jupyterlab-tensorflow
-
-
+    ├── general/                            # General tests applied to all images
+    ├── jupyterlab-cpu/                     # Test applied to a specific image
+    ├── jupyterlab-pytorch/
+    ├── jupyterlab-tensorflow/
+    └── README.md
 ```
-
-## Troubleshooting
-If running using a VM and RStudio image was built successfully but is not opening correctly on localhost (error 5000 page),
-change your CPU allocation in your Linux VM settings to >= 3.
-You can also use your VM's system monitor to examine if all CPUs are 100% being used as your container is running.
-If so, increase CPU allocation.
-This was tested on Linux Ubuntu 20.04 virtual machine.
