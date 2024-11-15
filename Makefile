@@ -69,9 +69,6 @@ generate-Spark:
 ###### Dockerfile Management ######
 ###################################
 
-all:
-	@echo 'Did you mean to generate all Dockerfiles?  That has been renamed to `make generate-dockerfiles`'
-
 generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
 	@echo "All dockerfiles created."
 
@@ -81,7 +78,6 @@ generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-
 
 # Configure the "Bases".
 #
-# Revert Stan's change made in PR#306 that includes $(SRC)/2_cpu.Dockerfile It really balloons the size of the image
 # PyTorch image can use Aanaconda's CUDA packages (much simpler)
 pytorch: .output
 	$(CAT) \
