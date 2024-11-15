@@ -1,6 +1,31 @@
-# Containers for Kubeflow
+# aaw-kubeflow-containers <!-- omit in toc -->
 
 Container images to be used with kubeflow on the AAW platform for Data Science & other workloads.
+
+## Table of Contents <!-- omit in toc -->
+
+- [Introduction](#introduction)
+- [List of maintained images in this github repository](#list-of-maintained-images-in-this-github-repository)
+- [Using](#using)
+  - [Generating Dockerfiles](#generating-dockerfiles)
+  - [Building and Tagging Docker Images](#building-and-tagging-docker-images)
+  - [Pulling and Pushing Docker Images](#pulling-and-pushing-docker-images)
+  - [Testing images](#testing-images)
+    - [Running and Connecting to Images Locally/Interactively](#running-and-connecting-to-images-locallyinteractively)
+    - [Automated Testing](#automated-testing)
+- [General Development Workflow](#general-development-workflow)
+  - [💻 Running an AAW Container Locally](#-running-an-aaw-container-locally)
+  - [Testing Locally](#testing-locally)
+  - [Testing On-Platform testing](#testing-on-platform-testing)
+  - [Overview of docker-bits and Makefile](#overview-of-docker-bits-and-makefile)
+  - [Adding new software](#adding-new-software)
+  - [Adding new Images](#adding-new-images)
+  - [Modifying and Testing CI](#modifying-and-testing-ci)
+- [Other Development Notes](#other-development-notes)
+  - [The `latest` and `v1` tags for the master branch](#the-latest-and-v1-tags-for-the-master-branch)
+  - [Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files](#set-user-file-permissions-after-every-pipconda-install-or-edit-of-users-home-files)
+- [Structure](#structure)
+- [Troubleshooting](#troubleshooting)
 
 ## Introduction
 
@@ -8,6 +33,7 @@ Our Container images are based on the community driven [jupyter/docker-stacks](h
 We chose those images because they are continuously updated and install the most common utilities.
 This enables us to focus only on the additional toolsets that we require to enable our data scientists.
 These customized images are maintained by the AAW team and are the default images available on the kubeflow UI.
+
 This is different from the [aaw-contrib-containers](https://github.com/StatCan/aaw-contrib-containers) as those images are built by AAW user-base.
 These are often created when a user's workload is more specific and our generic images are not suitable for them.
 Those images can be used via the `custom-image` feature in kubeflow and do not populate the default images drop-down.
@@ -23,7 +49,7 @@ Additionally, the AAW team is not responsible for maintaining those images.
 | rstudio               | For users looking to have a rstudio tuned experience.                                                                                            |                      |
 | sas                   | Similar to our jupyterlab-cpu image, except with SAS. This is only available  to Statistics Canada employees as that is what our license allows. |                      |
 
-## Usage
+## Using
 
 ### Generating Dockerfiles
 
@@ -94,13 +120,14 @@ Tests are formatted using typical pytest formats (python files with `def test_SO
 
 ## General Development Workflow
 
-### 💻 Running AAW Locally (simple instructions)
+### 💻 Running an AAW Container Locally
 
 1. Clone the repository with `git clone https://github.com/StatCan/aaw-kubeflow-containers`.
-2. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`.
+2. Generate Dockerfiles through `make generate-dockerfiles`
 3. Run `make install-python-dev-venv` to build a development Python virtual environment.
-4. Test your image using automated tests through `make test/IMAGENAME`, e.g. run `make test/jupyterlab-tensorflow`.
-5. Find your images (required for the next step) with `docker images`. You should see a table printed in the console with your images. For example you may see:
+4. Build your image using `make build/IMAGENAME`, e.g. run `make build/jupyterlab-tensorflow`.
+5. Test your image using automated tests through `make test/IMAGENAME`, e.g. run `make test/jupyterlab-tensorflow`.
+6. Veiw your images with `docker images`. You should see a table printed in the console with your images. For example you may see:
 
 ```
 username@hostname:~$ docker images
@@ -110,33 +137,41 @@ k8scc01covidacr.azurecr.io/jupyterlab-pytorch      master         2b9acb795079  
 jupyter/datascience-notebook                       9ed3b8de5de1   9a0c8d86de1a   5 weeks ago      4.25GB
 ```
 
-7. Run your image with `docker run -p 8888:8888 REPO/IMAGENAME:TAG`, e.g. `docker run -p 8888:8888 k8scc01covidacr.azurecr.io/jupyterlab-tensorflow:master`.
+7. Run your image with `docker run -p 8888:8888 REPO/IMAGENAME:TAG`,
+   e.g. `docker run -p 8888:8888 k8scc01covidacr.azurecr.io/jupyterlab-tensorflow:master`.
 8. Open [http://localhost:8888](http://localhost:8888) or `<ip-address-of-server>:8888`.
 
-### Modifying Dockerfiles (local testing)
+### Testing Locally
 
-* Clone the repo
-* (optional) `make pull/IMAGENAME TAG=SOMEEXISTINGTAG` to pull an existing version of the image you are working on (this could be useful as a build cache to reduce development time below)
-* Change an image via the [docker-bits](/docker-bits) that are used to create it, **not the files in the output/ folder**.
-  Same goes for the shell scripts and json files - they should be modified from the [resources](/resources) folder.
+1. Clone the repo
+2. (optional) `make pull/IMAGENAME TAG=SOMEEXISTINGTAG` to pull an existing version of the image you are working on
+   (this could be useful as a build cache to reduce development time below)
+3. Edit an image via the [docker-bits](/docker-bits) that are used to create it,
+   **not the files in the output/ folder**.
+   Same goes for the shell scripts and json files - they should be modified from the [resources](/resources) folder.
+    * For quick-iteration debugging you can directly edit the `./output` files,
+      but make sure you commit any changes you want to keep back to the `./docker-bits`
+4. Generate new Dockerfiles through `make generate-dockerfiles`
+5. Build your edited image using `make build/IMAGENAME`
+   (if you pulled a version of it above, you can use `make build/IMAGENAME DARGS="--cache-from SOMEOLDREPO/SOMEOLDIMAGE:SOMETAG"`,
+   which will speed up your build by using layers from the pulled image as cached layers if possible)
+6. Test your image:
+    * using automated tests through `make test/IMAGENAME`
+    * manually by `docker run -it -p 8888:8888 REPO/IMAGENAME:TAG`,
+      then opening it in [http://localhost:8888](http://localhost:8888)
 
-  * For quick-iteration debugging you can directly edit the `./output` files,
-    but make sure you commit any changes you want to keep back to the `./docker-bits`
-* After making your changes, generate new Dockerfiles through `make generate-dockerfiles`
-* Build your edited image using `make build/IMAGENAME` (or, if you pulled a version of it above, you can use `make build/IMAGENAME DARGS="--cache-from SOMEOLDREPO/SOMEOLDIMAGE:SOMETAG"`, which will use layers from the pulled image as cached layers if possible, speeding up your build)
-* Test your image:
-  * using automated tests through `make test/IMAGENAME`
-  * manually by `docker run -it -p 8888:8888 REPO/IMAGENAME:TAG`, then opening it in [http://localhost:8888](http://localhost:8888)
-
-### Modifying Dockerfiles (on-platform testing)
+### Testing On-Platform testing
 
 GitHub Actions CI is enabled to do building, scanning, automated testing, and (optionally) pushing of our images to ACR.
+
 Build, test, and scan CI triggers on:
 * any push to master
 * any push to an open PR
 This allows for easy scanning and automated testing for images.
 
-GitHub Actions CI also enables pushing built images to our ACRs, making them accessible from the platform.
+Pushing images to ACR triggers on:
+* any push to master
+* any push to an open PR **that also has the `auto-deploy` label**
 
 
 Pushes to the `master` branch will push to the k8scc01covidacr.azurecr.io ACR and these are accessible from both the dev and prod cluster.
@@ -146,26 +181,22 @@ You can access these images using any of the following:
 * k8scc01covidacr.azurecr.io/IMAGENAME:latest
 * k8scc01covidacr.azurecr.io/IMAGENAME:v1
 
-
-Any push to an open PR **that also has the `auto-deploy` label on the PR**
-This allows developers to opt-in to on-platform testing.
-For example, when you need to build in github and test on platform (or want someone else to be able to pull your image):
-* open a PR and add the `auto-deploy` label
-* push to your PR and watch the GitHub Action CI
-* access your image in Kubeflow DEV via a custom image from any of:
-  * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHA
-  * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHORT_SHA
-  * k8scc01covidacrdev.azurecr.io/IMAGENAME:dev (for convenience in testing)
+Pushes to an open PR **that also has the `auto-deploy` label on the PR** are accessible only from the dev cluster
+You can access these images using any of the following:
+* k8scc01covidacrdev.azurecr.io/IMAGENAME:SHA
+* k8scc01covidacrdev.azurecr.io/IMAGENAME:SHORT_SHA
+* k8scc01covidacrdev.azurecr.io/IMAGENAME:dev (for convenience in testing)
 
 Images pushed to the dev acr are only available to the DEV cluster, attempting to use them in prod will fail.
 
 NOTE: ACR has an image retention policy <Please add here>
 
-### docker-bits, the Makefile and You
+### Overview of docker-bits and Makefile
 The files in the `docker-bits` directory each make up a part of the final dockerfile and are combined depending on what type of dockerfile is being generated.
 You can see which "docker-bits" go into the dockerfile under their respective 'target'.
 
-For example for the `remote-desktop` image you can see in the makefile the following
+For example for the `remote-desktop` image you can see the following in the makefile
+
 ```
 mkdir -p $(OUT)/$@
 	echo "REMOTE DESKTOP"
@@ -183,23 +214,30 @@ mkdir -p $(OUT)/$@
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>   $(OUT)/$@/Dockerfile
 ```
+
 The first portion sets up and copies locally what scripts or utilities the final `Dockerfile` will need.
-The final `Dockerfile` is then generated using `0_Rocker.Dockerfile` up to `∞_CMD_remote-desktop.Dockerfile` as you can see above.
+The second portion then creates the `Dockerfile` using the listed dockerbits.
+In this example it begins with `0_Rocker.Dockerfile` and ends with `∞_CMD_remote-desktop.Dockerfile`.
 
 The `Makefile` sits in the root level of this directory and orchestrates the final dockerfile using the `make generate-dockerfiles` command.
-The segments of `Dockerfile`s are assembled and you can view which `docker-bit` it came from from the `Dockerfile` comments.
-All output images should meet the following criteria:
+The segments of `Dockerfile`s are assembled.
+Each `docker-bit` can be identified from it's opening comment in the `Dockerfile`.
 
+All output images should meet the following criteria:
 * be generated by calling `make generate-dockerfiles`
 * have outputs written to `output/imagename`, where `imagename` is a **valid Docker image name** (eg: all lowercase, no special characters)
 
-Always, before pushing to a branch ensure you run `make generate-dockerfiles` as if the `output` dockerfiles are out of sync from the `make generate-dockerfiles` the CI will fail.
+Before pushing to a branch ensure you run `make generate-dockerfiles`,
+because if the `output` dockerfiles are out of sync from the `make generate-dockerfiles` the CI will fail.
 
 ### Adding new software
 
-The developer has to make changes to the relevant `docker-bit` and then run the `make generate-dockerfiles`.
-*NOTE:* We do not allow for adding of software willy nilly,
-as our image sizes are already quite big (8Gb plus) and increasing that size would negatively impact the time it takes up for a workspace server to come up (as well as first time image pulls to a node).
+Software needs to be added by modifying the relevant `docker-bit`,
+then following the normal build instructions starting with the Generate Dockerfiles step.
+
+Be selective with software installation as image sizes are already quite big (8Gb plus),
+and increasing that size would negatively impact the time it takes up for a workspace server to come up
+(as well as first time image pulls to a node).
 In such cases it may be more relevant to make an image under [aaw-contrib-containers](https://github.com/StatCan/aaw-contrib-containers) as mentioned earlier.
 
 ### Adding new Images
@@ -211,8 +249,8 @@ or you can add a whole new `make` target (but make sure to add your new target t
 ### Modifying and Testing CI
 
 If making changes to CI that cannot be done on a branch (eg: changes to issue_comment triggers), you can:
-* fork the 'kubeflow-containers' repo
-* Modify the CI with
+1. fork the 'kubeflow-containers' repo
+2. Modify the CI with
   * REGISTRY: (your own dockerhub repo, eg: "j-smith" (no need for the full url))
   * Change
     ```
@@ -229,7 +267,7 @@ If making changes to CI that cannot be done on a branch (eg: changes to issue_co
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     ```
-  * In your forked repo, define secrets for REGISTRY_USERNAME and REGISTRY_PASSWORD with your dockerhub credentials (you should use an API token, not your actual dockerhub password)
+3. In your forked repo, define secrets for REGISTRY_USERNAME and REGISTRY_PASSWORD with your dockerhub credentials (you should use an API token, not your actual dockerhub password)
 
 **Note:** Since pushing comes right at the end of the CI,
 in many cases you don't need to have a valid registry to test the CI on a fork.
@@ -240,14 +278,14 @@ but all other steps will clearly work and you can know it should safely merge ba
 
 ### The `latest` and `v1` tags for the master branch
 
-These are intended to be `long-lived` in that they will not change.
-Subsequent pushes will clobber the previous `jupyterlab-cpu:latest` image.
-Previously when we built and pushed to master with updates to an image, we would need to go and change the spawner to use that new image.
-This will allow us to have them reference `jupyterlab-cpu:latest` and remove us from needing to update it.
-Additionally, upon changing the `ImagePullPolicy` to `Always` we could do restarts of workloads and then guarantee that users are on the 'latest' image.
+These tags are intended to be `long-lived` in that they will not change.
+Subsequent pushes will clobber the previous `IMAGENAME:latest` image.
+This means that `IMAGENAME:latest` will be updated automatically as changes are made,
+so updates to the tag are not needed.
 
-The `v1` tag is intended for when we encounter a breaking change but still want to support the features of that current image.
-We would then branch off and modify the CI as well as increment the tag.
+The `v1` tag is intended for when we encounter a breaking change,
+but still want to support the features of that current image.
+A new `v2` tag will be created for adding these breaking changes.
 
 ---
 ### Set User File Permissions after Every `pip`/`conda` Install or Edit of User's Home Files
