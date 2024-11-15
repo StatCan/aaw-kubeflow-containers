@@ -198,7 +198,8 @@ RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000
     /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
 
 #testing for a connection
-COPY tnsnames.ora /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+#COPY tnsnames.ora /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+COPY dbConnection/ /opt/oracle/instantclient_23_5/network/admin/
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
