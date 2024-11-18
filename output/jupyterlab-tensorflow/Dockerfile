@@ -545,7 +545,7 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
 # on my VM I don't need to actually install lmodern, quarto install tinytex is sufficient,
 # but on The Zone I need to install lmodern explicitly
 # - Going to try now only installing lmodern without tinytex and see if that is sufficient.
-RUN apt-get install lmodern -y \
+RUN apt-get update && sudo apt-get install lmodern -y \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1002 sasstaff && \
