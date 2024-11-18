@@ -9,12 +9,12 @@ If you do not request a directory you will not have access to it, unless it is u
 
 For example, if you request fld9filer/test1/requested you will not see anything under filers/fld9filersvm/test1 **other** than the `requested` folder, but if there is a `fld9filer/test1/requested/randomFolder` you will be able to see `randomFolder`.
 
-### Note for deleting a connected share
-If you delete your connected share and then start up your notebook server again, you will not be connected to the filer anymore but you may still see a 'ghost' folder. This folder may say `fld9filersvm/s3test` but it will not be connected to the filer, and any data you write in that directory will get overwritten and deleted if you choose to re-add the previously connected share.
+### Note for deleting a connected share in the UI
+If you delete your connected share from the `Manage Filers` page and then start up your notebook server again, you will not be connected to the filer anymore but you may still see a 'ghost' folder. This folder may say `fld9filersvm/s3test` but it will not be connected to the filer, and any data you write in that directory will get overwritten and deleted if you choose to re-add the previously connected share.
 
 
-## Using the Command line
-To connect to the filer we make use of the minio client as seen here https://min.io/docs/minio/linux/reference/minio-mc.html
+## An Alternate way to interact with your filer
+Another way to interact with the filer is to make use of the minio client as seen here https://min.io/docs/minio/linux/reference/minio-mc.html
 
 For more detailed and intricacies with using your filer please refer to the documentation 
 [here](https://zone.pages.cloud.statcan.ca/docs/en/5-Storage/FieldFilers.html)
