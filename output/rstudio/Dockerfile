@@ -271,7 +271,7 @@ ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackso
 USER root
 RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
     && echo "jackson-databind: downloaded" \
-    && sudo mv /tmp/jackson-databind /usr/local/bin/jackson-databind
+    && sudo mv /tmp/jackson-databind.jar /usr/local/lib/jackson-databind.jar
 
 ###############################
 ###  docker-bits/∞_CMD.Dockerfile
