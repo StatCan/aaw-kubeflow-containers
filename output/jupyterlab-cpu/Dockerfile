@@ -389,7 +389,7 @@ RUN apt-get update --yes \
     && pip install /opt/jupyter-ompp-proxy/
 
 # MinIO Client install
-COPY --from=minio/mc:RELEASE.2024-11-07T00-52-20Z /bin/mc /usr/local/bin/mc
+COPY --from=minio/mc:RELEASE.2024-11-17T19-35-25Z /bin/mc /usr/local/bin/mc
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
@@ -421,7 +421,7 @@ RUN groupadd -g 1002 sasstaff && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2024-11-07T00-52-20Z /bin/mc /usr/local/bin/mc
+COPY --from=minio/mc:RELEASE.2024-11-17T19-35-25Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
