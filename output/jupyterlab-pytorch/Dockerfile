@@ -219,9 +219,9 @@ RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000
     unzip -oj instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle/instantclient_23_5 && \
     /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
 
-#testing for a connection
-#COPY tnsnames.ora /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
-COPY dbConnection/ /opt/oracle/instantclient_23_5/network/admin/
+# add relevent files needed for oracle
+COPY dbConnection/*.ora /home/jovyan/oracle/
+COPY dbConnection/LINUX_CLIENT_WALLET /opt/oracle/instantclient_23_5/network/admin/LINUX_CLIENT_WALLET
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
