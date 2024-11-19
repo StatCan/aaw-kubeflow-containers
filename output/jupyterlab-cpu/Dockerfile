@@ -493,7 +493,7 @@ USER $NB_USER
 ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar
 ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
 
-wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
+RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
     && echo ${JACKSON_SHA} /tmp/jackson-databind | sha256sum -c \
     && echo "jackson-databind: ok" \
     && chmod +x /tmp/jackson-databind \
