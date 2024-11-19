@@ -623,7 +623,7 @@ ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackso
 # ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
 
 USER root
-RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
+RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind.jar \
     && echo "jackson-databind: downloaded" \
     && sudo mv /tmp/jackson-databind.jar /usr/local/lib/jackson-databind.jar
 
