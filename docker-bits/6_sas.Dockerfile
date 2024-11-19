@@ -18,7 +18,7 @@ RUN groupadd -g 1002 sasstaff && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
+COPY --from=minio/mc:RELEASE.2024-11-07T00-52-20Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
