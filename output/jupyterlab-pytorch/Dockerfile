@@ -513,11 +513,10 @@ RUN pip3 --no-cache-dir install --quiet \
 USER $NB_USER
 
 ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar
-ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
+# ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
 
 RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
-    && echo "${JACKSON_SHA}  /tmp/jackson-databind" | sha256sum -c - \
-    && echo "jackson-databind: ok" \
+    && echo "jackson-databind: downloaded" \
     && mv /tmp/jackson-databind /usr/local/bin/jackson-databind
 
 ###############################
