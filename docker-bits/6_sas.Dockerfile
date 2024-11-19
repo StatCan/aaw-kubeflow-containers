@@ -1,12 +1,13 @@
 # SAS
 
 # Install Quarto
-ARG QUARTO_VERSION=1.4.176
-ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
+ARG QUARTO_VERSION=1.5.57
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
-    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    wget -q ${QUARTO_CHECKSUM_URL} -O /tmp/checksums.txt && \
+    grep /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz /tmp/checksums.txt | sha256sum -c - && \
     tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
     ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
