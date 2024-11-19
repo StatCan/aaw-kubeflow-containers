@@ -516,10 +516,9 @@ ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackso
 ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
 
 RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind \
-    && echo ${JACKSON_SHA} /tmp/jackson-databind | sha256sum -c \
+    && echo "${JACKSON_SHA}  /tmp/jackson-databind" | sha256sum -c - \
     && echo "jackson-databind: ok" \
-    && chmod +x /tmp/jackson-databind \
-    && sudo mv /tmp/jackson-databind /usr/local/bin/jackson-databind 
+    && mv /tmp/jackson-databind /usr/local/bin/jackson-databind
 
 ###############################
 ###  docker-bits/8_platform.Dockerfile
