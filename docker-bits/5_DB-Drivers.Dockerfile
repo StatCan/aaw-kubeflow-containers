@@ -23,6 +23,8 @@ RUN apt-get update && \
 RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc && \
     source ~/.bashrc
 
+ENV TNS_ADMIN=/home/$NB_USER/oracle
+
 # installing Oracle Instant Client
 RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip && \
     unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle/ && \
@@ -37,6 +39,6 @@ RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000
     /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
 
 # add relevent files needed for oracle
+#TODO: Move this first copy command to the start custom script, or else files get lost when a workspace volume gets mounted
 COPY dbConnection/*.ora /home/$NB_USER/oracle/
 COPY dbConnection/LINUX_CLIENT_WALLET /opt/oracle/instantclient_23_5/network/admin/LINUX_CLIENT_WALLET
-ENV TNS_ADMIN=/home/$NB_USER/oracle
