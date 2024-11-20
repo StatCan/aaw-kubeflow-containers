@@ -220,8 +220,9 @@ RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000
     /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
 
 # add relevent files needed for oracle
-COPY dbConnection/*.ora /home/jovyan/oracle/
+COPY dbConnection/*.ora /home/$NB_USER/oracle/
 COPY dbConnection/LINUX_CLIENT_WALLET /opt/oracle/instantclient_23_5/network/admin/LINUX_CLIENT_WALLET
+ENV TNS_ADMIN=/home/$NB_USER/oracle
 
 ###############################
 ###  docker-bits/6_rstudio-server.Dockerfile
