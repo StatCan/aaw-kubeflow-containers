@@ -204,6 +204,12 @@ if [ ! -d "$HOME/workspace" ]; then
   mkdir -p "$HOME/workspace/repositories"
 fi
 
+# Creating symlink to oracle files for easier access
+if [ ! -d "$HOME/oracle" ]; then
+  echo "Creating symlink for oracle"
+  ln -s /opt/oracle/instantclient_23_5/network/admin/ "$HOME/oracle"
+fi
+
 # Add sasstudio default
 if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
   echo "No sas studio default settings created"

@@ -49,7 +49,7 @@ WALLET_LOCATION =
   (SOURCE =
     (METHOD = FILE)
     (METHOD_DATA =
-      (DIRECTORY=/opt/oracle/instantclient_23_5/network/admin/LINUX_CLIENT_WALLET)
+      (DIRECTORY=/opt/oracle/instantclient_23_5/LINUX_CLIENT_WALLET)
     )
   )
 
