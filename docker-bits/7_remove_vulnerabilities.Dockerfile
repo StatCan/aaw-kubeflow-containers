@@ -32,3 +32,5 @@ RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind.jar \
     && echo "jackson-databind: downloaded" \
     && sudo mv /tmp/jackson-databind.jar /usr/local/lib/jackson-databind.jar
 ENV CLASSPATH="/usr/local/lib/jackson-databind.jar:${CLASSPATH}"
+
+run echo $CLASSPATH

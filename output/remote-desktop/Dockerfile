@@ -641,6 +641,8 @@ RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind.jar \
     && sudo mv /tmp/jackson-databind.jar /usr/local/lib/jackson-databind.jar
 ENV CLASSPATH="/usr/local/lib/jackson-databind.jar:${CLASSPATH}"
 
+run echo $CLASSPATH
+
 ###############################
 ###  docker-bits/8_platform.Dockerfile
 ###############################

@@ -17,7 +17,6 @@ ARG BASE_VERSION=2024-06-17
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
-FROM maven:3.6.3-openjdk-8
 
 USER root
 
@@ -501,6 +500,8 @@ RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind.jar \
     && echo "jackson-databind: downloaded" \
     && sudo mv /tmp/jackson-databind.jar /usr/local/lib/jackson-databind.jar
 ENV CLASSPATH="/usr/local/lib/jackson-databind.jar:${CLASSPATH}"
+
+run echo $CLASSPATH
 
 ###############################
 ###  docker-bits/8_platform.Dockerfile
