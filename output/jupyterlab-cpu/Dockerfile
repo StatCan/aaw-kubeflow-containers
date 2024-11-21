@@ -13,10 +13,11 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=latest
+ARG BASE_VERSION=2024-06-17
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
+FROM maven:3.6.3-openjdk-8
 
 USER root
 
@@ -493,7 +494,7 @@ USER $NB_USER
 ARG JACKSON_URL=https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar
 # ARG JACKSON_SHA=3490508379d065fe3fcb80042b62f630f7588606
 
-RUN java -version
+RUN mvn -v
 
 USER root
 RUN wget -q "${JACKSON_URL}" -O /tmp/jackson-databind.jar \

@@ -3,10 +3,11 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=latest
+ARG BASE_VERSION=2024-06-17
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
+FROM maven:3.6.3-openjdk-8
 
 USER root
 
