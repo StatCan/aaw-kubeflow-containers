@@ -69,11 +69,85 @@ generate-Spark:
 ###### Dockerfile Management ######
 ###################################
 
-all:
-	@echo 'Did you mean to generate all Dockerfiles?  That has been renamed to `make generate-dockerfiles`'
+generate-dockerfiles: clean dockerfiles
 
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
-	@echo "All dockerfiles created."
+dockerfiles:
+	mkdir -p $(OUT)
+	cp -r resources/common/. $(OUT)
+	# base-cpu
+	$(CAT) \
+		$(SRC)/0_cpu.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/5_DB-Drivers.Dockerfile \
+	> $(OUT)/Dockerfile
+	echo "\n\nFROM base-cpu as base-jupyterlab" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/6_jupyterlab.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-cpu as mid-rstudio" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/6_rstudio-server.Dockerfile \
+		$(SRC)/6_rstudio.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as mid-tensorflow" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/1_CUDA-11.8.0.Dockerfile \
+		$(SRC)/2_tensorflow.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as mid-pytorch" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/2_pytorch.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as jupyterlab-cpy" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-rstudio as rstudio" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-tensorflow as jupyterlab-tensorflow" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-pytorch as jupyterlab-pytorch" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+
+#########################################
+###   testing for multistage builds   ###
+#########################################
+
+# Testing for Evening
+evening:
+
+	mkdir -p $(OUT)/$@
+	cp -r resources/common/. $(OUT)/$@
+	$(CAT) \
+		$(SRC)/0_cpu.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/5_DB-Drivers.Dockerfile \
+		$(SRC)/6_jupyterlab.Dockerfile \
+		$(SRC)/6_rstudio-server.Dockerfile \
+		$(SRC)/6_rstudio.Dockerfile \
+		$(SRC)/1_CUDA-11.8.0.Dockerfile \
+		$(SRC)/2_tensorflow.Dockerfile \
+		$(SRC)/2_pytorch.Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>   $(OUT)/$@/Dockerfile
 
 ##############################
 ###   Bases GPU & Custom   ###
