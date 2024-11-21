@@ -53,9 +53,9 @@ get_file () {
 ###########################
 ### $FILE
 ###########################
-# https://raw.githubusercontent.com/jupyter/docker-stacks/$COMMIT/$FILE/Dockerfile
+# https://raw.githubusercontent.com/jupyter/docker-stacks/$COMMIT/images/$FILE/Dockerfile
 
-$(curl -s https://raw.githubusercontent.com/jupyter/docker-stacks/$COMMIT/$FILE/Dockerfile)
+$(curl -s https://raw.githubusercontent.com/jupyter/docker-stacks/$COMMIT/images/$FILE/Dockerfile)
 
 EOF
 }
