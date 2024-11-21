@@ -525,6 +525,22 @@ ENV CLASSPATH="/usr/local/lib/jackson-databind.jar:${CLASSPATH}"
 
 run echo $CLASSPATH
 
+ENV MAVEN_VERSION=3.9.5 \
+    MAVEN_HOME=/usr/share/maven \
+    PATH=$MAVEN_HOME/bin:$PATH
+
+# Install Maven
+RUN apt-get update && \
+    apt-get install -y wget && \
+    wget https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    tar xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /usr/share && \
+    ln -s /usr/share/apache-maven-${MAVEN_VERSION} $MAVEN_HOME && \
+    rm apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Verify Maven installation
+RUN mvn --version
+
 ###############################
 ###  docker-bits/8_platform.Dockerfile
 ###############################
