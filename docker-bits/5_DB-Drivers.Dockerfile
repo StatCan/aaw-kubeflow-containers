@@ -40,4 +40,5 @@ RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000
 COPY dbConnection/LINUX_CLIENT_WALLET /opt/oracle/instantclient_23_5/LINUX_CLIENT_WALLET
 COPY dbConnection/*.ora /opt/oracle/instantclient_23_5/network/admin/
 #give users permissions to edit the alias file
+RUN chmod a+w /opt/oracle/instantclient_23_5/network/admin
 RUN chown $NB_UID:$NB_GID /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
