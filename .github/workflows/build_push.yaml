@@ -125,7 +125,7 @@ jobs:
       run:  |
         sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
         sudo chmod +x hadolint
-        ./hadolint output/${{ matrix.notebook }}/Dockerfile --no-fail
+        ./hadolint output/Dockerfile --no-fail
         
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image
