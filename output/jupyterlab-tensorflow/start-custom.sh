@@ -205,10 +205,12 @@ if [ ! -d "$HOME/workspace" ]; then
 fi
 
 # Creating symlink to oracle files for easier access
-if [ ! -d "$HOME/oracle" ]; then
-  echo "Creating symlink for oracle"
-  ln -s /opt/oracle/instantclient_23_5/network/admin/ "$HOME/oracle"
-fi
+#TODO: Fix this or remove it if we have an alternate solution
+# it's commented out because it would always run on startup and reset the files on notebook restart
+# if [ ! -d "$HOME/oracle" ]; then
+#   echo "Creating symlink for oracle"
+#   ln -s /opt/oracle/instantclient_23_5/network/admin/ "$HOME/oracle"
+# fi
 
 # Add sasstudio default
 if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
