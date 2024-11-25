@@ -410,11 +410,10 @@ RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz &&
     echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
     tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
-    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
-
-# Install lmodern, required by LaTeX so Quarto can produce PDFs
-RUN apt-get update && sudo apt-get install lmodern -y \
-    && rm -rf /var/lib/apt/lists/*
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto && \
+    # Install lmodern, required by LaTeX so Quarto can produce PDFs
+    apt-get update && sudo apt-get install lmodern -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
