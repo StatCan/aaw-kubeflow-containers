@@ -90,9 +90,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-ARG KUBECTL_VERSION=v1.28.2
+ARG KUBECTL_VERSION=v1.29.10
 ARG KUBECTL_URL=https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-ARG KUBECTL_SHA=c922440b043e5de1afa3c1382f8c663a25f055978cbc6e8423493ec157579ec5
 
 ARG AZCLI_URL=https://aka.ms/InstallAzureCLIDeb
 
@@ -102,9 +101,9 @@ ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b
 ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
 ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
 
-ARG ARGO_CLI_VERSION=v3.4.5
+ARG ARGO_CLI_VERSION=v3.5.12
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
-ARG ARGO_CLI_SHA=0528ff0c0aa87a3f150376eee2f1b26e8b41eb96578c43d715c906304627d3a1 
+ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
 RUN \
   # OpenJDK-8
@@ -116,7 +115,8 @@ RUN \
   && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
-    && echo "${KUBECTL_SHA} kubectl" | sha256sum -c - \
+    && curl -LO "${KUBECTL_URL}.sha256" \
+    && echo "$(cat kubectl.sha256) kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
     && sudo mv ./kubectl /usr/local/bin/kubectl \
   && \
@@ -140,7 +140,8 @@ RUN \
   && \
     # argo cli
     curl -sLO  ${ARGO_CLI_URL}\
-    && echo "${ARGO_CLI_SHA}  argo-linux-amd64.gz"  | sha256sum -c - \
+    && curl -LO ${ARGO_CLI_CHECKSUM_URL} \
+    && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
     && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
@@ -159,13 +160,50 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
 ###  docker-bits/5_DB-Drivers.Dockerfile
 ###############################
 
+USER root
+
 # ODBC drivers
+# Add the signature to trust the Microsoft repo
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc && \
+    # Add repo to apt sources
+    curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+
 RUN apt-get update && \
-    apt-get install -y unixodbc-dev && \
+    # Install the driver
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18 && \
+    # optional: for bcp and sqlcmd
+    ACCEPT_EULA=Y apt-get install -y mssql-tools18 && \
+    # installing unixODBC
+    apt-get install -y unixodbc unixodbc-dev && \
+    # libaio1 needed for Oracle Instant Client
+    apt-get install -y libaio1 && \
     pip install --no-cache-dir --quiet pyodbc && \
     rm -rf /var/lib/apt/lists/* && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
+
+RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc && \
+    source ~/.bashrc
+
+# installing Oracle Instant Client
+RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip && \
+    unzip instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle/ && \
+    echo /opt/oracle/instantclient_23_5 > /etc/ld.so.conf.d/oracle-instantclient.conf && \
+    ldconfig
+
+ENV PATH /opt/oracle/instantclient_23_5:${PATH}
+
+# installing Oracle ODBC driver
+RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-odbc-linux.x64-23.5.0.24.07.zip && \
+    unzip -oj instantclient-odbc-linux.x64-23.5.0.24.07.zip -d /opt/oracle/instantclient_23_5 && \
+    /opt/oracle/instantclient_23_5/odbc_update_ini.sh / /opt/oracle/instantclient_23_5
+
+# add relevent files needed for oracle
+COPY dbConnection/LINUX_CLIENT_WALLET /opt/oracle/instantclient_23_5/LINUX_CLIENT_WALLET
+COPY dbConnection/*.ora /opt/oracle/instantclient_23_5/network/admin/
+#give users permissions to edit the alias file
+RUN chmod a+w /opt/oracle/instantclient_23_5/network/admin
+RUN chown $NB_UID:$NB_GID /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
 
 ###############################
 ###  docker-bits/6_jupyterlab.Dockerfile
@@ -285,10 +323,11 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Install OpenM++ MPI
-ARG OMPP_VERSION="1.15.6"
+ARG OMPP_VERSION="1.17.5"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ARG OMPP_PKG_DATE="20231115"
-ARG SHA256ompp=ad8027e2097ed46205fe0e89c1008680e92c5de36af2613d0af8070e5c78b903
+ARG OMPP_PKG_DATE="20241021"
+# Sha needs to be manually generated.
+ARG SHA256ompp=79c4bf6e09c9c51f33986251f1f44279f29d4fe669b6e8f7d7597a406d24b5a9
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -307,8 +346,8 @@ RUN apt-get update --yes \
     && rm -f /tmp/ompp.tar.gz \
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \
@@ -317,7 +356,7 @@ RUN apt-get update --yes \
     && pip install /opt/jupyter-ompp-proxy/
 
 # MinIO Client install
-COPY --from=minio/mc:RELEASE.2024-03-09T06-43-06Z /bin/mc /usr/local/bin/mc
+COPY --from=minio/mc:RELEASE.2024-11-17T19-35-25Z /bin/mc /usr/local/bin/mc
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
@@ -398,15 +437,19 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
 # SAS
 
 # Install Quarto
-ARG QUARTO_VERSION=1.4.176
-ARG QUARTO_SHA=c06edd8930903a1018a27eb9f70fb9037b28a3cd8a7eb6299e8136876b4e11b3
-ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz 
+ARG QUARTO_VERSION=1.5.57
+ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
+ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
 RUN wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
-    echo "${QUARTO_SHA} /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" | sha256sum -c - && \
+    wget -q ${QUARTO_CHECKSUM_URL} -O /tmp/quarto-${QUARTO_VERSION}-checksums.txt && \
+    grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" /tmp/quarto-${QUARTO_VERSION}-checksums.txt | sed "s|quarto-${QUARTO_VERSION}-linux-amd64.tar.gz|/tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz|" | sha256sum -c - && \
     tar -xzvf /tmp/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz -C /tmp/ && \
     chmod +x /tmp/quarto-${QUARTO_VERSION} && \
-    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto
+    ln -s /tmp/quarto-${QUARTO_VERSION}/bin/quarto /usr/bin/quarto && \
+    # Install lmodern, required by LaTeX so Quarto can produce PDFs
+    apt-get update && sudo apt-get install lmodern -y && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1002 sasstaff && \
     usermod -a -G sasstaff jovyan && \
@@ -414,7 +457,7 @@ RUN groupadd -g 1002 sasstaff && \
 
 COPY --from=SASHome /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc
+COPY --from=minio/mc:RELEASE.2024-11-17T19-35-25Z /bin/mc /usr/local/bin/mc
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \

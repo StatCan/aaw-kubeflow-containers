@@ -1,0 +1,15 @@
+###############################################################################
+# 
+# You can add aliases to databases in this file. Typically follows this format:
+# 
+# test_alias =
+#     (description=
+#       (address=
+#         (protocol=tcps)
+#         (host=<YOUR_HOST_VALUE>)
+#         (port=2485))
+#       (connect_data=
+#         (server=dedicated)
+#         (service_name=<YOUR_SERVICE_NAME>))) 
+# 
+###############################################################################
