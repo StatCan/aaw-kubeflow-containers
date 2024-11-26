@@ -130,6 +130,9 @@ dockerfiles:
 		$(SRC)/0_Rocker.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-remote-desktop as remote-desktop" >> $(OUT)/Dockerfile
+	$(CAT) \
 		$(SRC)/6_remote-desktop.Dockerfile \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
@@ -141,10 +144,16 @@ dockerfiles:
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-sas as mid-sas" >> $(OUT)/Dockerfile
+	$(CAT) \
 		$(SRC)/6_jupyterlab.Dockerfile \
 		$(SRC)/6_rstudio-server.Dockerfile \
 		$(SRC)/6_rstudio.Dockerfile\
 		$(SRC)/6_sas.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-sas as sas" >> $(OUT)/Dockerfile
+	$(CAT) \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile

@@ -6,7 +6,7 @@
 ARG BASE_VERSION_SAS=2024-06-17
 
 FROM k8scc01covidacr.azurecr.io/sas4c:0.0.3 as SASHome
-FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION_SAS as sas
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION_SAS as base-sas
 
 USER root
 
