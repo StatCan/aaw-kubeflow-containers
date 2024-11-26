@@ -4,6 +4,7 @@
 # https://github.com/jupyter/docker-stacks/wiki
 
 ARG BASE_VERSION_CPU=2024-06-17
+ARG BASE_VERSION_SAS=2024-06-17-test
 
 FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION_CPU as base-cpu
 
