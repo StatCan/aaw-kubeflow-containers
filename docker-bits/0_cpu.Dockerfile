@@ -3,9 +3,9 @@
 # It can be obtained by running `docker inspect repo/imagename:tag@digest` or from
 # https://github.com/jupyter/docker-stacks/wiki
 
-ARG BASE_VERSION=2024-06-17
+ARG BASE_VERSION_CPU=2024-06-17
 
-FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION as base-cpu
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION_CPU as base-cpu
 
 USER root
 

@@ -69,11 +69,13 @@ generate-Spark:
 ###### Dockerfile Management ######
 ###################################
 
-generate-dockerfiles: clean dockerfiles
+generate-dockerfiles: clean .output dockerfiles
 
 dockerfiles:
-	mkdir -p $(OUT)
 	cp -r resources/common/. $(OUT)
+	cp -r scripts/remote-desktop $(OUT)
+	cp -r resources/remote-desktop/. $(OUT)
+	cp -r resources/sas/. $(OUT)
 	# base-cpu
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
