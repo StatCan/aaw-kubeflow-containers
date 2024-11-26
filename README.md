@@ -187,6 +187,7 @@ Pushes to an open PR **that also has the `auto-deploy` label on the PR** are acc
 You can access these images using any of the following:
 * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHA
 * k8scc01covidacrdev.azurecr.io/IMAGENAME:SHORT_SHA
+* k8scc01covidacrdev.azurecr.io/IMAGENAME:BRANCHNAME
 * k8scc01covidacrdev.azurecr.io/IMAGENAME:dev (for convenience in testing)
 
 Images pushed to the dev acr are only available to the DEV cluster, attempting to use them in prod will fail.
