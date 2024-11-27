@@ -103,25 +103,21 @@ dockerfiles:
 	>> $(OUT)/Dockerfile
 	echo "\n\nFROM base-jupyterlab as jupyterlab-cpu" >> $(OUT)/Dockerfile
 	$(CAT) \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile
 	echo "\n\nFROM mid-rstudio as rstudio" >> $(OUT)/Dockerfile
 	$(CAT) \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile
 	echo "\n\nFROM mid-tensorflow as jupyterlab-tensorflow" >> $(OUT)/Dockerfile
 	$(CAT) \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile
 	echo "\n\nFROM mid-pytorch as jupyterlab-pytorch" >> $(OUT)/Dockerfile
 	$(CAT) \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile
@@ -131,7 +127,6 @@ dockerfiles:
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/6_remote-desktop.Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
 	>> $(OUT)/Dockerfile
@@ -145,7 +140,6 @@ dockerfiles:
 		$(SRC)/6_rstudio-server.Dockerfile \
 		$(SRC)/6_rstudio.Dockerfile\
 		$(SRC)/6_sas.Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
 	>> $(OUT)/Dockerfile
 
