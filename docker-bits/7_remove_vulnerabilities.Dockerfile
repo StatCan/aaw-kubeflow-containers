@@ -7,7 +7,7 @@ USER root
 # Forcibly upgrade packages to patch vulnerabilities
 # See https://github.com/StatCan/aaw-private/issues/58#issuecomment-1471863092 for more details.
 RUN pip3 --no-cache-dir install --quiet \
-      'wheel==' \
+      'wheel' \
       'setuptools' \
       'pyjwt' \
       'oauthlib' \
