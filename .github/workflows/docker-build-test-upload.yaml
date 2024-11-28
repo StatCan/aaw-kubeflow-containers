@@ -3,6 +3,7 @@ name: Download a parent image, build a new one, and test it; then upload the ima
 env:
   REGISTRY_NAME: k8scc01covidacr
   DEV_REGISTRY_NAME: k8scc01covidacrdev
+  HADOLINT_VERSION: "2.12.0"
 
 on:
   workflow_call:
