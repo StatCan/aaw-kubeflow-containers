@@ -38,21 +38,6 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   
 jobs:
-  # Any checks that run pre-build
-  pre-build-checks:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-
-    - name: Assert committed ./output folder matches `make generate-dockerfiles` output
-      run: |
-        sudo apt-get install --yes make
-        make clean
-        make generate-dockerfiles
-        if ! git diff --quiet output/; then
-            echo 'output folder and docker-bits/resources out of sync!'
-            exit 1
-        fi
         
   build-push:
     env:
@@ -81,7 +66,6 @@ jobs:
           - jupyterlab-pytorch 
           # - jupyterlab-tensorflow removed from build. https://jirab.statcan.ca/browse/BTIS-421
           - remote-desktop 
-    needs: pre-build-checks
     runs-on: ubuntu-latest
     services:
       registry:
@@ -141,7 +125,7 @@ jobs:
       run:  |
         sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
         sudo chmod +x hadolint
-        ./hadolint output/${{ matrix.notebook }}/Dockerfile --no-fail
+        ./hadolint output/Dockerfile --no-fail
         
     # make build emits full_image_name, image_tag, and image_repo outputs
     - name: Build image

@@ -69,98 +69,63 @@ generate-Spark:
 ###### Dockerfile Management ######
 ###################################
 
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
-	@echo "All dockerfiles created."
+generate-dockerfiles: clean .output dockerfiles
 
-##############################
-###   Bases GPU & Custom   ###
-##############################
-
-# Configure the "Bases".
-#
-# PyTorch image can use Aanaconda's CUDA packages (much simpler)
-pytorch: .output
+dockerfiles:
+	cp -r resources/common/. $(OUT)
+	cp -r scripts/remote-desktop $(OUT)
+	cp -r resources/remote-desktop/. $(OUT)
+	cp -r resources/sas/. $(OUT)
+	# base-cpu
 	$(CAT) \
 		$(SRC)/0_cpu.Dockerfile \
-		$(SRC)/2_$@.Dockerfile \
-	> $(TMP)/$@.Dockerfile
-
-# Tensorflow doesn't like the Anaconda CUDA packages (yet)
-tensorflow: .output
-	$(CAT) \
-		$(SRC)/0_cpu.Dockerfile \
-		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
-		$(SRC)/2_$@.Dockerfile \
-	> $(TMP)/$@.Dockerfile
-
-cpu: .output
-	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
-
-################################
-###    R-Studio & Jupyter    ###
-################################
-
-# Only one output version
-rstudio: cpu
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-
-	$(CAT) \
-		$(TMP)/$<.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
 		$(SRC)/4_CLI.Dockerfile \
 		$(SRC)/5_DB-Drivers.Dockerfile \
-		$(SRC)/6_rstudio-server.Dockerfile \
-		$(SRC)/6_$(@).Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
-		$(SRC)/∞_CMD.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# Only one output version
-sas:
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-	cp -r resources/sas/. $(OUT)/$@
-
+	> $(OUT)/Dockerfile
+	echo "\n\nFROM base-cpu as base-jupyterlab" >> $(OUT)/Dockerfile
 	$(CAT) \
-		$(SRC)/0_cpu_sas.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
-		$(SRC)/4_CLI.Dockerfile \
-		$(SRC)/5_DB-Drivers.Dockerfile \
 		$(SRC)/6_jupyterlab.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-cpu as mid-rstudio" >> $(OUT)/Dockerfile
+	$(CAT) \
 		$(SRC)/6_rstudio-server.Dockerfile \
-		$(SRC)/6_rstudio.Dockerfile\
-		$(SRC)/6_$(@).Dockerfile \
+		$(SRC)/6_rstudio.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as mid-tensorflow" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/1_CUDA-11.8.0.Dockerfile \
+		$(SRC)/2_tensorflow.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as mid-pytorch" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/2_pytorch.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM base-jupyterlab as jupyterlab-cpu" >> $(OUT)/Dockerfile
+	$(CAT) \
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# create directories for current images
-jupyterlab: pytorch tensorflow cpu
-
-	for type in $^; do \
-		mkdir -p $(OUT)/$@-$${type}; \
-		cp -r resources/common/. $(OUT)/$@-$${type}/; \
-		$(CAT) \
-			$(TMP)/$${type}.Dockerfile \
-			$(SRC)/3_Kubeflow.Dockerfile \
-			$(SRC)/4_CLI.Dockerfile \
-			$(SRC)/5_DB-Drivers.Dockerfile \
-			$(SRC)/6_$(@).Dockerfile \
-			$(SRC)/7_remove_vulnerabilities.Dockerfile \
-			$(SRC)/8_platform.Dockerfile \
-			$(SRC)/∞_CMD.Dockerfile \
-		>   $(OUT)/$@-$${type}/Dockerfile; \
-	done
-
-# Remote Desktop
-remote-desktop:
-	mkdir -p $(OUT)/$@
-	echo "REMOTE DESKTOP"
-	cp -r scripts/remote-desktop $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-	cp -r resources/remote-desktop/. $(OUT)/$@
-
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-rstudio as rstudio" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-tensorflow as jupyterlab-tensorflow" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	echo "\n\nFROM mid-pytorch as jupyterlab-pytorch" >> $(OUT)/Dockerfile
+	$(CAT) \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/8_platform.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
+	# Remote-desktop
 	$(CAT) \
 		$(SRC)/0_Rocker.Dockerfile \
 		$(SRC)/3_Kubeflow.Dockerfile \
@@ -169,16 +134,20 @@ remote-desktop:
 		$(SRC)/7_remove_vulnerabilities.Dockerfile \
 		$(SRC)/8_platform.Dockerfile \
 		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# Debugging Dockerfile generator that essentially uses docker-stacks images
-# Used for when you need something to build quickly during debugging
-docker-stacks-datascience-notebook:
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/* $(OUT)/$@
-	DS_TAG=$$(make -s get-docker-stacks-upstream-tag); \
-	echo "FROM jupyter/datascience-notebook:$$DS_TAG" > $(OUT)/$@/Dockerfile; \
-	$(CAT) $(SRC)/∞_CMD.Dockerfile >> $(OUT)/$@/Dockerfile
+	>> $(OUT)/Dockerfile
+	#sas
+	$(CAT) \
+		$(SRC)/0_cpu_sas.Dockerfile \
+		$(SRC)/3_Kubeflow.Dockerfile \
+		$(SRC)/4_CLI.Dockerfile \
+		$(SRC)/5_DB-Drivers.Dockerfile \
+		$(SRC)/6_jupyterlab.Dockerfile \
+		$(SRC)/6_rstudio-server.Dockerfile \
+		$(SRC)/6_rstudio.Dockerfile\
+		$(SRC)/6_sas.Dockerfile \
+		$(SRC)/7_remove_vulnerabilities.Dockerfile \
+		$(SRC)/∞_CMD.Dockerfile \
+	>> $(OUT)/Dockerfile
 
 ###################################
 ######    Docker helpers     ######
@@ -202,7 +171,7 @@ build/%: ## build the latest image
 	# End repo with exactly one trailing slash, unless it is empty
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
-	DOCKER_BUILDKIT=0 docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
+	docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/  --target $(notdir $@) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
