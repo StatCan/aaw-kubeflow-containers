@@ -64,10 +64,10 @@ jobs:
           username: ${{ secrets.DEV_REGISTRY_USERNAME }}
           password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
 
-    # make build emits full_image_name, image_tag, and image_repo outputs
-    - name: Build image
-      id: build-image
-      run: make build/${{ input.image }} REPO=${{ env.LOCAL_REPO }}
+      # make build emits full_image_name, image_tag, and image_repo outputs
+      - name: Build image
+        id: build-image
+        run: make build/${{ input.image }} REPO=${{ env.LOCAL_REPO }}
 
-    - name: Echo disk usage after build completion
-      run: ./.github/scripts/echo_usage.sh
+      - name: Echo disk usage after build completion
+        run: ./.github/scripts/echo_usage.sh
