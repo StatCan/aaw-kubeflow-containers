@@ -29,11 +29,6 @@ on:
   push:
     branches:
       - 'master'
-  pull_request:
-    types:
-      - 'opened'
-      - 'synchronize'
-      - 'reopened'
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   
