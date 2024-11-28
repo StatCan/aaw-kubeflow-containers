@@ -44,14 +44,6 @@ BRANCH_NAME := $(shell ./make_helpers/get_branch_name.sh)
 DEFAULT_PORT := 8888
 DEFAULT_NB_PREFIX := /notebook/username/notebookname
 
-.PHONY: clean .output generate-dockerfiles
-
-clean:
-	rm -rf $(OUT) $(TMP)
-
-.output:
-	mkdir -p $(OUT)/ $(TMP)/
-
 #############################
 ###    Generated Files    ###
 #############################
@@ -64,121 +56,6 @@ generate-CUDA:
 
 generate-Spark:
 	bash scripts/get-spark-stuff.sh --commit $(COMMIT)  > $(SRC)/2_Spark.Dockerfile
-
-###################################
-###### Dockerfile Management ######
-###################################
-
-generate-dockerfiles: clean jupyterlab rstudio remote-desktop sas docker-stacks-datascience-notebook
-	@echo "All dockerfiles created."
-
-##############################
-###   Bases GPU & Custom   ###
-##############################
-
-# Configure the "Bases".
-#
-# PyTorch image can use Aanaconda's CUDA packages (much simpler)
-pytorch: .output
-	$(CAT) \
-		$(SRC)/0_cpu.Dockerfile \
-		$(SRC)/2_$@.Dockerfile \
-	> $(TMP)/$@.Dockerfile
-
-# Tensorflow doesn't like the Anaconda CUDA packages (yet)
-tensorflow: .output
-	$(CAT) \
-		$(SRC)/0_cpu.Dockerfile \
-		$(SRC)/1_CUDA-$($(@)-CUDA).Dockerfile \
-		$(SRC)/2_$@.Dockerfile \
-	> $(TMP)/$@.Dockerfile
-
-cpu: .output
-	$(CAT) $(SRC)/0_$@.Dockerfile > $(TMP)/$@.Dockerfile
-
-################################
-###    R-Studio & Jupyter    ###
-################################
-
-# Only one output version
-rstudio: cpu
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-
-	$(CAT) \
-		$(TMP)/$<.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
-		$(SRC)/4_CLI.Dockerfile \
-		$(SRC)/5_DB-Drivers.Dockerfile \
-		$(SRC)/6_rstudio-server.Dockerfile \
-		$(SRC)/6_$(@).Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
-		$(SRC)/∞_CMD.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# Only one output version
-sas:
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-	cp -r resources/sas/. $(OUT)/$@
-
-	$(CAT) \
-		$(SRC)/0_cpu_sas.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
-		$(SRC)/4_CLI.Dockerfile \
-		$(SRC)/5_DB-Drivers.Dockerfile \
-		$(SRC)/6_jupyterlab.Dockerfile \
-		$(SRC)/6_rstudio-server.Dockerfile \
-		$(SRC)/6_rstudio.Dockerfile\
-		$(SRC)/6_$(@).Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
-		$(SRC)/∞_CMD.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# create directories for current images
-jupyterlab: pytorch tensorflow cpu
-
-	for type in $^; do \
-		mkdir -p $(OUT)/$@-$${type}; \
-		cp -r resources/common/. $(OUT)/$@-$${type}/; \
-		$(CAT) \
-			$(TMP)/$${type}.Dockerfile \
-			$(SRC)/3_Kubeflow.Dockerfile \
-			$(SRC)/4_CLI.Dockerfile \
-			$(SRC)/5_DB-Drivers.Dockerfile \
-			$(SRC)/6_$(@).Dockerfile \
-			$(SRC)/7_remove_vulnerabilities.Dockerfile \
-			$(SRC)/8_platform.Dockerfile \
-			$(SRC)/∞_CMD.Dockerfile \
-		>   $(OUT)/$@-$${type}/Dockerfile; \
-	done
-
-# Remote Desktop
-remote-desktop:
-	mkdir -p $(OUT)/$@
-	echo "REMOTE DESKTOP"
-	cp -r scripts/remote-desktop $(OUT)/$@
-	cp -r resources/common/. $(OUT)/$@
-	cp -r resources/remote-desktop/. $(OUT)/$@
-
-	$(CAT) \
-		$(SRC)/0_Rocker.Dockerfile \
-		$(SRC)/3_Kubeflow.Dockerfile \
-		$(SRC)/4_CLI.Dockerfile \
-		$(SRC)/6_remote-desktop.Dockerfile \
-		$(SRC)/7_remove_vulnerabilities.Dockerfile \
-		$(SRC)/8_platform.Dockerfile \
-		$(SRC)/∞_CMD_remote-desktop.Dockerfile \
-	>   $(OUT)/$@/Dockerfile
-
-# Debugging Dockerfile generator that essentially uses docker-stacks images
-# Used for when you need something to build quickly during debugging
-docker-stacks-datascience-notebook:
-	mkdir -p $(OUT)/$@
-	cp -r resources/common/* $(OUT)/$@
-	DS_TAG=$$(make -s get-docker-stacks-upstream-tag); \
-	echo "FROM jupyter/datascience-notebook:$$DS_TAG" > $(OUT)/$@/Dockerfile; \
-	$(CAT) $(SRC)/∞_CMD.Dockerfile >> $(OUT)/$@/Dockerfile
 
 ###################################
 ######    Docker helpers     ######
