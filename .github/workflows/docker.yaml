@@ -23,7 +23,7 @@ on:
 
 jobs:
   base-cpu:
-    uses: ./.github/workflows/docker-build-test-upload.yml
+    uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: ""
       image: "base-cpu"
