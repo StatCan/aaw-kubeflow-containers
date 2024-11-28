@@ -1,0 +1,29 @@
+name: Build, test, and push Docker Images
+on:
+  push:
+    branches:
+      - "master"
+    paths:
+      - ".github/workflows/docker.yml"
+
+      - "images/**"
+      - "!images/*/README.md"
+      - "tests/**"
+      - "!tests/README.md"
+      - "requirements-dev.txt"
+  pull_request:
+    paths:
+      - ".github/workflows/docker.yml"
+
+      - "images/**"
+      - "!images/*/README.md"
+      - "tests/**"
+      - "!tests/README.md"
+      - "requirements-dev.txt"
+
+jobs:
+  base-cpu:
+    uses: ./.github/workflows/docker-build-test-upload.yml
+    with:
+      parent-image: ""
+      image: "base-cpu"
