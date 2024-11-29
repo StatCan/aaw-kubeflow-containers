@@ -27,17 +27,20 @@ on:
         required: false
         type: string
         default: default
+      registry-username:
+        description: Username for the ACR
+        required: true
+        type: string
+      registry-password:
+        description: Password for the ACR
+        required: true
+        type: string
 
 jobs:
   build-test-upload:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Debug Secrets Access
-        run: |
-          echo "Username: ${{ secrets.REGISTRY_USERNAME }}"
-          echo "Password: ${{ secrets.REGISTRY_PASSWORD }}"
-
       - uses: actions/checkout@master
 
       - name: Run Hadolint
@@ -59,15 +62,8 @@ jobs:
       - uses: azure/docker-login@v1
         with:
           login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
-
-      # Connect to Azure DEV Container registry (ACR)
-      - uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.DEV_REGISTRY_NAME }}.azurecr.io
-          username: ${{ secrets.DEV_REGISTRY_USERNAME }}
-          password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+          username: ${{ inputs.registry-username }}
+          password: ${{ inputs.registry-password }}
 
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
