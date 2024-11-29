@@ -23,10 +23,11 @@ on:
 
 jobs:
   test-secrets:
-    - name: Debug Secrets Access
-      run: |
-        echo "Username: ${{ secrets.REGISTRY_USERNAME }}"
-        echo "Password: ${{ secrets.REGISTRY_PASSWORD }}"
+    steps:
+      - name: Debug Secrets Access
+        run: |
+          echo "Username: ${{ secrets.REGISTRY_USERNAME }}"
+          echo "Password: ${{ secrets.REGISTRY_PASSWORD }}"
 
   base-cpu:
     uses: ./.github/workflows/docker-build-test-upload.yaml
