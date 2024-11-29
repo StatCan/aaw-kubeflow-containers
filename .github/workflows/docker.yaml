@@ -23,6 +23,8 @@ on:
 
 jobs:
   test-secrets:
+    runs-on: ubuntu-latest
+
     steps:
       - name: Debug Secrets Access
         run: |
