@@ -27,5 +27,6 @@ jobs:
     with:
       parent-image: ""
       image: "base-cpu"
+    secrets:
       registry-username: ${{ secrets.REGISTRY_USERNAME }}
       registry-password: ${{ secrets.REGISTRY_PASSWORD }}
