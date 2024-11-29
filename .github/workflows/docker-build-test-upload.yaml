@@ -33,6 +33,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Debug Secrets Access
+        run: |
+          echo "Username: ${{ secrets.REGISTRY_USERNAME }}"
+          echo "Password: ${{ secrets.REGISTRY_PASSWORD }}"
+
       - uses: actions/checkout@master
 
       - name: Run Hadolint
