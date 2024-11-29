@@ -27,6 +27,13 @@ on:
         required: false
         type: string
         default: default
+    secrets:
+      REGISTRY_USERNAME:
+        description: The username for the container registry
+        required: true
+      REGISTRY_PASSWORD:
+        description: The password for the container registry
+        required: true
 
 jobs:
   build-test-upload:
