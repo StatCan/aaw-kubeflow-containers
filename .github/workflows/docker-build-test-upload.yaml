@@ -73,10 +73,10 @@ jobs:
         run: ./.github/scripts/echo_usage.sh
 
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
-        run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+        run: make post-build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
 
       - name: Push image to local registry (default pushes all tags)
-        run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+        run: make push/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
 
       # Image testing
       - name: Set Up Python for Test Suite
@@ -90,7 +90,7 @@ jobs:
           make install-python-dev-venv
       
       - name: Test image
-        run: make test/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+        run: make test/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
 
       # Free up space from build process (containerscan action will run out of space if we don't)
       - run: ./.github/scripts/cleanup_runner.sh

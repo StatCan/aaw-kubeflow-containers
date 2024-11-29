@@ -92,7 +92,6 @@ post-build/%: export SOURCE_FULL_IMAGE_NAME?=
 post-build/%: export IMAGE_VERSION?=
 post-build/%: export IS_LATEST?=
 post-build/%:
-	# TODO: could check for custom hook in the build's directory
 	IMAGE_NAME="$(notdir $@)" \
 	GIT_SHA=$(GIT_SHA) \
 	BRANCH_NAME=$(BRANCH_NAME) \
