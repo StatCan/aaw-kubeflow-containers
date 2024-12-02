@@ -26,12 +26,18 @@ env:
   DEV_REGISTRY_NAME: k8scc01covidacrdev
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test env
+        run: |
+          echo "Registry Name ${{ env.REGISTRY_NAME}}"
   base-cpu:
     uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: ""
       image: "base-cpu"
-      registry-name: "${{ env.DEV_REGISTRY_NAME }}"
+      registry-name: ""
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
@@ -40,7 +46,7 @@ jobs:
     with:
       parent-image: "base-cpu"
       image: "base-kubeflow"
-      registry-name: "${{ env.DEV_REGISTRY_NAME }}"
+      registry-name: "$"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
