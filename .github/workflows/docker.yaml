@@ -21,9 +21,11 @@ on:
       - "!tests/README.md"
       - "requirements-dev.txt"
 
-env:
-  REGISTRY_NAME: k8scc01covidacr
-  DEV_REGISTRY_NAME: k8scc01covidacrdev
+defaults:
+  run:
+    env:
+      REGISTRY_NAME: k8scc01covidacr
+      DEV_REGISTRY_NAME: k8scc01covidacrdev
 
 jobs:
   base-cpu:
