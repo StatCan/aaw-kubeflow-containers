@@ -20,27 +20,33 @@ on:
       - "tests/**"
       - "!tests/README.md"
       - "requirements-dev.txt"
-env:
-  REGISTRY_NAME: "k8scc01covidacr"
-  DEV_REGISTRY_NAME: "k8scc01covidacrdev"
 
 jobs:
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      REGISTRY_NAME: k8scc01covidacr
+      DEV_REGISTRY_NAME: k8scc01covidacrdev
+    steps:
+      - name: Set up environment
+        run: echo "Environment has been set up."
   base-cpu:
     uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: ""
       image: "base-cpu"
-      registry-name: "${{ env.DEV_REGISTRY_NAME}}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME}}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+    needs: [vars]
   base-kubeflow:
     uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: "base-cpu"
       image: "base-kubeflow"
-      registry-name: "${{ env.DEV_REGISTRY_NAME}}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME}}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [base-cpu]
+    needs: [vars, base-cpu]
