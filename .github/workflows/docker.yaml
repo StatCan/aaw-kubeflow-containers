@@ -22,31 +22,22 @@ on:
       - "requirements-dev.txt"
 
 jobs:
-  vars:
-    runs-on: ubuntu-latest
-    outputs:
-      REGISTRY_NAME: "k8scc01covidacr"
-      DEV_REGISTRY_NAME: "k8scc01covidacrdev"
-    steps:
-      - name: Set up environment
-        run: echo "Environment has been set up."
   base-cpu:
     uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: ""
       image: "base-cpu"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "k8scc01covidacrdev"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [vars]
   base-kubeflow:
     uses: ./.github/workflows/docker-build-test-upload.yaml
     with:
       parent-image: "base-cpu"
       image: "base-kubeflow"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "k8scc01covidacrdev"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [vars, base-cpu]
+    needs: [base-cpu]
