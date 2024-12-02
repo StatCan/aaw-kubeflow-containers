@@ -72,7 +72,7 @@ jobs:
 
       - name: Load parent built image to Docker
         if: inputs.parent-image != ''
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make pull/${{ inputs.parent-image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
@@ -85,7 +85,7 @@ jobs:
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
         run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
-      - name: Push image to local registry (default pushes all tags)
+      - name: Push image to registry (default pushes all tags)
         run: make push/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       # Image testing
