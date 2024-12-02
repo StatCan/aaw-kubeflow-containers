@@ -1,8 +1,6 @@
 name: Download a parent image, build a new one, and test it; then upload the image, tags, and manifests to GitHub artifacts
 
 env:
-  REGISTRY_NAME: k8scc01covidacr
-  DEV_REGISTRY_NAME: k8scc01covidacrdev
   LOCAL_REPO: localhost:5000
   HADOLINT_VERSION: "2.12.0"
 
@@ -24,6 +22,11 @@ on:
         type: string
       variant:
         description: Variant tag prefix
+        required: false
+        type: string
+        default: default
+      registry-name:
+        description: url of the registry <registy-name>.azurecr.io
         required: false
         type: string
         default: default
@@ -65,7 +68,7 @@ jobs:
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
         with:
-          login-server: ${{ env.REGISTRY_NAME }}.azurecr.io
+          login-server: ${{ inputs.REGISTRY_NAME }}.azurecr.io
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
