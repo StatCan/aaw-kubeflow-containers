@@ -5,7 +5,7 @@
 
 ARG BASE_VERSION=2024-06-17
 
-FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION
+FROM quay.io/jupyter/datascience-notebook:$BASE_VERSION as base-cpu
 
 USER root
 

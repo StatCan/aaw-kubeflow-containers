@@ -1,7 +1,6 @@
 name: Download a parent image, build a new one, and test it; then upload the image, tags, and manifests to GitHub artifacts
 
 env:
-  LOCAL_REPO: localhost:5000
   HADOLINT_VERSION: "2.12.0"
 
 on:
@@ -27,9 +26,8 @@ on:
         default: default
       registry-name:
         description: url of the registry <registy-name>.azurecr.io
-        required: false
+        required: true
         type: string
-        default: default
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -72,19 +70,23 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
+      - name: Load parent built image to Docker
+        if: inputs.parent-image != ''
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.REGISTRY_NAME }}.azurecr.io
+
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make build/${{ inputs.image }} REPO=${{ inputs.REGISTRY_NAME }}.azurecr.io
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh
 
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
-        run: make post-build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make post-build/${{ inputs.image }} REPO=${{ inputs.REGISTRY_NAME }}.azurecr.io
 
       - name: Push image to local registry (default pushes all tags)
-        run: make push/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make push/${{ inputs.image }} REPO=${{ inputs.REGISTRY_NAME }}.azurecr.io
 
       # Image testing
       - name: Set Up Python for Test Suite
