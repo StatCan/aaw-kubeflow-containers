@@ -65,13 +65,14 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Pull parent image
+        id: pull-parent
         if: inputs.parent-image != ''
         run: make pull/${{ inputs.parent-image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       - name: Set BASE_IMAGE variable
         run: |
           if [ "${{ inputs.base-image }}" == "" ]; then
-            echo "BASE_IMAGE=${{ steps.pull-parent-image.outputs.parent_image_name }}" >> $GITHUB_ENV
+            echo "BASE_IMAGE=${{ steps.pull-parent.outputs.parent_image_name }}" >> $GITHUB_ENV
           else
             echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
           fi
