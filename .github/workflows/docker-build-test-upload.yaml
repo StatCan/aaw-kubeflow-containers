@@ -2,7 +2,6 @@ name: Download a parent image, build a new one, and test it; then upload the ima
 
 env:
   HADOLINT_VERSION: "2.12.0"
-  LOCAL_REPO: localhost:5000
 
 on:
   workflow_call:
@@ -78,7 +77,7 @@ jobs:
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh
