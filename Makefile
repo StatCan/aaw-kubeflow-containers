@@ -70,7 +70,7 @@ pull/%:
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') &&\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
-	echo "Pulling $$IMAGE_NAME &&\
+	echo "Pulling $$IMAGE_NAME" &&\
 	docker pull $(DARGS) $$IMAGE_NAME &&\
 	echo "parent_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
 
