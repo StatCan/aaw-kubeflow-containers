@@ -12,6 +12,7 @@ on:
         description: Is there a difference in the master branch and the current branch
         value: ${{ jobs.check-changes.outputs.is-diff }}
         type: boolean
+        
 jobs:
   check-diff:
     runs-on: ubuntu-latest

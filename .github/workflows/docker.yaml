@@ -31,7 +31,7 @@ jobs:
       - name: Set up environment
         run: echo "Environment has been set up."
   base-cpu:
-    uses: ./.github/workflows/docker-build-test-upload.yaml
+    uses: ./.github/workflows/docker-steps.yaml
     with:
       parent-image: ""
       image: "base-cpu"
@@ -42,7 +42,7 @@ jobs:
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     needs: [vars]
   base-kubeflow:
-    uses: ./.github/workflows/docker-build-test-upload.yaml
+    uses: ./.github/workflows/docker-steps.yaml
     with:
       parent-image: "base-cpu"
       image: "base-kubeflow"

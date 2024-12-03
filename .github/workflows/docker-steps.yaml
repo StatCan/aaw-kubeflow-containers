@@ -1,0 +1,55 @@
+name: Build, test, and push Docker Images
+on:
+  workflow_call:
+    inputs:
+      parent-image:
+        description: Parent image name
+        required: true
+        type: string
+      image:
+        description: Image name
+        required: true
+        type: string
+      base-image:
+        description: The base image to build from if not located on our own repo
+        required: false
+        type: string
+      registry-name:
+        description: url of the registry <registy-name>.azurecr.io
+        required: true
+        type: string
+    secrets:
+      REGISTRY_USERNAME:
+        description: The username for the container registry
+        required: true
+      REGISTRY_PASSWORD:
+        description: The password for the container registry
+        required: true
+
+jobs:
+  check-diff:
+    runs-on: ubunto-latest
+    steps:
+      - name: check-diff
+        id: check-diff
+        uses: ./.github/workflows/check-diff.yaml
+      - name: build-upload
+        if: steps.check-diff.outputs.is-diff
+        uses: ./.github/workflows/docker-build-upload.yaml
+        with:
+          parent-image: ${{ inputs.parent-image }}
+          image: ${{ inputs.image }}
+          base-image: ${{ inputs.base-image }}
+          registry-name: ${{ inputs.registry-name }}
+          REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      - name: pull-upload
+        if: ${{ !steps.check-diff.outputs.is-diff }}
+        uses: ./.github/workflows/docker-pull-upload.yaml
+        with:
+          parent-image: ${{ inputs.parent-image }}
+          image: ${{ inputs.image }}
+          base-image: ${{ inputs.base-image }}
+          registry-name: ${{ inputs.registry-name }}
+          REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
