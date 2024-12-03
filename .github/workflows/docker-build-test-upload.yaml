@@ -42,6 +42,12 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Check for changes
+        uses: ./.github/workflows/check-diff.yaml
+        id: check-diff
+        with:
+          image: ${{ inputs.image }}
+
       - name: Run Hadolint
         run: |
           sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
@@ -66,27 +72,41 @@ jobs:
 
       - name: Pull parent image
         id: pull-parent
-        if: inputs.parent-image != ''
+        if: inputs.parent-image != '' && steps.check-diff.outputs.is-diff
         run: make pull/${{ inputs.parent-image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       - name: Set BASE_IMAGE variable
+        if: steps.check-diff.outputs.is-diff
         run: |
           if [ "${{ inputs.base-image }}" == "" ]; then
-            echo "BASE_IMAGE=${{ steps.pull-parent.outputs.parent_image_name }}" >> $GITHUB_ENV
+            echo "BASE_IMAGE=${{ steps.pull-parent.outputs.image_name }}" >> $GITHUB_ENV
           else
             echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
           fi
 
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
+        if: steps.check-diff.outputs.is-diff
         id: build-image
         run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io BASE_IMAGE=${{ env.BASE_IMAGE}}
 
       - name: Echo disk usage after build completion
+        if: steps.check-diff.outputs.is-diff
         run: ./.github/scripts/echo_usage.sh
 
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
+        if: steps.check-diff.outputs.is-diff
         run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+
+      - name: Pull existing image
+        id: pull-existing
+        if: ${{ !steps.check-diff.outputs.is-diff }}
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds
+        # TODO replace TAG with master
+
+      - name: Retag existing image
+        if: ${{ !steps.check-diff.outputs.is-diff }}
+        run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io SOURCE_FULL_IMAGE_NAME=${{ steps.pull-existing.outputs.image_name }}
 
       - name: Push image to registry (default pushes all tags)
         run: make push/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io

@@ -1,0 +1,39 @@
+name: Check changes to stage
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Image name
+        required: true
+        type: string
+    outputs:
+      is-diff:
+        description: Is there a difference in the master branch and the current branch
+        value: ${{ jobs.check-changes.outputs.is-diff }}
+        type: boolean
+jobs:
+  check-diff:
+    runs-on: ubuntu-latest
+    outputs:
+      is-diff: ${{ steps.check-changes.outputs.is-diff }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch master branch
+        run: |
+          git fetch origin staged-changes:staged-changes # TODO staged-changes:staged-changes to master:master
+
+      - name: Check for changes
+        id: check-changes
+        run: | # Check for changes excluding README.md
+          CHANGES=$(git diff --name-only origin/staged-changes HEAD -- "$DIR" | grep -v "README.md") # TODO staged-changes to master for live
+
+          if [ -n "$CHANGES" ]; then
+            echo "Changes detected (excluding README.md)"
+            echo "is-diff=true" >> $(GITHUB_OUTPUT)
+          else
+            echo "No changes detected"
+            echo "is-diff=false" >> $(GITHUB_OUTPUT)
+          fi

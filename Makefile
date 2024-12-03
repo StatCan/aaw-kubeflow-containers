@@ -72,7 +72,7 @@ pull/%:
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
 	echo "Pulling $$IMAGE_NAME" &&\
 	docker pull $(DARGS) $$IMAGE_NAME &&\
-	echo "parent_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
+	echo "image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
 
 build/%: GITHUB_OUTPUT ?= .tmp/github_output.log
 build/%: DARGS?=
