@@ -61,6 +61,7 @@ generate-Spark:
 ######    Docker helpers     ######
 ###################################
 
+pull/%: GITHUB_OUTPUT ?= .tmp/github_output.log
 pull/%: DARGS?=
 pull/%: REPO?=$(DEFAULT_REPO)
 pull/%: TAG?=$(DEFAULT_TAG)
@@ -69,7 +70,8 @@ pull/%:
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') &&\
 	echo "Pulling $${REPO}$(notdir $@)$${TAG}" &&\
-	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}"
+	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}" &&\
+	echo "parent_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
 
 build/%: GITHUB_OUTPUT ?= .tmp/github_output.log
 build/%: DARGS?=

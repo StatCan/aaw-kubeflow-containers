@@ -71,7 +71,7 @@ jobs:
       - name: Set BASE_IMAGE variable
         run: |
           if [ "${{ inputs.base-image }}" == "" ]; then
-            echo "BASE_IMAGE=${{ inputs.registry-name }}.azurecr.io/${{ inputs.parent-image }}" >> $GITHUB_ENV
+            echo "BASE_IMAGE=${{ env.parent_image_name }}" >> $GITHUB_ENV
           else
             echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
           fi
