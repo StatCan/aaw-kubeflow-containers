@@ -35,6 +35,7 @@ jobs:
     with:
       parent-image: ""
       image: "base-cpu"
+      base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
       registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}

@@ -10,17 +10,12 @@ on:
         description: Parent image name
         required: true
         type: string
-      parent-variant:
-        description: Parent variant tag prefix
-        required: false
-        type: string
-        default: default
       image:
         description: Image name
         required: true
         type: string
-      variant:
-        description: Variant tag prefix
+      base-image:
+        description: The base image to build from if not located on our own repo
         required: false
         type: string
         default: default
@@ -74,10 +69,18 @@ jobs:
         if: inputs.parent-image != ''
         run: make pull/${{ inputs.parent-image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
+      - name: Set BASE_IMAGE variable
+        run: |
+          if [ "${{ inputs.base-image }}" == "" ]; then
+            echo "BASE_IMAGE=${{ inputs.registry-name }}.azurecr.io/${{ inputs.parent-image }}" >> $GITHUB_ENV
+          else
+            echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
+          fi
+
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io BASE_IMAGE=${{ env.BASE_IMAGE}}
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh

@@ -1,4 +1,5 @@
-FROM base-cpu as base-kubeflow
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE} as base-kubeflow
 
 USER root
 COPY aaw-suspend-server.sh /usr/local/bin
