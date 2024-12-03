@@ -69,8 +69,9 @@ pull/%:
 	# End repo with a single slash and start tag with a single colon, if they exist
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') &&\
-	echo "Pulling $${REPO}$(notdir $@)$${TAG}" &&\
-	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}" &&\
+	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
+	echo "Pulling $$IMAGE_NAME &&\
+	docker pull $(DARGS) $$IMAGE_NAME &&\
 	echo "parent_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
 
 build/%: GITHUB_OUTPUT ?= .tmp/github_output.log
