@@ -31,6 +31,7 @@ jobs:
       - name: Set up environment
         run: echo "Environment has been set up."
   base-cpu:
+    needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
       parent-image: ""
@@ -40,8 +41,8 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [vars]
   base-kubeflow:
+    needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
       parent-image: "base-cpu"
@@ -50,4 +51,3 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [vars, base-cpu]

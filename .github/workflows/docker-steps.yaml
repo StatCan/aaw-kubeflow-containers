@@ -28,15 +28,11 @@ on:
 
 jobs:
   check-diff:
-    runs-on: ubuntu-latest
-    outputs:
-      is_diff: ${{ steps.check-diff.outputs.is-diff}}
-    steps:
-      - uses: ./.github/workflows/check-diff.yaml
-        id: check-diff
-        with: ${{ inputs.image }}
+    uses: ./.github/workflows/check-diff.yaml
+    with: ${{ inputs.image }}
 
   build-upload:
+    needs: [check-diff]
     if: needs.check-diff.outputs.is-diff
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
@@ -47,9 +43,9 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [check-diff]
 
   pull-upload:
+    needs: [check-diff]
     if: ${{ !needs.check-diff.outputs.is-diff }}
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
@@ -60,4 +56,3 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    needs: [check-diff]
