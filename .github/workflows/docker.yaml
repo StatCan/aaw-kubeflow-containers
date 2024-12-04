@@ -42,7 +42,7 @@ jobs:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
   base-kubeflow:
-    needs: [vars]
+    needs: [vars, base-cpu]
     uses: ./.github/workflows/docker-steps.yaml
     with:
       parent-image: "base-cpu"
