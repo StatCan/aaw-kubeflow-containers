@@ -1,7 +1,3 @@
-ARG BASE_IMAGE
-ARG STAGE_NAME=cpu
-FROM ${BASE_IMAGE} as ${STAGE_NAME}
-
 USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"

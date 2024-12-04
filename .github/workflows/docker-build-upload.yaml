@@ -77,10 +77,14 @@ jobs:
             echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
           fi
 
+      - name: Set FROM and as in Docerfile
+        run: |
+          sed -i '1i FROM ${{ env.BASE_IMAGE}} as ${{ inputs.image }}' ./images/${{ inputs.image }}/Dockerfile
+
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io BASE_IMAGE=${{ env.BASE_IMAGE}} STAGE_NAME=${{ inputs.image }}
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh
