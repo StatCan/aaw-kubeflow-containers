@@ -28,7 +28,7 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: | # Check for changes excluding README.md
-          CHANGES=$(git diff --name-only origin/staged-builds HEAD -- "$DIR" | grep -v "README.md") # TODO staged-builds to master for live
+          CHANGES=$(git diff --name-only origin/staged-builds HEAD -- "images/${{ inputs.image }}" | grep -v "README.md") # TODO staged-builds to master for live
 
           if [ -n "$CHANGES" ]; then
             echo "Changes detected (excluding README.md)"
