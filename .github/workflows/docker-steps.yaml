@@ -5,7 +5,7 @@ on:
     inputs:
       parent-image:
         description: Parent image name
-        required: true
+        required: false
         type: string
       image:
         description: Image name
@@ -28,11 +28,6 @@ on:
         required: true
 
 jobs:
-  debug: 
-    runs-on: ubuntu-latest
-    steps:
-      - name: secrets?
-        run: echo "Username is ${{ secrets.REGISTRY_USERNAME }}"
   check-diff:
     uses: ./.github/workflows/check-diff.yaml
     with: 
@@ -48,8 +43,8 @@ jobs:
       base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   pull-upload:
     needs: [check-diff]
@@ -59,5 +54,5 @@ jobs:
       image: ${{ inputs.image }}
       registry-name: ${{ inputs.registry-name }}
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
