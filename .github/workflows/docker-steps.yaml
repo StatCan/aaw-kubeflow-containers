@@ -42,6 +42,15 @@ jobs:
     with: 
       image: ${{ inputs.image }}
 
+  print-variables:
+    needs: [check-diff]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print inputs
+        run: echo "${{ toJSON(inputs) }}"
+      - name: print check-diff
+        run: echo "${{ toJSON(needs.check-diff) }}"
+
   build-upload:
     needs: [check-diff]
     if: ${{ needs.check-diff.outputs.is-diff || (inputs.parent-image-is-diff == 'true') }}
