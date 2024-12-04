@@ -10,7 +10,7 @@ on:
     outputs:
       is-diff:
         description: Is there a difference between the master branch and the current branch
-        value: ${{ jobs.check-changes.outputs.is-diff }}
+        value: ${{ jobs.check-diff.outputs.is-diff }}
         
 jobs:
   check-diff:
