@@ -57,7 +57,7 @@ jobs:
 
   pull-upload:
     needs: [check-diff]
-    if: ${{ !needs.check-diff.outputs.is-diff && !fromJSON(inputs.parent-image-is-diff) }}
+    if: ${{ !needs.check-diff.outputs.is-diff && (inputs.parent-image-is-diff == 'false') }}
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
       image: ${{ inputs.image }}
