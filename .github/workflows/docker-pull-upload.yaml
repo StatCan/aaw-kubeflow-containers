@@ -40,6 +40,8 @@ jobs:
           - 5000:5000
 
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Free up all available disk space before building
         run: ./.github/scripts/cleanup_runner.sh
 

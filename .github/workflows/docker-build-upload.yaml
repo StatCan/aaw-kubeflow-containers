@@ -40,7 +40,7 @@ jobs:
           - 5000:5000
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v4
 
       - name: Run Hadolint
         run: |
