@@ -1,6 +1,7 @@
 #!/bin/bash
 #https://github.com/StatCan/aaw-kubeflow-containers/issues/459
 #https://github.com/StatCan/aaw-kubeflow-containers/issues/478
+# force diff from staged-builds
 
 time_wait=$1
 if ! [ ${time_wait:+1} ]
