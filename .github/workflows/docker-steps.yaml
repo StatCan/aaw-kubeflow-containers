@@ -44,6 +44,7 @@ jobs:
       image: ${{ inputs.image }}
       base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}
+    secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     needs: [check-diff]
@@ -56,6 +57,7 @@ jobs:
       image: ${{ inputs.image }}
       base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}
+    secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
     needs: [check-diff]
