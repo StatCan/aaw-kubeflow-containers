@@ -32,8 +32,8 @@ jobs:
 
           if [ -n "$CHANGES" ]; then
             echo "Changes detected (excluding README.md)"
-            echo "is-diff=true" >> $(GITHUB_OUTPUT)
+            echo "is-diff=true" >> $GITHUB_OUTPUT
           else
             echo "No changes detected"
-            echo "is-diff=false" >> $(GITHUB_OUTPUT)
+            echo "is-diff=false" >> $GITHUB_OUTPUT
           fi
