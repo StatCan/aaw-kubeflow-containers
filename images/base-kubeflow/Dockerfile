@@ -1,5 +1,6 @@
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE} as base-kubeflow
+ARG IMAGE
+FROM ${BASE_IMAGE} as ${IMAGE}
 
 USER root
 COPY aaw-suspend-server.sh /usr/local/bin

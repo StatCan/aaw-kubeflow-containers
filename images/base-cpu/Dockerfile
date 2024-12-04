@@ -1,5 +1,6 @@
 ARG BASE_IMAGE
-FROM ${BASE_IMAGE} as base-cpu
+ARG IMAGE
+FROM ${BASE_IMAGE} as ${IMAGE}
 
 USER root
 
