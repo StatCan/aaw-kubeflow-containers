@@ -44,9 +44,9 @@ jobs:
     needs: [vars, base-cpu]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "needs=${{ needs }} "
-      - run: echo "vars outputs=${{ needs.vars.outputs }}"
-      - run: echo "base-cpu outputs=${{ needs.base-cpu.outputs }}"
+      - run: echo "needs=${{ toJson(needs) }} "
+      - run: echo "vars outputs=${{ toJson(needs.vars.outputs) }}"
+      - run: echo "base-cpu outputs=${{ toJson(needs.base-cpu.outputs) }}"
   base-kubeflow:
     needs: [vars, base-cpu]
     uses: ./.github/workflows/docker-steps.yaml
