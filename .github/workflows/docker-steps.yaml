@@ -29,27 +29,33 @@ on:
 jobs:
   check-diff:
     runs-on: ubuntu-latest
+    outputs:
+      is_diff: ${{ steps.check-diff.outputs.is-diff}}
     steps:
-      - name: check-diff
+      - uses: ./.github/workflows/check-diff.yaml
         id: check-diff
-        uses: ./.github/workflows/check-diff.yaml
-      - name: build-upload
-        if: steps.check-diff.outputs.is-diff
-        uses: ./.github/workflows/docker-build-upload.yaml
-        with:
-          parent-image: ${{ inputs.parent-image }}
-          image: ${{ inputs.image }}
-          base-image: ${{ inputs.base-image }}
-          registry-name: ${{ inputs.registry-name }}
-          REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-      - name: pull-upload
-        if: ${{ !steps.check-diff.outputs.is-diff }}
-        uses: ./.github/workflows/docker-pull-upload.yaml
-        with:
-          parent-image: ${{ inputs.parent-image }}
-          image: ${{ inputs.image }}
-          base-image: ${{ inputs.base-image }}
-          registry-name: ${{ inputs.registry-name }}
-          REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+        with: ${{ inputs.image }}
+
+  build-upload:
+    if: needs.check-diff.outputs.is-diff
+    uses: ./.github/workflows/docker-build-upload.yaml
+    with:
+      parent-image: ${{ inputs.parent-image }}
+      image: ${{ inputs.image }}
+      base-image: ${{ inputs.base-image }}
+      registry-name: ${{ inputs.registry-name }}
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+    needs: [check-diff]
+
+  pull-upload:
+    if: ${{ !needs.check-diff.outputs.is-diff }}
+    uses: ./.github/workflows/docker-pull-upload.yaml
+    with:
+      parent-image: ${{ inputs.parent-image }}
+      image: ${{ inputs.image }}
+      base-image: ${{ inputs.base-image }}
+      registry-name: ${{ inputs.registry-name }}
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+    needs: [check-diff]
