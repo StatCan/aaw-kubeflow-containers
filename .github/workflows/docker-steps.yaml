@@ -29,7 +29,8 @@ on:
 jobs:
   check-diff:
     uses: ./.github/workflows/check-diff.yaml
-    with: ${{ inputs.image }}
+    with: 
+      image: ${{ inputs.image }}
 
   build-upload:
     needs: [check-diff]
