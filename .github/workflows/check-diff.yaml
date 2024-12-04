@@ -9,7 +9,7 @@ on:
         type: string
     outputs:
       is-diff:
-        description: Is there a difference in the master branch and the current branch
+        description: Is there a difference between the master branch and the current branch
         value: ${{ jobs.check-changes.outputs.is-diff }}
         
 jobs:

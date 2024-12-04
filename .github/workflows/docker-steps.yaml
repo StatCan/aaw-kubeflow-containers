@@ -3,14 +3,19 @@ name: Build, test, and push Docker Images
 on:
   workflow_call:
     inputs:
-      parent-image:
-        description: Parent image name
-        required: false
-        type: string
       image:
         description: Image name
         required: true
         type: string
+      parent-image:
+        description: Parent image name
+        required: false
+        type: string
+      parent-image-is-diff:
+        description: Parent image has been changed?
+        required: false
+        type: boolean
+        default: false
       base-image:
         description: The base image to build from if not located on our own repo
         required: false
@@ -26,6 +31,10 @@ on:
       REGISTRY_PASSWORD:
         description: The password for the container registry
         required: true
+    outputs:
+      is-diff:
+        description: Is there a difference between the master branch and the current branch
+        value: ${{ jobs.check-diff.outputs.is-diff }}
 
 jobs:
   check-diff:
@@ -35,7 +44,7 @@ jobs:
 
   build-upload:
     needs: [check-diff]
-    if: needs.check-diff.outputs.is-diff
+    if: needs.check-diff.outputs.is-diff || parent-image-is-diff
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
       parent-image: ${{ inputs.parent-image }}
@@ -48,7 +57,7 @@ jobs:
 
   pull-upload:
     needs: [check-diff]
-    if: ${{ !needs.check-diff.outputs.is-diff }}
+    if: ${{ !needs.check-diff.outputs.is-diff && !inputs.parent-image-is-diff }}
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
       image: ${{ inputs.image }}
