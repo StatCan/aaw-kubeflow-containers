@@ -14,8 +14,8 @@ on:
       parent-image-is-diff:
         description: Parent image has been changed?
         required: false
-        type: boolean
-        default: false
+        type: string
+        default: "false"
       base-image:
         description: The base image to build from if not located on our own repo
         required: false
@@ -44,7 +44,7 @@ jobs:
 
   build-upload:
     needs: [check-diff]
-    if: ${{ needs.check-diff.outputs.is-diff || inputs.parent-image-is-diff }}
+    if: ${{ needs.check-diff.outputs.is-diff || inputs.parent-image-is-diff == "true" }}
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
       parent-image: ${{ inputs.parent-image }}
@@ -57,7 +57,7 @@ jobs:
 
   pull-upload:
     needs: [check-diff]
-    if: ${{ !needs.check-diff.outputs.is-diff && !inputs.parent-image-is-diff }}
+    if: ${{ !needs.check-diff.outputs.is-diff && inputs.parent-image-is-diff == "false" }}
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
       image: ${{ inputs.image }}
