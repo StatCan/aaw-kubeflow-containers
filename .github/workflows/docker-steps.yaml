@@ -28,7 +28,7 @@ on:
 
 jobs:
   check-diff:
-    runs-on: ubunto-latest
+    runs-on: ubuntu-latest
     steps:
       - name: check-diff
         id: check-diff

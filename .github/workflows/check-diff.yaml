@@ -1,4 +1,4 @@
-name: Check changes to stage
+name: Check for changes in subdirectory
 
 on:
   workflow_call:
