@@ -80,7 +80,7 @@ jobs:
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io BASE_IMAGE=${{ env.BASE_IMAGE}} IMAGE=${{ inputs.image }}
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io BASE_IMAGE=${{ env.BASE_IMAGE}} STAGE_NAME=${{ inputs.image }}
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh
