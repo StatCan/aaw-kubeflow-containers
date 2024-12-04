@@ -41,10 +41,12 @@ jobs:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
   debug:
-    needs: [base-cpu]
+    needs: [vars, base-cpu]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "base-cpu output=${{ needs.base-cpu.outputs.is-diff }} "
+      - run: echo "needs=${{ needs }} "
+      - run: echo "vars outputs=${{ needs.vars.outputs }}"
+      - run: echo "base-cpu outputs=${{ needs.base-cpu.outputs }}"
   base-kubeflow:
     needs: [vars, base-cpu]
     uses: ./.github/workflows/docker-steps.yaml
