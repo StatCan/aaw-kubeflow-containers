@@ -31,7 +31,7 @@ on:
         required: true
 
 jobs:
-  build-test-upload:
+  build-upload:
     runs-on: ubuntu-latest
     services:
       registry:

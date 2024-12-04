@@ -1,4 +1,5 @@
 name: Build, test, and push Docker Images
+
 on:
   workflow_call:
     inputs:
@@ -27,6 +28,11 @@ on:
         required: true
 
 jobs:
+  debug: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: secrets?
+        run: echo "Username is ${{ secrets.REGISTRY_USERNAME }}"
   check-diff:
     uses: ./.github/workflows/check-diff.yaml
     with: 
@@ -50,9 +56,7 @@ jobs:
     if: ${{ !needs.check-diff.outputs.is-diff }}
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
-      parent-image: ${{ inputs.parent-image }}
       image: ${{ inputs.image }}
-      base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}

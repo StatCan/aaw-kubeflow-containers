@@ -6,17 +6,9 @@ env:
 on:
   workflow_call:
     inputs:
-      parent-image:
-        description: Parent image name
-        required: true
-        type: string
       image:
         description: Image name
         required: true
-        type: string
-      base-image:
-        description: The base image to build from if not located on our own repo
-        required: false
         type: string
       registry-name:
         description: url of the registry <registy-name>.azurecr.io
@@ -41,9 +33,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Free up all available disk space before building
         run: ./.github/scripts/cleanup_runner.sh
+
+      - name: secrets?
+        run: echo "Username is ${{ secrets.REGISTRY_USERNAME }}"
 
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
