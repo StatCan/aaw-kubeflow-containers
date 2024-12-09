@@ -35,7 +35,7 @@ jobs:
     needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "base"
       directory: "base"
       base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
       registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
@@ -47,7 +47,7 @@ jobs:
     needs: [vars, base]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "base-jupyterlab"
       directory: "jupyterlab"
       parent-image: "base"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
@@ -60,7 +60,7 @@ jobs:
     needs: [vars, base-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "platform-jupyterlab"
       directory: "platform"
       parent-image: "base-jupyterlab"
       parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
@@ -73,7 +73,7 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "jupyterlab"
       directory: "cmd"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
@@ -86,7 +86,7 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "mid-pytorch"
       directory: "pytorch"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
@@ -99,7 +99,7 @@ jobs:
     needs: [vars, mid-pytorch]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "pytorch"
       directory: "cmd"
       parent-image: "mid-pytorch"
       parent-image-is-diff: "${{ needs.mid-pytorch.outputs.is-diff }}"
@@ -112,7 +112,7 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "mid-tensorflow"
       directory: "tensorflow"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
@@ -125,7 +125,7 @@ jobs:
     needs: [vars, mid-tensorflow]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "tensorflow"
       directory: "cmd"
       parent-image: "mid-tensorflow"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
@@ -138,7 +138,7 @@ jobs:
     needs: [vars, base]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "mid-rstudio"
       directory: "rstudio"
       parent-image: "base"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
@@ -151,7 +151,7 @@ jobs:
     needs: [vars, mid-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "platform-rstudio"
       directory: "platform"
       parent-image: "mid-rstudio"
       parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
@@ -164,7 +164,7 @@ jobs:
     needs: [vars, platform-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "rstudio"
       directory: "cmd"
       parent-image: "platform-rstudio"
       parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
@@ -177,7 +177,7 @@ jobs:
     needs: [vars, base-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "base-sas"
       directory: "rstudio"
       parent-image: "base-jupyterlab"
       parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
@@ -190,7 +190,7 @@ jobs:
     needs: [vars, base-sas]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "mid-sas"
       directory: "sas"
       parent-image: "base-sas"
       parent-image-is-diff: "${{ needs.base-sas.outputs.is-diff }}"
@@ -203,7 +203,7 @@ jobs:
     needs: [vars, mid-sas]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "${{ github.job }}"
+      image: "sas"
       directory: "cmd"
       parent-image: "mid-sas"
       parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
