@@ -7,6 +7,10 @@ on:
         description: Image name
         required: true
         type: string
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
       parent-image:
         description: Parent image name
         required: false
@@ -57,6 +61,7 @@ jobs:
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
       parent-image: ${{ inputs.parent-image }}
+      directory: ${{ inputs.directory }}
       image: ${{ inputs.image }}
       base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}

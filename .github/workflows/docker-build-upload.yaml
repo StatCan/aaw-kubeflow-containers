@@ -10,6 +10,10 @@ on:
         description: Parent image name
         required: true
         type: string
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
       image:
         description: Image name
         required: true
@@ -84,7 +88,7 @@ jobs:
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io DIRECTORY=${{ inputs.directory }}
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh

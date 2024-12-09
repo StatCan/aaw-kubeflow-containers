@@ -30,23 +30,183 @@ jobs:
     steps:
       - name: Set up environment
         run: echo "Environment has been set up."
-  base-cpu:
+
+  base:
     needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "base-cpu"
+      image: "${{ github.job }}"
+      directory: "base"
       base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
       registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-  base-kubeflow:
-    needs: [vars, base-cpu]
+
+  base-jupyterlab:
+    needs: [vars, base]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "base-kubeflow"
-      parent-image: "base-cpu"
-      parent-image-is-diff: "${{ needs.base-cpu.outputs.is-diff }}"
+      image: "${{ github.job }}"
+      directory: "jupyterlab"
+      parent-image: "base"
+      parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  platform-jupyterlab:
+    needs: [vars, base-jupyterlab]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "platform"
+      parent-image: "base-jupyterlab"
+      parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  jupyterlab:
+    needs: [vars, platform-jupyterlab]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "cmd"
+      parent-image: "platform-jupyterlab"
+      parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  mid-pytorch:
+    needs: [vars, platform-jupyterlab]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "pytorch"
+      parent-image: "platform-jupyterlab"
+      parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  pytorch:
+    needs: [vars, mid-pytorch]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "cmd"
+      parent-image: "mid-pytorch"
+      parent-image-is-diff: "${{ needs.mid-pytorch.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  mid-tensorflow:
+    needs: [vars, platform-jupyterlab]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "tensorflow"
+      parent-image: "platform-jupyterlab"
+      parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  tensorflow:
+    needs: [vars, mid-tensorflow]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "cmd"
+      parent-image: "mid-tensorflow"
+      parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  mid-rstudio:
+    needs: [vars, base]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "rstudio"
+      parent-image: "base"
+      parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  platform-rstudio:
+    needs: [vars, mid-rstudio]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "platform"
+      parent-image: "mid-rstudio"
+      parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  rstudio:
+    needs: [vars, platform-rstudio]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "cmd"
+      parent-image: "platform-rstudio"
+      parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  base-sas:
+    needs: [vars, base-jupyterlab]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "rstudio"
+      parent-image: "base-jupyterlab"
+      parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  mid-sas:
+    needs: [vars, base-sas]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "sas"
+      parent-image: "base-sas"
+      parent-image-is-diff: "${{ needs.base-sas.outputs.is-diff }}"
+      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+
+  sas:
+    needs: [vars, mid-sas]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "${{ github.job }}"
+      directory: "cmd"
+      parent-image: "mid-sas"
+      parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
