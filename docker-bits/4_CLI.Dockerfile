@@ -46,6 +46,8 @@ ARG ARGO_CLI_VERSION=v3.5.12
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
+ARG AZCOPY_URL=https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb
+
 RUN \
   # OpenJDK-8
     apt-get update && \
@@ -66,6 +68,13 @@ RUN \
     && bash InstallAzureCLIDeb \
     && rm InstallAzureCLIDeb \
     && echo "azcli: ok" \
+  && \
+    # azcopy - blob storage tool
+    curl -sSL -O "${AZCOPY_URL}" && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install azcopy \
   && \
     # zsh
     wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
