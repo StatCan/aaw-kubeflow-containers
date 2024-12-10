@@ -38,10 +38,10 @@ jobs:
       image: "base"
       directory: "base"
       base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   base-jupyterlab:
     needs: [vars, base]
@@ -51,10 +51,10 @@ jobs:
       directory: "jupyterlab"
       parent-image: "base"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   platform-jupyterlab:
     needs: [vars, base-jupyterlab]
@@ -64,10 +64,10 @@ jobs:
       directory: "platform"
       parent-image: "base-jupyterlab"
       parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   jupyterlab:
     needs: [vars, platform-jupyterlab]
@@ -77,10 +77,10 @@ jobs:
       directory: "cmd"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   mid-pytorch:
     needs: [vars, platform-jupyterlab]
@@ -90,10 +90,10 @@ jobs:
       directory: "pytorch"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   pytorch:
     needs: [vars, mid-pytorch]
@@ -103,10 +103,10 @@ jobs:
       directory: "cmd"
       parent-image: "mid-pytorch"
       parent-image-is-diff: "${{ needs.mid-pytorch.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   mid-tensorflow:
     needs: [vars, platform-jupyterlab]
@@ -116,10 +116,10 @@ jobs:
       directory: "tensorflow"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   tensorflow:
     needs: [vars, mid-tensorflow]
@@ -129,10 +129,10 @@ jobs:
       directory: "cmd"
       parent-image: "mid-tensorflow"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   mid-rstudio:
     needs: [vars, base]
@@ -142,10 +142,10 @@ jobs:
       directory: "rstudio"
       parent-image: "base"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   platform-rstudio:
     needs: [vars, mid-rstudio]
@@ -155,10 +155,10 @@ jobs:
       directory: "platform"
       parent-image: "mid-rstudio"
       parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   rstudio:
     needs: [vars, platform-rstudio]
@@ -168,10 +168,10 @@ jobs:
       directory: "cmd"
       parent-image: "platform-rstudio"
       parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   base-sas:
     needs: [vars, base-jupyterlab]
@@ -181,10 +181,10 @@ jobs:
       directory: "rstudio"
       parent-image: "base-jupyterlab"
       parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   mid-sas:
     needs: [vars, base-sas]
@@ -194,10 +194,10 @@ jobs:
       directory: "sas"
       parent-image: "base-sas"
       parent-image-is-diff: "${{ needs.base-sas.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   sas:
     needs: [vars, mid-sas]
@@ -207,7 +207,7 @@ jobs:
       directory: "cmd"
       parent-image: "mid-sas"
       parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.DEV_REGISTRY_NAME }}"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
-      REGISTRY_USERNAME: ${{ secrets.DEV_REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.DEV_REGISTRY_PASSWORD }}
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
