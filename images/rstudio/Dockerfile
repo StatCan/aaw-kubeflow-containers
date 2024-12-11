@@ -39,6 +39,12 @@ RUN mamba install --quiet --yes \
 RUN mamba install --quiet --yes \
       'r-hdf5r' \
       'r-odbc' \
+    && \
+    clean-layer.sh && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
+
+RUN mamba install --quiet --yes \
       'r-sf' \
       'r-e1071' \
       'r-markdown' \
