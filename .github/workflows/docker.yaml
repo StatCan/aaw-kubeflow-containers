@@ -135,7 +135,7 @@ jobs:
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   mid-sas:
-    needs: [vars, mid-r]
+    needs: [vars, mid-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
       image: "mid-sas"
