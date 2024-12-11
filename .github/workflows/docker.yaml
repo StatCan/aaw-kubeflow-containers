@@ -49,8 +49,8 @@ jobs:
     with:
       image: "platform-jupyterlab"
       directory: "platform"
-      parent-image: "base-jupyterlab"
-      parent-image-is-diff: "${{ needs.base-jupyterlab.outputs.is-diff }}"
+      parent-image: "base"
+      parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
