@@ -1,4 +1,4 @@
-name: Download a parent image, build a new one, and test it; then upload the image, tags, and manifests to GitHub artifacts
+name: Download a parent image, build a new one, tag it, then upload the image
 
 env:
   HADOLINT_VERSION: "2.12.0"

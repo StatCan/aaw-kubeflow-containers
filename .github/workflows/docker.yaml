@@ -65,6 +65,7 @@ jobs:
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      is-final: "true"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -91,6 +92,7 @@ jobs:
       parent-image: "mid-tensorflow"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      is-final: "true"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -130,6 +132,7 @@ jobs:
       parent-image: "platform-rstudio"
       parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      is-final: "true"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
@@ -156,6 +159,7 @@ jobs:
       parent-image: "mid-sas"
       parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      is-final: "true"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}

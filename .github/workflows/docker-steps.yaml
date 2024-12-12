@@ -1,4 +1,4 @@
-name: Build, test, and push Docker Images
+name: organizes the steps taken to build, upload, and test the images
 
 on:
   workflow_call:
@@ -28,6 +28,11 @@ on:
         description: url of the registry <registy-name>.azurecr.io
         required: true
         type: string
+      is-final:
+        description: Is this the final image
+        required: false
+        type: string
+        default: "false"
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -79,3 +84,14 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  pull-test:
+    needs: [check-diff]
+    if: ${{ inputs.is-final == 'true' }}
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: ${{ inputs.image }}
+      registry-name: ${{ inputs.registry-name }}
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}      
