@@ -25,6 +25,10 @@ else
   echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
 fi
 
+# Retrieving Alias file for oracle client
+# Runs on every startup because this output location is not persisted storage
+curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+
 # Clone example notebooks (with retries because it sometimes initially fails)
 if [[ ! -d  ~/aaw-contrib-jupyter-notebooks ]]; then
   echo "Cloning examples notebooks"
