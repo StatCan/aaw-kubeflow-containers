@@ -206,8 +206,17 @@ fi
 
 # Retrieving Alias file for oracle client
 # Runs on every startup because this output location is not persisted storage
+# Implemented with a retry because it sometimes fails for some reason
 echo "Retrieving Oracle tnsnames file"
-curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+RETRIES_NO=5
+RETRY_DELAY=3
+for i in $(seq 1 $RETRIES_NO); do
+  curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora && break
+  echo "Failed to get the tnsnames.ora file. Attempt $i of $RETRIES_NO"
+  #if it ran all the retries, exit
+  [[ $i -eq $RETRIES_NO ]] && echo "Failed to get the tnsnames.ora file after $RETRIES_NO retries"
+  sleep ${RETRY_DELAY}
+done
 
 # Add sasstudio default
 if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
