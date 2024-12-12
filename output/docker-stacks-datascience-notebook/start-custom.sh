@@ -25,10 +25,6 @@ else
   echo "export GPG_TTY=\$(tty)" >> ~/.bashrc
 fi
 
-# Retrieving Alias file for oracle client
-# Runs on every startup because this output location is not persisted storage
-curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
-
 # Clone example notebooks (with retries because it sometimes initially fails)
 if [[ ! -d  ~/aaw-contrib-jupyter-notebooks ]]; then
   echo "Cloning examples notebooks"
@@ -208,13 +204,10 @@ if [ ! -d "$HOME/workspace" ]; then
   mkdir -p "$HOME/workspace/repositories"
 fi
 
-# Creating symlink to oracle files for easier access
-#TODO: Fix this or remove it if we have an alternate solution
-# it's commented out because it would always run on startup and reset the files on notebook restart
-# if [ ! -d "$HOME/oracle" ]; then
-#   echo "Creating symlink for oracle"
-#   ln -s /opt/oracle/instantclient_23_5/network/admin/ "$HOME/oracle"
-# fi
+# Retrieving Alias file for oracle client
+# Runs on every startup because this output location is not persisted storage
+echo "Retrieving Oracle tnsnames file"
+curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
 
 # Add sasstudio default
 if [[ -z "${SASSTUDIO_TEMP_HOME}" ]]; then
