@@ -140,8 +140,8 @@ jobs:
     with:
       image: "mid-sas"
       directory: "sas"
-      parent-image: "base-sas"
-      parent-image-is-diff: "${{ needs.base-sas.outputs.is-diff }}"
+      parent-image: "mid-rstudio"
+      parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
