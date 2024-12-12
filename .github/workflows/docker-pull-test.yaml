@@ -23,7 +23,7 @@ on:
         required: true
 
 jobs:
-  pull-upload:
+  pull-test:
     runs-on: ubuntu-latest
     services:
       registry:
@@ -50,31 +50,25 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
-      - name: Pull existing image
-        id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
-        # TODO replace TAG with master
-
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' 
+          python-version: "3.10"
 
       - name: Set up venv for Test Suite
         run: |
           python -m pip install --upgrade pip
           make install-python-dev-venv
-      
+
       - name: Test image
-        run: make test/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make test/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       # Scan image for vulnerabilities
       - name: Aqua Security Trivy image scan
-      # see https://github.com/StatCan/aaw-private/issues/11 -- should be re-enabled
         run: |
           printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
-          
+
           set +e
 
           for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
@@ -83,7 +77,7 @@ jobs:
             trivy image \
               --db-repository ${{ env.TRIVY_DATABASES }} \
               --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-              ${{ steps.build-image.outputs.full_image_name }} \
+              ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image }}:$GITHUB_REF_NAME \
               --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
             EXIT_CODE=$?
 
