@@ -36,6 +36,7 @@ jobs:
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
       TRIVY_MAX_RETRIES: 5
       TRIVY_RETRY_DELAY: 20
+      LOCAL_REPO: localhost:5000
 
     steps:
       - uses: actions/checkout@v4
@@ -49,6 +50,16 @@ jobs:
           login-server: ${{ inputs.registry-name }}.azurecr.io
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Pull existing image
+        id: pull-existing
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+
+      - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
+        run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+      - name: Push image to local registry (default pushes all tags)
+        run: make push/${{ input.image }} REPO=${{ env.LOCAL_REPO }}
 
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
