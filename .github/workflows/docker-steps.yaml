@@ -86,8 +86,8 @@ jobs:
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
 
   pull-test:
-    needs: [check-diff]
-    if: ${{ inputs.is-final == 'true' }}
+    needs: [build-upload, pull-upload]
+    if: ${{ always() && inputs.is-final == 'true' && contains(needs.*.result, 'success') }}
     uses: ./.github/workflows/docker-pull-test.yaml
     with:
       image: ${{ inputs.image }}
