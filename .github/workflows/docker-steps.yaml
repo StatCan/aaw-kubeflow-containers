@@ -60,27 +60,9 @@ jobs:
       - name: print check-diff
         run: echo "${{ toJSON(needs.check-diff) }}"
 
-      - name: print conditionals
-        run: |
-          echo "build-upload conditionals"
-          BUILD_1=$([[ ${{ needs.check-diff.outputs.is-diff }} == 'true' ]] && echo "true" || echo "false")
-          echo "needs.check-diff.outputs.is-diff == 'true' = $BUILD_1"
-          BUILD_2=$([[ ${{ inputs.parent-image-is-diff }} == 'true' ]] && echo "true" || echo "false")
-          echo "inputs.parent-image-is-diff == 'true' = $BUILD_2"
-
-          echo "pull-upload conditionals"
-          UPLOAD_1=$([[ ${{ needs.check-diff.outputs.is-diff }} == 'false' ]] && echo "true" || echo "false")
-          echo "needs.check-diff.outputs.is-diff == 'false' = $UPLOAD_1"
-          UPLOAD_2=$([[ ${{ inputs.parent-image-is-diff }} == 'false' ]] && echo "true" || echo "false")
-          echo "inputs.parent-image-is-diff == 'false' = $UPLOAD_2"
-          UPLOAD_3=$([[ ${{ needs.check-diff.outputs.is-diff }} == 'false' && ${{ inputs.parent-image-is-diff }} == 'false' ]] && echo "true" || echo "false")
-          echo "one && two = $UPLOAD_3"
-          UPLOAD_4=$([[ (needs.check-diff.outputs.is-diff == 'true') || (inputs.parent-image-is-diff == 'true') ]] && echo "true" || echo "false")
-          echo "one && two = $UPLOAD_4"
-
   build-upload:
     needs: [check-diff]
-    if: ${{ (needs.check-diff.outputs.is-diff == 'true') || (inputs.parent-image-is-diff == 'true') }}
+    if: ${{ needs.check-diff.outputs.is-diff }} == 'true' || ${{ inputs.parent-image-is-diff }} == 'true'
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
       parent-image: ${{ inputs.parent-image }}
@@ -102,14 +84,6 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-
-  print-extra-variables:
-    needs: [build-upload, pull-upload]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: print inputs
-        run: echo "${{ contains(needs.*.result, 'success') }}"
 
   pull-test:
     needs: [build-upload, pull-upload]
