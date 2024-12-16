@@ -53,7 +53,7 @@ jobs:
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
 
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
         run: make post-build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}

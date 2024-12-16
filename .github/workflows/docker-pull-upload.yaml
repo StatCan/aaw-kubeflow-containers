@@ -46,7 +46,7 @@ jobs:
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
         # TODO replace TAG with master
 
       - name: Retag existing image
