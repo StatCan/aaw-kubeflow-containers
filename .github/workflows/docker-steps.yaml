@@ -61,13 +61,18 @@ jobs:
         run: echo "${{ toJSON(needs.check-diff) }}"
 
       - name: print conditionals
-        run: \
-          echo "build-upload conditionals" && \
-          echo (needs.check-diff.outputs.is-diff == 'true') && \
-          echo (inputs.parent-image-is-diff == 'true') && \
-          echo "pull-upload conditionals" && \
-          echo (needs.check-diff.outputs.is-diff == 'false') && \
-          echo (inputs.parent-image-is-diff == 'false') && \
+        run: |
+          echo "build-upload conditionals"
+          BUILD_1=$([[ "${{ needs.check-diff.outputs.is-diff }}" == 'true' ]] && echo "true" || echo "false")
+          echo "needs.check-diff.outputs.is-diff == 'true' = $BUILD_1"
+          BUILD_2=$([[ "${{ inputs.parent-image-is-diff }}" == 'true' ]] && echo "true" || echo "false")
+          echo "inputs.parent-image-is-diff == 'true' = $BUILD_2"
+
+          echo "pull-upload conditionals"
+          UPLOAD_1=$([[ "${{ needs.check-diff.outputs.is-diff }}" == 'false' ]] && echo "true" || echo "false")
+          echo "needs.check-diff.outputs.is-diff == 'false' = $UPLOAD_1"
+          UPLOAD_2=$([[ "${{ inputs.parent-image-is-diff }}" == 'false' ]] && echo "true" || echo "false")
+          echo "inputs.parent-image-is-diff == 'false' = $UPLOAD_2"
 
   build-upload:
     needs: [check-diff]
