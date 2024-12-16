@@ -75,6 +75,8 @@ jobs:
           echo "inputs.parent-image-is-diff == 'false' = $UPLOAD_2"
           UPLOAD_3=$([[ ${{ needs.check-diff.outputs.is-diff }} == 'false' && ${{ inputs.parent-image-is-diff }} == 'false' ]] && echo "true" || echo "false")
           echo "one && two = $UPLOAD_3"
+          UPLOAD_4=$([[ (needs.check-diff.outputs.is-diff == 'true') || (inputs.parent-image-is-diff == 'true') ]] && echo "true" || echo "false")
+          echo "one && two = $UPLOAD_4"
 
   build-upload:
     needs: [check-diff]
@@ -100,6 +102,13 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  print-extra-variables:
+    needs: [build-upload, pull-upload]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print inputs
+        run: echo "${{ contains(needs.*.result, 'success') }}"
 
   pull-test:
     needs: [build-upload, pull-upload]
