@@ -94,7 +94,7 @@ jobs:
 
   pull-upload:
     needs: [check-diff]
-    if: ${{ (needs.check-diff.outputs.is-diff == 'false') && (inputs.parent-image-is-diff == 'false') }}
+    if: ${{ needs.check-diff.outputs.is-diff }} == 'false' && ${{ inputs.parent-image-is-diff }} == 'false'
     uses: ./.github/workflows/docker-pull-upload.yaml
     with:
       image: ${{ inputs.image }}
@@ -105,6 +105,7 @@ jobs:
 
   print-extra-variables:
     needs: [build-upload, pull-upload]
+    if: always()
     runs-on: ubuntu-latest
     steps:
       - name: print inputs
