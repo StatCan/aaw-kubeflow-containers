@@ -20,6 +20,7 @@ RUN mamba install --quiet --yes \
       'r-e1071' \
       'r-hdf5r' \
       'r-markdown' \
+      'r-sparklyr' \
       'r-odbc' \
       'r-renv' \
       'r-rodbc' \
