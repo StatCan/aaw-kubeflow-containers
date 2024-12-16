@@ -56,7 +56,7 @@ jobs:
         run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
 
       - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
-        run: make post-build/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+        run: make post-build/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
 
       - name: Push image to local registry (default pushes all tags)
         run: make push/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
