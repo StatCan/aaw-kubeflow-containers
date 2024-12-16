@@ -268,6 +268,9 @@ RUN python3 -m pip install \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
+# Install sparklyr
+RUN Rscript -e "library(sparklyr); spark_install()"
+
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
 ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-r-notebooks.git

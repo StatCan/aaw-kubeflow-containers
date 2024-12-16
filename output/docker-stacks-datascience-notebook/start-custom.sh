@@ -50,11 +50,6 @@ if [ ! -e /home/$NB_USER/.Rprofile ]; then
     cat /tmp/.Rprofile >> /home/$NB_USER/.Rprofile && rm -rf /tmp/.Rprofile
 fi
 
-# Install sparklyr
-Rscript -e "if (!requireNamespace('sparklyr', quietly = TRUE)) install.packages('sparklyr')" \
-        -e "library(sparklyr)" \
-        -e "spark_install()"
-
 # Configure the shell! If not already configured.
 if [ ! -f /home/$NB_USER/.zsh-installed ]; then
     if [ -f /tmp/oh-my-zsh-install.sh ]; then
