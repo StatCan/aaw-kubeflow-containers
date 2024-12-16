@@ -31,7 +31,7 @@ jobs:
           # Check if the subdirectory exists in the base branch
           if ! git ls-tree -d origin/staged-builds-revised-stages -- "images/${{ inputs.image }}" >/dev/null 2>&1; then
             echo "Subdirectory does not exist in the base branch"
-            echo "is-diff=true" >> $GITHUB_OUTPUT
+            echo "is-diff='true'" >> $GITHUB_OUTPUT
           else
             CHANGES=$(git diff --name-only origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.image }}" | grep -v "README.md" || true)
             NEW_FILES=$(git diff --name-only --diff-filter=A origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.image }}" | grep -v "README.md" || true)
@@ -40,9 +40,9 @@ jobs:
 
             if [ -n "$CHANGES" ]; then
               echo "Changes detected (excluding README.md)"
-              echo "is-diff=true" >> $GITHUB_OUTPUT
+              echo "is-diff='true'" >> $GITHUB_OUTPUT
             else
               echo "No changes detected"
-              echo "is-diff=false" >> $GITHUB_OUTPUT
+              echo "is-diff='false'" >> $GITHUB_OUTPUT
             fi
           fi
