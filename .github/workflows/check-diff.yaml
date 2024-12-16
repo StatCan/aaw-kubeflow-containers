@@ -36,7 +36,7 @@ jobs:
             CHANGES=$(git diff --name-only origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.image }}" | grep -v "README.md" || true)
             NEW_FILES=$(git diff --name-only --diff-filter=A origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.image }}" | grep -v "README.md" || true)
             
-            CHANGES="${CHANGES}"$'\n'"${NEW_FILES}"
+            CHANGES="${CHANGES}${NEW_FILES}"
 
             if [ -n "$CHANGES" ]; then
               echo "Changes detected (excluding README.md)"
