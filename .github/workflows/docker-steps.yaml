@@ -60,6 +60,15 @@ jobs:
       - name: print check-diff
         run: echo "${{ toJSON(needs.check-diff) }}"
 
+      - name: print conditionals
+        run: \
+          echo "build-upload conditionals" && \
+          echo (needs.check-diff.outputs.is-diff == 'true') && \
+          echo (inputs.parent-image-is-diff == 'true') && \
+          echo "pull-upload conditionals" && \
+          echo (needs.check-diff.outputs.is-diff == 'false') && \
+          echo (inputs.parent-image-is-diff == 'false') && \
+
   build-upload:
     needs: [check-diff]
     if: ${{ (needs.check-diff.outputs.is-diff == 'true') || (inputs.parent-image-is-diff == 'true') }}
