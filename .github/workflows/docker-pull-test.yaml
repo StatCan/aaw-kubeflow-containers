@@ -56,10 +56,7 @@ jobs:
         run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
 
       - name: Retag image
-        run: |
-          chmod +x ./make_helpers/get_branch_name.sh
-          BRANCH=$(./make_helpers/get_branch_name.sh)
-          docker tag ${{ steps.pull-existing.outputs.image_name }} ${{ env.LOCAL_REPO }}/${{ inputs.image }}:${BRANCH}
+        run: docker tag ${{ steps.pull-existing.outputs.image_name }} ${{ env.LOCAL_REPO }}/${{ inputs.image }}:${{ GITHUB_REF_NAME }}
 
       - name: Push image to local registry (default pushes all tags)
         run: make push/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
@@ -75,7 +72,7 @@ jobs:
           make install-python-dev-venv
 
       - name: Test image
-        run: make test/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make test/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
 
       # Scan image for vulnerabilities
       - name: Aqua Security Trivy image scan
@@ -91,7 +88,7 @@ jobs:
             trivy image \
               --db-repository ${{ env.TRIVY_DATABASES }} \
               --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-              ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image }}:$GITHUB_REF_NAME \
+              ${{ env.LOCAL_REPO }}.azurecr.io/${{ inputs.image }}:${{ GITHUB_REF_NAME }} \
               --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
             EXIT_CODE=$?
 
