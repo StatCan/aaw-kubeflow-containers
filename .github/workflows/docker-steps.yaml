@@ -62,7 +62,7 @@ jobs:
 
   build-upload:
     needs: [check-diff]
-    if: ${{ needs.check-diff.outputs.is-diff }} == 'true' || ${{ inputs.parent-image-is-diff }} == 'true'
+    if: ${{ (needs.check-diff.outputs.is-diff == 'true') || (inputs.parent-image-is-diff == 'true') }}
     uses: ./.github/workflows/docker-build-upload.yaml
     with:
       parent-image: ${{ inputs.parent-image }}
