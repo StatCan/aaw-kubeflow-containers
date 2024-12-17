@@ -57,8 +57,8 @@ jobs:
 
       - name: Retag image
         run: |
-          chmod +x ./make_helpers.get_branch_name.sh
-          BRANCH=$()./make_helpers.get_branch_name.sh)
+          chmod +x ./make_helpers/get_branch_name.sh
+          BRANCH=$()./make_helpers/get_branch_name.sh)
           docker tag ${{ steps.pull-existing.outputs.image_name }} ${{ env.LOCAL_REPO }}/${{ inputs.image }}:${BRANCH}
 
       - name: Push image to local registry (default pushes all tags)
