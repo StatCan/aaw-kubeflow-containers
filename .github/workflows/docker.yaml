@@ -30,9 +30,6 @@ jobs:
     steps:
       - name: Set up environment
         run: echo "Environment has been set up."
-      - name: Test Ref
-        run: echo "${{ toJSON(github) }}"
-
 
   base:
     needs: [vars]
