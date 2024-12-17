@@ -38,8 +38,6 @@ RUN python3 -m pip install \
       fix-permissions /home/$NB_USER
 
 # Install sparklyr
-ENV R_LIBS_USER="${SPARK_HOME}/R/lib"
-RUN fix-permissions "${R_LIBS_USER}"
 RUN apt-get update && \
     apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev && \
     Rscript -e "library(sparklyr); spark_install()"

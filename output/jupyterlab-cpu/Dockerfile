@@ -269,8 +269,6 @@ RUN python3 -m pip install \
       fix-permissions /home/$NB_USER
 
 # Install sparklyr
-ENV R_LIBS_USER="${SPARK_HOME}/R/lib"
-RUN fix-permissions "${R_LIBS_USER}"
 RUN apt-get update && \
     apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev && \
     Rscript -e "library(sparklyr); spark_install()"
@@ -303,10 +301,6 @@ ENV CS_DISABLE_FILE_DOWNLOADS=1
 ENV CS_TEMP_HOME=/etc/share/code-server
 ENV CS_DEFAULT_HOME=$HOME/.local/share/code-server
 ENV SERVICE_URL=https://extensions.coder.com/api
-
-ENV SPARK_HOME=/usr/local/spark
-ENV PATH="${PATH}:${SPARK_HOME}/bin"
-ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
 
 RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     && echo "${VSCODE_SHA}  ./vscode.deb" | sha256sum -c - \
