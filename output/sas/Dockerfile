@@ -429,7 +429,11 @@ RUN python3 -m pip install \
       fix-permissions /home/$NB_USER
 
 # Install sparklyr
-RUN Rscript -e "library(sparklyr); spark_install()"
+ENV R_LIBS_USER="${SPARK_HOME}/R/lib"
+RUN fix-permissions "${R_LIBS_USER}"
+RUN apt-get update && \
+    apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev    && \
+    Rscript -e "library(sparklyr); spark_install()"
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
