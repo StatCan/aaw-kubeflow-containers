@@ -31,7 +31,7 @@ jobs:
       - name: Set up environment
         run: echo "Environment has been set up."
       - name: Test Ref
-        run: echo "${{ GITHUB_REF_NAME }}"
+        run: echo "${{ toJSON(github) }}"
 
 
   base:

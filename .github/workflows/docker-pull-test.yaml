@@ -56,7 +56,7 @@ jobs:
         run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
 
       - name: Retag image
-        run: docker tag ${{ steps.pull-existing.outputs.image_name }} ${{ env.LOCAL_REPO }}/${{ inputs.image }}:${{ GITHUB_REF_NAME }}
+        run: docker tag ${{ steps.pull-existing.outputs.image_name }} ${{ env.LOCAL_REPO }}/${{ inputs.image }}:${{ inputs.image }}
 
       - name: Push image to local registry (default pushes all tags)
         run: make push/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
@@ -88,7 +88,7 @@ jobs:
             trivy image \
               --db-repository ${{ env.TRIVY_DATABASES }} \
               --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-              ${{ env.LOCAL_REPO }}.azurecr.io/${{ inputs.image }}:${{ GITHUB_REF_NAME }} \
+              ${{ env.LOCAL_REPO }}.azurecr.io/${{ inputs.image }}:${{ inputs.image }} \
               --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
             EXIT_CODE=$?
 
