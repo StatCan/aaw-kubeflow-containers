@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=PSPP
+Exec=/usr/bin/psppire %F
+Icon=pspp
+Terminal=false
+Categories=Development;IDE;

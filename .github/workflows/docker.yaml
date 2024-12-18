@@ -173,3 +173,19 @@ jobs:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
       CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  remote-desktop:
+    needs: [vars]
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "remote-desktop"
+      directory: "remote-desktop"
+      # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
+      # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
+      base-image: "rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      is-final: "true"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}

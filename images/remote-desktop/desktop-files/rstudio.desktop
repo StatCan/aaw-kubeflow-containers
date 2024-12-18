@@ -1,0 +1,7 @@
+[Desktop Entry]
+Exec=/usr/bin/rstudio %F
+Icon=rstudio
+Type=Application
+Terminal=False
+Name=RStudio
+Categories=Development;IDE;
