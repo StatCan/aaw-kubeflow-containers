@@ -101,6 +101,7 @@ jobs:
               echo "Unexpected error persists after ${{ env.TRIVY_MAX_RETRIES }} attempts. Exiting."
               exit 1
             fi
+          done
 
       # Free up space from build process (containerscan action will run out of space if we don't)
       - run: ./.github/scripts/cleanup_runner.sh
