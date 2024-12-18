@@ -12,6 +12,8 @@ RUN mkdir -p /etc/rstudio && \
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
+ENV SPARK_HOME="/opt/conda/lib/python3.11/site-packages/pyspark"
+
 # Install some default R packages
 RUN mamba install --quiet --yes \
       'r-arrow' \
@@ -20,7 +22,6 @@ RUN mamba install --quiet --yes \
       'r-e1071' \
       'r-hdf5r' \
       'r-markdown' \
-      'r-sparklyr' \
       'r-odbc' \
       'r-renv' \
       'r-rodbc' \
@@ -36,13 +37,6 @@ RUN python3 -m pip install \
     'jupyter-server-proxy==4.2.0' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
-
-ARG SPARK_VERSION="3.4.1"
-
-# Install sparklyr
-RUN apt-get update && \
-    apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev && \
-    Rscript -e "library(sparklyr); spark_install(version = ${SPARK_VERSION})"
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
