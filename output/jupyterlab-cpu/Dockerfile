@@ -268,17 +268,13 @@ RUN python3 -m pip install \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# ENV SPARK_VERSION=3.5
+# ARG SPARK_VERSION=3.5
 
 # If spark_version is not set, latest Spark will be installed
 ARG spark_version
 ARG hadoop_version="3"
 # If scala_version is not set, Spark without Scala will be installed
 ARG scala_version
-# URL to use for Spark downloads
-# You need to use https://archive.apache.org/dist/spark/ website if you want to download old Spark versions
-# But it seems to be slower, that's why we use the recommended site for download
-ARG spark_download_url="https://dlcdn.apache.org/spark/"
 
 ENV SPARK_HOME=/usr/local/spark
 ENV PATH="${PATH}:${SPARK_HOME}/bin"
