@@ -81,7 +81,7 @@ jobs:
             trivy image \
               --db-repository ${{ env.TRIVY_DATABASES }} \
               --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-              ${{ env.LOCAL_REPO }}.azurecr.io/${{ inputs.image }}:${{ github.head_ref }} \
+              ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image }}:${{ github.head_ref }} \
               --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL
             EXIT_CODE=$?
 
