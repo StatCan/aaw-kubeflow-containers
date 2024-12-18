@@ -36,7 +36,6 @@ jobs:
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
       TRIVY_MAX_RETRIES: 5
       TRIVY_RETRY_DELAY: 20
-      LOCAL_REPO: localhost:5000
 
     steps:
       - uses: actions/checkout@v4
@@ -55,9 +54,6 @@ jobs:
         id: pull-existing
         run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
 
-      - name: run image
-        run: docker run -it -p 8888:8888 k8scc01covidacr.azurecr.io/jupyterlab:staged-builds-testing
-
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
         with:
@@ -69,7 +65,7 @@ jobs:
           make install-python-dev-venv
 
       - name: Test image
-        run: make test/${{ inputs.image }} REPO=${{ env.LOCAL_REPO }}
+        run: make test/${{ inputs.image }}
 
       # Scan image for vulnerabilities
       - name: Aqua Security Trivy image scan
