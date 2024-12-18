@@ -70,6 +70,10 @@ jobs:
       - name: Test image
         run: make test/${{ inputs.image }}
 
+      # Free up space from build process (containerscan action will run out of space if we don't)
+      - name: cleanup runner``
+        run: ./.github/scripts/cleanup_runner.sh
+
       # Scan image for vulnerabilities
       - name: Aqua Security Trivy image scan
         run: |
@@ -102,6 +106,3 @@ jobs:
               exit 1
             fi
           done
-
-      # Free up space from build process (containerscan action will run out of space if we don't)
-      - run: ./.github/scripts/cleanup_runner.sh
