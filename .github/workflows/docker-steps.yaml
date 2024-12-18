@@ -49,7 +49,7 @@ jobs:
   check-diff:
     uses: ./.github/workflows/check-diff.yaml
     with: 
-      image: ${{ inputs.image }}
+      directory: ${{ inputs.directory }}
 
   print-variables:
     needs: [check-diff]
