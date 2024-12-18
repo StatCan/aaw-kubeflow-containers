@@ -263,17 +263,44 @@ RUN mamba install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-server-proxy==4.2.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
+    'jupyter-rsession-proxy==2.2.0' \
+    'jupyter-server-proxy==4.2.0' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
-ENV SPARK_VERSION=3.5
+# ENV SPARK_VERSION=3.5
 
-# Install sparklyr
-RUN apt-get update && \
-    apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev && \
-    Rscript -e "library(sparklyr); spark_install(version = ${SPARK_VERSION})"
+# RSpark config
+ENV R_LIBS_USER="${SPARK_HOME}/R/lib"
+RUN fix-permissions "${R_LIBS_USER}"
+
+# If spark_version is not set, latest Spark will be installed
+ARG spark_version
+ARG hadoop_version="3"
+# If scala_version is not set, Spark without Scala will be installed
+ARG scala_version
+# URL to use for Spark downloads
+# You need to use https://archive.apache.org/dist/spark/ website if you want to download old Spark versions
+# But it seems to be slower, that's why we use the recommended site for download
+ARG spark_download_url="https://dlcdn.apache.org/spark/"
+
+ENV SPARK_HOME=/usr/local/spark
+ENV PATH="${PATH}:${SPARK_HOME}/bin"
+ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info"
+
+COPY setup_spark.py /opt/setup-scripts/
+
+# Setup Spark
+RUN /opt/setup-scripts/setup_spark.py \
+    --spark-version="${spark_version}" \
+    --hadoop-version="${hadoop_version}" \
+    --scala-version="${scala_version}" \
+    --spark-download-url="${spark_download_url}"
+
+# # Install sparklyr
+# RUN apt-get update && \
+#     apt install -y --no-install-recommends libxml2-dev libcurl4-openssl-dev && \
+#     Rscript -e "library(sparklyr); spark_install(version = ${SPARK_VERSION})"
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
