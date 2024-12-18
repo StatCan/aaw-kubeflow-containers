@@ -40,6 +40,9 @@ on:
       REGISTRY_PASSWORD:
         description: The password for the container registry
         required: true
+      CVE_ALLOWLIST:
+        description: The list of Trivy exemptions
+        required: true
     outputs:
       is-diff:
         description: Is there a difference between the master branch and the current branch
@@ -48,7 +51,7 @@ on:
 jobs:
   check-diff:
     uses: ./.github/workflows/check-diff.yaml
-    with: 
+    with:
       directory: ${{ inputs.directory }}
 
   print-variables:
@@ -94,4 +97,5 @@ jobs:
       registry-name: ${{ inputs.registry-name }}
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}      
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST }}

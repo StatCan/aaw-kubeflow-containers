@@ -21,6 +21,9 @@ on:
       REGISTRY_PASSWORD:
         description: The password for the container registry
         required: true
+      CVE_ALLOWLIST:
+        description: The list of Trivy exemptions
+        required: true
 
 jobs:
   pull-test:
