@@ -522,6 +522,7 @@ RUN chown -R $NB_USER /home/$NB_USER
 USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 
+USER root
 # Forcibly upgrade packages to patch vulnerabilities
 # See https://github.com/StatCan/aaw-private/issues/58#issuecomment-1471863092 for more details.
 RUN pip3 --no-cache-dir install --quiet \
