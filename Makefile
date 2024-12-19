@@ -80,7 +80,7 @@ build/%: DARGS?=
 build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)
 build/%: ## build the latest image
-	ifeq ((notdir $@),'remote-desktop')
+	ifeq ($(notdir $@),'remote-desktop')
 		BUILDKIT=0
 	else
 		BUILDKIT=1
