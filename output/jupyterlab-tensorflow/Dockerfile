@@ -386,6 +386,7 @@ RUN mamba install --quiet --yes \
       'r-renv' \
       'r-rodbc' \
       'r-sf' \
+      'r-sparklyr' \
       'r-tidyverse' \
     && \
     clean-layer.sh && \
