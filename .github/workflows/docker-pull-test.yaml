@@ -55,7 +55,7 @@ jobs:
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=staged-builds-revised-stages
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=${{ github.head_ref }}
 
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
