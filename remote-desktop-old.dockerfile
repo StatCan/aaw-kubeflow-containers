@@ -1,3 +1,13 @@
+
+###############################
+###  docker-bits/0_Rocker.Dockerfile
+###############################
+
+# Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
+# images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
+
+FROM rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2
+
 # For compatibility with docker stacks
 ARG HOME=/home/$NB_USER
 ARG NB_USER="jovyan"
@@ -95,7 +105,11 @@ RUN set -x && \
     fix-permissions ${CONDA_DIR} && \
     fix-permissions /home/${NB_USER}
 
+###############################
+###  docker-bits/3_Kubeflow.Dockerfile
+###############################
 
+USER root
 COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
@@ -112,6 +126,12 @@ RUN mamba install --quiet \
       fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
+
+###############################
+###  docker-bits/4_CLI.Dockerfile
+###############################
+
+USER root
 
 # Add helpers for shell initialization
 COPY shell_helpers.sh /tmp/shell_helpers.sh
@@ -203,8 +223,14 @@ RUN \
     && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
     && sudo rm -f /usr/local/bin/quarto \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
-    
+    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto 
+
+###############################
+###  docker-bits/6_remote-desktop.Dockerfile
+###############################
+
+USER root
+
 ENV NB_UID=1000
 ENV NB_GID=100
 ENV XDG_DATA_HOME=/etc/share
@@ -595,6 +621,7 @@ RUN pip3 install --force websockify==0.9.0 \
 
 COPY --chown=$NB_USER:100 canada.ico $RESOURCES_PATH/favicon.ico
 
+USER root
 RUN apt-get update --yes \
     && apt-get install --yes nginx \
     && chown -R $NB_USER:100 /var/log/nginx \
@@ -606,6 +633,20 @@ USER $NB_USER
 COPY --chown=$NB_USER:100 nginx.conf /etc/nginx/nginx.conf
 
 USER root
+
+
+###############################
+###  docker-bits/7_remove_vulnerabilities.Dockerfile
+###############################
+
+# Remove libpdfbox-java due to CVE-2019-0228. See https://github.com/StatCan/aaw-kubeflow-containers/issues/249#issuecomment-834808115 for details.
+# Issue opened https://github.com/jupyter/docker-stacks/issues/1299.
+# This line of code should be removed once a solution or better alternative is found.
+USER root
+RUN apt-get update --yes \
+    && dpkg -r --force-depends libpdfbox-java \
+    && rm -rf /var/lib/apt/lists/*
+
 # Forcibly upgrade packages to patch vulnerabilities
 # See https://github.com/StatCan/aaw-private/issues/58#issuecomment-1471863092 for more details.
 RUN pip3 --no-cache-dir install --quiet \
@@ -619,6 +660,14 @@ RUN pip3 --no-cache-dir install --quiet \
       'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
+
+USER $NB_USER
+
+###############################
+###  docker-bits/8_platform.Dockerfile
+###############################
+
+USER root
 
 # Install AMD AOCL
 ARG AOCL_VERSION=4.0
@@ -644,8 +693,13 @@ RUN cd ${RESOURCES_PATH} && \
    /bin/bash ./install.sh && \
    rm /tmp/aocc-compiler-${AOCC_VERSION}.tar
 
+###############################
+###  docker-bits/∞_CMD_remote-desktop.Dockerfile
+###############################
 
 # Configure container startup
+
+USER root
 
 WORKDIR /home/$NB_USER
 EXPOSE 8888
