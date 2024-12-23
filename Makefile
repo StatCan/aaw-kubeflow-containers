@@ -80,11 +80,11 @@ build/%: DARGS?=
 build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)
 build/%: ## build the latest image
-	ifeq ($(notdir $@),remote-desktop)
-		BUILDKIT=0
-	else
-		BUILDKIT=1
-	endif
+ifeq ($(notdir $@),remote-desktop)
+	BUILDKIT=0
+else
+	BUILDKIT=1
+endif
 	# End repo with exactly one trailing slash, unless it is empty
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
