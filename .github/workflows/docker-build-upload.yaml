@@ -26,6 +26,10 @@ on:
         description: url of the registry <registy-name>.azurecr.io
         required: true
         type: string
+      buildkit:
+        description: buildkit version, legacy is 0 and deprecated 
+        required: true
+        type: number
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -88,7 +92,7 @@ jobs:
       # make build emits full_image_name, image_tag, and image_repo outputs
       - name: Build image
         id: build-image
-        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io DIRECTORY=${{ inputs.directory }}
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io DIRECTORY=${{ inputs.directory }} BUILDKIT=${{ inputs.buildkit }}
 
       - name: Echo disk usage after build completion
         run: ./.github/scripts/echo_usage.sh

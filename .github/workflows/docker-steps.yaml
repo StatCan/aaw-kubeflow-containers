@@ -33,6 +33,11 @@ on:
         required: false
         type: string
         default: "false"
+      buildkit:
+        description: buildkit version, legacy is 0 and deprecated 
+        required: false
+        type: number
+        default: 1
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -73,6 +78,7 @@ jobs:
       image: ${{ inputs.image }}
       base-image: ${{ inputs.base-image }}
       registry-name: ${{ inputs.registry-name }}
+      buildkit: ${{ inputs.buildkit }}
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
