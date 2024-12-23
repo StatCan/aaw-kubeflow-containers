@@ -84,8 +84,9 @@ build/%: ## build the latest image
 		BUILDKIT=0; \
 	else \
 		BUILDKIT=1; \
-	fi && \
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::'); \ # End repo with exactly one trailing slash, unless it is empty
+	fi
+    # End repo with exactly one trailing slash, unless it is empty
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') && \
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
 	DOCKER_BUILDKIT=$$BUILDKIT docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./images/$(DIRECTORY) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
