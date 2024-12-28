@@ -332,7 +332,7 @@ RUN if [ -d "/home/jovyan/.gnupg" ]; then \
       chmod 700 /home/jovyan/.gnupg; \
     fi
 
-RUN mkdir /test
+RUN mkdir /home/jovyan/test
 
 # Point conda to Artifactory repository
 RUN conda config --remove channels conda-forge --system
