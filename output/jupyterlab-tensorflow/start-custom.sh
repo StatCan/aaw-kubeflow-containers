@@ -247,6 +247,25 @@ local({
 EOF
 fi
 
+# Check if the directory exists
+if [ ! -d /home/$NB_USER/test ]; then
+  # Directory does not exist, create it
+  mkdir -p /home/$NB_USER/test
+  echo "Directory test created."
+else
+  echo "Directory test already exists."
+fi
+
+DIR="/home/$NB_USER/.gnupg"
+
+if [ -d "$DIR" ]; then
+  chmod 700 "$DIR"
+  echo "Permissions for $DIR set to 700."
+else
+  echo "Directory $DIR does not exist."
+fi
+
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \

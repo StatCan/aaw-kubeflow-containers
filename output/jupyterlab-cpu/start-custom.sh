@@ -265,6 +265,7 @@ else
   echo "Directory $DIR does not exist."
 fi
 
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \
