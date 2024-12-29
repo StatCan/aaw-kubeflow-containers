@@ -23,12 +23,6 @@ COPY .Rprofile /tmp/.Rprofile
 # Copy over Instructions to Home directory
 ADD connect-to-filer.md /home/$NB_USER/connect-to-filer.md
 
-RUN if [ -d "/home/jovyan/.gnupg" ]; then \
-      chmod 700 /home/jovyan/.gnupg; \
-    fi
-
-RUN mkdir /home/jovyan/test
-
 # Point conda to Artifactory repository
 RUN conda config --remove channels conda-forge --system
 
