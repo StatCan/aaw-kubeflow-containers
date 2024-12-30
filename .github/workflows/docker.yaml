@@ -62,7 +62,7 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "jupyterlab"
+      image: "jupyterlab-cpu"
       directory: "cmd"
       parent-image: "platform-jupyterlab"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
@@ -91,7 +91,7 @@ jobs:
     needs: [vars, mid-tensorflow]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "tensorflow"
+      image: "jupyterlab-tensorflow"
       directory: "cmd"
       parent-image: "mid-tensorflow"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
