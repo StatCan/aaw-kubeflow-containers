@@ -1,5 +1,8 @@
 name: Build, test, and push Docker Images
 on:
+  schedule:
+    # Execute at 2am EST every day
+    - cron:  '0 21 * * *'
   push:
     branches:
       - "master"
