@@ -1,0 +1,107 @@
+name: Download a parent image, build a new one, tag it, then upload the image
+
+env:
+  HADOLINT_VERSION: "2.12.0"
+
+on:
+  workflow_call:
+    inputs:
+      parent-image:
+        description: Parent image name
+        required: true
+        type: string
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
+      image:
+        description: Image name
+        required: true
+        type: string
+      base-image:
+        description: The base image to build from if not located on our own repo
+        required: false
+        type: string
+      registry-name:
+        description: url of the registry <registy-name>.azurecr.io
+        required: true
+        type: string
+      buildkit:
+        description: buildkit version, legacy is 0 and deprecated 
+        required: true
+        type: number
+    secrets:
+      REGISTRY_USERNAME:
+        description: The username for the container registry
+        required: true
+      REGISTRY_PASSWORD:
+        description: The password for the container registry
+        required: true
+
+jobs:
+  build-upload:
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Hadolint
+        run: |
+          sudo curl -L https://github.com/hadolint/hadolint/releases/download/v${{ env.HADOLINT_VERSION }}/hadolint-Linux-x86_64 --output hadolint
+          sudo chmod +x hadolint
+          ./hadolint images/${{ inputs.directory }}/Dockerfile --no-fail
+
+      - name: Echo disk usage before clean up
+        run: ./.github/scripts/echo_usage.sh
+
+      - name: Free up all available disk space before building
+        run: ./.github/scripts/cleanup_runner.sh
+
+      - name: Echo disk usage before build start
+        run: ./.github/scripts/echo_usage.sh
+
+      # Connect to Azure Container registry (ACR)
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ inputs.registry-name }}.azurecr.io
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Pull parent image
+        id: pull-parent
+        if: inputs.parent-image != ''
+        run: make pull/${{ inputs.parent-image }} REPO=${{ inputs.registry-name }}.azurecr.io
+
+      - name: Set BASE_IMAGE variable
+        run: |
+          if [ "${{ inputs.base-image }}" == "" ]; then
+            echo "BASE_IMAGE=${{ steps.pull-parent.outputs.image_name }}" >> $GITHUB_ENV
+          else
+            echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
+          fi
+
+      - name: Set FROM and as in Docerfile
+        run: |
+          sed -i '1i FROM ${{ env.BASE_IMAGE}} as ${{ inputs.image }}' ./images/${{ inputs.directory }}/Dockerfile
+
+      # make build emits full_image_name, image_tag, and image_repo outputs
+      - name: Build image
+        id: build-image
+        run: make build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io DIRECTORY=${{ inputs.directory }} BUILDKIT=${{ inputs.buildkit }}
+
+      - name: Echo disk usage after build completion
+        run: ./.github/scripts/echo_usage.sh
+
+      - name: Add standard tag names (short sha, sha, and branch) and any other post-build activity
+        run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+
+      - name: Push image to registry (default pushes all tags)
+        run: make push/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+
+      # Free up space from build process (containerscan action will run out of space if we don't)
+      - run: ./.github/scripts/cleanup_runner.sh

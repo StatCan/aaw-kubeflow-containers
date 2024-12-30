@@ -1,0 +1,48 @@
+name: Check for changes in subdirectory
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
+    outputs:
+      is-diff:
+        description: Is there a difference between the master branch and the current branch
+        value: ${{ jobs.check-diff.outputs.is-diff }}
+
+jobs:
+  check-diff:
+    runs-on: ubuntu-latest
+    outputs:
+      is-diff: ${{ steps.check-changes.outputs.is-diff }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch master branch
+        run: |
+          git fetch origin staged-builds-revised-stages:staged-builds-revised-stages # TODO staged-builds-revised-stages:staged-builds-revised-stages to master:master
+
+      - name: Check for changes
+        id: check-changes
+        run: | # Check for changes excluding README.md
+          # Check if the subdirectory exists in the base branch
+          if ! git ls-tree -d origin/staged-builds-revised-stages -- "images/${{ inputs.directory }}" >/dev/null 2>&1; then
+            echo "Subdirectory does not exist in the base branch"
+            echo "is-diff='true'" >> $GITHUB_OUTPUT
+          else
+            CHANGES=$(git diff --name-only origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.directory }}" | grep -v "README.md" || true)
+            NEW_FILES=$(git diff --name-only --diff-filter=A origin/staged-builds-revised-stages HEAD -- "images/${{ inputs.directory }}" | grep -v "README.md" || true)
+            
+            CHANGES="${CHANGES}${NEW_FILES}"
+
+            if [ -n "$CHANGES" ]; then
+              echo "Changes detected (excluding README.md)"
+              echo "is-diff=true" >> $GITHUB_OUTPUT
+            else
+              echo "No changes detected"
+              echo "is-diff=false" >> $GITHUB_OUTPUT
+            fi
+          fi
