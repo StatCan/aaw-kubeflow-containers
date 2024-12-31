@@ -77,7 +77,6 @@ jobs:
       # Scan image for vulnerabilities
       - name: Aqua Security Trivy image scan
         run: |
-          printf ${{ secrets.CVE_ALLOWLIST }} > .trivyignore
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
 
           set +e

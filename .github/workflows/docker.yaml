@@ -1,10 +1,13 @@
 name: Build, test, and push Docker Images
 on:
+  schedule:
+    # Execute at 2am EST every day
+    - cron:  '0 21 * * *'
   push:
     branches:
       - "master"
     paths:
-      - ".github/workflows/docker.yml"
+      - ".github/workflows/*"
 
       - "images/**"
       - "!images/*/README.md"
@@ -13,7 +16,7 @@ on:
       - "requirements-dev.txt"
   pull_request:
     paths:
-      - ".github/workflows/docker.yml"
+      - ".github/workflows/*"
 
       - "images/**"
       - "!images/*/README.md"
@@ -35,7 +38,7 @@ jobs:
     needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "base"
+      image: "base-fork"
       directory: "base"
       base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
@@ -48,9 +51,9 @@ jobs:
     needs: [vars, base]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "platform-jupyterlab"
+      image: "platform-jupyterlab-fork"
       directory: "platform"
-      parent-image: "base"
+      parent-image: "base-fork"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
@@ -62,9 +65,9 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "jupyterlab-cpu"
+      image: "jupyterlab-cpu-fork"
       directory: "cmd"
-      parent-image: "platform-jupyterlab"
+      parent-image: "platform-jupyterlab-fork"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       is-final: "true"
@@ -77,9 +80,9 @@ jobs:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "mid-tensorflow"
+      image: "mid-tensorflow-fork"
       directory: "tensorflow"
-      parent-image: "platform-jupyterlab"
+      parent-image: "platform-jupyterlab-fork"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
@@ -91,9 +94,9 @@ jobs:
     needs: [vars, mid-tensorflow]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "jupyterlab-tensorflow"
+      image: "jupyterlab-tensorflow-fork"
       directory: "cmd"
-      parent-image: "mid-tensorflow"
+      parent-image: "mid-tensorflow-fork"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       is-final: "true"
@@ -106,9 +109,9 @@ jobs:
     needs: [vars, base]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "mid-rstudio"
+      image: "mid-rstudio-fork"
       directory: "rstudio"
-      parent-image: "base"
+      parent-image: "base-fork"
       parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
@@ -120,9 +123,9 @@ jobs:
     needs: [vars, mid-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "platform-rstudio"
+      image: "platform-rstudio-fork"
       directory: "platform"
-      parent-image: "mid-rstudio"
+      parent-image: "mid-rstudio-fork"
       parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
@@ -134,9 +137,9 @@ jobs:
     needs: [vars, platform-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "rstudio"
+      image: "rstudio-fork"
       directory: "cmd"
-      parent-image: "platform-rstudio"
+      parent-image: "platform-rstudio-fork"
       parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       is-final: "true"
@@ -149,9 +152,9 @@ jobs:
     needs: [vars, mid-rstudio]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "mid-sas"
+      image: "mid-sas-fork"
       directory: "sas"
-      parent-image: "mid-rstudio"
+      parent-image: "mid-rstudio-fork"
       parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
     secrets:
@@ -163,9 +166,9 @@ jobs:
     needs: [vars, mid-sas]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "sas"
+      image: "sas-fork"
       directory: "cmd"
-      parent-image: "mid-sas"
+      parent-image: "mid-sas-fork"
       parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       is-final: "true"
@@ -178,7 +181,7 @@ jobs:
     needs: [vars]
     uses: ./.github/workflows/docker-steps.yaml
     with:
-      image: "remote-desktop"
+      image: "remote-desktop-fork"
       directory: "remote-desktop"
       # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
       # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
