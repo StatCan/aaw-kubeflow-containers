@@ -32,6 +32,9 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: | # Check for changes excluding README.md
+          echo "{{ github.head_ref }}"
+          chmod +x ./make_helpers/get_branch_name.sh
+          echo ./make_helpers/get_branch_name.sh
           if [ "{{ github.head_ref }}" == "master" ]; then
             echo "Always build master"
             echo "is-diff=true" >> $GITHUB_OUTPUT
