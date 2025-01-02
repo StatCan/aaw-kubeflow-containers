@@ -139,16 +139,6 @@ RUN pip3 --no-cache-dir install --quiet \
       && fix-permissions $CONDA_DIR && \
       fix-permissions /home/$NB_USER
 
-# installs vscode server, python & conda packages and jupyter lab extensions.
-
-# Using JupyterLab 3.0 inherited docker-stacks base image. A few extensions we used to install do not yet support
-# this version of Jupyterlab and/or are not OL-compliant so they have been removed until new compatible versions are available:
-    # jupyterlab-kale
-    # jupyterlab-variableinspector
-    # jupyterlab-archive
-    # jupyterlab-spellchecker
-    # jupyterlab-spreadsheet
-
 # Install vscode
 ARG VSCODE_VERSION=4.95.1
 ARG VSCODE_SHA=dafa88431ff0b52ce9d92bceb30460edab95e7fa2c2a0e8cf9fb6cdb6c0752e7

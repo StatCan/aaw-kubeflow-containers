@@ -34,9 +34,6 @@ RUN /rocker_scripts/install_shiny_server.sh \
 # Users should install R packages in their home directory
 RUN chmod 555 /usr/local/lib/R /usr/local/lib/R/site-library/
 
-
-# ARG CONDA_VERSION=py38_4.10.3
-# ARG CONDA_MD5=14da4a9a44b337f7ccb8363537f65b9c
 ARG PYTHON_VERSION=3.11
 
 COPY initial-condarc "${CONDA_DIR}/.condarc"
