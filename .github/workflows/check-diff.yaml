@@ -27,7 +27,7 @@ jobs:
 
       - name: Fetch master branch
         run: |
-          git fetch origin master:master
+          git fetch origin master
 
       - name: Check for changes
         id: check-changes
