@@ -32,7 +32,10 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: | # Check for changes excluding README.md
-          if [ "${{ inputs.parent-image-is-diff }}" == "true" ]; then
+          if [ {{ github.head_ref }} == "master" ]; then
+            echo "Always build master"
+            echo "is-diff=true" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.parent-image-is-diff }}" == "true" ]; then
             echo "Parent is diff"
             echo "is-diff=true" >> $GITHUB_OUTPUT
           # Check if the subdirectory exists in the base branch
