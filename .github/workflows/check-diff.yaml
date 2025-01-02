@@ -32,7 +32,7 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: | # Check for changes excluding README.md
-          if [ {{ github.head_ref }} == "master" ]; then
+          if [ "{{ github.head_ref }}" == "master" ]; then
             echo "Always build master"
             echo "is-diff=true" >> $GITHUB_OUTPUT
           elif [ "${{ inputs.parent-image-is-diff }}" == "true" ]; then
