@@ -38,6 +38,10 @@ on:
         required: false
         type: number
         default: 1
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -59,6 +63,7 @@ jobs:
     with:
       directory: ${{ inputs.directory }}
       parent-image-is-diff: ${{ inputs.parent-image-is-diff }}
+      branch-name: ${{ inputs.branch-name }}
 
   print-variables:
     needs: [check-diff]
@@ -102,6 +107,7 @@ jobs:
     with:
       image: ${{ inputs.image }}
       registry-name: ${{ inputs.registry-name }}
+      branch-name: ${{ inputs.branch-name }}
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}

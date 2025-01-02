@@ -11,6 +11,10 @@ on:
         description: Parent image has been changed?
         required: true
         type: string
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
     outputs:
       is-diff:
         description: Is there a difference between the master branch and the current branch
@@ -32,10 +36,7 @@ jobs:
       - name: Check for changes
         id: check-changes
         run: | # Check for changes excluding README.md
-          echo "Current branch: '${{ github.head_ref }}'"
-          chmod +x ./make_helpers/get_branch_name.sh
-          ./make_helpers/get_branch_name.sh
-          if [ "{{ github.head_ref }}" == "master" ]; then
+          if [ "${{ inputs.branch-name }}" == "master" ]; then
             echo "Always build master"
             echo "is-diff=true" >> $GITHUB_OUTPUT
           elif [ "${{ inputs.parent-image-is-diff }}" == "true" ]; then

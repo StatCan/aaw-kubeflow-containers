@@ -14,6 +14,10 @@ on:
         description: url of the registry <registy-name>.azurecr.io
         required: true
         type: string
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
     secrets:
       REGISTRY_USERNAME:
         description: The username for the container registry
@@ -55,7 +59,7 @@ jobs:
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=${{ github.head_ref }}
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=${{ inputs.branch-name }}
 
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
