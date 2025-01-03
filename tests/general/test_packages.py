@@ -90,6 +90,7 @@ EXCLUDED_PACKAGES = [
     "gputil",
     "cudatoolkit",
     "cudnn",
+    "mamba",
     # Python
     # import PIL, not import pillow
     "pillow",
