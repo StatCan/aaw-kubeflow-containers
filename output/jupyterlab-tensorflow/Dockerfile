@@ -207,6 +207,8 @@ RUN apt-get update && \
       'zip' \
       'zsh' \
       'dos2unix' \
+      # installs necessary tool for kerberos authentication setup
+      'krb5-user' \
       # these are required by some r packages, adding these here so they get
       # installed into all images.
       'libfreetype6-dev' \
@@ -284,6 +286,8 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
+
+COPY ktutil-keytab.sh /home/$NB_USER/.local/bin/ktutil-keytab
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
