@@ -1,0 +1,66 @@
+{
+    "jobs": [
+        {
+            "image": "base-fork",
+            "directory": "base",
+            "parent-image": null,
+            "base-image": "quay.io/jupyter/datascience-notebook:2024-06-17"
+        },
+        {
+            "image": "platform-jupyterlab-fork",
+            "directory": "platform",
+            "parent-image": "base-fork"
+        },
+        {
+            "image": "jupyterlab-cpu-fork",
+            "directory": "cmd",
+            "parent-image": "platform-jupyterlab",
+            "is-final": "true"
+        },
+        {
+            "image": "mid-tensorflow-fork",
+            "directory": "tensorflow",
+            "parent-image": "platform-jupyterlab-fork"
+        },
+        {
+            "image": "jupyterlab-tensorflow-fork",
+            "directory": "cmd",
+            "parent-image": "mid-tensorflow-fork",
+            "is-final": "true"
+        },
+        {
+            "image": "mid-rstudio-fork",
+            "directory": "rstudio",
+            "parent-image": "base-fork"
+        },
+        {
+            "image": "platform-rstudio-fork",
+            "directory": "platform",
+            "parent-image": "mid-rstudio-fork"
+        },
+        {
+            "image": "rstudio-fork",
+            "directory": "cmd",
+            "parent-image": "platform-rstudio-fork",
+            "is-final": "true"
+        },
+        {
+            "image": "mid-sas-fork",
+            "directory": "sas",
+            "parent-image": "mid-rstudio-fork"
+        },
+        {
+            "image": "sas-fork",
+            "directory": "cmd",
+            "parent-image": "mid-sas-fork",
+            "is-final": "true"
+        },
+        {
+            "image": "remote-desktop-fork",
+            "directory": "remote-desktop",
+            "parent-image": null,
+            "base-image": "quay.io/jupyter/datascience-notebook:2024-06-17",
+            "is-final": "true"
+        }
+    ]
+}

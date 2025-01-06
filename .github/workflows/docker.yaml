@@ -44,173 +44,42 @@ jobs:
       - name: Set up environment
         run: echo "Environment has been set up."
 
-  base:
-    needs: [vars]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "base-fork"
-      directory: "base"
-      base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+build-docker-images:
+    runs-on: ubuntu-latest
 
-  platform-jupyterlab:
-    needs: [vars, base]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "platform-jupyterlab-fork"
-      directory: "platform"
-      parent-image: "base-fork"
-      parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+    strategy:
+      matrix:
+        job: ${{ fromJson(steps.load-matrix.outputs.jobMatrix) }}
 
-  jupyterlab:
-    needs: [vars, platform-jupyterlab]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "jupyterlab-cpu-fork"
-      directory: "cmd"
-      parent-image: "platform-jupyterlab-fork"
-      parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+    needs: ${{ matrix.job.parent-job || 'vars' }}
 
-  mid-tensorflow:
-    needs: [vars, platform-jupyterlab]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "mid-tensorflow-fork"
-      directory: "tensorflow"
-      parent-image: "platform-jupyterlab-fork"
-      parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  tensorflow:
-    needs: [vars, mid-tensorflow]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "jupyterlab-tensorflow-fork"
-      directory: "cmd"
-      parent-image: "mid-tensorflow-fork"
-      parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  mid-rstudio:
-    needs: [vars, base]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "mid-rstudio-fork"
-      directory: "rstudio"
-      parent-image: "base-fork"
-      parent-image-is-diff: "${{ needs.base.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  platform-rstudio:
-    needs: [vars, mid-rstudio]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "platform-rstudio-fork"
-      directory: "platform"
-      parent-image: "mid-rstudio-fork"
-      parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  rstudio:
-    needs: [vars, platform-rstudio]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "rstudio-fork"
-      directory: "cmd"
-      parent-image: "platform-rstudio-fork"
-      parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  mid-sas:
-    needs: [vars, mid-rstudio]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "mid-sas-fork"
-      directory: "sas"
-      parent-image: "mid-rstudio-fork"
-      parent-image-is-diff: "${{ needs.mid-rstudio.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  sas:
-    needs: [vars, mid-sas]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "sas-fork"
-      directory: "cmd"
-      parent-image: "mid-sas-fork"
-      parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  remote-desktop:
-    needs: [vars]
-    uses: ./.github/workflows/docker-steps.yaml
-    with:
-      image: "remote-desktop-fork"
-      directory: "remote-desktop"
-      # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
-      # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-      base-image: "rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
-      buildkit: 0
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+      - name: Load job matrix from file
+        id: load-matrix
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const matrix = JSON.parse(fs.readFileSync('images/stages.json', 'utf8'));
+            return matrix.jobs;
+        result-encoding: string
+        result: jobMatrix
+        
+      - name: Build and Push Docker Images
+        uses: ./.github/workflows/docker-steps.yaml
+        with:
+          image: ${{ matrix.job.image }}
+          directory: ${{ matrix.job.directory }}
+          base-image: ${{ matrix.job.base-image || '' }}
+          parent-image: ${{ matrix.job.parent-job || '' }}
+          parent-image-is-diff: ${{ matrix.job.parent-job && needs[matrix.job.parent-job].outputs.is-diff || '' }}
+          registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+          branch-name: "${{ needs.vars.outputs.branch-name }}"
+          is-final: "${{ matrix.job.is-final || 'false' }}"
+        secrets:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST }}
