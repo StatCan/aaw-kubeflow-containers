@@ -1,0 +1,85 @@
+name: Test nightly
+on:
+  schedule:
+    # Execute at 2am EST every day
+    - cron:  '0 21 * * *'
+
+jobs:
+  vars:
+    runs-on: ubuntu-latest
+    outputs:
+      REGISTRY_NAME: "k8scc01covidacr"
+      DEV_REGISTRY_NAME: "k8scc01covidacrdev"
+      branch-name: "master"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get branch name
+        id: getBranch
+        run: |
+          chmod +x ./make_helpers/get_branch_name.sh
+          BRANCH_NAME=$(./make_helpers/get_branch_name.sh)
+          echo "branch-name=$BRANCH_NAME"
+          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+      - name: Set up environment
+        run: echo "Environment has been set up."
+
+  jupyterlab-cpu-test:
+    needs: [vars]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "jupyterlab-cpu-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  jupyterlab-tensorflow-test:
+    needs: [vars]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "jupyterlab-tensorflow-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  rstudio-test:
+    needs: [vars]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "rstudio-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  sas-test:
+    needs: [vars]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "sas-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  remote-desktop-test:
+    needs: [vars]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "remote-desktop-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}

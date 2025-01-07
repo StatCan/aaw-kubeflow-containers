@@ -1,8 +1,5 @@
 name: Build, test, and push Docker Images
 on:
-  schedule:
-    # Execute at 2am EST every day
-    - cron:  '0 21 * * *'
   push:
     branches:
       - "master"
@@ -56,7 +53,6 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   platform-jupyterlab:
     needs: [vars, base]
@@ -71,9 +67,8 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
-  jupyterlab:
+  jupyterlab-cpu:
     needs: [vars, platform-jupyterlab]
     uses: ./.github/workflows/docker-steps.yaml
     with:
@@ -82,12 +77,10 @@ jobs:
       parent-image: "platform-jupyterlab-fork"
       parent-image-is-diff: "${{ needs.platform-jupyterlab.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   mid-tensorflow:
     needs: [vars, platform-jupyterlab]
@@ -102,9 +95,8 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
-  tensorflow:
+  jupyterlab-tensorflow:
     needs: [vars, mid-tensorflow]
     uses: ./.github/workflows/docker-steps.yaml
     with:
@@ -113,12 +105,10 @@ jobs:
       parent-image: "mid-tensorflow-fork"
       parent-image-is-diff: "${{ needs.mid-tensorflow.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   mid-rstudio:
     needs: [vars, base]
@@ -133,7 +123,6 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   platform-rstudio:
     needs: [vars, mid-rstudio]
@@ -148,7 +137,6 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   rstudio:
     needs: [vars, platform-rstudio]
@@ -159,12 +147,10 @@ jobs:
       parent-image: "platform-rstudio-fork"
       parent-image-is-diff: "${{ needs.platform-rstudio.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   mid-sas:
     needs: [vars, mid-rstudio]
@@ -179,7 +165,6 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   sas:
     needs: [vars, mid-sas]
@@ -190,12 +175,10 @@ jobs:
       parent-image: "mid-sas-fork"
       parent-image-is-diff: "${{ needs.mid-sas.outputs.is-diff }}"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
 
   remote-desktop:
     needs: [vars]
@@ -207,8 +190,68 @@ jobs:
       # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
       base-image: "rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      is-final: "true"
       buildkit: 0
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  # Test the Images
+
+  jupyterlab-cpu-test:
+    needs: [vars, jupyterlab-cpu]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "jupyterlab-cpu-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  jupyterlab-tensorflow-test:
+    needs: [vars, jupyterlab-tensorflow]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "jupyterlab-tensorflow-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  rstudio-test:
+    needs: [vars, rstudio]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "rstudio-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  sas-test:
+    needs: [vars, sas]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "sas-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+
+  remote-desktop-test:
+    needs: [vars, remote-desktop]
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "remote-desktop-fork"
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
