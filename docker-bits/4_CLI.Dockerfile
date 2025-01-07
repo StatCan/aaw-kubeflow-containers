@@ -99,4 +99,4 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
 
-COPY ktutil-keytab.sh /home/$NB_USER/.local/bin/ktutil-keytab
+COPY ktutil-keytab.sh /usr/local/bin/ktutil-keytab

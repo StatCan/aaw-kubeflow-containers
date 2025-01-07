@@ -30,3 +30,17 @@ kubectl create secret generic kerberos-keytab -n $NS --from-file=./client.keytab
 
 # apply the secret
 kubectl apply -f ./ktutil_keytab.yaml
+
+
+#get the notebook name
+nb_name=${NB_PREFIX##*/}
+
+# Prompt user for notebook restart
+while true; do
+    read -p "In order to update the kerberos authentication, the notebook server needs to be restarted. Would you like to restart your notebook server?[Y/n]: " yn
+    case $yn in
+        [Yy]* ) echo "Your notebook server will now restart"; kubectl rollout restart statefulset $nb_name -n $NB_NAMESPACE; break;;
+        [Nn]* ) echo "Your notebook server will not be restarted"; exit;;
+        * ) echo "Only yes or no is an expected answer";;
+    esac
+done
