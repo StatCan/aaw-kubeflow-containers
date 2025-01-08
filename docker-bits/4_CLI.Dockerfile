@@ -99,4 +99,6 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
 
+# add script for kerberos keytab creation
 COPY ktutil-keytab.sh /usr/local/bin/ktutil-keytab
+RUN chmod +x /usr/local/bin/ktutil-keytab
