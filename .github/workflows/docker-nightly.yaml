@@ -1,4 +1,4 @@
-name: Test nightly
+name: Nightly test
 on:
   schedule:
     # Execute at 2am EST every day
