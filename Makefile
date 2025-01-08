@@ -11,7 +11,6 @@
 DOCKER-STACKS-UPSTREAM-TAG := ed2908bbb62e
 
 tensorflow-CUDA := 11.8.0
-pytorch-CUDA    := 11.8.0
 
 # Misc Directories
 TESTS_DIR := ./tests
@@ -41,8 +40,7 @@ get-docker-stacks-upstream-tag:
 	@echo $(DOCKER-STACKS-UPSTREAM-TAG)
 
 generate-CUDA:
-	bash scripts/get-nvidia-stuff.sh $(tensorflow-CUDA) > 1_CUDA-$(tensorflow-CUDA).Dockerfile
-	bash scripts/get-nvidia-stuff.sh    $(pytorch-CUDA) > 1_CUDA-$(pytorch-CUDA).Dockerfile
+	bash $(MAKE_HELPERS)/get-nvidia-stuff.sh $(tensorflow-CUDA) > 1_CUDA-$(tensorflow-CUDA).Dockerfile
 
 ###################################
 ######    Docker helpers     ######
