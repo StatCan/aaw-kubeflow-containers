@@ -2,7 +2,7 @@ name: Test nightly
 on:
   schedule:
     # Execute at 2am EST every day
-    - cron:  '0 21 * * *'
+    - cron:  '0 7 * * *'
 
 jobs:
   vars:
