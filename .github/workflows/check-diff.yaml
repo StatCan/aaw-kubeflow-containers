@@ -1,0 +1,62 @@
+name: Check for changes in subdirectory
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
+      parent-image-is-diff:
+        description: Parent image has been changed?
+        required: true
+        type: string
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
+    outputs:
+      is-diff:
+        description: Is there a difference between the master branch and the current branch
+        value: ${{ jobs.check-diff.outputs.is-diff }}
+
+jobs:
+  check-diff:
+    runs-on: ubuntu-latest
+    outputs:
+      is-diff: ${{ steps.check-changes.outputs.is-diff }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch master branch
+        run: |
+          git fetch origin master
+
+      - name: Check for changes
+        id: check-changes
+        run: | # Check for changes excluding README.md
+          if [ "${{ inputs.branch-name }}" == "master" ]; then
+            echo "Always build master"
+            echo "is-diff=true" >> $GITHUB_OUTPUT
+          elif [ "${{ inputs.parent-image-is-diff }}" == "true" ]; then
+            echo "Parent is diff"
+            echo "is-diff=true" >> $GITHUB_OUTPUT
+          # Check if the subdirectory exists in the base branch
+          elif ! git ls-tree -d origin/master -- "images/${{ inputs.directory }}" >/dev/null 2>&1; then
+            echo "Subdirectory does not exist in the base branch"
+            echo "is-diff='true'" >> $GITHUB_OUTPUT
+          else
+            CHANGES=$(git diff --name-only origin/master HEAD -- "images/${{ inputs.directory }}" | grep -v "README.md" || true)
+            NEW_FILES=$(git diff --name-only --diff-filter=A origin/master HEAD -- "images/${{ inputs.directory }}" | grep -v "README.md" || true)
+            
+            CHANGES="${CHANGES}${NEW_FILES}"
+
+            if [ -n "$CHANGES" ]; then
+              echo "Changes detected (excluding README.md)"
+              echo "is-diff=true" >> $GITHUB_OUTPUT
+            else
+              echo "No changes detected"
+              echo "is-diff=false" >> $GITHUB_OUTPUT
+            fi
+          fi

@@ -1,0 +1,93 @@
+name: organizes the steps taken to build, upload, and test the images
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Image name
+        required: true
+        type: string
+      directory:
+        description: The directory of the image files
+        required: true
+        type: string
+      parent-image:
+        description: Parent image name
+        required: false
+        type: string
+      parent-image-is-diff:
+        description: Parent image has been changed?
+        required: false
+        type: string
+        default: "false"
+      base-image:
+        description: The base image to build from if not located on our own repo
+        required: false
+        type: string
+      registry-name:
+        description: url of the registry <registy-name>.azurecr.io
+        required: true
+        type: string
+      buildkit:
+        description: buildkit version, legacy is 0 and deprecated 
+        required: false
+        type: number
+        default: 1
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
+    secrets:
+      REGISTRY_USERNAME:
+        description: The username for the container registry
+        required: true
+      REGISTRY_PASSWORD:
+        description: The password for the container registry
+        required: true
+    outputs:
+      is-diff:
+        description: Is there a difference between the master branch and the current branch
+        value: ${{ jobs.check-diff.outputs.is-diff }}
+
+jobs:
+  check-diff:
+    uses: ./.github/workflows/check-diff.yaml
+    with:
+      directory: ${{ inputs.directory }}
+      parent-image-is-diff: ${{ inputs.parent-image-is-diff }}
+      branch-name: ${{ inputs.branch-name }}
+
+  print-variables:
+    needs: [check-diff]
+    runs-on: ubuntu-latest
+    steps:
+      - name: print inputs
+        run: echo "${{ toJSON(inputs) }}"
+      - name: print check-diff
+        run: echo "${{ toJSON(needs.check-diff) }}"
+
+  build-upload:
+    needs: [check-diff]
+    if: ${{ needs.check-diff.outputs.is-diff == 'true' }}
+    uses: ./.github/workflows/docker-build-upload.yaml
+    with:
+      parent-image: ${{ inputs.parent-image }}
+      directory: ${{ inputs.directory }}
+      image: ${{ inputs.image }}
+      base-image: ${{ inputs.base-image }}
+      registry-name: ${{ inputs.registry-name }}
+      buildkit: ${{ inputs.buildkit }}
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+
+  pull-upload:
+    needs: [check-diff]
+    if: ${{ needs.check-diff.outputs.is-diff == 'false' }}
+    uses: ./.github/workflows/docker-pull-upload.yaml
+    with:
+      image: ${{ inputs.image }}
+      registry-name: ${{ inputs.registry-name }}
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
