@@ -3,6 +3,11 @@
 mkdir -p ~/krb5
 cd ~/krb5
 
+#clean up from previous run(or else it appends to the file instead of replacing it)
+if [ -f ./client.keytab ]; then
+    rm ./client.keytab
+fi
+
 # gets the user's username (legacy AD)
 read -p "Username(ex. marcoma):" user_name
 
