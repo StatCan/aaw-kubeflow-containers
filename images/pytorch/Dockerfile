@@ -1,6 +1,6 @@
 # Install PyTorch GPU Packages and enable PyTorch IPyKernel
 RUN mamba create -n torch && \
-    mamba install -n torch --quiet --yes -c pytorch -c nvidia \
+    conda install -n torch --quiet --yes -c pytorch -c nvidia \
         python=3.11 \
         ipykernel \
         pytorch \

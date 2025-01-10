@@ -111,7 +111,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 # Install Tensorflow
-RUN mamba install --quiet --yes \
+RUN conda install --quiet --yes \
         tensorflow \
         keras \
         ipykernel \

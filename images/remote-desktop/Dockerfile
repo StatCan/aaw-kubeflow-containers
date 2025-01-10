@@ -70,7 +70,7 @@ RUN set -x && \
 COPY aaw-suspend-server.sh /usr/local/bin
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN mamba install --quiet \
+RUN conda install --quiet \
       'pillow' \
       'pyyaml' \
       'joblib==1.2.0' \

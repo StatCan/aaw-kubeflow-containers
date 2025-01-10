@@ -16,7 +16,7 @@ COPY aaw-suspend-server.sh /usr/local/bin
 COPY pytorch-requirements.txt /usr/local/bin/requirments.txt
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
-RUN mamba install --quiet \
+RUN conda install --quiet \
       'pillow' \
       'pyyaml' \
       'joblib==1.2.0' \
@@ -185,7 +185,7 @@ COPY languagepacks.json $CS_TEMP_HOME/
 RUN pip install \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
-    mamba install --quiet --yes -c conda-forge \
+  conda install --quiet --yes -c conda-forge \
     'jupyter_contrib_nbextensions' \ 
     'dash' \
     'plotly' \
@@ -220,7 +220,7 @@ RUN pip install \
 # Install python, R, Julia and other useful language servers
 RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    mamba install -c conda-forge \
+    conda install -c conda-forge \
       'python-lsp-server' \
     && \
 # These should probably go in a package.json file
