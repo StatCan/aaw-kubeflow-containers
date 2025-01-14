@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       registry-name:
-        description: url of the registry <registy-name>.azurecr.io
+        description: url of the registry <registy-name>
         required: true
         type: string
       branch-name:
@@ -53,13 +53,13 @@ jobs:
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
         with:
-          login-server: ${{ inputs.registry-name }}.azurecr.io
+          login-server: ${{ inputs.registry-name }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=${{ inputs.branch-name }}
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }} TAG=${{ inputs.branch-name }}
 
       - name: Set Up Python for Test Suite
         uses: actions/setup-python@v4
@@ -91,7 +91,7 @@ jobs:
             trivy image \
               --db-repository ${{ env.TRIVY_DATABASES }} \
               --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
-              ${{ inputs.registry-name }}.azurecr.io/${{ inputs.image }}:${{ inputs.branch-name }} \
+              ${{ inputs.registry-name }}/${{ inputs.image }}:${{ inputs.branch-name }} \
               --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL --quiet
             EXIT_CODE=$?
 

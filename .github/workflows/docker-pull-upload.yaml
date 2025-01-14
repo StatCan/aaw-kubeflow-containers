@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       registry-name:
-        description: url of the registry <registy-name>.azurecr.io
+        description: url of the registry <registy-name>
         required: true
         type: string
     secrets:
@@ -40,19 +40,19 @@ jobs:
       # Connect to Azure Container registry (ACR)
       - uses: azure/docker-login@v1
         with:
-          login-server: ${{ inputs.registry-name }}.azurecr.io
+          login-server: ${{ inputs.registry-name }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io TAG=master
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }} TAG=master
 
       - name: Retag existing image
-        run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io SOURCE_FULL_IMAGE_NAME=${{ steps.pull-existing.outputs.image_name }}
+        run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }} SOURCE_FULL_IMAGE_NAME=${{ steps.pull-existing.outputs.image_name }}
 
       - name: Push image to registry (default pushes all tags)
-        run: make push/${{ inputs.image }} REPO=${{ inputs.registry-name }}.azurecr.io
+        run: make push/${{ inputs.image }} REPO=${{ inputs.registry-name }}
 
       # Free up space from build process (containerscan action will run out of space if we don't)
       - run: ./.github/scripts/cleanup_runner.sh
