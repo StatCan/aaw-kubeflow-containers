@@ -325,6 +325,7 @@ This was tested on Linux Ubuntu 20.04 virtual machine.
 │
 ├── make_helpers                            # Scripts used by makefile
 │   ├── get_branch_name.sh
+│   ├── get-nvidia-stuff.sh
 │   └── post-build-hook.sh
 │
 ├── images                                  # Dockerfile and required resources for stage builds
@@ -337,22 +338,6 @@ This was tested on Linux Ubuntu 20.04 virtual machine.
 │   └── tensorflow
 │
 ├── docs                                    # files/images used in documentation (ex. Readme's)
-│
-├── scripts                                 # Helper Scripts (NOT automated.)
-│   ├── remote-desktop                      # Scripts installing applications on remote desktop
-│   │  ├── firefox.sh
-│   │  ├── fix-permissions
-│   │  ├── minio-launcher.py
-│   │  ├── pspp.sh
-│   │  ├── qgis.sh
-│   │  ├── r-studio-desktop.sh
-│   │  ├── README.md
-│   │  └── vs-code-desktop.sh
-│   ├── CHECKSUMS
-│   ├── checksums.sh
-│   ├── get-nvidia-stuff.sh
-│   ├── get-spark-stuff.sh
-│   └── README.md
 │
 └── tests
     ├── general/                            # General tests applied to all images
