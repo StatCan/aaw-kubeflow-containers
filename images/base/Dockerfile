@@ -13,7 +13,7 @@ RUN apt-get update --yes \
 COPY aaw-suspend-server.sh /usr/local/bin
 
 # Add requirments file for adding pytorch
-COPY pytorch-requirements.txt /usr/local/bin/requirments.txt
+COPY pytorch-requirements.txt /usr/local/bin/requirements.txt
 
 # https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 RUN mamba install --quiet \
