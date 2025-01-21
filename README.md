@@ -19,6 +19,7 @@ Container images to be used with kubeflow on the AAW platform for Data Science &
   - [Overview of images](#overview-of-images)
   - [Adding new software](#adding-new-software)
   - [Adding new Images](#adding-new-images)
+  - [Adding new Stages](#adding-new-stages)
   - [Modifying and Testing CI](#modifying-and-testing-ci)
 - [Other Development Notes](#other-development-notes)
   - [Github CI](#github-ci)
@@ -77,7 +78,7 @@ For example:
 ### Pulling and Pushing Docker Images
 
 `make pull/IMAGENAME` and `make push/IMAGENAME` work similarly to `make build/IMAGENAME`.
-They either push a local image to the acr, or pull and exisitng one from acr to local. 
+They either push a local image to the acr, or pull an exisitng one from acr to local. 
 The `REPO` and `TAG` arguments are available to override their default values.
 
 **Note:** To use `make pull` or `make push`,
@@ -92,7 +93,7 @@ you must first log in to ACR (`az acr login -n k8scc01covidacr`)
 To test an image interactively, use `make dev/IMAGENAME`.
 This calls `docker run` on a built image,
 automatically forwarding ports to your local machine and providing a link to connect to.
-The site can then be tested localy.
+Once the docker container is running, it will serve a localhost url to connect to the notebook.
 
 #### Automated Testing
 
@@ -194,7 +195,7 @@ Each directory in the images folder makes up one stage of the build process.
 They each contain the Dockerfile that directs the build, and all related files.
 
 The relationship between the stages and the final product is as shown below.
-![The flowchart shoing the stages and thier order](./docs/images/image-stages.png)
+![The flowchart showing the stages and their order](./docs/images/image-stages.png)
 
 All output images should meet the following criteria:
 
@@ -210,9 +211,62 @@ In such cases it may be more relevant to make an image under [aaw-contrib-contai
 
 ### Adding new Images
 
-1. Identify what stages are needed, and if the image will build from an existing stage
-2. Create a new subdirectory in the `/images/` directory for each new stage
-3. Add new jobs to the `./github/workflows/docker.yaml` for each new stage. 
+1. Identify what stages are needed, 
+and if the image will use any existing images and workflows
+2. For each new stage to be added, 
+follow the process in the [Adding new Stages](#adding-new-stages) section
+
+### Adding new Stages
+
+1. Identify where the new stage will be placed in the build order
+2. Create a new subdirectory in the `/images/` directory for the stage
+3. Add a new job to the `./github/workflows/docker.yaml` for the new stage.
+See below for a description of all the fields.
+4. If this stage was inserted between two existing stages,
+update the parent values of any children of this stage
+5. If this stage creates an image that will be deployed to users.
+A job must be added to test the image in `./github/workflows/docker.yaml` and `./github/workflows/docker-nightly.yaml`
+See below for a description of all the fields
+6. Update the documentation for the new stage.
+This is generally updating `images-stages.png` and `image-stages.drawio` in the `docs/images` folder using draw.io.
+
+
+yaml to create an image
+```yaml
+  stage-name:                                                         # The name of the stage, will be shown in the CICD workflow
+    needs: [vars, parent]                                             # All stages need vars, any stages with a parent must link their direct parent
+    uses: ./.github/workflows/docker-steps.yaml
+    with:
+      image: "stage-name"                                             # The name of the current stage/image
+      directory: "directory-name"                                     # The name of the directory in the /images/ folder. /images/base would be "base"
+      base-image: "quay.io/jupyter/datascience-notebook:2024-06-17"   # used if the stage is built from an upsteam image. Omit if stage has a local parent
+      parent-image: "parent"                                          # The name of the parent stage/image. Omit if stage uses an upsteam image
+      parent-image-is-diff: "${{ needs.parent.outputs.is-diff }}"     # Checks if the parent image had changes. Omit if stage uses an upsteam image
+      buildkit: 1                                                     # Configures the buildkit version of docker. Can be ommited if using the default 1. 
+                                                                      # Can be set to 0 for building large images, like remote-desktop
+      # The following values are static between differnt stages
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+```
+
+yaml to create a test
+```yaml
+  imagename-test:                                       # The name of the test job, usually  imagename-test
+    needs: [vars, imagename]                            # Must contain vars and the image that will be tested
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: "imagename"                                # The name of the image that will be tested
+      # The following values are static between differnt tests
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+```
 
 ### Modifying and Testing CI
 
