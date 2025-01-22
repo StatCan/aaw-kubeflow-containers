@@ -24,62 +24,25 @@ jobs:
       - name: Set up environment
         run: echo "Environment has been set up."
 
-  jupyterlab-cpu-test:
-    needs: [vars]
-    uses: ./.github/workflows/docker-pull-test.yaml
-    with:
-      image: "jupyterlab-cpu"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  jupyterlab-tensorflow-test:
-    needs: [vars]
-    uses: ./.github/workflows/docker-pull-test.yaml
-    with:
-      image: "jupyterlab-tensorflow"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  rstudio-test:
-    needs: [vars]
-    uses: ./.github/workflows/docker-pull-test.yaml
-    with:
-      image: "rstudio"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  sas-test:
-    needs: [vars]
-    uses: ./.github/workflows/docker-pull-test.yaml
-    with:
-      image: "sas"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
-
-  remote-desktop-test:
-    needs: [vars]
-    uses: ./.github/workflows/docker-pull-test.yaml
-    with:
-      image: "remote-desktop"
-      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-      branch-name: "${{ needs.vars.outputs.branch-name }}"
-    secrets:
-      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+  nightly-tests:
+    needs: vars
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image:
+          - jupyterlab-cpu
+          - jupyterlab-tensorflow
+          - rstudio
+          - sas
+          - remote-desktop
+    steps:
+      - name: pull and test docker image
+        uses: ./.github/workflows/docker-pull-test.yaml
+        with:
+          image: ${{ matrix.image }}
+          registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+          branch-name: "${{ needs.vars.outputs.branch-name }}"
+        secrets:
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+          CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
