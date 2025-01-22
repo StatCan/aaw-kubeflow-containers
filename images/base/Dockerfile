@@ -1,4 +1,3 @@
-FROM quay.io/jupyter/datascience-notebook:2024-06-17 as base
 USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
