@@ -211,7 +211,7 @@ echo "Retrieving Oracle tnsnames file"
 RETRIES_NO=5
 RETRY_DELAY=3
 for i in $(seq 1 $RETRIES_NO); do
-  curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/499/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora && break
+  curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/515/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora && break
   echo "Failed to get the tnsnames.ora file. Attempt $i of $RETRIES_NO"
   #if it ran all the retries, exit
   [[ $i -eq $RETRIES_NO ]] && echo "Failed to get the tnsnames.ora file after $RETRIES_NO retries"
