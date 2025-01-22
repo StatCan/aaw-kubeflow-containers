@@ -19,6 +19,7 @@ jobs:
 
   nightly-tests:
     needs: vars
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         image:
