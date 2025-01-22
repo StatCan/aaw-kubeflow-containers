@@ -1,0 +1,111 @@
+name: Tests the image built or copied from the previous step
+
+env:
+  HADOLINT_VERSION: "2.12.0"
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: Image name
+        required: true
+        type: string
+      registry-name:
+        description: url of the registry <registy-name>
+        required: true
+        type: string
+      branch-name:
+        description: The name of the current branch 
+        required: true
+        type: string
+    secrets:
+      REGISTRY_USERNAME:
+        description: The username for the container registry
+        required: true
+      REGISTRY_PASSWORD:
+        description: The password for the container registry
+        required: true
+      CVE_ALLOWLIST:
+        description: The list of Trivy exemptions
+        required: true
+
+jobs:
+  pull-test:
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+    env:
+      TRIVY_VERSION: "v0.57.0"
+      TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
+      TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
+      TRIVY_MAX_RETRIES: 5
+      TRIVY_RETRY_DELAY: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free up all available disk space before building
+        run: ./.github/scripts/cleanup_runner.sh
+
+      # Connect to Azure Container registry (ACR)
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ inputs.registry-name }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Pull existing image
+        id: pull-existing
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }} TAG=${{ inputs.branch-name }}
+
+      - name: Set Up Python for Test Suite
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Set up venv for Test Suite
+        run: |
+          python -m pip install --upgrade pip
+          make install-python-dev-venv
+
+      - name: Test image
+        run: make test/${{ inputs.image }}
+
+      # Free up space from build process (containerscan action will run out of space if we don't)
+      - name: cleanup runner
+        run: ./.github/scripts/cleanup_runner.sh
+
+      # Scan image for vulnerabilities
+      - name: Aqua Security Trivy image scan
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${{ env.TRIVY_VERSION }}
+
+          set +e
+
+          for ((i=0; i<${{ env.TRIVY_MAX_RETRIES }}; i++)); do
+            echo "Attempt $((i + 1)) of ${{ env.TRIVY_MAX_RETRIES }}..."
+
+            trivy image \
+              --db-repository ${{ env.TRIVY_DATABASES }} \
+              --java-db-repository ${{ env.TRIVY_JAVA_DATABASES }} \
+              ${{ inputs.registry-name }}/${{ inputs.image }}:${{ inputs.branch-name }} \
+              --exit-code 10 --timeout=20m --scanners vuln --severity CRITICAL --quiet
+            EXIT_CODE=$?
+
+            if [[ $EXIT_CODE -eq 0 ]]; then
+              echo "Trivy scan completed successfully."
+              exit 0
+            elif [[ $EXIT_CODE -eq 10 ]]; then
+              echo "Trivy scan completed successfully. Some vulnerabilities were found."
+              exit 0
+            elif [[ $i -lt $(( ${{ env.TRIVY_MAX_RETRIES }} - 1))  ]]; then
+              echo "Encountered unexpected error. Retrying in ${{ env.TRIVY_RETRY_DELAY }} seconds..."
+              sleep ${{ env.TRIVY_RETRY_DELAY }}
+            else
+              echo "Unexpected error persists after ${{ env.TRIVY_MAX_RETRIES }} attempts. Exiting."
+              exit 1
+            fi
+          done

@@ -184,6 +184,7 @@ docker-stacks-datascience-notebook:
 ######    Docker helpers     ######
 ###################################
 
+pull/%: GITHUB_OUTPUT ?= .tmp/github_output.log
 pull/%: DARGS?=
 pull/%: REPO?=$(DEFAULT_REPO)
 pull/%: TAG?=$(DEFAULT_TAG)
@@ -191,18 +192,22 @@ pull/%:
 	# End repo with a single slash and start tag with a single colon, if they exist
 	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
 	TAG=$$(echo "$(TAG)" | sed 's~^:*~:~' | sed 's~^\s*:*\s*$$~~') &&\
-	echo "Pulling $${REPO}$(notdir $@)$${TAG}" &&\
-	docker pull $(DARGS) "$${REPO}$(notdir $@)$${TAG}"
+	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
+	echo "Pulling $$IMAGE_NAME" &&\
+	docker pull $(DARGS) $$IMAGE_NAME &&\
+	echo "image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT)
 
 build/%: GITHUB_OUTPUT ?= .tmp/github_output.log
+build/%: BUILDKIT ?= 1
+build/%: DIRECTORY?=
 build/%: DARGS?=
 build/%: REPO?=$(DEFAULT_REPO)
 build/%: TAG?=$(DEFAULT_TAG)
 build/%: ## build the latest image
 	# End repo with exactly one trailing slash, unless it is empty
-	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') &&\
+	REPO=$$(echo "$(REPO)" | sed 's:/*$$:/:' | sed 's:^\s*/*\s*$$::') && \
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" && \
-	DOCKER_BUILDKIT=0 docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./output/$(notdir $@) && \
+	DOCKER_BUILDKIT=$(BUILDKIT) docker build $(DARGS) --rm --force-rm -t $$IMAGE_NAME ./images/$(DIRECTORY) && \
 	echo -n "Built image $$IMAGE_NAME of size: " && \
 	docker images $$IMAGE_NAME --format "{{.Size}}" && \
 	echo "full_image_name=$$IMAGE_NAME" >> $(GITHUB_OUTPUT) && \
