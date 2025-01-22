@@ -138,7 +138,7 @@ RUN \
     && curl -LO "${KUBECTL_URL}.sha256" \
     && echo "$(cat kubectl.sha256) kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
   && \
     # AzureCLI - installation script from Azure
     curl -sLO "${AZCLI_URL}" \
@@ -156,7 +156,7 @@ RUN \
     && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+    && mv /tmp/trino-original /usr/local/bin/trino-original \
   && \
     # argo cli
     curl -sLO  ${ARGO_CLI_URL}\
@@ -164,7 +164,7 @@ RUN \
     && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
-    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version \
   && \
     # quarto
@@ -173,8 +173,8 @@ RUN \
     && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
     && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
-    && sudo rm -f /usr/local/bin/quarto \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && rm -f /usr/local/bin/quarto \
+    && mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
     
 ENV NB_UID=1000
 ENV NB_GID=100
@@ -253,7 +253,7 @@ RUN \
 #None of these are installed in upstream docker images but are present in current remote
 RUN \
     apt-get update --fix-missing && \
-    apt-get install -y sudo apt-utils && \
+    apt-get install -y apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         # This is necessary for apt to access HTTPS sources:
@@ -418,17 +418,17 @@ RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/v
 WORKDIR $NODE_VERSION_ARCH
 
 RUN if [ -f /usr/bin/node ]; then \
-    sudo mv -f /usr/bin/node /usr/bin/node.old; \
+    mv -f /usr/bin/node /usr/bin/node.old; \
     fi \
  && if [ -f /usr/bin/npm ]; then \
-    sudo mv -f /usr/bin/npm /usr/bin/npm.old; \
+    mv -f /usr/bin/npm /usr/bin/npm.old; \
     fi \
  && if [ -f /usr/bin/npx ]; then \
-    sudo mv -f /usr/bin/npx /usr/bin/npx.old; \
+    mv -f /usr/bin/npx /usr/bin/npx.old; \
     fi \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx \
  && npm install @vscode/vsce
 
 WORKDIR /tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
@@ -442,13 +442,13 @@ WORKDIR /tmp
 
 RUN rm -fr vscode-lang-pack-install \
  && if [ -f /usr/bin/node.old ]; then \
-    sudo mv -f /usr/bin/node.old /usr/bin/node; \
+    mv -f /usr/bin/node.old /usr/bin/node; \
     fi \
  && if [ -f /usr/bin/npm.old ]; then \
-    sudo mv -f /usr/bin/npm.old /usr/bin/npm; \
+    mv -f /usr/bin/npm.old /usr/bin/npm; \
     fi \
  && if [ -f /usr/bin/npx.old ]; then \
-    sudo mv -f /usr/bin/npx.old /usr/bin/npx; \
+    mv -f /usr/bin/npx.old /usr/bin/npx; \
     fi \
  && fix-permissions $XDG_DATA_HOME \
  && clean-layer.sh

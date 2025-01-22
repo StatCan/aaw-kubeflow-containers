@@ -1,3 +1,4 @@
+FROM quay.io/jupyter/datascience-notebook:2024-06-17 as base
 USER root
 
 ENV PATH="/home/jovyan/.local/bin/:${PATH}"
@@ -82,7 +83,7 @@ RUN \
     && curl -LO "${KUBECTL_URL}.sha256" \
     && echo "$(cat kubectl.sha256) kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
   && \
     # AzureCLI - installation script from Azure
     curl -sLO "${AZCLI_URL}" \
@@ -100,7 +101,7 @@ RUN \
     && echo "${TRINO_SHA}" /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+    && mv /tmp/trino-original /usr/local/bin/trino-original \
   && \
     # argo cli
     curl -sLO  "${ARGO_CLI_URL}" \
@@ -108,7 +109,7 @@ RUN \
     && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
-    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version \
   && \
     # quarto
@@ -117,8 +118,8 @@ RUN \
     && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" "quarto-${QUARTO_VERSION}-checksums.txt" | sha256sum -c - \
     && tar -xf "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" \
     && chmod +x "quarto-${QUARTO_VERSION}" \
-    && sudo rm -f /usr/local/bin/quarto \
-    && sudo mv "./quarto-${QUARTO_VERSION}" /usr/local/bin/quarto 
+    && rm -f /usr/local/bin/quarto \
+    && mv "./quarto-${QUARTO_VERSION}" /usr/local/bin/quarto 
 
 # ODBC drivers
 RUN apt-get update && \
