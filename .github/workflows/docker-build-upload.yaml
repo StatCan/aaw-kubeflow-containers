@@ -83,7 +83,7 @@ jobs:
             echo "BASE_IMAGE=${{ inputs.base-image }}" >> $GITHUB_ENV
           fi
 
-      - name: Set FROM and as in Docerfile
+      - name: Set FROM and as in Dockerfile
         run: |
           sed -i '1i FROM ${{ env.BASE_IMAGE}} as ${{ inputs.image }}' ./images/${{ inputs.directory }}/Dockerfile
 
