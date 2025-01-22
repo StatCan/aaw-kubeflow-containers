@@ -28,7 +28,7 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/*
 
 RUN /rocker_scripts/install_shiny_server.sh \
-    && pip3 install jupyter \
+    && pip3 install --no-cache-dir jupyter \
     && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory
@@ -78,10 +78,10 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' \
       'graphviz' && \
-      pip install 'kubeflow-training' && \
+      pip install --no-cache-dir 'kubeflow-training' && \
       clean-layer.sh && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER && \
+      fix-permissions "$CONDA_DIR" && \
+      fix-permissions "/home/$NB_USER" && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 # Add helpers for shell initialization
@@ -356,7 +356,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \
+RUN pip3 install --quiet --no-cache-dir 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -536,7 +536,6 @@ RUN rm /usr/share/applications/exo-mail-reader.desktop
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
 
-
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
@@ -547,7 +546,6 @@ ENV NB_NAMESPACE=$NB_NAMESPACE
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
-
 
 #Set Defaults
 ENV HOME=/home/$NB_USER

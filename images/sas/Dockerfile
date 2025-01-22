@@ -35,7 +35,7 @@ EXPOSE 8561 8591 38080
 
 ENV SASPY_VERSION="5.4.0"
 
-RUN pip install sas_kernel
+RUN pip install --no-cache-dir sas_kernel
 
 # TODO: make Python version ENV var.
 COPY sascfg.py /opt/conda/lib/python3.11/site-packages/saspy/sascfg.py
@@ -49,7 +49,7 @@ RUN jupyter nbextension install --py sas_kernel.showSASLog && \
 # Jupyter SASStudio Proxy
 
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
-RUN pip install /opt/jupyter-sasstudio-proxy/
+RUN pip install --no-cache-dir /opt/jupyter-sasstudio-proxy/
 
 # Must be set in deepest image
 ENV DEFAULT_JUPYTER_URL=/lab 

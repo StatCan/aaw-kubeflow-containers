@@ -37,15 +37,15 @@ RUN conda install --quiet --yes \
       'r-markdown' \
     && \
     clean-layer.sh && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
 
-RUN python3 -m pip install \
+RUN python3 -m pip install --no-cache-dir \
       'jupyter-rsession-proxy==2.2.0' \
       'jupyter-server-proxy==4.2.0' \
       'jupyter-shiny-proxy==1.1' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
+      fix-permissions "$CONDA_DIR" && \
+      fix-permissions "/home/$NB_USER"
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"

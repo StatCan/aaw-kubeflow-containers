@@ -23,10 +23,10 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' \
       'graphviz' && \
-      pip install 'kubeflow-training' && \
+      pip install --no-cache-dir 'kubeflow-training' && \
       clean-layer.sh && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER && \
+      fix-permissions "$CONDA_DIR" && \
+      fix-permissions "/home/$NB_USER" && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 # Add helpers for shell initialization
@@ -74,8 +74,8 @@ RUN \
     apt-get update && \
     apt-get install -y openjdk-8-jre && \
     apt-get clean && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER \
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER" \
   && \
     # kubectl
     curl -LO "${KUBECTL_URL}" \
@@ -97,14 +97,14 @@ RUN \
   && \
     # trino cli
     wget -q "${TRINO_URL}" -O /tmp/trino-original \
-    && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
+    && echo "${TRINO_SHA}" /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
     && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
   && \
     # argo cli
-    curl -sLO  ${ARGO_CLI_URL}\
-    && curl -LO ${ARGO_CLI_CHECKSUM_URL} \
+    curl -sLO  "${ARGO_CLI_URL}" \
+    && curl -LO "${ARGO_CLI_CHECKSUM_URL}" \
     && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
@@ -112,21 +112,21 @@ RUN \
     && argo version \
   && \
     # quarto
-    curl -sLO  ${QUARTO_URL} \
-    && curl -LO ${QUARTO_CHECKSUM_URL} \
-    && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
-    && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
-    && chmod +x quarto-${QUARTO_VERSION} \
+    curl -sLO  "${QUARTO_URL}" \
+    && curl -LO "${QUARTO_CHECKSUM_URL}" \
+    && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" "quarto-${QUARTO_VERSION}-checksums.txt" | sha256sum -c - \
+    && tar -xf "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" \
+    && chmod +x "quarto-${QUARTO_VERSION}" \
     && sudo rm -f /usr/local/bin/quarto \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto 
+    && sudo mv "./quarto-${QUARTO_VERSION}" /usr/local/bin/quarto 
 
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y unixodbc-dev && \
     pip install --no-cache-dir --quiet pyodbc && \
     rm -rf /var/lib/apt/lists/* && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
 
 # Forcibly upgrade packages to patch vulnerabilities
 # See https://github.com/StatCan/aaw-private/issues/58#issuecomment-1471863092 for more details.
@@ -182,7 +182,7 @@ COPY vscode-overrides.json $CS_TEMP_HOME/Machine/settings.json
 # Languagepacks.json needs to exist for code-server to recognize the languagepack
 COPY languagepacks.json $CS_TEMP_HOME/
 
-RUN pip install \
+RUN pip install --no-cache-dir \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
@@ -209,10 +209,10 @@ RUN pip install \
     jupyter lab build && \
     jupyter lab clean && \
   clean-layer.sh && \
-  rm -rf /home/$NB_USER/.cache/yarn && \
-  rm -rf /home/$NB_USER/.node-gyp && \
-  fix-permissions $CONDA_DIR && \
-  fix-permissions /home/$NB_USER
+  rm -rf "/home/$NB_USER/.cache/yarn" && \
+  rm -rf "/home/$NB_USER/.node-gyp" && \
+  fix-permissions "$CONDA_DIR" && \
+  fix-permissions "/home/$NB_USER"
 
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
@@ -232,8 +232,8 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
     'unified-language-server' \
     'yaml-language-server' && \
     clean-layer.sh && \ 
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
 
 # OpenM install
 # Install OpenM++ MPI
@@ -267,7 +267,7 @@ RUN apt-get update --yes \
     && rm -r ${OMPP_INSTALL_DIR}/html \
     && mv ${OMPP_INSTALL_DIR}/ompp-ui/dist/spa ${OMPP_INSTALL_DIR}/html \
     && fix-permissions ${OMPP_INSTALL_DIR} \
-    && pip install /opt/jupyter-ompp-proxy/
+    && pip install --no-cache-dir /opt/jupyter-ompp-proxy/
 
 # Solarized Theme and Cell Execution Time
 COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
