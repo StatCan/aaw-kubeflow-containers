@@ -394,10 +394,11 @@ RUN apt-get update --yes \
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 
-RUN cd $RESOURCES_PATH \
- && mkdir -p $HOME/.local/share \
- && mkdir -p $VSCODE_DIR/extensions 
+RUN mkdir -p "$RESOURCES_PATH/$HOME/.local/share" \
+ && mkdir -p "$RESOURCES_PATH/$VSCODE_DIR/extensions"
+
 ENV VS_PYTHON_VERSION="2020.5.86806" 
+
 RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
  && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
  && bsdtar -xf ms-python-release.vsix extension \
@@ -510,8 +511,8 @@ COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
+WORKDIR ${RESOURCES_PATH}
 RUN \
-    cd ${RESOURCES_PATH} && \
     wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
@@ -593,24 +594,24 @@ RUN pip3 --no-cache-dir install --quiet \
 ARG AOCL_VERSION=4.0
 ENV AOCL_PATH=/opt/amd/aocl/${AOCL_VERSION}
 ARG AOCL_SHA256=8a249e727beb8005639b4887074e1ea75020267ed1ac25520876a7ad21d0f4f6
-RUN cd ${RESOURCES_PATH} && \
+WORKDIR ${RESOURCES_PATH}
+RUN \
     wget --quiet https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-${AOCL_VERSION}.tar.gz -O /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
     echo "${AOCL_SHA256} /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" | sha256sum -c - && \
     tar xf /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar -C ./ && \
-    cd ./aocl-linux-aocc-${AOCL_VERSION} && \
-    /bin/bash ./install.sh -t /opt/amd/aocl && \
+    /bin/bash ./aocl-linux-aocc-${AOCL_VERSION}/install.sh -t /opt/amd/aocl && \
     cp setenv_aocl.sh ${AOCL_PATH} &&\
     rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar
 
 # Install AMD AOCC
 ARG AOCC_VERSION=4.0.0
 ARG AOCC_SHA256=2729ec524cbc927618e479994330eeb72df5947e90cfcc49434009eee29bf7d4
-RUN cd ${RESOURCES_PATH} && \
+WORKDIR ${RESOURCES_PATH}
+RUN \
    wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
    echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
    tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
-   cd ./aocc-compiler-${AOCC_VERSION} && \
-   /bin/bash ./install.sh && \
+   /bin/bash ./aocc-compiler-${AOCC_VERSION}/install.sh && \
    rm /tmp/aocc-compiler-${AOCC_VERSION}.tar
 
 
