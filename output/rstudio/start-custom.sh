@@ -249,6 +249,15 @@ local({
 EOF
 fi
 
+# Set permissions for .gnupg
+DIR="/home/$NB_USER/.gnupg"
+
+if [ -d "$DIR" ]; then
+  chmod 700 "$DIR"
+  echo "Permissions for $DIR set to 700."
+fi
+
+
 echo "--------------------starting jupyter--------------------"
 
 /opt/conda/bin/jupyter server --notebook-dir=/home/${NB_USER} \

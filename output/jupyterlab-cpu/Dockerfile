@@ -78,6 +78,8 @@ RUN apt-get update && \
       'zip' \
       'zsh' \
       'dos2unix' \
+      # installs necessary tool for kerberos authentication setup
+      'krb5-user' \
       # these are required by some r packages, adding these here so they get
       # installed into all images.
       'libfreetype6-dev' \
@@ -155,6 +157,10 @@ RUN wget -q "${GIT_CRED_MANAGER_URL}" -O ./gcm.deb \
   && echo "${GIT_CRED_MANAGER_SHA}  ./gcm.deb" | sha256sum -c - \
   && dpkg -i ./gcm.deb \
   && rm ./gcm.deb
+
+# add script for kerberos keytab creation
+COPY ktutil-keytab.sh /usr/local/bin/ktutil-keytab
+RUN chmod +x /usr/local/bin/ktutil-keytab
 
 ###############################
 ###  docker-bits/5_DB-Drivers.Dockerfile
@@ -243,6 +249,8 @@ RUN mkdir -p /etc/rstudio && \
 
 ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 
+ENV SPARK_HOME="/opt/conda/lib/python3.11/site-packages/pyspark"
+
 # Install some default R packages
 RUN mamba install --quiet --yes \
       'r-arrow' \
@@ -255,6 +263,7 @@ RUN mamba install --quiet --yes \
       'r-renv' \
       'r-rodbc' \
       'r-sf' \
+      'r-sparklyr' \
       'r-tidyverse' \
     && \
     clean-layer.sh && \
@@ -262,10 +271,10 @@ RUN mamba install --quiet --yes \
     fix-permissions /home/$NB_USER
 
 RUN python3 -m pip install \
-      'jupyter-rsession-proxy==2.2.0' \
-      'jupyter-server-proxy==4.2.0' && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER
+    'jupyter-rsession-proxy==2.2.0' \
+    'jupyter-server-proxy==4.2.0' && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # If using the docker bit in other Dockerfiles, this must get written over in a later layer
 ENV DEFAULT_JUPYTER_URL="/rstudio"
@@ -342,6 +351,7 @@ RUN pip install \
     'plotly' \
     'ipywidgets' \
     'markupsafe' \
+    'pyspark' \
     'ipympl' \
     'pexpect==4.9.0' \
     'jupyter-resource-usage' \
