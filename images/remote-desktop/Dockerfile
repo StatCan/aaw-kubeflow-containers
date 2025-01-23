@@ -1,4 +1,3 @@
-FROM dummy as testing
 # For compatibility with docker stacks
 ARG HOME=/home/$NB_USER
 ARG NB_USER="jovyan"
