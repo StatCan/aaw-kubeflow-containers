@@ -150,6 +150,12 @@ jobs:
 
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
+
+    # Free up space from build process (containerscan action will run out of space if we don't)
+    - run: ./.github/scripts/cleanup_runner.sh
+
+    - name: Echo disk usage after build completion
+      run: ./.github/scripts/echo_usage.sh
       
     # Image testing
     - name: Set Up Python for Test Suite
