@@ -10,7 +10,7 @@ RUN \
     echo "${AOCL_SHA256} /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" | sha256sum -c - && \
     tar xf "/tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" -C ./ && \
     /bin/bash "./aocl-linux-aocc-${AOCL_VERSION}/install.sh" -t /opt/amd/aocl && \
-    cp setenv_aocl.sh ${AOCL_PATH} &&\
+    cp "./aocl-linux-aocc-${AOCL_VERSION}/setenv_aocl.sh" ${AOCL_PATH} &&\
     rm "/tmp/aocl-linux-aocc-${AOCL_VERSION}.tar"
 
 # Install AMD AOCC

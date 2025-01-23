@@ -1,3 +1,4 @@
+FROM dummy as testing
 # For compatibility with docker stacks
 ARG HOME=/home/$NB_USER
 ARG NB_USER="jovyan"
@@ -399,6 +400,7 @@ RUN mkdir -p "$RESOURCES_PATH/$HOME/.local/share" \
 
 ENV VS_PYTHON_VERSION="2020.5.86806" 
 
+WORKDIR ${RESOURCES_PATH}
 RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
  && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
  && bsdtar -xf ms-python-release.vsix extension \
