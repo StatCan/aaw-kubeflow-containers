@@ -29,7 +29,7 @@ RUN conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8
     conda config --add channels http://jfrog-platform-artifactory.jfrog-system:8081/artifactory/api/conda/conda-pytorch-remote --system
 
 # Assign ownership of user's home directory to user
-RUN chown $NB_USER:users /home/$NB_USER
+RUN chown "$NB_USER:users" "/home/$NB_USER"
 
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]

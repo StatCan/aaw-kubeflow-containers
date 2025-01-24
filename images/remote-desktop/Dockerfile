@@ -28,7 +28,7 @@ RUN apt-get update --yes \
     && rm -rf /var/lib/apt/lists/*
 
 RUN /rocker_scripts/install_shiny_server.sh \
-    && pip3 install jupyter \
+    && pip3 install --no-cache-dir jupyter \
     && rm -rf /var/lib/apt/lists/* 
 
 # Users should install R packages in their home directory
@@ -78,10 +78,10 @@ RUN mamba install --quiet \
       's3fs' \ 
       'fire==0.5.0' \
       'graphviz' && \
-      pip install 'kubeflow-training' && \
+      pip install --no-cache-dir 'kubeflow-training' && \
       clean-layer.sh && \
-      fix-permissions $CONDA_DIR && \
-      fix-permissions /home/$NB_USER && \
+      fix-permissions "$CONDA_DIR" && \
+      fix-permissions "/home/$NB_USER" && \
       chmod +x /usr/local/bin/aaw-suspend-server.sh
 
 # Add helpers for shell initialization
@@ -138,7 +138,7 @@ RUN \
     && curl -LO "${KUBECTL_URL}.sha256" \
     && echo "$(cat kubectl.sha256) kubectl" | sha256sum -c - \
     && chmod +x ./kubectl \
-    && sudo mv ./kubectl /usr/local/bin/kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
   && \
     # AzureCLI - installation script from Azure
     curl -sLO "${AZCLI_URL}" \
@@ -156,7 +156,7 @@ RUN \
     && echo ${TRINO_SHA} /tmp/trino-original | sha256sum -c \
     && echo "trinocli: ok" \
     && chmod +x /tmp/trino-original \
-    && sudo mv /tmp/trino-original /usr/local/bin/trino-original \
+    && mv /tmp/trino-original /usr/local/bin/trino-original \
   && \
     # argo cli
     curl -sLO  ${ARGO_CLI_URL}\
@@ -164,7 +164,7 @@ RUN \
     && grep argo-linux-amd64.gz argo-workflows-cli-checksums.txt | sha256sum -c - \
     && gunzip argo-linux-amd64.gz \
     && chmod +x argo-linux-amd64 \
-    && sudo mv ./argo-linux-amd64 /usr/local/bin/argo \
+    && mv ./argo-linux-amd64 /usr/local/bin/argo \
     && argo version \
   && \
     # quarto
@@ -173,8 +173,8 @@ RUN \
     && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
     && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && chmod +x quarto-${QUARTO_VERSION} \
-    && sudo rm -f /usr/local/bin/quarto \
-    && sudo mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
+    && rm -f /usr/local/bin/quarto \
+    && mv ./quarto-${QUARTO_VERSION} /usr/local/bin/quarto
     
 ENV NB_UID=1000
 ENV NB_GID=100
@@ -356,7 +356,7 @@ RUN \
     # Cleanup
     clean-layer.sh
 
-RUN pip3 install --quiet 'selenium' && \
+RUN pip3 install --quiet --no-cache-dir 'selenium' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
@@ -393,12 +393,12 @@ RUN apt-get update --yes \
 # https://github.com/cdr/code-server/issues/171
 ARG SHA256py=a4191fefc0e027fbafcd87134ac89a8b1afef4fd8b9dc35f14d6ee7bdf186348
 ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
-
-RUN cd $RESOURCES_PATH \
- && mkdir -p $HOME/.local/share \
- && mkdir -p $VSCODE_DIR/extensions 
 ENV VS_PYTHON_VERSION="2020.5.86806" 
-RUN wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
+
+WORKDIR ${RESOURCES_PATH}
+RUN  mkdir -p $HOME/.local/share \
+ && mkdir -p $VSCODE_DIR/extensions \
+ && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
  && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
  && bsdtar -xf ms-python-release.vsix extension \
  && rm ms-python-release.vsix \
@@ -418,17 +418,17 @@ RUN git clone -vb release/$VS_LOCALE_REPO_VERSION https://github.com/microsoft/v
 WORKDIR $NODE_VERSION_ARCH
 
 RUN if [ -f /usr/bin/node ]; then \
-    sudo mv -f /usr/bin/node /usr/bin/node.old; \
+    mv -f /usr/bin/node /usr/bin/node.old; \
     fi \
  && if [ -f /usr/bin/npm ]; then \
-    sudo mv -f /usr/bin/npm /usr/bin/npm.old; \
+    mv -f /usr/bin/npm /usr/bin/npm.old; \
     fi \
  && if [ -f /usr/bin/npx ]; then \
-    sudo mv -f /usr/bin/npx /usr/bin/npx.old; \
+    mv -f /usr/bin/npx /usr/bin/npx.old; \
     fi \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
- && sudo ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/node /usr/bin/node \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npm /usr/bin/npm \
+ && ln -sfv /tmp/vscode-lang-pack-install/$NODE_VERSION_ARCH/bin/npx /usr/bin/npx \
  && npm install @vscode/vsce
 
 WORKDIR /tmp/vscode-lang-pack-install/vscode-loc/i18n/vscode-language-pack-fr 
@@ -442,13 +442,13 @@ WORKDIR /tmp
 
 RUN rm -fr vscode-lang-pack-install \
  && if [ -f /usr/bin/node.old ]; then \
-    sudo mv -f /usr/bin/node.old /usr/bin/node; \
+    mv -f /usr/bin/node.old /usr/bin/node; \
     fi \
  && if [ -f /usr/bin/npm.old ]; then \
-    sudo mv -f /usr/bin/npm.old /usr/bin/npm; \
+    mv -f /usr/bin/npm.old /usr/bin/npm; \
     fi \
  && if [ -f /usr/bin/npx.old ]; then \
-    sudo mv -f /usr/bin/npx.old /usr/bin/npx; \
+    mv -f /usr/bin/npx.old /usr/bin/npx; \
     fi \
  && fix-permissions $XDG_DATA_HOME \
  && clean-layer.sh
@@ -510,8 +510,8 @@ COPY French/vscode/languagepacks.json /home/$NB_USER/.config/Code/
 
 #Tiger VNC
 ARG SHA256tigervnc=fb8f94a5a1d77de95ec8fccac26cb9eaa9f9446c664734c68efdffa577f96a31
+WORKDIR ${RESOURCES_PATH}
 RUN \
-    cd ${RESOURCES_PATH} && \
     wget --quiet https://sourceforge.net/projects/tigervnc/files/stable/1.10.1/tigervnc-1.10.1.x86_64.tar.gz/ -O /tmp/tigervnc.tar.gz && \
     echo "${SHA256tigervnc} /tmp/tigervnc.tar.gz" | sha256sum -c - && \
     tar xzf /tmp/tigervnc.tar.gz --strip 1 -C / && \
@@ -536,7 +536,6 @@ RUN rm /usr/share/applications/exo-mail-reader.desktop
 #Prevent screen from locking
 RUN apt-get remove -y -q light-locker
 
-
 # apt-get may result in root-owned directories/files under $HOME
 RUN usermod -l $NB_USER rstudio && \
     chown -R $NB_UID:$NB_GID $HOME
@@ -547,7 +546,6 @@ ENV NB_NAMESPACE=$NB_NAMESPACE
 RUN apt-get update && apt-get install --yes websockify \
     && cp /usr/lib/websockify/rebind.cpython-38-x86_64-linux-gnu.so /usr/lib/websockify/rebind.so \
     && clean-layer.sh
-
 
 #Set Defaults
 ENV HOME=/home/$NB_USER
@@ -595,24 +593,24 @@ RUN pip3 --no-cache-dir install --quiet \
 ARG AOCL_VERSION=4.0
 ENV AOCL_PATH=/opt/amd/aocl/${AOCL_VERSION}
 ARG AOCL_SHA256=8a249e727beb8005639b4887074e1ea75020267ed1ac25520876a7ad21d0f4f6
-RUN cd ${RESOURCES_PATH} && \
+WORKDIR ${RESOURCES_PATH}
+RUN \
     wget --quiet https://download.amd.com/developer/eula/aocl/aocl-4-0/aocl-linux-aocc-${AOCL_VERSION}.tar.gz -O /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar && \
     echo "${AOCL_SHA256} /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar" | sha256sum -c - && \
     tar xf /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar -C ./ && \
-    cd ./aocl-linux-aocc-${AOCL_VERSION} && \
-    /bin/bash ./install.sh -t /opt/amd/aocl && \
-    cp setenv_aocl.sh ${AOCL_PATH} &&\
+    /bin/bash ./aocl-linux-aocc-${AOCL_VERSION}/install.sh -t /opt/amd/aocl && \
+    cp  ./aocl-linux-aocc-${AOCL_VERSION}/setenv_aocl.sh ${AOCL_PATH} &&\
     rm /tmp/aocl-linux-aocc-${AOCL_VERSION}.tar
 
 # Install AMD AOCC
 ARG AOCC_VERSION=4.0.0
 ARG AOCC_SHA256=2729ec524cbc927618e479994330eeb72df5947e90cfcc49434009eee29bf7d4
-RUN cd ${RESOURCES_PATH} && \
+WORKDIR ${RESOURCES_PATH}
+RUN \
    wget --quiet https://download.amd.com/developer/eula/aocc-compiler/aocc-compiler-${AOCC_VERSION}.tar -O /tmp/aocc-compiler-${AOCC_VERSION}.tar && \
    echo "${AOCC_SHA256} /tmp/aocc-compiler-${AOCC_VERSION}.tar" | sha256sum -c - && \
    tar xf /tmp/aocc-compiler-${AOCC_VERSION}.tar -C ./ && \
-   cd ./aocc-compiler-${AOCC_VERSION} && \
-   /bin/bash ./install.sh && \
+   /bin/bash ./aocc-compiler-${AOCC_VERSION}/install.sh && \
    rm /tmp/aocc-compiler-${AOCC_VERSION}.tar
 
 

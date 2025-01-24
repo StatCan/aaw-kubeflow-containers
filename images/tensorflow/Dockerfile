@@ -17,7 +17,7 @@ ARG TARGETARCH
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 curl ca-certificates && \
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/${OS_VER}/${NVARCH}/3bf863cc.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/nvidia.gpg && \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/${OS_VER}/${NVARCH}/3bf863cc.pub | gpg --dearmor | tee /etc/apt/trusted.gpg.d/nvidia.gpg && \
     echo "deb https://developer.download.nvidia.com/compute/cuda/repos/${OS_VER}/${NVARCH} /" > /etc/apt/sources.list.d/cuda.list && \
     apt-get purge --autoremove -y curl \
     && rm -rf /var/lib/apt/lists/*
@@ -117,5 +117,5 @@ RUN mamba install --quiet --yes \
         ipykernel \
     && \
     clean-layer.sh && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
