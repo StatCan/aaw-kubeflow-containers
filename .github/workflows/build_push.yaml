@@ -151,10 +151,12 @@ jobs:
     - name: Push image to local registry (default pushes all tags)
       run: make push/${{ matrix.notebook }} REPO=${{ env.LOCAL_REPO }}
 
-    # Free up space from build process (containerscan action will run out of space if we don't)
-    - run: ./.github/scripts/cleanup_runner.sh
+    # Free up space from build process (test image action will run out of space if we don't)
+    # Removes all images created more than 2 hours ago
+    - name: Clean up prerequisite images
+      run: docker image prune --all --force --filter "until=2h"
 
-    - name: Echo disk usage after build completion
+    - name: Echo disk usage after cleanup
       run: ./.github/scripts/echo_usage.sh
       
     # Image testing
