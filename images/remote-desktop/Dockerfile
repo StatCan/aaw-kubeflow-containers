@@ -253,7 +253,7 @@ RUN \
 #None of these are installed in upstream docker images but are present in current remote
 RUN \
     apt-get update --fix-missing && \
-    apt-get install -y apt-utils && \
+    apt-get install -y sudo apt-utils && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         # This is necessary for apt to access HTTPS sources:
