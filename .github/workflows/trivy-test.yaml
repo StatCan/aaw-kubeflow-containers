@@ -33,7 +33,6 @@ jobs:
             && tar -xf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
 
           ls
-          chmod +x trivy_${{ env.TRIVY_VERSION }} \
-            && sudo mv ./trivy_${{ env.TRIVY_VERSION }} /usr/local/bin/trivy
 
-          set +e
+        #  chmod +x trivy_${{ env.TRIVY_VERSION }} \
+        #    && sudo mv ./trivy_${{ env.TRIVY_VERSION }} /usr/local/bin/trivy
