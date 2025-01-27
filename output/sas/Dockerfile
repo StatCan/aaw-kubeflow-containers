@@ -380,7 +380,7 @@ ARG RSTUDIO_VERSION=2024.12.0-467
 ARG SHA256=1493188cdabcc1047db27d1bd0e46947e39562cbd831158c7812f88d80e742b3
 
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends software-properties-common dirmngr && \
+    apt-get install -y --no-install-recommends software-properties-common dirmngr && \
     wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
     add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
     apt-get update && \
