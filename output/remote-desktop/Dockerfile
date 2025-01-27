@@ -137,30 +137,30 @@ COPY shell_helpers.sh /tmp/shell_helpers.sh
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-      byobu \
-      pass \
-      htop \
-      jq \
-      openssl \
-      ranger \
-      tig \
-      tmux \
-      tree \
-      vim \
-      zip \
-      zsh \
-      dos2unix \
+      'byobu' \
+      'pass' \
+      'htop' \
+      'jq' \
+      'openssl' \
+      'ranger' \
+      'tig' \
+      'tmux' \
+      'tree' \
+      'vim' \
+      'zip' \
+      'zsh' \
+      'dos2unix' \
       # installs necessary tool for kerberos authentication setup
-      krb5-user \
+      'krb5-user' \
       # these are required by some r packages, adding these here so they get
       # installed into all images.
-      libfreetype6-dev \
-      libpng-dev \
-      libtiff5-dev \
-      libjpeg-dev \
-      libtiff-dev \
-      libfreetype-dev \
-      libfreetype6 && \
+      'libfreetype6-dev' \
+      'libpng-dev' \
+      'libtiff5-dev' \
+      'libjpeg-dev' \
+      'libtiff-dev' \
+      'libfreetype-dev' \
+      'libfreetype6' && \
     rm -rf /var/lib/apt/lists/*
 
 

@@ -65,30 +65,30 @@ COPY shell_helpers.sh /tmp/shell_helpers.sh
 # Dependencies
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-      byobu \
-      pass \
-      htop \
-      jq \
-      openssl \
-      ranger \
-      tig \
-      tmux \
-      tree \
-      vim \
-      zip \
-      zsh \
-      dos2unix \
+      'byobu' \
+      'pass' \
+      'htop' \
+      'jq' \
+      'openssl' \
+      'ranger' \
+      'tig' \
+      'tmux' \
+      'tree' \
+      'vim' \
+      'zip' \
+      'zsh' \
+      'dos2unix' \
       # installs necessary tool for kerberos authentication setup
-      krb5-user \
+      'krb5-user' \
       # these are required by some r packages, adding these here so they get
       # installed into all images.
-      libfreetype6-dev \
-      libpng-dev \
-      libtiff5-dev \
-      libjpeg-dev \
-      libtiff-dev \
-      libfreetype-dev \
-      libfreetype6 && \
+      'libfreetype6-dev' \
+      'libpng-dev' \
+      'libtiff5-dev' \
+      'libjpeg-dev' \
+      'libtiff-dev' \
+      'libfreetype-dev' \
+      'libfreetype6' && \
     rm -rf /var/lib/apt/lists/*
 
 
@@ -378,7 +378,12 @@ ENV GIT_EXAMPLE_NOTEBOOKS=https://gitlab.k8s.cloud.statcan.ca/business-transform
 # install rstudio-server
 ARG RSTUDIO_VERSION=2024.12.0-467
 ARG SHA256=1493188cdabcc1047db27d1bd0e46947e39562cbd831158c7812f88d80e742b3
-RUN apt-get update && \
+
+RUN apt update -qq && \
+    apt install --no-install-recommends software-properties-common dirmngr && \
+    wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc && \
+    add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/" && \
+    apt-get update && \
     apt install -y --no-install-recommends r-base r-base-core r-recommended r-base-dev && \
     apt-get update && apt-get -y dist-upgrade
 
