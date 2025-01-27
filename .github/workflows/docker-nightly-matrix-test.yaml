@@ -26,7 +26,7 @@ jobs:
 
   nightly-tests:
     needs: vars
-    runs-on: ubuntu-latest
+    secrets: inherit
     strategy:
       matrix:
         image:
@@ -35,19 +35,9 @@ jobs:
           - rstudio
           - sas
           - remote-desktop
-    steps:
-      - name: pull and test docker image
-        env:
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-          CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST }}
-        run: |
-          echo "Pulling and testing Docker image: ${{ matrix.image }}"
-          ls
-          ./docker-pull-test.sh \
-            --image="${{ matrix.image }}" \
-            --registry-name="${{ needs.vars.outputs.REGISTRY_NAME }}" \
-            --branch-name="${{ needs.vars.outputs.branch-name }}" \
-            --username="${REGISTRY_USERNAME}" \
-            --password="${REGISTRY_PASSWORD}" \
-            --cve-allowlist="${CVE_ALLOWLIST}"
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: ${{ matrix.image }}
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+          
