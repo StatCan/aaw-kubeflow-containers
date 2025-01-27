@@ -213,7 +213,10 @@ ORACLE_ADMIN_PATH="/opt/oracle/instantclient_23_5/network/admin"
 RETRIES_NO=5
 RETRY_DELAY=3
 for i in $(seq 1 $RETRIES_NO); do
-  test -z "$GIT_ORACLE_SNIPPET" || git clone "$GIT_ORACLE_SNIPPET" "$ORACLE_ADMIN_PATH" && rm -rf "${ORACLE_ADMIN_PATH}/.git" && break
+  test -z "$GIT_ORACLE_SNIPPET" || git clone "$GIT_ORACLE_SNIPPET" "${ORACLE_ADMIN_PATH}/515" \
+    && mv "${ORACLE_ADMIN_PATH}/515/tnsnames.ora" "${ORACLE_ADMIN_PATH}" \
+    && rm -rf "${ORACLE_ADMIN_PATH}/515" \
+    && break
   echo "Failed to clone the tnsnames.ora file. Attempt $i of $RETRIES_NO"
   #if it ran all the retries, exit
   [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone the tnsnames.ora after $RETRIES_NO retries"
