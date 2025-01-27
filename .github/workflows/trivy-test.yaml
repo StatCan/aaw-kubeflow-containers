@@ -34,5 +34,9 @@ jobs:
 
           ls
 
-        #  chmod +x trivy_${{ env.TRIVY_VERSION }} \
-        #    && sudo mv ./trivy_${{ env.TRIVY_VERSION }} /usr/local/bin/trivy
+          chmod +x trivy \
+            && sudo mv ./trivy /usr/local/bin/trivy
+
+          ls
+
+          trivy --version
