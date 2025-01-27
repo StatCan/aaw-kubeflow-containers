@@ -43,6 +43,7 @@ jobs:
           CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST }}
         run: |
           echo "Pulling and testing Docker image: ${{ matrix.image }}"
+          ls
           ./docker-pull-test.sh \
             --image="${{ matrix.image }}" \
             --registry-name="${{ needs.vars.outputs.REGISTRY_NAME }}" \
