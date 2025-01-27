@@ -8,8 +8,8 @@ jobs:
   vars:
     runs-on: ubuntu-latest
     outputs:
-      REGISTRY_NAME: "k8scc01covidacr"
-      DEV_REGISTRY_NAME: "k8scc01covidacrdev"
+      REGISTRY_NAME: "k8scc01covidacr.azurecr.io"
+      DEV_REGISTRY_NAME: "k8scc01covidacrdev.azurecr.io"
       branch-name: "master"
     steps:
       - uses: actions/checkout@v4
