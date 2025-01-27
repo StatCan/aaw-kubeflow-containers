@@ -30,13 +30,8 @@ jobs:
           curl -sLO  https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz \
             && curl -LO https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_checksums.txt \
             && grep "trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz" trivy_${{ env.TRIVY_VERSION }}_checksums.txt | sha256sum -c - \
-            && tar -xf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz
-
-          ls
-
-          chmod +x trivy \
+            && tar -xf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz \
+            && chmod +x trivy \
             && sudo mv ./trivy /usr/local/bin/trivy
-
-          ls
 
           trivy --version
