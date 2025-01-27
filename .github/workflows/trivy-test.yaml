@@ -1,4 +1,4 @@
-name: Tests the image built or copied from the previous step
+name: Tests trivy SHA
 
 env:
   HADOLINT_VERSION: "2.12.0"
@@ -25,13 +25,16 @@ jobs:
 
     steps:
       # Scan image for vulnerabilities
-      - name: Aqua Security Trivy image scan
+      - name: Trivy Sha
         run: |
           curl -sLO  https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz \
             && curl -LO https://github.com/aquasecurity/trivy/releases/download/v${{ env.TRIVY_VERSION }}/trivy_${{ env.TRIVY_VERSION }}_checksums.txt \
-            && grep "trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz" trivy-${{ env.TRIVY_VERSION }}_checksums.txt | sha256sum -c - \
-            && tar -xf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz \
-            && chmod +x trivy_${{ env.TRIVY_VERSION }} \
-            && sudo mv ./trivy_${{ env.TRIVY_VERSION }} /usr/local/bin/trivy
+          
+          ls
+
+          grep "trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz" trivy-${{ env.TRIVY_VERSION }}_checksums.txt | sha256sum -c - \
+          tar -xf trivy_${{ env.TRIVY_VERSION }}_Linux-64bit.tar.gz \
+          chmod +x trivy_${{ env.TRIVY_VERSION }} \
+          sudo mv ./trivy_${{ env.TRIVY_VERSION }} /usr/local/bin/trivy
 
           set +e
