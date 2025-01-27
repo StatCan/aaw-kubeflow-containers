@@ -38,7 +38,7 @@ jobs:
         ports:
           - 5000:5000
     env:
-      TRIVY_VERSION: "v0.58.2"
+      TRIVY_VERSION: "0.58.2"
       TRIVY_DATABASES: '"ghcr.io/aquasecurity/trivy-db:2","public.ecr.aws/aquasecurity/trivy-db"'
       TRIVY_JAVA_DATABASES: '"ghcr.io/aquasecurity/trivy-java-db:1","public.ecr.aws/aquasecurity/trivy-java-db"'
       TRIVY_MAX_RETRIES: 5
