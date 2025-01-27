@@ -19,7 +19,6 @@ jobs:
 
   nightly-tests:
     needs: vars
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         image:
@@ -36,4 +35,4 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST }}
