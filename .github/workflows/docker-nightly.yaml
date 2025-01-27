@@ -26,7 +26,6 @@ jobs:
 
   nightly-tests:
     needs: vars
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         image:
@@ -35,14 +34,12 @@ jobs:
           - rstudio
           - sas
           - remote-desktop
-    steps:
-      - name: pull and test docker image
-        uses: ./.github/workflows/docker-pull-test.yaml
-        with:
-          image: ${{ matrix.image }}
-          registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
-          branch-name: "${{ needs.vars.outputs.branch-name }}"
-        secrets:
-          REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
-          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-          CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
+    uses: ./.github/workflows/docker-pull-test.yaml
+    with:
+      image: ${{ matrix.image }}
+      registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
+      branch-name: "${{ needs.vars.outputs.branch-name }}"
+    secrets:
+      REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      CVE_ALLOWLIST: ${{ secrets.CVE_ALLOWLIST}}
