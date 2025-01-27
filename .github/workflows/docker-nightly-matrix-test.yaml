@@ -27,6 +27,7 @@ jobs:
   nightly-tests:
     needs: vars
     strategy:
+      max-parallel: 2
       matrix:
         image:
           - jupyterlab-cpu
