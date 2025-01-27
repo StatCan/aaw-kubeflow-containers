@@ -15,9 +15,11 @@ ENV PATH=$PATH:/usr/lib/rstudio-server/bin
 ENV SPARK_HOME="/opt/conda/lib/python3.11/site-packages/pyspark"
 
 # Install some default R packages
-RUN mamba install --quiet --yes \
+RUN mamba remove rpy2 && \
+    mamba install --quiet --yes \
       'r-arrow' \
       'r-aws.s3' \
+      'r-base=4.4.2' \
       'r-catools' \
       'r-e1071' \
       'r-hdf5r' \
@@ -29,6 +31,7 @@ RUN mamba install --quiet --yes \
       'r-sparklyr' \
       'r-tidyverse' \
     && \
+    pip install rpy2 && \
     clean-layer.sh && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
