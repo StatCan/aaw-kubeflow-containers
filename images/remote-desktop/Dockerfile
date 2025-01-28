@@ -485,7 +485,7 @@ ENV OMPP_VERSION="1.17.1"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ENV OMPP_PKG_DATE="20240322"
 # Sha needs to be manually generated.
-ARG SHA256ompp=04fc24ad2ed6d6ef1e29430885b77c766eba85e7c5e69ba4c11acb838d712609
+ARG SHA256ompp=76c16dd8e2ca637006b92c4cc36541cedc776dda1a06fcf0702859271ca78ac3
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
