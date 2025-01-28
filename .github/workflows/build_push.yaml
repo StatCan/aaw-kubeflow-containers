@@ -120,13 +120,6 @@ jobs:
         username: ${{ secrets.REGISTRY_USERNAME }}
         password: ${{ secrets.REGISTRY_PASSWORD }}
     
-    # Connect to Azure DEV Container registry (ACR)
-    - uses: azure/docker-login@v1
-      with:
-        login-server: ${{ env.DEV_REGISTRY_NAME }}.azurecr.io
-        username: ${{ secrets.DEV_REGISTRY_USERNAME }}
-        password: ${{ secrets.DEV_REGISTRY_PASSWORD }}
-    
     # Image building/storing locally
     - name: Make Dockerfiles
       run: make generate-dockerfiles
