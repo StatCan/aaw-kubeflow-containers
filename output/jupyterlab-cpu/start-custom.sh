@@ -33,7 +33,7 @@ if [[ ! -d  ~/aaw-contrib-jupyter-notebooks ]]; then
   RETRY_DELAY=3
   for i in $(seq 1 $RETRIES_NO); do
     test -z "$GIT_EXAMPLE_NOTEBOOKS" || git clone "$GIT_EXAMPLE_NOTEBOOKS" && break
-    echo "Failed to cloned the example notebooks. Attempt $i of $RETRIES_NO"
+    echo "Failed to clone the example notebooks. Attempt $i of $RETRIES_NO"
     #if it ran all the retries, exit
     [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone example notebooks after $RETRIES_NO retries"
     sleep ${RETRY_DELAY}
@@ -208,13 +208,18 @@ fi
 # Runs on every startup because this output location is not persisted storage
 # Implemented with a retry because it sometimes fails for some reason
 echo "Retrieving Oracle tnsnames file"
+GIT_ORACLE_SNIPPET="https://gitlab.k8s.cloud.statcan.ca/business-transformation/aaw/aaw-contrib-containers/snippets/515.git"
+ORACLE_ADMIN_PATH="/opt/oracle/instantclient_23_5/network/admin"
 RETRIES_NO=5
 RETRY_DELAY=3
 for i in $(seq 1 $RETRIES_NO); do
-  curl --url "https://gitlab.k8s.cloud.statcan.ca/api/v4/snippets/515/raw" -o /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora && break
-  echo "Failed to get the tnsnames.ora file. Attempt $i of $RETRIES_NO"
+  test -z "$GIT_ORACLE_SNIPPET" || git clone "$GIT_ORACLE_SNIPPET" "${ORACLE_ADMIN_PATH}/515" \
+    && mv "${ORACLE_ADMIN_PATH}/515/tnsnames.ora" "${ORACLE_ADMIN_PATH}" \
+    && rm -rf "${ORACLE_ADMIN_PATH}/515" \
+    && break
+  echo "Failed to clone the tnsnames.ora file. Attempt $i of $RETRIES_NO"
   #if it ran all the retries, exit
-  [[ $i -eq $RETRIES_NO ]] && echo "Failed to get the tnsnames.ora file after $RETRIES_NO retries"
+  [[ $i -eq $RETRIES_NO ]] && echo "Failed to clone the tnsnames.ora after $RETRIES_NO retries"
   sleep ${RETRY_DELAY}
 done
 
