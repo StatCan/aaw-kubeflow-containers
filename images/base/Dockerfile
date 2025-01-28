@@ -237,11 +237,10 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Install OpenM++ MPI
-ENV OMPP_VERSION="1.17.5"
-# IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ENV OMPP_PKG_DATE="20241021"
+ENV OMPP_VERSION="1.17.1"
+ENV OMPP_PKG_DATE="20240322"
 # Sha needs to be manually generated.
-ARG SHA256ompp=79c4bf6e09c9c51f33986251f1f44279f29d4fe669b6e8f7d7597a406d24b5a9
+ARG SHA256ompp=04fc24ad2ed6d6ef1e29430885b77c766eba85e7c5e69ba4c11acb838d712609
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
