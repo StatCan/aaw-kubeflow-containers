@@ -31,7 +31,7 @@ on:
 
 jobs:
   pull-test:
-    runs-on: ubuntu-24.04-20250120.5.0  # Pin to older image
+    runs-on: ubuntu-latest
     services:
       registry:
         image: registry:2

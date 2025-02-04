@@ -98,6 +98,9 @@ EXCLUDED_PACKAGES = [
     "pyyaml",
     "graphviz",
     "pytables",
+    # Failed build, see https://github.com/StatCan/aaw-kubeflow-containers/issues/747
+    "pkg-config",
+    "jupyter-resource-usage",
 ]
 
 
