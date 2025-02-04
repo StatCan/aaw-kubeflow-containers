@@ -31,7 +31,7 @@ on:
 
 jobs:
   pull-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest #to change
     services:
       registry:
         image: registry:2
