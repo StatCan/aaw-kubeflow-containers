@@ -10,17 +10,10 @@ jobs:
     outputs:
       REGISTRY_NAME: "k8scc01covidacr.azurecr.io"
       DEV_REGISTRY_NAME: "k8scc01covidacrdev.azurecr.io"
-      branch-name: "master"
+      branch-name: "v1"
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get branch name
-        id: getBranch
-        run: |
-          chmod +x ./make_helpers/get_branch_name.sh
-          BRANCH_NAME=$(./make_helpers/get_branch_name.sh)
-          echo "branch-name=$BRANCH_NAME"
-          echo "branch-name=$BRANCH_NAME" >> $GITHUB_OUTPUT
       - name: Set up environment
         run: echo "Environment has been set up."
 
