@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       REGISTRY_NAME: "k8scc01covidacr.azurecr.io"
-      DEV_REGISTRY_NAME: "k8scc01covidacrdev.azurecr.io"
       branch-name: "v1"
     steps:
       - uses: actions/checkout@v4
