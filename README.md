@@ -15,7 +15,7 @@ Container images to be used with kubeflow on the AAW platform for Data Science &
 - [General Development Workflow](#general-development-workflow)
   - [Running an AAW Container Locally](#running-an-aaw-container-locally)
   - [Testing Locally](#testing-locally)
-  - [Testing On-Platform testing](#testing-on-platform-testing)
+  - [Testing On-Platform](#testing-on-platform)
   - [Overview of images](#overview-of-images)
   - [Adding new software](#adding-new-software)
   - [Adding new Images](#adding-new-images)
@@ -154,7 +154,7 @@ jupyter/datascience-notebook                       9ed3b8de5de1   9a0c8d86de1a  
    - manually by `docker run -it -p 8888:8888 REPO/IMAGENAME:TAG`,
      then opening it in [http://localhost:8888](http://localhost:8888)
 
-### Testing On-Platform testing
+### Testing On-Platform
 
 GitHub Actions CI is enabled to do building, scanning, automated testing, pushing of our images to ACR.
 
@@ -207,7 +207,8 @@ then following the normal build instructions starting with the Generate Dockerfi
 Be selective with software installation as image sizes are already quite big (16Gb plus),
 and increasing that size would negatively impact the time it takes up for a workspace server to come up
 (as well as first time image pulls to a node).
-In such cases it may be more relevant to make an image under [aaw-contrib-containers](https://github.com/StatCan/aaw-contrib-containers) as mentioned earlier.
+In such cases it may be more relevant to make an image under
+[aaw-contrib-containers](https://github.com/StatCan/aaw-contrib-containers) as mentioned earlier.
 
 ### Adding new Images
 
@@ -225,7 +226,8 @@ See below for a description of all the fields.
 4. If this stage was inserted between two existing stages,
 update the parent values of any children of this stage
 5. If this stage creates an image that will be deployed to users.
-A job must be added to test the image in `./github/workflows/docker.yaml` and `./github/workflows/docker-nightly.yaml`
+A job must be added to test the image in `./github/workflows/docker.yaml`,
+and the image name must be added to the matrix in `./github/workflows/docker-nightly.yaml`
 See below for a description of all the fields
 6. Update the documentation for the new stage.
 This is generally updating `images-stages.png` and `image-stages.drawio` in the `docs/images` folder using draw.io.
@@ -324,7 +326,12 @@ so updates to the tag are not needed.
 
 The `v1` tag is intended for when we encounter a breaking change,
 but still want to support the features of that current image.
-A new `v2` tag will be created for adding these breaking changes.
+
+The `v2` tag is currently used by [zone-kubeflow-containers](https://github.com/StatCan/zone-kubeflow-containers)
+
+**Note**:
+The `latest` tag is shared with [zone-kubeflow-containers](https://github.com/StatCan/zone-kubeflow-containers),
+So isn't reliable
 
 ### Set User File Permissions
 
