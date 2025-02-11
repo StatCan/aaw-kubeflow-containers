@@ -61,7 +61,7 @@ ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b
 ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
 ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
 
-ARG ARGO_CLI_VERSION=v3.5.12
+ARG ARGO_CLI_VERSION=v3.5.14
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
@@ -168,7 +168,6 @@ RUN wget -q "${VSCODE_URL}" -O ./vscode.deb \
     code-server --install-extension REditorSupport.r@2.8.1 && \
     code-server --install-extension ms-ceintl.vscode-language-pack-fr@1.79.0 && \
     code-server --install-extension quarto.quarto@1.90.1 && \
-    code-server --install-extension databricks.databricks@1.4.0 && \
     code-server --install-extension dvirtz.parquet-viewer@2.3.3 && \
     code-server --install-extension redhat.vscode-yaml@1.14.0 && \
     code-server --install-extension ms-vscode.azurecli@0.5.0 && \

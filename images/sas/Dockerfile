@@ -9,7 +9,7 @@ RUN groupadd -g 1337 supergroup && \
 # Will fail if CI/CD only authenticates Dev
 COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
 
-COPY --from=minio/mc:RELEASE.2022-03-17T20-25-06Z /bin/mc /usr/local/bin/mc-original
+COPY --from=minio/mc:RELEASE.2025-01-17T23-25-50Z /bin/mc /usr/local/bin/mc-original
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
