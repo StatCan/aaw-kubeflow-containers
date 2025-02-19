@@ -20,7 +20,7 @@ rm -rf /usr/local/src/*
 # Delete cache and temp folders
 rm -rf /tmp/* /var/tmp/* $HOME/.cache/* /var/cache/apt/*
 # Remove apt lists
-rm -rf /var/lib/apt/lists/* /etc/apt/sources.list.d/*
+rm -rf /var/lib/apt/lists/*
 
 # Clean conda
 if [ -x "$(command -v mamba)" ]; then
