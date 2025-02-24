@@ -52,6 +52,7 @@ PACKAGE_MAPPING = {
     "scikit-image": "skimage",
     "spylon-kernel": "spylon_kernel",
     "pytables": "tables",
+    "jupyterhub-singleuser": "jupyterhub.singleuser",
     # R
     "randomforest": "randomForest",
     "rsqlite": "DBI",
