@@ -80,7 +80,7 @@ EXCLUDED_PACKAGES = [
     "jupyterlab-lsp",
     "jupyter-lsp",
     # Other
-    "conda-forge::blas=[build=openblas]",
+    "conda-forge::blas=[build", # library is decoded incorrectly "conda-forge::blas=[build=openblas]"
     "protobuf",
     "r-irkernel",
     "unixodbc",
