@@ -14,22 +14,23 @@ EXPECTED = "2024.04.2+764 (Chocolate Cosmos) for Ubuntu Jammy"
     ),
 ])
 def test_rstudio_server_version(command, expected_keyword, description):
-    """Test that rstudio-server version runs successfully and outputs the expected text."""
+    """Ensure rstudio-server is running before checking the version."""
+    LOGGER.info("Starting rstudio-server if not already running...")
+    subprocess.run(["bash", "-c", "rstudio-server start"], capture_output=True, text=True)
+
     LOGGER.info(description)
     result = subprocess.run(
         ["bash", "-c", command],
         capture_output=True,
         text=True,
     )
-    # Assert that the command succeeded.
     assert result.returncode == 0, (
         f"Command '{command}' failed with exit code {result.returncode}. "
         f"Error output: {result.stderr}"
     )
 
-    output = result.stdout.strip()  # Strip whitespace for clean comparison
+    output = result.stdout.strip()
     LOGGER.debug(output)
-    # Check that the expected keyword is in the output.
     assert expected_keyword in output, (
         f"Expected keyword '{expected_keyword}' not found in output: {output}"
     )
