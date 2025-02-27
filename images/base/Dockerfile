@@ -136,7 +136,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'pyjwt==2.6.0' \
       'oauthlib==3.2.2' \
       'mpmath==1.3.0' \
-      'lxml' \
+      'lxml==5.3.1' \
       'pyarrow==14.0.1' \
       'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
