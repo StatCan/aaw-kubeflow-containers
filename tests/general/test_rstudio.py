@@ -8,7 +8,7 @@ EXPECTED = "2024.04.2+764 (Chocolate Cosmos) for Ubuntu Jammy"
 
 @pytest.mark.parametrize("command,expected_keyword,description", [
     (
-        "rstudio-server version",
+        "/usr/sbin/rstudio-server version",
         EXPECTED,
         "Test that the rstudio-server version command outputs valid version information."
     ),
@@ -16,7 +16,7 @@ EXPECTED = "2024.04.2+764 (Chocolate Cosmos) for Ubuntu Jammy"
 def test_rstudio_server_version(command, expected_keyword, description):
     """Ensure rstudio-server is running before checking the version."""
     LOGGER.info("Starting rstudio-server if not already running...")
-    subprocess.run(["bash", "-c", "rstudio-server start"], capture_output=True, text=True)
+    subprocess.run(["bash", "-c", "/usr/sbin/rstudio-server start"], capture_output=True, text=True)
 
     LOGGER.info(description)
     result = subprocess.run(
