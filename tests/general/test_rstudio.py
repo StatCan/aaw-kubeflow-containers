@@ -25,7 +25,7 @@ CONTAINER_NAME = get_container_name()
 
 @pytest.mark.parametrize("command,expected_keyword,description", [
     (
-        f"docker exec {CONTAINER_NAME} /usr/sbin/rstudio-server version",
+        f"docker exec {CONTAINER_NAME} rstudio-server version",
         EXPECTED,
         "Test that the rstudio-server version command outputs valid version information."
     ),
@@ -34,7 +34,7 @@ def test_rstudio_server_version(command, expected_keyword, description):
     """Ensure rstudio-server is running before checking the version."""
     LOGGER.info("Starting rstudio-server if not already running...")
     subprocess.run(
-        ["docker", "exec", CONTAINER_NAME, "/usr/sbin/rstudio-server", "start"],
+        ["docker", "exec", CONTAINER_NAME, "rstudio-server", "start"],
         capture_output=True,
         text=True
     )
