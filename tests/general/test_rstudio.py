@@ -5,27 +5,12 @@ import pytest
 LOGGER = logging.getLogger(__name__)
 
 EXPECTED = "2024.04.2+764 (Chocolate Cosmos) for Ubuntu Jammy"
-
-
-def get_container_name():
-    """Retrieve the container name dynamically."""
-    result = subprocess.run(
-        ["docker", "ps", "--format", "{{.Names}}"],
-        capture_output=True,
-        text=True
-    )
-    containers = result.stdout.strip().split("\n")
-    if containers:
-        return containers[0]  # Assuming only one container is running
-    raise RuntimeError("No running container found")
-
-
-CONTAINER_NAME = get_container_name()
+IMAGE_NAME = os.getenv("IMAGE_NAME", "default-image-name")  # Use default if not set
 
 
 @pytest.mark.parametrize("command,expected_keyword,description", [
     (
-        f"docker exec {CONTAINER_NAME} source /etc/profile && /usr/lib/rstudio-server/bin/rstudio-server version",
+        f"docker exec {IMAGE_NAME} /usr/lib/rstudio-server/bin/rstudio-server version",
         EXPECTED,
         "Test that the rstudio-server version command outputs valid version information."
     ),
@@ -34,7 +19,7 @@ def test_rstudio_server_version(command, expected_keyword, description):
     """Ensure rstudio-server is running before checking the version."""
     LOGGER.info("Starting rstudio-server if not already running...")
     subprocess.run(
-        ["docker", "exec", CONTAINER_NAME, "source /etc/profile && /usr/lib/rstudio-server/bin/rstudio-server", "start"],
+        ["docker", "exec", IMAGE_NAME, "/usr/lib/rstudio-server/bin/rstudio-server", "start"],
         capture_output=True,
         text=True
     )
