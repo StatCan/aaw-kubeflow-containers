@@ -136,7 +136,7 @@ RUN pip3 --no-cache-dir install --quiet \
       'pyjwt==2.6.0' \
       'oauthlib==3.2.2' \
       'mpmath==1.3.0' \
-      'lxml==4.9.2' \
+      'lxml==5.3.1' \
       'pyarrow==14.0.1' \
       'cryptography==41.0.6' \
       && fix-permissions $CONDA_DIR && \
@@ -185,6 +185,7 @@ RUN pip install --no-cache-dir \
     'git+https://github.com/betatim/vscode-binder' && \
     # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
+    'nodejs' \
     'jupyter_contrib_nbextensions' \ 
     'dash' \
     'plotly' \

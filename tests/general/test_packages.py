@@ -52,6 +52,7 @@ PACKAGE_MAPPING = {
     "scikit-image": "skimage",
     "spylon-kernel": "spylon_kernel",
     "pytables": "tables",
+    "jupyterhub-singleuser": "jupyterhub.singleuser",
     # R
     "randomforest": "randomForest",
     "rsqlite": "DBI",
@@ -79,7 +80,7 @@ EXCLUDED_PACKAGES = [
     "jupyterlab-lsp",
     "jupyter-lsp",
     # Other
-    "conda-forge::blas[build=openblas]",
+    "conda-forge::blas=[build", # library is decoded incorrectly "conda-forge::blas=[build=openblas]"
     "protobuf",
     "r-irkernel",
     "unixodbc",
@@ -118,7 +119,7 @@ def packages(package_helper):
 
 def package_map(package):
     """Perform a mapping between the python package name and the name used for the import"""
-    _package = package
+    _package = package.split("[")[0] # Remove bracketed metadata
     if _package in PACKAGE_MAPPING:
         _package = PACKAGE_MAPPING.get(_package)
     return _package
