@@ -136,6 +136,14 @@ test/%: check-test-prereqs # Run all generic and image-specific tests against an
 		TESTS="$${TESTS} $${SPECIFIC_TEST_DIR}";\
 		echo "Found specific tests folder";\
 	fi;\
+	# Add rstudio tests if image is 'sas' or 'r-studio'
+	if [ "$(notdir $@)" = "sas" ] || [ "$(notdir $@)" = "r-studio" ]; then\
+		RSTUDIO_TEST_DIR="$(TESTS_DIR)/rstudio";\
+		if [ -d "$${RSTUDIO_TEST_DIR}" ]; then\
+			TESTS="$${TESTS} $${RSTUDIO_TEST_DIR}";\
+			echo "Including rstudio tests for $(notdir $@) image";\
+		fi;\
+	fi;\
 	echo "Running tests on folders '$${TESTS}'";\
 	IMAGE_NAME="$${REPO}$(notdir $@):$(TAG)" NB_PREFIX=$(DEFAULT_NB_PREFIX) $(PYTHON) -m pytest -m "not info" $${TESTS}
 
