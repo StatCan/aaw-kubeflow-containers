@@ -46,7 +46,7 @@ jobs:
 
       - name: Pull existing image
         id: pull-existing
-        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }} TAG=master
+        run: make pull/${{ inputs.image }} REPO=${{ inputs.registry-name }} TAG=v1
 
       - name: Retag existing image
         run: make post-build/${{ inputs.image }} REPO=${{ inputs.registry-name }} SOURCE_FULL_IMAGE_NAME=${{ steps.pull-existing.outputs.image_name }}

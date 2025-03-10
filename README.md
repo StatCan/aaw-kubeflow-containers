@@ -133,8 +133,8 @@ Tests are formatted using typical pytest formats (python files with `def test_SO
 ```
 username@hostname:~$ docker images
 REPOSITORY                                         TAG            IMAGE ID       CREATED          SIZE
-k8scc01covidacr.azurecr.io/jupyterlab-tensorflow   master         13f8dc0e4f7a   26 minutes ago   14.6GB
-k8scc01covidacr.azurecr.io/jupyterlab-pytorch      master         2b9acb795079   19 hours ago     15.5GB
+k8scc01covidacr.azurecr.io/jupyterlab-tensorflow   v1             13f8dc0e4f7a   26 minutes ago   14.6GB
+k8scc01covidacr.azurecr.io/jupyterlab-pytorch      v1             2b9acb795079   19 hours ago     15.5GB
 jupyter/datascience-notebook                       9ed3b8de5de1   9a0c8d86de1a   5 weeks ago      4.25GB
 ```
 
