@@ -72,7 +72,7 @@ jobs:
           make install-python-dev-venv
 
       - name: Test image
-        run: make test/${{ inputs.image }}
+        run: make test/${{ inputs.image }} TAG=${{ inputs.tag }}
 
       # Free up space from build process (containerscan action will run out of space if we don't)
       - name: cleanup runner
