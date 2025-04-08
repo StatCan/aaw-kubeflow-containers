@@ -1,5 +1,10 @@
 {
     "@jupyterlab/notebook-extension:tracker" : {
-        "recordTiming": true
+        "recordTiming": true,
+        "codeCellConfig": {
+            "codeFolding": true,
+            "lineNumbers": false,
+            "lineWrap": false
+        }
     }
 }
