@@ -183,10 +183,8 @@ COPY languagepacks.json $CS_TEMP_HOME/
 
 RUN pip install --no-cache-dir \
     'git+https://github.com/betatim/vscode-binder' && \
-    # jupyter_contrib_nbextensions likes to be installed with pip
     mamba install --quiet --yes -c conda-forge \
     'nodejs' \
-    'jupyter_contrib_nbextensions' \ 
     'dash' \
     'plotly' \
     'ipywidgets' \
@@ -200,7 +198,6 @@ RUN pip install --no-cache-dir \
     'jupyterlab-lsp' \
     'jupyter-lsp'  && \
     jupyter server extension enable --py jupyter_server_proxy && \
-    jupyter nbextension enable codefolding/main --sys-prefix && \
     jupyter labextension enable \
       '@jupyterlab/translation-extension' \
       '@jupyterlab/server-proxy' \

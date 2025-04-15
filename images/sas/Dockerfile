@@ -42,12 +42,6 @@ RUN PYTHON_VERSION=$(python3 -c "import sys; print(f'python{sys.version_info.maj
     && cp /tmp/sascfg.py /opt/conda/lib/$PYTHON_VERSION/site-packages/saspy/sascfg.py \
     && rm /tmp/sascfg.py
 
-RUN jupyter nbextension install --py sas_kernel.showSASLog && \
-    jupyter nbextension enable sas_kernel.showSASLog --py && \
-    jupyter nbextension install --py sas_kernel.theme && \
-    jupyter nbextension enable sas_kernel.theme --py && \
-    jupyter nbextension list
-
 # Jupyter SASStudio Proxy
 
 COPY jupyter-sasstudio-proxy/ /opt/jupyter-sasstudio-proxy/
