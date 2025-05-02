@@ -485,7 +485,7 @@ ENV OMPP_VERSION="1.17.8"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
 ENV OMPP_PKG_DATE="20250330"
 # Sha needs to be manually generated.
-ARG SHA256ompp=3407def2d633e7989396b6e2f2a75a7c445b5fc699d714e846ee8e279ff43b0e
+ARG SHA256ompp=83b640bfe8fa088bd029015628a39816fb30e3e46192e0dfa18db91094489000
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
@@ -494,7 +494,7 @@ ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 \
-    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian-11_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mkdir /opt/openmpp \
