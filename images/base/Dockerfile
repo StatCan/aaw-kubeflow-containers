@@ -237,7 +237,7 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 ENV OMPP_VERSION="1.17.8"
 ENV OMPP_PKG_DATE="20250330"
 # Sha needs to be manually generated.
-ARG SHA256ompp=04fc24ad2ed6d6ef1e29430885b77c766eba85e7c5e69ba4c11acb838d712609
+ARG SHA256ompp=3407def2d633e7989396b6e2f2a75a7c445b5fc699d714e846ee8e279ff43b0e
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
