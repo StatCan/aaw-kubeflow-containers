@@ -498,7 +498,7 @@ RUN apt-get update --yes \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mkdir /opt/openmpp \
-    && mv /tmp/openmpp_debian-11_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
+    && mv /tmp/openmpp_debian_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
     && chown -R $NB_UID:$NB_GID /opt/openmpp
 # Copy the desktop icon into place for the web UI
 COPY openmpp.png $RESOURCES_PATH/openmpp.png
