@@ -47,7 +47,7 @@ jobs:
     with:
       image: "base"
       directory: "base"
-      base-image: "quay.io/jupyter/datascience-notebook:2025-02-18"
+      base-image: "quay.io/jupyter/datascience-notebook:2025-04-30"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       branch-name: "${{ needs.vars.outputs.branch-name }}"
     secrets:
