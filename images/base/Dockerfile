@@ -119,8 +119,8 @@ RUN \
     && rm -f /tmp/quarto-${QUARTO_VERSION}.tar.gz \
     && rm -f /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
     && rm -f /usr/local/bin/quarto \
-    && mv "./quarto-${QUARTO_VERSION}" /usr/local/bin/quarto 
     && chmod +x "/tmp/quarto-${QUARTO_VERSION}" \
+    && mv "/tmp/quarto-${QUARTO_VERSION}/bin/quarto" /usr/local/bin/quarto 
 
 # ODBC drivers
 RUN apt-get update && \
