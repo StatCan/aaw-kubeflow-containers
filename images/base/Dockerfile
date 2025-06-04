@@ -61,11 +61,11 @@ ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b
 ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
 ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
 
-ARG ARGO_CLI_VERSION=v3.5.14
+ARG ARGO_CLI_VERSION=v3.6.7
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
-ENV QUARTO_VERSION=1.5.57
+ENV QUARTO_VERSION=1.8.1
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
@@ -234,10 +234,10 @@ RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
 
 # OpenM install
 # Install OpenM++ MPI
-ENV OMPP_VERSION="1.17.1"
-ENV OMPP_PKG_DATE="20240322"
+ENV OMPP_VERSION="1.17.8"
+ENV OMPP_PKG_DATE="20250330"
 # Sha needs to be manually generated.
-ARG SHA256ompp=04fc24ad2ed6d6ef1e29430885b77c766eba85e7c5e69ba4c11acb838d712609
+ARG SHA256ompp=3407def2d633e7989396b6e2f2a75a7c445b5fc699d714e846ee8e279ff43b0e
 # OpenM++ environment settings
 ENV OMPP_INSTALL_DIR=/opt/openmpp/${OMPP_VERSION}
 
@@ -256,8 +256,8 @@ RUN apt-get update --yes \
     && rm -f /tmp/ompp.tar.gz \
 # Customize and rebuild omp-ui for jupyter-ompp-proxy install
 # issue with making a relative publicPath https://github.com/quasarframework/quasar/issues/8513
-    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
-    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.conf.js \
+    && sed -i -e 's/history/hash/' ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
+    && sed -i -e "s/OMS_URL:.*''/OMS_URL: '.'/" ${OMPP_INSTALL_DIR}/ompp-ui/quasar.config.js \
     && npm install --prefix ${OMPP_INSTALL_DIR}/ompp-ui @babel/traverse@7.23.2\
     && npm run build --prefix ${OMPP_INSTALL_DIR}/ompp-ui \
     && rm -r ${OMPP_INSTALL_DIR}/html \

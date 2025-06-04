@@ -117,11 +117,11 @@ ARG OH_MY_ZSH_SHA=22811faf34455a5aeaba6f6b36f2c79a0a454a74c8b4ea9c0760d1b2d7022b
 ARG TRINO_URL=https://repo1.maven.org/maven2/io/trino/trino-cli/410/trino-cli-410-executable.jar
 ARG TRINO_SHA=f32c257b9cfc38e15e8c0b01292ae1f11bda2b23b5ce1b75332e108ca7bf2e9b
 
-ARG ARGO_CLI_VERSION=v3.5.14
+ARG ARGO_CLI_VERSION=v3.6.7
 ARG ARGO_CLI_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-linux-amd64.gz
 ARG ARGO_CLI_CHECKSUM_URL=https://github.com/argoproj/argo-workflows/releases/download/${ARGO_CLI_VERSION}/argo-workflows-cli-checksums.txt
 
-ENV QUARTO_VERSION=1.5.57
+ENV QUARTO_VERSION=1.8.1
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
@@ -481,11 +481,11 @@ COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
 COPY remote-desktop/minio-launch.py /usr/bin/minio-launch.py
 
 # Install OpenM++
-ENV OMPP_VERSION="1.17.1"
+ENV OMPP_VERSION="1.17.8"
 # IMPORTANT: Don't forget to update the version number in the openmpp.desktop file!!
-ENV OMPP_PKG_DATE="20240322"
+ENV OMPP_PKG_DATE="20250330"
 # Sha needs to be manually generated.
-ARG SHA256ompp=76c16dd8e2ca637006b92c4cc36541cedc776dda1a06fcf0702859271ca78ac3
+ARG SHA256ompp=83b640bfe8fa088bd029015628a39816fb30e3e46192e0dfa18db91094489000
 # OpenM++ environment settings
 ENV OMPP_USER=$NB_USER
 ENV OMPP_GROUP=100
@@ -494,11 +494,11 @@ ENV OMPP_GID=$NB_GID
 # OpenM++ expects sqlite to be installed (not just libsqlite)
 RUN apt-get update --yes \
     && apt-get install --yes sqlite3 \
-    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian-11_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
+    && wget https://github.com/openmpp/main/releases/download/v${OMPP_VERSION}/openmpp_debian_${OMPP_PKG_DATE}.tar.gz -O /tmp/ompp.tar.gz \
     && echo "${SHA256ompp} /tmp/ompp.tar.gz" | sha256sum -c - \
     && tar -xf /tmp/ompp.tar.gz -C /tmp/ \
     && mkdir /opt/openmpp \
-    && mv /tmp/openmpp_debian-11_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
+    && mv /tmp/openmpp_debian_${OMPP_PKG_DATE} /opt/openmpp/${OMPP_VERSION} \
     && chown -R $NB_UID:$NB_GID /opt/openmpp
 # Copy the desktop icon into place for the web UI
 COPY openmpp.png $RESOURCES_PATH/openmpp.png
