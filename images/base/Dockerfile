@@ -116,11 +116,11 @@ RUN \
     && wget -q ${QUARTO_CHECKSUM_URL} -O /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
     && grep "quarto-${QUARTO_VERSION}.tar.gz" /tmp/quarto-${QUARTO_VERSION}-checksums.txt | sed "s|quarto-${QUARTO_VERSION}.tar.gz|/tmp/quarto-${QUARTO_VERSION}.tar.gz|" | sha256sum -c - && \
     && tar -xzvf /tmp/quarto-${QUARTO_VERSION}.tar.gz -C /tmp/ \
-    && chmod +x "quarto-${QUARTO_VERSION}" \
     && rm -f /tmp/quarto-${QUARTO_VERSION}.tar.gz \
     && rm -f /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
     && rm -f /usr/local/bin/quarto \
     && mv "./quarto-${QUARTO_VERSION}" /usr/local/bin/quarto 
+    && chmod +x "/tmp/quarto-${QUARTO_VERSION}" \
 
 # ODBC drivers
 RUN apt-get update && \
