@@ -114,7 +114,7 @@ RUN \
     # quarto
     wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}.tar.gz \
     && wget -q ${QUARTO_CHECKSUM_URL} -O /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
-    && grep "quarto-${QUARTO_VERSION}.tar.gz" /tmp/quarto-${QUARTO_VERSION}-checksums.txt | sed "s|quarto-${QUARTO_VERSION}.tar.gz|/tmp/quarto-${QUARTO_VERSION}.tar.gz|" | sha256sum -c - && \
+    && grep "quarto-${QUARTO_VERSION}.tar.gz" /tmp/quarto-${QUARTO_VERSION}-checksums.txt | sed "s|quarto-${QUARTO_VERSION}.tar.gz|/tmp/quarto-${QUARTO_VERSION}.tar.gz|" | sha256sum -c - \
     && tar -xzvf /tmp/quarto-${QUARTO_VERSION}.tar.gz -C /tmp/ \
     && rm -f /tmp/quarto-${QUARTO_VERSION}.tar.gz \
     && rm -f /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
