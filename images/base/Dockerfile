@@ -113,11 +113,11 @@ RUN \
     && argo version \
   && \
     # quarto
-    wget -q ${QUARTO_URL} -O quarto-${QUARTO_VERSION}.tar.gz \
-    && wget -q ${QUARTO_CHECKSUM_URL} -O quarto-${QUARTO_VERSION}-checksums.txt \
-    && grep "quarto-${QUARTO_VERSION}.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
-    && tar -xzvf quarto-${QUARTO_VERSION}.tar.gz -C  \
-    && rm -f quarto-${QUARTO_VERSION}.tar.gz \
+    wget -q ${QUARTO_URL} \
+    && wget -q ${QUARTO_CHECKSUM_URL} \
+    && grep "quarto-${QUARTO_VERSION}-linux-amd64.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
+    && tar -xf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
+    && rm -f quarto-${QUARTO_VERSION}-linux-amd64.tar.gz \
     && rm -f quarto-${QUARTO_VERSION}-checksums.txt \
     && rm -f /usr/local/bin/quarto \
     && chmod +x "quarto-${QUARTO_VERSION}" \
