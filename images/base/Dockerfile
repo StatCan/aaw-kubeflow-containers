@@ -69,6 +69,7 @@ ENV QUARTO_VERSION=1.8.1
 ARG QUARTO_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 ARG QUARTO_CHECKSUM_URL=https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-checksums.txt
 
+WORKDIR /tmp
 RUN \
   # OpenJDK-8
     apt-get update && \
@@ -91,16 +92,16 @@ RUN \
     && echo "azcli: ok" \
   && \
     # zsh
-    wget -q "${OH_MY_ZSH_URL}" -O /tmp/oh-my-zsh-install.sh \
-    && echo "${OH_MY_ZSH_SHA} /tmp/oh-my-zsh-install.sh" | sha256sum -c \
+    wget -q "${OH_MY_ZSH_URL}" -O oh-my-zsh-install.sh \
+    && echo "${OH_MY_ZSH_SHA} oh-my-zsh-install.sh" | sha256sum -c \
     && echo "oh-my-zsh: ok" \
   && \
     # trino cli
-    wget -q "${TRINO_URL}" -O /tmp/trino-original \
-    && echo "${TRINO_SHA}" /tmp/trino-original | sha256sum -c \
+    wget -q "${TRINO_URL}" -O trino-original \
+    && echo "${TRINO_SHA}" trino-original | sha256sum -c \
     && echo "trinocli: ok" \
-    && chmod +x /tmp/trino-original \
-    && mv /tmp/trino-original /usr/local/bin/trino-original \
+    && chmod +x trino-original \
+    && mv trino-original /usr/local/bin/trino-original \
   && \
     # argo cli
     curl -sLO  "${ARGO_CLI_URL}" \
@@ -112,16 +113,17 @@ RUN \
     && argo version \
   && \
     # quarto
-    wget -q ${QUARTO_URL} -O /tmp/quarto-${QUARTO_VERSION}.tar.gz \
-    && wget -q ${QUARTO_CHECKSUM_URL} -O /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
-    && grep "quarto-${QUARTO_VERSION}.tar.gz" /tmp/quarto-${QUARTO_VERSION}-checksums.txt | sed "s|quarto-${QUARTO_VERSION}.tar.gz|/tmp/quarto-${QUARTO_VERSION}.tar.gz|" | sha256sum -c - \
-    && tar -xzvf /tmp/quarto-${QUARTO_VERSION}.tar.gz -C /tmp/ \
-    && rm -f /tmp/quarto-${QUARTO_VERSION}.tar.gz \
-    && rm -f /tmp/quarto-${QUARTO_VERSION}-checksums.txt \
+    wget -q ${QUARTO_URL} -O quarto-${QUARTO_VERSION}.tar.gz \
+    && wget -q ${QUARTO_CHECKSUM_URL} -O quarto-${QUARTO_VERSION}-checksums.txt \
+    && grep "quarto-${QUARTO_VERSION}.tar.gz" quarto-${QUARTO_VERSION}-checksums.txt | sha256sum -c - \
+    && tar -xzvf quarto-${QUARTO_VERSION}.tar.gz -C  \
+    && rm -f quarto-${QUARTO_VERSION}.tar.gz \
+    && rm -f quarto-${QUARTO_VERSION}-checksums.txt \
     && rm -f /usr/local/bin/quarto \
-    && chmod +x "/tmp/quarto-${QUARTO_VERSION}" \
-    && mv "/tmp/quarto-${QUARTO_VERSION}/bin/quarto" /usr/local/bin/quarto 
+    && chmod +x "quarto-${QUARTO_VERSION}" \
+    && mv "quarto-${QUARTO_VERSION}/bin/quarto" /usr/local/bin/quarto 
 
+WORKDIR /
 # ODBC drivers
 RUN apt-get update && \
     apt-get install -y unixodbc-dev && \
