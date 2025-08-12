@@ -19,6 +19,7 @@
 #     c. AZURE_CREDENTIALS with the output of `az ad sp create-for-rbac --sdk-auth`
 #     d. DEV_REGISTRY_USERNAME with the DEV ACR username
 #     e. DEV_REGISTRY_PASSWORD with the DEV ACR Password
+# test
 #
 # 2. Change the values for the REGISTRY_NAME, CLUSTER_NAME, CLUSTER_RESOURCE_GROUP and NAMESPACE environment variables (below in build-push).
 name: build_and_push
