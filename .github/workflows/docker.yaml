@@ -53,8 +53,8 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
-      SAS_SA_NAME: ${{ secrets.BRYAN_SA_NAME }}
-      SAS_SA_KEY_1: ${{ secrets.BRYAN_SA_KEY }}
+      BRYAN_SA_NAME: ${{ secrets.BRYAN_SA_NAME }}
+      BRYAN_SA_KEY: ${{ secrets.BRYAN_SA_KEY }}
 
   platform-jupyterlab:
     needs: [vars, base]
