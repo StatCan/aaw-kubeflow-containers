@@ -7,7 +7,24 @@ RUN groupadd -g 1337 supergroup && \
     echo "sas:sas" | chpasswd
 
 # Will fail if CI/CD only authenticates Dev
-COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
+#COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
+
+ARG ACCOUNT_NAME=${ACCOUNT_NAME}
+ARG SRC_ACCOUNT_KEY=${SRC_ACCOUNT_KEY}
+
+RUN curl -L https://github.com/Azure/blobporter/releases/download/v0.6.20/bp_linux.tar.gz -o /tmp/blobporter.tar.gz && \
+    tar -xf /tmp/blobporter.tar.gz -C /tmp linux_amd64/blobporter && \
+    mv /tmp/linux_amd64/blobporter /usr/local/bin/blobporter && \
+    rm -rf /tmp/* && \
+    chmod a+x /usr/local/bin/blobporter
+
+RUN cd /usr/local/ && \
+    blobporter -f https://bryantestsas.blob.core.windows.net/sasblobcontainer/SASHome.tar.gz -c sasblobcontainer -n SASHome.tar.gz -t blob-file && \
+    tar -xzpf SASHome.tar.gz && \
+    rm SASHome.tar.gz && \
+    chown -R jovyan:sasstaff /usr/local/SASHome && \
+    ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas
+    
 
 COPY --from=minio/mc:RELEASE.2025-01-17T23-25-50Z /bin/mc /usr/local/bin/mc-original
 

@@ -44,6 +44,12 @@ on:
       REGISTRY_PASSWORD:
         description: The password for the container registry
         required: true
+      BRYAN_SA_KEY:
+        description: The name of the SAS storage account
+        required: false
+      BRYAN_SA_NAME:
+        description: The access key to the SAS storage account
+        required: false
     outputs:
       is-diff:
         description: Is there a difference between the master branch and the current branch
@@ -81,6 +87,8 @@ jobs:
     secrets:
       REGISTRY_USERNAME: ${{ secrets.REGISTRY_USERNAME }}
       REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      BRYAN_SA_NAME: ${{ secrets.BRYAN_SA_NAME }}
+      BRYAN_SA_KEY: ${{ secrets.BRYAN_SA_KEY }}
 
   pull-upload:
     needs: [check-diff]
