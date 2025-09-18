@@ -6,8 +6,10 @@ RUN groupadd -g 1337 supergroup && \
     usermod -a -G sasstaff sas && \
     echo "sas:sas" | chpasswd
 
-# Will fail if CI/CD only authenticates Dev
-COPY --from=k8scc01covidacr.azurecr.io/sas4c:0.0.3 /usr/local/SASHome /usr/local/SASHome
+# Dockerfile GIST: https://gist.github.com/Jose-Matsuda/c66dbf758620e4ae6bbd811a7b6471f1 
+COPY --chown=jovyan:sasstaff --from=k8scc01covidacr.azurecr.io/sasinstallation:v1 /usr/local/SASHome /usr/local/SASHome
+
+RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas 
 
 COPY --from=minio/mc:RELEASE.2025-01-17T23-25-50Z /bin/mc /usr/local/bin/mc-original
 
@@ -15,17 +17,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/local/SASHome/SASFoundation/9.4/bin/sas_en /usr/local/bin/sas && \
-    usermod -a -G sasstaff jovyan && \
-    chmod -R 0775 /usr/local/SASHome/studioconfig
-
 WORKDIR /home/sas
 
 ENV PATH=$PATH:/usr/local/SASHome/SASFoundation/9.4/bin
 
 ENV PATH=$PATH:/usr/local/SASHome/SASPrivateJavaRuntimeEnvironment/9.4/jre/bin
 
-RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
+# setuid.sh is not working as intended, seemingly cannot find the file so we do this instead.
+#RUN /usr/local/SASHome/SASFoundation/9.4/utilities/bin/setuid.sh
+RUN chown root /usr/local/SASHome/SASFoundation/9.4/utilities/bin/elssrv && \
+    chown root /usr/local/SASHome/SASFoundation/9.4/utilities/bin/sasauth && \
+    chown root /usr/local/SASHome/SASFoundation/9.4/utilities/bin/sasperm && \
+    chmod 4755 /usr/local/SASHome/SASFoundation/9.4/utilities/bin/elssrv && \
+    chmod 4755 /usr/local/SASHome/SASFoundation/9.4/utilities/bin/sasauth && \
+    chmod 4755 /usr/local/SASHome/SASFoundation/9.4/utilities/bin/sasperm
 
 ENV SAS_HADOOP_JAR_PATH=/opt/hadoop
 
