@@ -647,3 +647,4 @@ RUN apt-get remove -y -q light-locker xfce4-screensaver \
 USER $NB_USER
 ENTRYPOINT ["tini", "--"]
 CMD ["start-remote-desktop.sh"]
+
