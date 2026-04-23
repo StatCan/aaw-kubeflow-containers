@@ -214,20 +214,30 @@ RUN pip install --no-cache-dir \
 # Update and pin packages
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 
-# Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
-    /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
-    mamba install -c conda-forge \
-      'python-lsp-server' \
-    && \
+
+RUN julia -e 'using Pkg; Pkg.Registry.add(Pkg.RegistrySpec(url="https://github.com/JuliaRegistries/General.git")); Pkg.add("LanguageServer"); Pkg.precompile()' && \
+    clean-layer.sh && \ 
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
+
+RUN /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'options(repos=c(CRAN="https://cran.rstudio.com/")); install.packages("languageserver")' && \
+    clean-layer.sh && \ 
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
+
+RUN mamba install -c conda-forge --yes --quiet 'python-lsp-server' && \
+    clean-layer.sh && \ 
+    fix-permissions "$CONDA_DIR" && \
+    fix-permissions "/home/$NB_USER"
+
 # These should probably go in a package.json file
 # Copy the file over then use npm ci, much better flexibility for managing deps and CVEs
-    npm i -g \
-    'bash-language-server'  \
-    'dockerfile-language-server-nodejs' \
-    'javascript-typescript-langserver' \
-    'unified-language-server' \
-    'yaml-language-server' && \
+RUN npm install -g --no-progress --no-audit \
+    bash-language-server \
+    dockerfile-language-server-nodejs \
+    javascript-typescript-langserver \
+    unified-language-server \
+    yaml-language-server && \
     clean-layer.sh && \ 
     fix-permissions "$CONDA_DIR" && \
     fix-permissions "/home/$NB_USER"
