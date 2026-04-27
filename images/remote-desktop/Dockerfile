@@ -1,6 +1,6 @@
 # For compatibility with docker stacks
-ARG HOME=/home/$NB_USER
 ARG NB_USER="jovyan"
+ARG HOME=/home/$NB_USER
 ARG NB_UID="1000"
 ARG NB_GID="100"
 
@@ -9,7 +9,6 @@ ENV NB_USER="${NB_USER}" \
     NB_GID=${NB_GID} \
     CONDA_DIR=/opt/conda \
     PATH=$PATH:/opt/conda/bin \
-    NB_USER="jovyan" \
     HOME="/home/${NB_USER}"
 
 USER root
@@ -182,7 +181,7 @@ ENV XDG_DATA_HOME=/etc/share
 ENV VSCODE_DIR=$XDG_DATA_HOME/code
 ENV VSCODE_EXTENSIONS=$VSCODE_DIR/extensions
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update \
  && apt-get install -y dbus-x11 \
     xfce4 \

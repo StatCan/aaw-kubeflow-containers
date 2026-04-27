@@ -17,7 +17,6 @@ if ! hash pspp 2>/dev/null; then
     apt-get update
     apt-get install -y debhelper dh-elpa perl texinfo libspread-sheet-widget-dev libgsl-dev libgtk-3-dev libgtksourceview-3.0-dev libxml2-dev libreadline-dev libglib2.0-dev libcairo2-dev libpango1.0-dev zlib1g-dev pkg-config postgresql libtext-diff-perl libpq-dev emacsen-common
     apt-get update
-    apt upgrade -y
     dpkg -i ./libreadline7.deb 
     dpkg -i ./pspp.deb
     #remove
