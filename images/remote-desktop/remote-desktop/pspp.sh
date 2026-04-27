@@ -14,9 +14,7 @@ if ! hash pspp 2>/dev/null; then
     echo "${SHA256_PSPP} ./pspp.deb" | sha256sum -c -
     wget --quiet http://ftp.us.debian.org/debian/pool/main/r/readline/libreadline7_7.0-5_amd64.deb -O ./libreadline7.deb
     echo "${SHA256_LIBREADLINE} ./libreadline7.deb" | sha256sum -c -
-    apt-get update
     apt-get install -y debhelper dh-elpa perl texinfo libspread-sheet-widget-dev libgsl-dev libgtk-3-dev libgtksourceview-3.0-dev libxml2-dev libreadline-dev libglib2.0-dev libcairo2-dev libpango1.0-dev zlib1g-dev pkg-config postgresql libtext-diff-perl libpq-dev emacsen-common
-    apt-get update
     dpkg -i ./libreadline7.deb 
     dpkg -i ./pspp.deb
     #remove
