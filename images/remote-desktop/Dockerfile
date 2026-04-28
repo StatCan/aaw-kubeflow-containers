@@ -472,9 +472,8 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     clean-layer.sh
 
 #Install PSPP
-RUN apt-get update && \
-    apt-get install -y pspp && \
-    clean-layer.sh
+RUN /bin/bash $RESOURCES_PATH/pspp.sh \
+    && clean-layer.sh
 
 #Install Minio
 COPY minio-icon.png $RESOURCES_PATH/minio-icon.png
