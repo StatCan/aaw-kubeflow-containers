@@ -188,7 +188,7 @@ jobs:
       directory: "remote-desktop"
       # Rocker/geospatial is tagged by R version number.  They are not clear on whether they'll change those tagged
       # images for hotfixes, so always pin tag and digest to prevent unexpected upstream changes
-      base-image: "rocker/geospatial:4.2.1@sha256:5caca36b8962233f8636540b7c349d3f493f09e864b6e278cb46946ccf60d4d2"
+      base-image: "rocker/geospatial:4.3.3@sha256:938ebd052e3426ea271a78c960679639e7638877c5ab32d67fd8ab2bb5289613"
       registry-name: "${{ needs.vars.outputs.REGISTRY_NAME }}"
       buildkit: 0
       branch-name: "${{ needs.vars.outputs.branch-name }}"
