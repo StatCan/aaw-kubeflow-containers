@@ -395,7 +395,7 @@ ARG SHA256gl=ed130b2a0ddabe5132b09978195cefe9955a944766a72772c346359d65f263cc
 ENV VS_PYTHON_VERSION="2020.5.86806" 
 
 WORKDIR ${RESOURCES_PATH}
-RUN  mkdir -p $HOME/.local/share \
+RUN mkdir -p $HOME/.local/share \
  && mkdir -p $VSCODE_DIR/extensions \
  && wget --quiet --no-check-certificate https://github.com/microsoft/vscode-python/releases/download/$VS_PYTHON_VERSION/ms-python-release.vsix \
  && echo "${SHA256py} ms-python-release.vsix" | sha256sum -c - \
@@ -472,7 +472,26 @@ RUN add-apt-repository ppa:libreoffice/ppa && \
     clean-layer.sh
 
 #Install PSPP
-RUN /bin/bash $RESOURCES_PATH/pspp.sh \
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential \
+        libgsl-dev \
+        libgtk-3-dev \
+        libgtksourceview-3.0-dev \
+        libxml2-dev \
+        libreadline-dev \
+        libpq-dev \
+        texinfo \
+        gettext \
+        libspread-sheet-widget-dev \
+    && wget https://ftp.gnu.org/gnu/pspp/pspp-1.6.2.tar.gz \
+    && tar -xf pspp-1.6.2.tar.gz \
+    && cd pspp-1.6.2 \
+    && ./configure --without-gui \
+    && make -j$(nproc) \
+    && make install \
+    && cd .. \
+    && rm -rf pspp-1.6.2* \
     && clean-layer.sh
 
 #Install Minio
