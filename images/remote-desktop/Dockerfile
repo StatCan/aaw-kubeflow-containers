@@ -9,6 +9,7 @@ ENV NB_USER="${NB_USER}" \
     NB_GID=${NB_GID} \
     CONDA_DIR=/opt/conda \
     PATH=$PATH:/opt/conda/bin \
+    NB_USER="jovyan" \
     HOME="/home/${NB_USER}"
 
 USER root
