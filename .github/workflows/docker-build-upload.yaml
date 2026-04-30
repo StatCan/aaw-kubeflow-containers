@@ -85,7 +85,7 @@ jobs:
 
       - name: Set FROM and as in Dockerfile
         run: |
-          sed -i '1i FROM ${{ env.BASE_IMAGE}} as ${{ inputs.image }}' ./images/${{ inputs.directory }}/Dockerfile
+          sed -i '1i FROM ${{ env.BASE_IMAGE}} AS ${{ inputs.image }}' ./images/${{ inputs.directory }}/Dockerfile
 
       - name: Run Hadolint
         run: |

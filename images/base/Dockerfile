@@ -215,7 +215,7 @@ RUN pip install --no-cache-dir \
 # See https://github.com/StatCan/aaw-kubeflow-containers/issues/293
 
 # Install python, R, Julia and other useful language servers
-RUN julia -e 'using Pkg; Pkg.add("LanguageServer")' && \
+RUN julia -e 'using Pkg; Pkg.add(Pkg.PackageSpec(;name="LanguageServer", version="4.5.1"))' && \
     /opt/conda/bin/R --silent --slave --no-save --no-restore -e 'install.packages("languageserver", repos="https://cran.r-project.org/")' && \
     mamba install -c conda-forge \
       'python-lsp-server' \
@@ -270,3 +270,4 @@ COPY jupyterlab-overrides.json /opt/conda/share/jupyter/lab/settings/overrides.j
 
 ENV DEFAULT_JUPYTER_URL=/lab
 ENV GIT_EXAMPLE_NOTEBOOKS=https://github.com/StatCan/aaw-contrib-jupyter-notebooks
+
